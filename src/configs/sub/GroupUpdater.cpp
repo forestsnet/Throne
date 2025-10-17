@@ -902,22 +902,6 @@ namespace Subscription {
             // Всегда создаем новую группу без диалога
             asURL = true;
             createNewGroup = true;
-            
-            // Удаляем старые группы с тем же доменом
-            QString newDomain = QUrl(processedUrl).host();
-            
-            // Используем существующий метод для получения всех ID групп
-            auto groupIds = Configs::profileManager->groupsTabOrder;
-            for (const auto& gid : groupIds) {
-                auto group = Configs::profileManager->GetGroup(gid);
-                if (group != nullptr && !group->url.isEmpty() && QUrl(group->url).host() == newDomain) {
-                    MW_show_log(QString("Removing old group with same domain: %1").arg(group->name));
-                    // Удаляем все профили группы
-                    Configs::profileManager->BatchDeleteProfiles(group->profiles);
-                    // Удаляем саму группу
-                    Configs::profileManager->DeleteGroup(group->id);
-                }
-            }
         }
 
         runOnNewThread([=,this] {
@@ -930,6 +914,24 @@ namespace Subscription {
                 gid = group->id;
                 MW_show_log(QString("Created new subscription group: %1").arg(group->name));
                 MW_dialog_message("SubUpdater", "NewGroup");
+                
+                // ПОСЛЕ создания новой группы удаляем старые с тем же доменом
+                QString newDomain = QUrl(processedUrl).host();
+                auto groupIds = Configs::profileManager->groupsTabOrder;
+                
+                for (const auto& oldGid : groupIds) {
+                    // Не удаляем только что созданную группу
+                    if (oldGid == gid) continue;
+                    
+                    auto oldGroup = Configs::profileManager->GetGroup(oldGid);
+                    if (oldGroup != nullptr && !oldGroup->url.isEmpty() && QUrl(oldGroup->url).host() == newDomain) {
+                        MW_show_log(QString("Removing old group with same domain: %1").arg(oldGroup->name));
+                        // Удаляем все профили группы
+                        Configs::profileManager->BatchDeleteProfiles(oldGroup->profiles);
+                        // Удаляем саму группу
+                        Configs::profileManager->DeleteGroup(oldGroup->id);
+                    }
+                }
             }
             Update(processedUrl, gid, asURL);
             emit asyncUpdateCallback(gid);
