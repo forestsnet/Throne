@@ -10,20 +10,6 @@
 
 #include "3rdparty/fkYAML/node.hpp"
 
-#ifdef Q_OS_WIN
-static void DebugBox(const QString &title, const QString &text)
-{
-    QMessageBox box;
-    box.setWindowTitle(title);
-    box.setText(text);
-    box.setIcon(QMessageBox::Information);
-    box.setStandardButtons(QMessageBox::Ok);
-    box.exec();
-}
-#else
-#define DebugBox(title, text) qDebug() << title << ":" << text
-#endif
-
 
 namespace Subscription {
 
@@ -92,7 +78,7 @@ namespace Subscription {
     QString processCustomScheme(const QString &url) {
         #ifdef Q_OS_WIN
         QString debugMsg = QString("processCustomScheme called with: %1").arg(url);
-        DebugBox("Debug - processCustomScheme", debugMsg);
+        MessageBoxWarning("Debug - processCustomScheme", debugMsg);
         #endif
         
         MW_show_log(QString("Processing URL: %1").arg(url));
@@ -103,7 +89,7 @@ namespace Subscription {
             fixedUrl.replace("throne://subscribe?", "throne://subscribe/?");
             #ifdef Q_OS_WIN
             QString fixMsg = QString("Fixed URL: %1").arg(fixedUrl);
-            DebugBox("Debug - URL Fixed", fixMsg);
+            MessageBoxWarning("Debug - Fixed URL", fixMsg);
             #endif
         }
 
@@ -117,14 +103,14 @@ namespace Subscription {
             
             #ifdef Q_OS_WIN
             QString resultMsg = QString("Decoded URL: %1").arg(decodedUrl);
-            DebugBox("Debug - Final URL", resultMsg);
+            MessageBoxWarning("Debug - Final URL", resultMsg);
             #endif
             
             return decodedUrl;
         }
 
         #ifdef Q_OS_WIN
-        DebugBox("Debug - No URL Param", "No URL parameter found, returning original");
+        MessageBoxWarning("Debug - No URL Param", "No URL parameter found, returning original");
         #endif
         
         return url;
@@ -952,7 +938,7 @@ namespace Subscription {
         // Дебажим какую ссылку получаем выводя окно
         #ifdef Q_OS_WIN
         QString processedMsg = QString("Processed URL: %1").arg(processedUrl);
-        DebugBox("Debug - Processed URL", processedMsg);
+        MessageBoxWarning("Debug - Processed URL", processedMsg);
         #endif
 
         
