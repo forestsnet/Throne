@@ -18,9 +18,9 @@ jobs:
           - cross_os: windows
             cross_arch: amd64
             go_version: "1.25.3"
-          # - cross_os: windows
-          #   cross_arch: arm64
-          #   go_version: "1.25.3"
+          - cross_os: windows
+            cross_arch: arm64
+            go_version: "1.25.3"
           # - cross_os: linux
           #   cross_arch: amd64
           #   go_version: "1.25.3"
@@ -33,12 +33,12 @@ jobs:
           # - cross_os: darwin
           #   cross_arch: arm64
           #   go_version: "1.25.3"
-          # - cross_os: windowslegacy
-          #   cross_arch: amd64
-          #   go_version: "1.25.3"
-          # - cross_os: windowslegacy
-          #   cross_arch: 386
-          #   go_version: "1.25.3"
+          - cross_os: windowslegacy
+            cross_arch: amd64
+            go_version: "1.25.3"
+          - cross_os: windowslegacy
+            cross_arch: 386
+            go_version: "1.25.3"
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
@@ -96,9 +96,9 @@ jobs:
           - platform: windows-latest
             qt_version: "6.10.0"
             target: x86_64
-          # - platform: windows-11-arm
-          #   qt_version: "6.10.0"
-          #   target: arm64
+          - platform: windows-11-arm
+            qt_version: "6.10.0"
+            target: arm64
           # - platform: ubuntu-22.04
           #   qt_version: "6.10.0"
           #   target: amd64
@@ -117,9 +117,9 @@ jobs:
           - platform: windows-latest
             qt_version: "6.2.12"
             target: x86_64
-          # - platform: windows-latest
-          #   qt_version: "6.2.12"
-          #   target: i686
+          - platform: windows-latest
+            qt_version: "6.2.12"
+            target: i686
       fail-fast: false
     runs-on: ${{ matrix.platform }}
     env:
