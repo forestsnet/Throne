@@ -275,16 +275,38 @@ int main(int argc, char* argv[]) {
     hashBytes.replace('+', '0').replace('/', '1');
     auto serverName = LOCAL_SERVER_PREFIX + QString::fromUtf8(hashBytes);
     qDebug() << "server name: " << serverName;
+    
+    // Проверяем throne:// URL перед проверкой другого экземпляра
+    QStringList arguments = a.arguments();
+    qDebug() << "Application arguments:" << arguments;
+    
+    QString throneUrl;
+    for (int i = 1; i < arguments.size(); ++i) {
+        const QString &arg = arguments[i];
+        qDebug() << "Checking argument:" << arg;
+        if (arg.startsWith("throne://")) {
+            throneUrl = arg;
+            qDebug() << "Found throne URL:" << throneUrl;
+            break;
+        }
+    }
+    
     QLocalSocket socket;
     socket.connectToServer(serverName);
     if (socket.waitForConnected(250))
     {
-        qDebug() << "Another instance is running, let's wake it up and quit";
+        qDebug() << "Another instance is running";
+        if (!throneUrl.isEmpty()) {
+            // Передаем URL в запущенный экземпляр
+            qDebug() << "Sending URL to running instance:" << throneUrl;
+            socket.write(throneUrl.toUtf8());
+            socket.waitForBytesWritten(1000);
+        }
         socket.disconnectFromServer();
         return 0;
     }
 
-    // QLocalServer
+    // QLocalServer - обновляем обработчик для получения URL
     QLocalServer server(qApp);
     server.setSocketOptions(QLocalServer::WorldAccessOption);
     if (!server.listen(serverName)) {
@@ -294,8 +316,30 @@ int main(int argc, char* argv[]) {
     QObject::connect(&server, &QLocalServer::newConnection, qApp, [&] {
         auto s = server.nextPendingConnection();
         qDebug() << "Another instance tried to wake us up on " << serverName << s;
+        
+        // Читаем данные из соединения (если новый экземпляр передает URL)
+        if (s->waitForReadyRead(1000)) {
+            QByteArray data = s->readAll();
+            QString receivedUrl = QString::fromUtf8(data);
+            qDebug() << "Received URL from another instance:" << receivedUrl;
+            
+            if (receivedUrl.startsWith("throne://")) {
+                // Открываем главное окно и обрабатываем URL
+                QTimer::singleShot(500, [receivedUrl]() {
+                    auto mainWindow = GetMainWindow();
+                    if (mainWindow) {
+                        mainWindow->show();
+                        mainWindow->raise();
+                        mainWindow->activateWindow();
+                    }
+                    MW_show_log("Processing throne:// URL from another instance: " + receivedUrl);
+                    Subscription::groupUpdater->AsyncUpdate(receivedUrl, -1, nullptr);
+                });
+            }
+        }
+        
         s->close();
-        // raise main window
+        // raise main window в любом случае
         MW_dialog_message("", "Raise");
     });
     QObject::connect(qApp, &QApplication::aboutToQuit, [&]
@@ -324,21 +368,7 @@ int main(int argc, char* argv[]) {
 
     registerUrlScheme();
     
-    // Обработка URL при запуске - добавляем отладку
-    QStringList arguments = a.arguments();
-    qDebug() << "Application arguments:" << arguments;
-    
-    QString throneUrl;
-    for (int i = 1; i < arguments.size(); ++i) {
-        const QString &arg = arguments[i];
-        qDebug() << "Checking argument:" << arg;
-        if (arg.startsWith("throne://")) {
-            throneUrl = arg;
-            qDebug() << "Found throne URL:" << throneUrl;
-            break;
-        }
-    }
-    
+    // Обработка URL при первом запуске (если приложение не было запущено)
     if (!throneUrl.isEmpty()) {
         // Обработать URL-схему после инициализации UI
         QTimer::singleShot(2000, [throneUrl]() {
