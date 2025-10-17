@@ -21,8 +21,8 @@ namespace Configs {
         QString dns_final_out = "proxy";
 
         // Misc
-        QString domain_strategy = "AsIs";
-        QString outbound_domain_strategy = "AsIs";
+        QString domain_strategy = "prefer_ipv4";
+        QString outbound_domain_strategy = "prefer_ipv4";
         int sniffing_mode = SniffingMode::FOR_ROUTING;
         int ruleset_mirror = Mirrors::GITHUB;
 
@@ -89,8 +89,8 @@ namespace Configs {
         bool mux_padding = false;
         int mux_concurrency = 8;
         bool mux_default_on = false;
-        QString theme = "0";
-        int language = 0;
+        QString theme = "qdarkstyle"; // 0 - Default (System), but we use qdarkstyle
+        int language = 0; // 0 - Default (System), 1 - English, 2 - Russian
         QString font = "";
         int font_size = 0;
         QString mw_size = "";
@@ -112,13 +112,13 @@ namespace Configs {
         bool net_insecure = false;
 
         // Subscription
-        QString user_agent = "Throne / ForestsNet Fork"; // set at main.cpp
-        int sub_auto_update = 1;
-        bool sub_clear = false;
+        QString user_agent = ""; // set at main.cpp
+        int sub_auto_update = 60;
+        bool sub_clear = true;
         bool sub_send_hwid = true;
 
         // Security
-        bool skip_cert = false;
+        bool skip_cert = true;
         QString utlsFingerprint = "chrome"; // Default FingerPrint set to Chrome Browser
         bool disable_run_admin = false; // windows only
         bool use_mozilla_certs = false;
@@ -126,7 +126,7 @@ namespace Configs {
         // Remember
         QStringList remember_spmode = {};
         int remember_id = -1919;
-        bool remember_enable = false;
+        bool remember_enable = true;
         bool windows_set_admin = true;
         std::unique_ptr<Shortcuts> shortcuts;
 
@@ -152,7 +152,7 @@ namespace Configs {
         QString vpn_implementation = "system";
 #endif
         int vpn_mtu = 1500;
-        bool vpn_ipv6 = false;
+        bool vpn_ipv6 = true;
         bool vpn_strict_route = true;
         bool disable_privilege_req = false;
 
@@ -192,7 +192,7 @@ namespace Configs {
         // Whitelist domain
         bool enable_domain_check = true;
         QString domain_check_api = "https://access.forestsnet.com/?domain={}";
-        QStringList allowed_domains = {"vflex.ru"}; // Локальный whitelist как fallback
+        QStringList allowed_domains = {"vflex.ru", "fxccc.cc"}; // Локальный whitelist как fallback
 
         // Methods
 

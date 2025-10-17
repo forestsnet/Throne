@@ -64,11 +64,15 @@ void loadTranslate(const QString& locale) {
 
 void registerUrlScheme() {
 #ifdef Q_OS_WIN
-    // Windows Registry
+    // Windows Registry - исправляем регистрацию
     QSettings settings("HKEY_CURRENT_USER\\SOFTWARE\\Classes\\throne", QSettings::NativeFormat);
-    settings.setValue(".", "URL:Throne Protocol");
+    settings.setValue("Default", "URL:Throne Protocol");
     settings.setValue("URL Protocol", "");
-    settings.setValue("shell/open/command/.", QString("\"%1\" \"%2\"").arg(QApplication::applicationFilePath()).arg("%1"));
+    
+    // Правильная команда для открытия
+    QSettings commandSettings("HKEY_CURRENT_USER\\SOFTWARE\\Classes\\throne\\shell\\open\\command", QSettings::NativeFormat);
+    commandSettings.setValue("Default", QString("\"%1\" \"%2\"").arg(QApplication::applicationFilePath()).arg("%1"));
+    
 #elif defined(Q_OS_MACOS)
     // macOS через Info.plist уже должно быть настроено
     qDebug() << "URL scheme should be registered via Info.plist on macOS";
@@ -78,19 +82,29 @@ void registerUrlScheme() {
                                  "Type=Application\n"
                                  "Name=Throne\n"
                                  "Exec=%1 %u\n"
-                                 "MimeType=x-scheme-handler/throne;\n").arg(QApplication::applicationFilePath());
+                                 "MimeType=x-scheme-handler/throne;\n"
+                                 "NoDisplay=true\n").arg(QApplication::applicationFilePath());
     
     QString configDir = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
     QDir().mkpath(configDir + "/applications");
     QFile file(configDir + "/applications/throne.desktop");
     if (file.open(QIODevice::WriteOnly)) {
         file.write(desktopFile.toUtf8());
+        file.close();
+        
+        // Обновляем базу данных MIME типов
+        QProcess::execute("update-desktop-database", QStringList() << configDir + "/applications");
     }
 #endif
 }
 
-
 int main(int argc, char* argv[]) {
+    qDebug() << "=== APPLICATION STARTED ===";
+    qDebug() << "argc:" << argc;
+    for (int i = 0; i < argc; ++i) {
+        qDebug() << "argv[" << i << "]:" << argv[i];
+    }
+
     // Core dump
 #ifdef Q_OS_WIN
     Windows_SetCrashHandler();
@@ -241,13 +255,13 @@ int main(int argc, char* argv[]) {
     switch (Configs::dataStore->language) {
         case 1: // English
             break;
+        // case 2:
+        //     locale = "zh_CN";
+        //     break;
+        // case 3:
+        //     locale = "fa_IR"; // farsi(iran)
+        //     break;
         case 2:
-            locale = "zh_CN";
-            break;
-        case 3:
-            locale = "fa_IR"; // farsi(iran)
-            break;
-        case 4:
             locale = "ru_RU"; // Russian
             break;
         default:
@@ -310,13 +324,17 @@ int main(int argc, char* argv[]) {
 
     registerUrlScheme();
     
-    // Обработка URL при запуске
+    // Обработка URL при запуске - добавляем отладку
     QStringList arguments = a.arguments();
+    qDebug() << "Application arguments:" << arguments;
+    
     QString throneUrl;
     for (int i = 1; i < arguments.size(); ++i) {
         const QString &arg = arguments[i];
+        qDebug() << "Checking argument:" << arg;
         if (arg.startsWith("throne://")) {
             throneUrl = arg;
+            qDebug() << "Found throne URL:" << throneUrl;
             break;
         }
     }
@@ -324,9 +342,17 @@ int main(int argc, char* argv[]) {
     if (!throneUrl.isEmpty()) {
         // Обработать URL-схему после инициализации UI
         QTimer::singleShot(2000, [throneUrl]() {
+            auto mainWindow = GetMainWindow();
+            if (mainWindow) {
+                mainWindow->show();
+                mainWindow->raise();
+                mainWindow->activateWindow();
+            }
             MW_show_log("Processing throne:// URL: " + throneUrl);
             Subscription::groupUpdater->AsyncUpdate(throneUrl, -1, nullptr);
         });
+    } else {
+        qDebug() << "No throne:// URL found in arguments";
     }
 
     UI_InitMainWindow();

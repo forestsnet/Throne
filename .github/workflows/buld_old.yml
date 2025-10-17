@@ -94,28 +94,7 @@ jobs:
       matrix:
         include:
           - platform: windows-latest
-            qt_version: "6.10.1"
-            target: x86_64
-          - platform: windows-11-arm
-            qt_version: "6.10.1"
-            target: arm64
-          - platform: ubuntu-22.04
-            qt_version: "6.10.1"
-            target: amd64
-          - platform: ubuntu-22.04
-            qt_version: "6.2.0"
-            target: amd64
-          - platform: ubuntu-24.04-arm
-            qt_version: "6.10.1"
-            target: arm64
-          - platform: macos-latest
-            qt_version: "6.10.1"
-            target: x86_64
-          - platform: macos-latest
-            qt_version: "6.10.1"
-            target: arm64
-          - platform: macos-latest
-            qt_version: "6.4.3"
+            qt_version: "6.10.0"
             target: x86_64
           - platform: windows-11-arm
             qt_version: "6.10.0"
@@ -172,7 +151,20 @@ jobs:
         uses: actions/cache@v4.2.3
         with:
           path: qt6/build
-          key: QtStaticCache-${{ matrix.platform }}-${{ matrix.target }}-Qt${{ matrix.qt_version }}
+          key: QtStaticCache-${{ matrix.platform }}-${{ matrix.target }}-Qt${{ matrix.qt_version }}-${{ hashFiles('script/build_qt_static_windows.bat') }}
+      - name: OpenSSL Cache
+        id: cache-openssl
+        if: matrix.platform == 'windows-latest' && matrix.qt_version != '6.2.12'
+        uses: actions/cache@v4.2.3
+        with:
+          path: C:/vcpkg/installed/x64-mingw-static
+          key: OpenSSLCache-${{ matrix.platform }}-${{ matrix.target }}
+      - name: Install OpenSSL (Windows)
+        if: matrix.platform == 'windows-latest' && steps.cache-openssl.outputs.cache-hit != 'true' && matrix.qt_version != '6.2.12'
+        shell: powershell
+        run: |
+          echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" | Out-File -FilePath $env:GITHUB_ENV -Append
+          vcpkg install openssl:x64-mingw-static
       - name: Install Qt Windows
         shell: powershell
         if: matrix.platform == 'windows-latest' && steps.cache-static-Qt.outputs.cache-hit != 'true' && matrix.qt_version != '6.2.12'
@@ -194,8 +186,8 @@ jobs:
           mkdir build
           cd build
           curl -fLso srslist.h "https://raw.githubusercontent.com/throneproj/routeprofiles/rule-set/srslist.h"
-          cmake -GNinja -DCMAKE_CXX_FLAGS="-static" -DCMAKE_BUILD_TYPE=Debug ..
-          ninja
+          cmake -GNinja -DCMAKE_CXX_FLAGS="-static" -DOPENSSL_ROOT_DIR="$VCPKG_INSTALLATION_ROOT/installed/x64-mingw-static" -DCMAKE_BUILD_TYPE=Debug ..
+          ninja -j2
           cd ..
           ./script/deploy_windows.sh
       - name: Legacy Windows - Generate MakeFile and Build
@@ -212,7 +204,7 @@ jobs:
           cd build
           curl -fLso srslist.h "https://raw.githubusercontent.com/throneproj/routeprofiles/rule-set/srslist.h"
           cmake -GNinja -DCMAKE_CXX_FLAGS="-static" -DCMAKE_BUILD_TYPE=Debug ..
-          ninja
+          ninja -j2
           cd ..
           ./script/deploy_windows.sh ${{ matrix.target }}
       - name: WOA - Generate MakeFile and Build
@@ -223,7 +215,7 @@ jobs:
           cd build
           curl -fLso srslist.h "https://raw.githubusercontent.com/throneproj/routeprofiles/rule-set/srslist.h"
           cmake -GNinja -DCMAKE_BUILD_TYPE=Release ..
-          ninja
+          ninja -j2
           cd ..
           ./script/deploy_woa.sh
       - name: Build Installer with NSIS
@@ -236,7 +228,7 @@ jobs:
           cp ThroneSetup.exe deployment/
       - name: Linux - Generate MakeFile and Build
         shell: bash
-        if: contains( matrix.platform, 'ubuntu' ) && matrix.qt_version != '6.2.0'
+        if: contains( matrix.platform, 'ubuntu' )
         run: |
           sudo apt update && sudo apt upgrade -y
           mkdir build
@@ -246,17 +238,6 @@ jobs:
           ninja
           cd ..
           ./script/deploy_linux64.sh
-      - name: Linux Using System Qt - Generate MakeFile and Build
-        shell: bash
-        if: contains( matrix.platform, 'ubuntu' ) && matrix.qt_version == '6.2.0'
-        run: |
-          mkdir build
-          cd build
-          curl -fLso srslist.h "https://raw.githubusercontent.com/throneproj/routeprofiles/rule-set/srslist.h"
-          cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXE_LINKER_FLAGS="-static-libgcc" ..
-          ninja
-          cd ..
-          ./script/deploy_linux64_system_qt.sh
       - name: macOS - Generate MakeFile and Build
         shell: bash
         if: matrix.platform == 'macos-latest' && matrix.qt_version != '6.4.3'
@@ -318,10 +299,6 @@ jobs:
           mv Throne.deb $version_standalone-debian-x64.deb
           rm -rf Throne
           ####
-          bash ../script/pack_debian_system_qt.sh ${{ github.event.inputs.tag }}
-          mv Throne.deb $version_standalone-debian-system-qt-x64.deb
-          rm -rf Throne
-          ####
           mv linux-amd64 Throne
           zip -9 -r $version_standalone-linux-amd64.zip Throne
           rm -rf Throne
@@ -347,13 +324,35 @@ jobs:
           zip -9 -r $version_standalone-windows-arm64.zip Throne
           rm -rf Throne
           ####
+          mkdir Throne
+          mv macos-arm64/Throne.app Throne/Throne.app
+          zip -9 --symlinks -r $version_standalone-macos-arm64.zip Throne
+          rm -rf macos-arm64
+          rm -rf Throne
+          ####
+          mkdir Throne
+          mv macos-amd64/Throne.app Throne/Throne.app
+          zip -9 --symlinks -r $version_standalone-macos-amd64.zip Throne
+          rm -rf macos-amd64
+          rm -rf Throne
+          ####
+          mkdir Throne
+          mv macoslegacy-amd64/Throne.app Throne/Throne.app
+          zip -9 --symlinks -r $version_standalone-macoslegacy-amd64.zip Throne
+          rm -rf macoslegacy-amd64
+          rm -rf Throne
       - name: Clean Up
         run: |
           cd deployment
           rm -rf windows-arm64
+          rm -rf linux-arm64
+          rm -rf linux-amd64
           rm -rf windows64
           rm -rf windows32
           rm -rf windowslegacy64
+          rm -rf macos-amd64
+          rm -rf macos-arm64
+          rm -rf macoslegacy-amd64
           rm -rf *.pdb
       - name: Uploading Artifact
         uses: actions/upload-artifact@v4.6.2
