@@ -325,17 +325,30 @@ int main(int argc, char* argv[]) {
             
             if (receivedUrl.startsWith("throne://")) {
                 // Открываем главное окно и обрабатываем URL
-                QTimer::singleShot(500, [receivedUrl]() {
+                QTimer::singleShot(100, [receivedUrl]() {
+                    qDebug() << "Processing received throne URL:" << receivedUrl;
+                    
+                    // Показываем окно
+                    MW_dialog_message("", "Raise");
+                    
                     auto mainWindow = GetMainWindow();
                     if (mainWindow) {
                         mainWindow->show();
                         mainWindow->raise();
                         mainWindow->activateWindow();
+                        qDebug() << "Main window activated";
+                    } else {
+                        qDebug() << "Main window is null!";
                     }
+                    
                     MW_show_log("Processing throne:// URL from another instance: " + receivedUrl);
                     Subscription::groupUpdater->AsyncUpdate(receivedUrl, -1, nullptr);
                 });
+            } else {
+                qDebug() << "Received data is not a throne URL:" << receivedUrl;
             }
+        } else {
+            qDebug() << "Failed to read data from connection or no data received";
         }
         
         s->close();
@@ -368,23 +381,31 @@ int main(int argc, char* argv[]) {
 
     registerUrlScheme();
     
+    UI_InitMainWindow();
+    
     // Обработка URL при первом запуске (если приложение не было запущено)
     if (!throneUrl.isEmpty()) {
         // Обработать URL-схему после инициализации UI
-        QTimer::singleShot(2000, [throneUrl]() {
+        QTimer::singleShot(1000, [throneUrl]() {
+            MW_show_log("Processing throne:// URL: " + throneUrl);
+            
+            // Показываем главное окно
             auto mainWindow = GetMainWindow();
             if (mainWindow) {
                 mainWindow->show();
                 mainWindow->raise();
                 mainWindow->activateWindow();
+            } else {
+                // Если окно еще не готово, пробуем через MW_dialog_message
+                MW_dialog_message("", "Raise");
             }
-            MW_show_log("Processing throne:// URL: " + throneUrl);
+            
+            // Обрабатываем URL
             Subscription::groupUpdater->AsyncUpdate(throneUrl, -1, nullptr);
         });
     } else {
         qDebug() << "No throne:// URL found in arguments";
     }
 
-    UI_InitMainWindow();
     return QApplication::exec();
 }
