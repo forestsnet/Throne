@@ -431,7 +431,7 @@ int main(int argc, char* argv[]) {
     
     // Обработка URL при первом запуске (если приложение не было запущено)
     if (!throneUrl.isEmpty()) {
-        #ifdef Q_OS_WIN
+        // #ifdef Q_OS_WIN
         // QString debugMsg = QString("Found throne URL: %1").arg(throneUrl);
         // DebugBox("Debug - URL Found", debugMsg);
         // #endif
