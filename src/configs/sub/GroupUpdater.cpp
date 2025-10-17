@@ -77,7 +77,7 @@ namespace Subscription {
     QString processCustomScheme(const QString &url) {
         #ifdef Q_OS_WIN
         QString debugMsg = QString("processCustomScheme called with: %1").arg(url);
-        MessageBoxA(nullptr, debugMsg.toLocal8Bit().data(), "Debug - processCustomScheme", MB_OK);
+        DebugBox("Debug - processCustomScheme", debugMsg);
         #endif
         
         MW_show_log(QString("Processing URL: %1").arg(url));
@@ -88,7 +88,7 @@ namespace Subscription {
             fixedUrl.replace("throne://subscribe?", "throne://subscribe/?");
             #ifdef Q_OS_WIN
             QString fixMsg = QString("Fixed URL: %1").arg(fixedUrl);
-            MessageBoxA(nullptr, fixMsg.toLocal8Bit().data(), "Debug - URL Fixed", MB_OK);
+            DebugBox("Debug - URL Fixed", fixMsg);
             #endif
         }
 
@@ -102,14 +102,14 @@ namespace Subscription {
             
             #ifdef Q_OS_WIN
             QString resultMsg = QString("Decoded URL: %1").arg(decodedUrl);
-            MessageBoxA(nullptr, resultMsg.toLocal8Bit().data(), "Debug - Final URL", MB_OK);
+            DebugBox("Debug - Final URL", resultMsg);
             #endif
             
             return decodedUrl;
         }
 
         #ifdef Q_OS_WIN
-        MessageBoxA(nullptr, "No URL parameter found, returning original", "Debug - No URL Param", MB_OK);
+        DebugBox("Debug - No URL Param", "No URL parameter found, returning original");
         #endif
         
         return url;
@@ -937,7 +937,7 @@ namespace Subscription {
         // Дебажим какую ссылку получаем выводя окно
         #ifdef Q_OS_WIN
         QString processedMsg = QString("Processed URL: %1").arg(processedUrl);
-        MessageBoxA(nullptr, processedMsg.toLocal8Bit().data(), "Debug - Processed URL", MB_OK);
+        DebugBox("Debug - Processed URL", processedMsg);
         #endif
 
         
