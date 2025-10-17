@@ -66,7 +66,6 @@ void loadTranslate(const QString& locale) {
 void registerUrlScheme()
 {
 #ifdef Q_OS_WIN
-    // --- Windows ---
     const QString appPath = QDir::toNativeSeparators(QApplication::applicationFilePath());
     const QString protocolName = "throne";
     const QString description = "URL:Throne Protocol";
@@ -74,36 +73,31 @@ void registerUrlScheme()
     // Основная ветка реестра
     QSettings protocolKey(QString("HKEY_CURRENT_USER\\Software\\Classes\\%1").arg(protocolName),
                           QSettings::NativeFormat);
-    protocolKey.setValue("Default", description);
+    protocolKey.setValue(".", description);  // "." вместо "Default" — чтобы точно попало в (Default)
     protocolKey.setValue("URL Protocol", "");
 
     // Команда для открытия
+    const QString correctValue = QString("\"%1\" \"%2\"").arg(appPath, "%1");
     QSettings commandKey(QString("HKEY_CURRENT_USER\\Software\\Classes\\%1\\shell\\open\\command")
                              .arg(protocolName),
                          QSettings::NativeFormat);
-    commandKey.setValue("Default", QString("\"%1\" \"%%1\"").arg(appPath));
 
-    qDebug() << "Registered Windows URL scheme for" << protocolName << "->" << appPath;
+    QString currentValue = commandKey.value(".").toString();
+
+    if (currentValue != correctValue)
+    {
+        commandKey.setValue(".", correctValue);
+        qDebug() << "Fixed registry command for throne://" << correctValue;
+    }
+    else
+    {
+        qDebug() << "Registry command already correct:" << correctValue;
+    }
 
 #elif defined(Q_OS_MACOS)
-    // --- macOS ---
-    // На macOS регистрация URL-схемы делается через Info.plist
-    // В Info.plist нужно добавить:
-    // <key>CFBundleURLTypes</key>
-    // <array>
-    //   <dict>
-    //     <key>CFBundleURLName</key>
-    //     <string>Throne</string>
-    //     <key>CFBundleURLSchemes</key>
-    //     <array>
-    //       <string>throne</string>
-    //     </array>
-    //   </dict>
-    // </array>
-    qDebug() << "URL scheme for macOS registered via Info.plist";
+    qDebug() << "URL scheme for macOS is handled via Info.plist";
 
 #elif defined(Q_OS_LINUX)
-    // --- Linux ---
     const QString desktopEntry =
         QString("[Desktop Entry]\n"
                 "Type=Application\n"
@@ -121,8 +115,8 @@ void registerUrlScheme()
     if (desktopFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
         desktopFile.write(desktopEntry.toUtf8());
         desktopFile.close();
-        qDebug() << "Created desktop entry:" << desktopFilePath;
         QProcess::execute("update-desktop-database", QStringList() << QFileInfo(desktopFilePath).absolutePath());
+        qDebug() << "Created desktop entry:" << desktopFilePath;
     } else {
         qWarning() << "Failed to write desktop entry:" << desktopFilePath;
     }
@@ -426,28 +420,28 @@ int main(int argc, char* argv[]) {
     #endif
 
     
-    #ifdef Q_OS_WIN
-    DebugBox("Debug - Before UI Init", "About to call UI_InitMainWindow");
-    #endif
+    // #ifdef Q_OS_WIN
+    // DebugBox("Debug - Before UI Init", "About to call UI_InitMainWindow");
+    // #endif
     
     UI_InitMainWindow();
     
-    #ifdef Q_OS_WIN
-    DebugBox("Debug - After UI Init", "UI_InitMainWindow completed");
-    #endif
+    // #ifdef Q_OS_WIN
+    // DebugBox("Debug - After UI Init", "UI_InitMainWindow completed");
+    // #endif
     
     // Обработка URL при первом запуске (если приложение не было запущено)
     if (!throneUrl.isEmpty()) {
         #ifdef Q_OS_WIN
-        QString debugMsg = QString("Found throne URL: %1").arg(throneUrl);
-        DebugBox("Debug - URL Found", debugMsg);
-        #endif
+        // QString debugMsg = QString("Found throne URL: %1").arg(throneUrl);
+        // DebugBox("Debug - URL Found", debugMsg);
+        // #endif
         
         // Обработать URL-схему после инициализации UI
         QTimer::singleShot(1000, [throneUrl]() {
-            #ifdef Q_OS_WIN
-            DebugBox("Debug - Timer", "Timer triggered, processing URL...");
-            #endif
+            // #ifdef Q_OS_WIN
+            // DebugBox("Debug - Timer", "Timer triggered, processing URL...");
+            // #endif
             
             // Показываем главное окно
             auto mainWindow = GetMainWindow();
@@ -455,33 +449,34 @@ int main(int argc, char* argv[]) {
                 mainWindow->show();
                 mainWindow->raise();
                 mainWindow->activateWindow();
-                #ifdef Q_OS_WIN
-                DebugBox("Debug - Window", "Main window shown");
-                #endif
+                // #ifdef Q_OS_WIN
+                // DebugBox("Debug - Window", "Main window shown");
+                // #endif
             } else {
                 MW_dialog_message("", "Raise");
-                #ifdef Q_OS_WIN
-                DebugBox("Debug - Window Null", "Main window was null, used MW_dialog_message");
-                #endif
+                // #ifdef Q_OS_WIN
+                // DebugBox("Debug - Window Null", "Main window was null, used MW_dialog_message");
+                // #endif
             }
             
-            #ifdef Q_OS_WIN
-            QString processMsg = QString("About to call AsyncUpdate with: %1").arg(throneUrl);
-            DebugBox("Debug - Before AsyncUpdate", processMsg);
-            #endif
+            // #ifdef Q_OS_WIN
+            // QString processMsg = QString("About to call AsyncUpdate with: %1").arg(throneUrl);
+            // DebugBox("Debug - Before AsyncUpdate", processMsg);
+            // #endif
             
             // Обрабатываем URL
             Subscription::groupUpdater->AsyncUpdate(throneUrl, -1, nullptr);
             
-            #ifdef Q_OS_WIN
-            DebugBox("AsyncUpdate called", "Debug - After AsyncUpdate");
-            #endif
+            // #ifdef Q_OS_WIN
+            // DebugBox("AsyncUpdate called", "Debug - After AsyncUpdate");
+            // #endif
         });
-    } else {
-        #ifdef Q_OS_WIN
-        DebugBox("No throne URL found in arguments", "Debug - No URL");
-        #endif
     }
+    // } else {
+    //     #ifdef Q_OS_WIN
+    //     // DebugBox("No throne URL found in arguments", "Debug - No URL");
+    //     #endif
+    // }
 
     return QApplication::exec();
 }
