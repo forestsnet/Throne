@@ -910,37 +910,64 @@ namespace Subscription {
         //     if (items.indexOf(a) == 1) createNewGroup = true;
         // }
 
-        QString processedUrl = processCustomScheme(content);
-        
-        if (_sub_gid < 0 && (processedUrl.startsWith("http://") || processedUrl.startsWith("https://"))) {
-            // Проверяем домен через REST API
-            QString domain = QUrl(processedUrl).host();
-            if (!DomainChecker::checkDomainAccess(domain)) {
-                MW_show_log(QString("Domain access denied for: %1").arg(domain));
-                runOnUiThread([domain] {
-                    MessageBoxWarning("Domain Access Denied", 
-                        QString("Access to domain '%1' is not allowed.\nPlease contact your administrator.").arg(domain));
-                });
-                if (finish != nullptr) finish();
-                return;
-            }
+        // В новой thread выполняется
+        void GroupUpdater::AsyncUpdate(const QString &str, int _sub_gid, const std::function<void()> &finish) {
+            auto content = str.trimmed();
+            bool asURL = false;
+            bool createNewGroup = false;
+
+            // Обрабатываем custom URL-схемы
+            QString processedUrl = processCustomScheme(content);
             
-            // Всегда создаем новую группу без диалога
-            asURL = true;
-            createNewGroup = true;
-            
-            // Удаляем старые группы с тем же доменом
-            QString newDomain = QUrl(processedUrl).host();
-            auto allGroups = Configs::profileManager->GetGroups();
-            for (const auto& group : allGroups) {
-                if (!group->url.isEmpty() && QUrl(group->url).host() == newDomain) {
-                    MW_show_log(QString("Removing old group with same domain: %1").arg(group->name));
-                    // Удаляем все профили группы
-                    Configs::profileManager->BatchDeleteProfiles(group->profiles);
-                    // Удаляем саму группу
-                    Configs::profileManager->DeleteGroup(group->id);
+            if (_sub_gid < 0 && (processedUrl.startsWith("http://") || processedUrl.startsWith("https://"))) {
+                // Проверяем домен через REST API
+                QString domain = QUrl(processedUrl).host();
+                if (!DomainChecker::checkDomainAccess(domain)) {
+                    MW_show_log(QString("Domain access denied for: %1").arg(domain));
+                    runOnUiThread([domain] {
+                        MessageBoxWarning("Domain Access Denied", 
+                            QString("Access to domain '%1' is not allowed.\nPlease contact your administrator.").arg(domain));
+                    });
+                    if (finish != nullptr) finish();
+                    return;
+                }
+                
+                // Всегда создаем новую группу без диалога
+                asURL = true;
+                createNewGroup = true;
+                
+                // Удаляем старые группы с тем же доменом
+                QString newDomain = QUrl(processedUrl).host();
+                
+                // Используем существующий метод для получения всех ID групп
+                auto groupIds = Configs::profileManager->groupsTabOrder;
+                for (const auto& gid : groupIds) {
+                    auto group = Configs::profileManager->GetGroup(gid);
+                    if (group != nullptr && !group->url.isEmpty() && QUrl(group->url).host() == newDomain) {
+                        MW_show_log(QString("Removing old group with same domain: %1").arg(group->name));
+                        // Удаляем все профили группы
+                        Configs::profileManager->BatchDeleteProfiles(group->profiles);
+                        // Удаляем саму группу
+                        Configs::profileManager->DeleteGroup(group->id);
+                    }
                 }
             }
+
+            runOnNewThread([=,this] {
+                auto gid = _sub_gid;
+                if (createNewGroup) {
+                    auto group = Configs::ProfileManager::NewGroup();
+                    group->name = QUrl(processedUrl).host();
+                    group->url = processedUrl;
+                    Configs::profileManager->AddGroup(group);
+                    gid = group->id;
+                    MW_show_log(QString("Created new subscription group: %1").arg(group->name));
+                    MW_dialog_message("SubUpdater", "NewGroup");
+                }
+                Update(processedUrl, gid, asURL);
+                emit asyncUpdateCallback(gid);
+                if (finish != nullptr) finish();
+            });
         }
 
 
