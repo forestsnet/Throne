@@ -14,6 +14,7 @@
 #include <3rdparty/WinCommander.hpp>
 
 #include "include/global/Configs.hpp"
+#include "include/configs/sub/GroupUpdater.hpp"
 
 #include "include/ui/mainwindow_interface.h"
 
@@ -311,7 +312,7 @@ int main(int argc, char* argv[]) {
     registerUrlScheme();
     
     // Обработка URL при запуске
-    QStringList arguments = app.arguments();
+    QStringList arguments = a.arguments();
     QString throneUrl;
     for (int i = 1; i < arguments.size(); ++i) {
         const QString &arg = arguments[i];
