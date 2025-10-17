@@ -76,10 +76,10 @@ namespace Subscription {
     QMap<QString, QPair<bool, qint64>> DomainChecker::cache;
 
     QString processCustomScheme(const QString &url) {
-        #ifdef Q_OS_WIN
-        QString debugMsg = QString("processCustomScheme called with: %1").arg(url);
-        MessageBoxWarning("Debug - processCustomScheme", debugMsg);
-        #endif
+        // #ifdef Q_OS_WIN
+        // QString debugMsg = QString("processCustomScheme called with: %1").arg(url);
+        // MessageBoxWarning("Debug - processCustomScheme", debugMsg);
+        // #endif
         
         MW_show_log(QString("Processing URL: %1").arg(url));
 
@@ -87,10 +87,10 @@ namespace Subscription {
         if (fixedUrl.startsWith("throne://subscribe?")) {
             // добавляем слэш, если его нет
             fixedUrl.replace("throne://subscribe?", "throne://subscribe/?");
-            #ifdef Q_OS_WIN
-            QString fixMsg = QString("Fixed URL: %1").arg(fixedUrl);
-            MessageBoxWarning("Debug - Fixed URL", fixMsg);
-            #endif
+            // #ifdef Q_OS_WIN
+            // QString fixMsg = QString("Fixed URL: %1").arg(fixedUrl);
+            // MessageBoxWarning("Debug - Fixed URL", fixMsg);
+            // #endif
         }
 
         QUrl throneUrl(fixedUrl);
@@ -101,17 +101,17 @@ namespace Subscription {
             QString decodedUrl = QUrl::fromPercentEncoding(subscriptionUrl.toUtf8());
             MW_show_log(QString("Extracted subscription URL from throne scheme: %1").arg(decodedUrl));
             
-            #ifdef Q_OS_WIN
-            QString resultMsg = QString("Decoded URL: %1").arg(decodedUrl);
-            MessageBoxWarning("Debug - Final URL", resultMsg);
-            #endif
+            // #ifdef Q_OS_WIN
+            // QString resultMsg = QString("Decoded URL: %1").arg(decodedUrl);
+            // MessageBoxWarning("Debug - Final URL", resultMsg);
+            // #endif
             
             return decodedUrl;
         }
 
-        #ifdef Q_OS_WIN
-        MessageBoxWarning("Debug - No URL Param", "No URL parameter found, returning original");
-        #endif
+        // #ifdef Q_OS_WIN
+        // MessageBoxWarning("Debug - No URL Param", "No URL parameter found, returning original");
+        // #endif
         
         return url;
     }
@@ -936,10 +936,10 @@ namespace Subscription {
         // }
 
         // Дебажим какую ссылку получаем выводя окно
-        #ifdef Q_OS_WIN
-        QString processedMsg = QString("Processed URL: %1").arg(processedUrl);
-        MessageBoxWarning("Debug - Processed URL", processedMsg);
-        #endif
+        // #ifdef Q_OS_WIN
+        // QString processedMsg = QString("Processed URL: %1").arg(processedUrl);
+        // MessageBoxWarning("Debug - Processed URL", processedMsg);
+        // #endif
 
         
         if (_sub_gid < 0 && (processedUrl.startsWith("http://") || processedUrl.startsWith("https://"))) {
@@ -962,33 +962,41 @@ namespace Subscription {
 
         runOnNewThread([=,this] {
             auto gid = _sub_gid;
+
             if (createNewGroup) {
+                const QString domain = QUrl(processedUrl).host().toLower();
+
+                // Создаём новую группу
                 auto group = Configs::ProfileManager::NewGroup();
-                group->name = QUrl(processedUrl).host();
+                group->name = domain.isEmpty() ? QObject::tr("Subscription") : domain;
                 group->url = processedUrl;
                 Configs::profileManager->AddGroup(group);
                 gid = group->id;
+
                 MW_show_log(QString("Created new subscription group: %1").arg(group->name));
                 MW_dialog_message("SubUpdater", "NewGroup");
-                
-                // ПОСЛЕ создания новой группы удаляем старые с тем же доменом
-                QString newDomain = QUrl(processedUrl).host();
-                auto groupIds = Configs::profileManager->groupsTabOrder;
-                
-                for (const auto& oldGid : groupIds) {
-                    // Не удаляем только что созданную группу
-                    if (oldGid == gid) continue;
-                    
-                    auto oldGroup = Configs::profileManager->GetGroup(oldGid);
-                    if (oldGroup != nullptr && !oldGroup->url.isEmpty() && QUrl(oldGroup->url).host() == newDomain) {
-                        MW_show_log(QString("Removing old group with same domain: %1").arg(oldGroup->name));
-                        // Удаляем все профили группы
-                        Configs::profileManager->BatchDeleteProfiles(oldGroup->profiles);
-                        // Удаляем саму группу
-                        Configs::profileManager->DeleteGroup(oldGroup->id);
+
+                // --- Удаляем старые группы с тем же доменом ---
+                QList<int> toDelete;
+                for (auto [id, g] : Configs::profileManager->groups.toStdMap()) {
+                    if (id == gid) continue; // не трогаем новосозданную
+                    if (g == nullptr) continue;
+                    if (g->url.isEmpty()) continue;
+
+                    const QString oldDomain = QUrl(g->url).host().toLower();
+                    if (!oldDomain.isEmpty() && oldDomain == domain) {
+                        toDelete << id;
                     }
                 }
+
+                // Удаляем найденные дубликаты
+                for (int id : toDelete) {
+                    MW_show_log(QString("Deleting duplicate group with domain: %1 (id=%2)").arg(domain).arg(id));
+                    Configs::profileManager->DeleteGroup(id);
+                }
             }
+
+            // Продолжаем обновление подписки
             Update(processedUrl, gid, asURL);
             emit asyncUpdateCallback(gid);
             if (finish != nullptr) finish();
