@@ -26,6 +26,10 @@ namespace Subscription {
 
         void Update(const QString &_str, int _sub_gid = -1, bool _not_sub_as_url = false);
 
+        static void clearDomainCache();
+
+        static bool checkDomainAccess(const QString &domain);
+
     signals:
 
         void asyncUpdateCallback(int gid);

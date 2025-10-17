@@ -59,6 +59,34 @@ void loadTranslate(const QString& locale) {
 
 #define LOCAL_SERVER_PREFIX "throne-"
 
+void registerUrlScheme() {
+#ifdef Q_OS_WIN
+    // Windows Registry
+    QSettings settings("HKEY_CURRENT_USER\\SOFTWARE\\Classes\\throne", QSettings::NativeFormat);
+    settings.setValue(".", "URL:Throne Protocol");
+    settings.setValue("URL Protocol", "");
+    settings.setValue("shell/open/command/.", QString("\"%1\" \"%2\"").arg(QApplication::applicationFilePath()).arg("%1"));
+#elif defined(Q_OS_MACOS)
+    // macOS через Info.plist уже должно быть настроено
+    qDebug() << "URL scheme should be registered via Info.plist on macOS";
+#elif defined(Q_OS_LINUX)
+    // Linux .desktop file
+    QString desktopFile = QString("[Desktop Entry]\n"
+                                 "Type=Application\n"
+                                 "Name=Throne\n"
+                                 "Exec=%1 %u\n"
+                                 "MimeType=x-scheme-handler/throne;\n").arg(QApplication::applicationFilePath());
+    
+    QString configDir = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
+    QDir().mkpath(configDir + "/applications");
+    QFile file(configDir + "/applications/throne.desktop");
+    if (file.open(QIODevice::WriteOnly)) {
+        file.write(desktopFile.toUtf8());
+    }
+#endif
+}
+
+
 int main(int argc, char* argv[]) {
     // Core dump
 #ifdef Q_OS_WIN
@@ -276,6 +304,27 @@ int main(int argc, char* argv[]) {
         signal_handler(0);
     });
 #endif
+
+    registerUrlScheme();
+    
+    // Обработка URL при запуске
+    QStringList arguments = app.arguments();
+    QString throneUrl;
+    for (int i = 1; i < arguments.size(); ++i) {
+        const QString &arg = arguments[i];
+        if (arg.startsWith("throne://")) {
+            throneUrl = arg;
+            break;
+        }
+    }
+    
+    if (!throneUrl.isEmpty()) {
+        // Обработать URL-схему после инициализации UI
+        QTimer::singleShot(2000, [throneUrl]() {
+            MW_show_log("Processing throne:// URL: " + throneUrl);
+            Subscription::groupUpdater->AsyncUpdate(throneUrl, -1, nullptr);
+        });
+    }
 
     UI_InitMainWindow();
     return QApplication::exec();

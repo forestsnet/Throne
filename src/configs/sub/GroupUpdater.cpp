@@ -14,6 +14,99 @@ namespace Subscription {
 
     GroupUpdater *groupUpdater = new GroupUpdater;
 
+    class DomainChecker {
+    private:
+        static QMap<QString, QPair<bool, qint64>> cache; // domain -> (access, timestamp)
+        static const qint64 CACHE_TTL = 3600000; // 1 час в миллисекундах
+
+    public:
+        static bool checkDomainAccess(const QString &domain) {
+            if (!Configs::dataStore->enable_domain_check) {
+                return true; // Если проверка отключена, разрешаем все
+            }
+            
+            if (domain.isEmpty()) return false;
+            
+            // Проверяем кэш
+            auto now = QDateTime::currentMSecsSinceEpoch();
+            if (cache.contains(domain)) {
+                auto cached = cache[domain];
+                if (now - cached.second < CACHE_TTL) {
+                    MW_show_log(QString("Domain %1 check result from cache: %2").arg(domain).arg(cached.first ? "allowed" : "denied"));
+                    return cached.first;
+                }
+            }
+            
+            // Локальный whitelist как fallback
+            if (Configs::dataStore->allowed_domains.contains(domain)) {
+                cache[domain] = {true, now};
+                MW_show_log(QString("Domain %1 allowed by local whitelist").arg(domain));
+                return true;
+            }
+            
+            // REST API запрос
+            QString apiUrl = Configs::dataStore->domain_check_api;
+            apiUrl.replace("{}", domain);
+            
+            MW_show_log(QString("Checking domain access for: %1").arg(domain));
+            auto response = NetworkRequestHelper::HttpGet(apiUrl, false);
+            bool access = false;
+            
+            if (response.error.isEmpty()) {
+                QJsonObject jsonResponse = QString2QJsonObject(response.data);
+                access = jsonResponse["access"].toBool();
+                MW_show_log(QString("Domain %1 API response: %2").arg(domain).arg(access ? "allowed" : "denied"));
+            } else {
+                MW_show_log(QString("Failed to check domain access for %1: %2").arg(domain, response.error));
+                // При ошибке API разрешаем только домены из локального whitelist
+                access = false;
+            }
+            
+            // Кэшируем результат
+            cache[domain] = {access, now};
+            return access;
+        }
+        
+        static void clearCache() {
+            cache.clear();
+        }
+    };
+
+    QMap<QString, QPair<bool, qint64>> DomainChecker::cache;
+
+    QString processCustomScheme(const QString &url) {
+        MW_show_log(QString("Processing URL: %1").arg(url));
+        
+        if (url.startsWith("throne://subscribe")) {
+            QUrl throneUrl(url);
+            QUrlQuery query(throneUrl.query());
+            QString subscriptionUrl = query.queryItemValue("url");
+            if (!subscriptionUrl.isEmpty()) {
+                QString decodedUrl = QUrl::fromPercentEncoding(subscriptionUrl.toUtf8());
+                MW_show_log(QString("Extracted subscription URL from throne scheme: %1").arg(decodedUrl));
+                return decodedUrl;
+            }
+        }
+        
+        return url;
+    }
+
+    void RawUpdater_FixEnt(const std::shared_ptr<Configs::ProxyEntity> &ent) {
+        if (ent == nullptr) return;
+        auto stream = Configs::GetStreamSettings(ent->bean.get());
+        if (stream == nullptr) return;
+        // 1. "security"
+        if (stream->security == "none" || stream->security == "0" || stream->security == "false") {
+            stream->security = "";
+        } else if (stream->security == "1" || stream->security == "true") {
+            stream->security = "tls";
+        }
+        // 2. TLS SNI: v2rayN config builder generate sni like this, so set sni here for their format.
+        if (stream->security == "tls" && IsIpAddress(ent->bean->serverAddress) && (!stream->host.isEmpty()) && stream->sni.isEmpty()) {
+            stream->sni = stream->host;
+        }
+    }
+
     int JsonEndIdx(const QString &str, int begin) {
         int sz = str.length();
         int counter = 1;
@@ -784,7 +877,22 @@ namespace Subscription {
         bool asURL = false;
         bool createNewGroup = false;
 
-        if (_sub_gid < 0 && (content.startsWith("http://") || content.startsWith("https://"))) {
+        // Обрабатываем custom URL-схемы
+        QString processedUrl = processCustomScheme(content);
+        
+        if (_sub_gid < 0 && (processedUrl.startsWith("http://") || processedUrl.startsWith("https://"))) {
+            // Проверяем домен через REST API перед показом диалога
+            QString domain = QUrl(processedUrl).host();
+            if (!DomainChecker::checkDomainAccess(domain)) {
+                MW_show_log(QString("Domain access denied for: %1").arg(domain));
+                runOnUiThread([domain] {
+                    MessageBoxWarning("Domain Access Denied", 
+                        QString("Access to domain '%1' is not allowed.\nPlease contact your administrator.").arg(domain));
+                });
+                if (finish != nullptr) finish();
+                return;
+            }
+            
             auto items = QStringList{
                 QObject::tr("Add profiles to this group"),
                 QObject::tr("Create new subscription group"),
@@ -792,9 +900,12 @@ namespace Subscription {
             bool ok;
             auto a = QInputDialog::getItem(nullptr,
                                            QObject::tr("url detected"),
-                                           QObject::tr("%1\nHow to update?").arg(content),
+                                           QObject::tr("%1\nHow to update?").arg(processedUrl),
                                            items, 0, false, &ok);
-            if (!ok) return;
+            if (!ok) {
+                if (finish != nullptr) finish();
+                return;
+            }
             asURL = true;
             if (items.indexOf(a) == 1) createNewGroup = true;
         }
@@ -803,33 +914,40 @@ namespace Subscription {
             auto gid = _sub_gid;
             if (createNewGroup) {
                 auto group = Configs::ProfileManager::NewGroup();
-                group->name = QUrl(str).host();
-                group->url = str;
+                group->name = QUrl(processedUrl).host();
+                group->url = processedUrl;
                 Configs::profileManager->AddGroup(group);
                 gid = group->id;
                 MW_dialog_message("SubUpdater", "NewGroup");
             }
-            Update(str, gid, asURL);
+            Update(processedUrl, gid, asURL);
             emit asyncUpdateCallback(gid);
             if (finish != nullptr) finish();
         });
     }
 
     void GroupUpdater::Update(const QString &_str, int _sub_gid, bool _not_sub_as_url) {
-        // 创建 rawUpdater
+        // создаём rawUpdater
         Configs::dataStore->imported_count = 0;
         auto rawUpdater = std::make_unique<RawUpdater>();
         rawUpdater->gid_add_to = _sub_gid;
 
-        // 准备
+        // подготавливаем
         QString sub_user_info;
-        bool asURL = _sub_gid >= 0 || _not_sub_as_url; // 把 _str 当作 url 处理（下载内容）
+        bool asURL = _sub_gid >= 0 || _not_sub_as_url; // _str как url (скачать содержимое)
         auto content = _str.trimmed();
         auto group = Configs::profileManager->GetGroup(_sub_gid);
         if (group != nullptr && group->archive) return;
 
-        // 网络请求
+        // сетевой запрос
         if (asURL) {
+            // Дополнительная проверка домена перед загрузкой
+            QString domain = QUrl(content).host();
+            if (!DomainChecker::checkDomainAccess(domain)) {
+                MW_show_log(QString("Domain access denied during update for: %1").arg(domain));
+                return;
+            }
+
             auto groupName = group == nullptr ? content : group->name;
             MW_show_log(">>>>>>>> " + QObject::tr("Requesting subscription: %1").arg(groupName));
 
@@ -845,13 +963,14 @@ namespace Subscription {
             MW_show_log("<<<<<<<< " + QObject::tr("Subscription request fininshed: %1").arg(groupName));
         }
 
+        // ...existing code...
         QList<std::shared_ptr<Configs::ProxyEntity>> in;          // 更新前
-        QList<std::shared_ptr<Configs::ProxyEntity>> out_all;     // 更新前 + 更新后
-        QList<std::shared_ptr<Configs::ProxyEntity>> out;         // 更新后
+        QList<std::shared_ptr<Configs::ProxyEntity>> out_all;     // 更新前 + 更新後
+        QList<std::shared_ptr<Configs::ProxyEntity>> out;         // 更新後
         QList<std::shared_ptr<Configs::ProxyEntity>> only_in;     // 只在更新前有的
-        QList<std::shared_ptr<Configs::ProxyEntity>> only_out;    // 只在更新后有的
-        QList<std::shared_ptr<Configs::ProxyEntity>> update_del;  // 更新前后都有的，需要删除的新配置
-        QList<std::shared_ptr<Configs::ProxyEntity>> update_keep; // 更新前后都有的，被保留的旧配置
+        QList<std::shared_ptr<Configs::ProxyEntity>> only_out;    // 只在更新後有的
+        QList<std::shared_ptr<Configs::ProxyEntity>> update_del;  // 更新前後都有的，需要删除的新配置
+        QList<std::shared_ptr<Configs::ProxyEntity>> update_keep; // 更新前後都有的，被保留的舊配置
 
         if (group != nullptr) {
             in = group->GetProfileEnts();
@@ -945,6 +1064,16 @@ namespace Subscription {
             Configs::dataStore->imported_count = rawUpdater->updated_order.count();
             MW_dialog_message("SubUpdater", "finish");
         }
+    }
+
+    // Публичные методы для управления кэшем доменов
+    void GroupUpdater::clearDomainCache() {
+        DomainChecker::clearCache();
+        MW_show_log("Domain access cache cleared");
+    }
+
+    bool GroupUpdater::checkDomainAccess(const QString &domain) {
+        return DomainChecker::checkDomainAccess(domain);
     }
 } // namespace Subscription
 
