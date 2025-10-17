@@ -13,9 +13,9 @@ namespace Configs {
 
         // DNS
         QString remote_dns = "tls://8.8.8.8";
-        QString remote_dns_strategy = "";
-        QString direct_dns = "localhost";
-        QString direct_dns_strategy = "";
+        QString remote_dns_strategy = "prefer_ipv4";
+        QString direct_dns = "tls://8.8.8.8";
+        QString direct_dns_strategy = "prefer_ipv4";
         bool use_dns_object = false;
         QString dns_object = "";
         QString dns_final_out = "proxy";
@@ -24,7 +24,7 @@ namespace Configs {
         QString domain_strategy = "AsIs";
         QString outbound_domain_strategy = "AsIs";
         int sniffing_mode = SniffingMode::FOR_ROUTING;
-        int ruleset_mirror = Mirrors::CLOUDFLARE;
+        int ruleset_mirror = Mirrors::GITHUB;
 
         explicit Routing(int preset = 0);
 
@@ -110,14 +110,14 @@ namespace Configs {
         bool net_insecure = false;
 
         // Subscription
-        QString user_agent = ""; // set at main.cpp
-        int sub_auto_update = -30;
+        QString user_agent = "Throne / ForestsNet Fork"; // set at main.cpp
+        int sub_auto_update = 1;
         bool sub_clear = false;
-        bool sub_send_hwid = false;
+        bool sub_send_hwid = true;
 
         // Security
         bool skip_cert = false;
-        QString utlsFingerprint = "";
+        QString utlsFingerprint = "chrome"; // Default FingerPrint set to Chrome Browser
         bool disable_run_admin = false; // windows only
         bool use_mozilla_certs = false;
 
@@ -125,13 +125,13 @@ namespace Configs {
         QStringList remember_spmode = {};
         int remember_id = -1919;
         bool remember_enable = false;
-        bool windows_set_admin = false;
+        bool windows_set_admin = true;
         std::unique_ptr<Shortcuts> shortcuts;
 
         // Socks & HTTP Inbound
         QString inbound_address = "127.0.0.1";
         int inbound_socks_port = 2080; // Mixed, actually
-        bool random_inbound_port = false;
+        bool random_inbound_port = true;
         QString custom_inbound = "{\"inbounds\": []}";
 
         // Routing
@@ -141,7 +141,7 @@ namespace Configs {
 
         // VPN
         bool fake_dns = false;
-        bool enable_tun_routing = false;
+        bool enable_tun_routing = true;
 #ifdef Q_OS_MACOS
         QString vpn_implementation = "gvisor";
 #elif defined(Q_OS_WIN)
@@ -186,6 +186,11 @@ namespace Configs {
         QString core_box_clash_listen_addr = "127.0.0.1";
         QString core_box_clash_api_secret = "";
         QString core_box_underlying_dns = "";
+        
+        // Whitelist domain
+        bool enable_domain_check = true;
+        QString domain_check_api = "https://access.forestsnet.com/?domain={}";
+        QStringList allowed_domains = {"vflex.ru"}; // Локальный whitelist как fallback
 
         // Methods
 
