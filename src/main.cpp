@@ -23,7 +23,6 @@
 #include "include/sys/windows/eventHandler.h"
 #include "include/sys/windows/WinVersion.h"
 #include <qfontdatabase.h>
-#include <windows.h>
 #endif
 #ifdef Q_OS_LINUX
 #include <qfontdatabase.h>
@@ -128,6 +127,20 @@ void registerUrlScheme()
     }
 #endif
 }
+
+#ifdef Q_OS_WIN
+static void DebugBox(const QString &title, const QString &text)
+{
+    QMessageBox box;
+    box.setWindowTitle(title);
+    box.setText(text);
+    box.setIcon(QMessageBox::Information);
+    box.setStandardButtons(QMessageBox::Ok);
+    box.exec();
+}
+#else
+#define DebugBox(title, text) qDebug() << title << ":" << text
+#endif
 
 int main(int argc, char* argv[]) {
     qDebug() << "=== APPLICATION STARTED ===";
@@ -413,26 +426,26 @@ int main(int argc, char* argv[]) {
 
     
     #ifdef Q_OS_WIN
-    MessageBoxA(nullptr, "About to call UI_InitMainWindow", "Debug - Before UI Init", MB_OK);
+    DebugBox("Debug - Before UI Init", "About to call UI_InitMainWindow");
     #endif
     
     UI_InitMainWindow();
     
     #ifdef Q_OS_WIN
-    MessageBoxA(nullptr, "UI_InitMainWindow completed", "Debug - After UI Init", MB_OK);
+    DebugBox("Debug - After UI Init", "UI_InitMainWindow completed");
     #endif
     
     // Обработка URL при первом запуске (если приложение не было запущено)
     if (!throneUrl.isEmpty()) {
         #ifdef Q_OS_WIN
         QString debugMsg = QString("Found throne URL: %1").arg(throneUrl);
-        MessageBoxA(nullptr, debugMsg.toLocal8Bit().data(), "Debug - URL Found", MB_OK);
+        DebugBox("Debug - URL Found", debugMsg);
         #endif
         
         // Обработать URL-схему после инициализации UI
         QTimer::singleShot(1000, [throneUrl]() {
             #ifdef Q_OS_WIN
-            MessageBoxA(nullptr, "Timer triggered, processing URL...", "Debug - Timer", MB_OK);
+            DebugBox("Debug - Timer", "Timer triggered, processing URL...");
             #endif
             
             // Показываем главное окно
@@ -442,30 +455,30 @@ int main(int argc, char* argv[]) {
                 mainWindow->raise();
                 mainWindow->activateWindow();
                 #ifdef Q_OS_WIN
-                MessageBoxA(nullptr, "Main window shown", "Debug - Window", MB_OK);
+                DebugBox("Debug - Window", "Main window shown");
                 #endif
             } else {
                 MW_dialog_message("", "Raise");
                 #ifdef Q_OS_WIN
-                MessageBoxA(nullptr, "Main window was null, used MW_dialog_message", "Debug - Window Null", MB_OK);
+                DebugBox("Debug - Window Null", "Main window was null, used MW_dialog_message");
                 #endif
             }
             
             #ifdef Q_OS_WIN
             QString processMsg = QString("About to call AsyncUpdate with: %1").arg(throneUrl);
-            MessageBoxA(nullptr, processMsg.toLocal8Bit().data(), "Debug - Before AsyncUpdate", MB_OK);
+            DebugBox("Debug - Before AsyncUpdate", processMsg);
             #endif
             
             // Обрабатываем URL
             Subscription::groupUpdater->AsyncUpdate(throneUrl, -1, nullptr);
             
             #ifdef Q_OS_WIN
-            MessageBoxA(nullptr, "AsyncUpdate called", "Debug - After AsyncUpdate", MB_OK);
+            DebugBox("AsyncUpdate called", "Debug - After AsyncUpdate");
             #endif
         });
     } else {
         #ifdef Q_OS_WIN
-        MessageBoxA(nullptr, "No throne URL found in arguments", "Debug - No URL", MB_OK);
+        DebugBox("No throne URL found in arguments", "Debug - No URL");
         #endif
     }
 
