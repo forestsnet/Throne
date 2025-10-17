@@ -412,27 +412,62 @@ int main(int argc, char* argv[]) {
     #endif
 
     
+    #ifdef Q_OS_WIN
+    MessageBoxA(nullptr, "About to call UI_InitMainWindow", "Debug - Before UI Init", MB_OK);
+    #endif
+    
     UI_InitMainWindow();
+    
+    #ifdef Q_OS_WIN
+    MessageBoxA(nullptr, "UI_InitMainWindow completed", "Debug - After UI Init", MB_OK);
+    #endif
     
     // Обработка URL при первом запуске (если приложение не было запущено)
     if (!throneUrl.isEmpty()) {
+        #ifdef Q_OS_WIN
+        QString debugMsg = QString("Found throne URL: %1").arg(throneUrl);
+        MessageBoxA(nullptr, debugMsg.toLocal8Bit().data(), "Debug - URL Found", MB_OK);
+        #endif
+        
         // Обработать URL-схему после инициализации UI
-        QTimer::singleShot(1000, [throneUrl]() {            
+        QTimer::singleShot(1000, [throneUrl]() {
+            #ifdef Q_OS_WIN
+            MessageBoxA(nullptr, "Timer triggered, processing URL...", "Debug - Timer", MB_OK);
+            #endif
+            
             // Показываем главное окно
             auto mainWindow = GetMainWindow();
             if (mainWindow) {
                 mainWindow->show();
                 mainWindow->raise();
                 mainWindow->activateWindow();
+                #ifdef Q_OS_WIN
+                MessageBoxA(nullptr, "Main window shown", "Debug - Window", MB_OK);
+                #endif
             } else {
-                // Если окно еще не готово, пробуем через MW_dialog_message
                 MW_dialog_message("", "Raise");
+                #ifdef Q_OS_WIN
+                MessageBoxA(nullptr, "Main window was null, used MW_dialog_message", "Debug - Window Null", MB_OK);
+                #endif
             }
+            
+            #ifdef Q_OS_WIN
+            QString processMsg = QString("About to call AsyncUpdate with: %1").arg(throneUrl);
+            MessageBoxA(nullptr, processMsg.toLocal8Bit().data(), "Debug - Before AsyncUpdate", MB_OK);
+            #endif
             
             // Обрабатываем URL
             Subscription::groupUpdater->AsyncUpdate(throneUrl, -1, nullptr);
+            
+            #ifdef Q_OS_WIN
+            MessageBoxA(nullptr, "AsyncUpdate called", "Debug - After AsyncUpdate", MB_OK);
+            #endif
         });
-    } 
+    } else {
+        #ifdef Q_OS_WIN
+        MessageBoxA(nullptr, "No throne URL found in arguments", "Debug - No URL", MB_OK);
+        #endif
+    }
 
     return QApplication::exec();
 }
