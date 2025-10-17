@@ -120,9 +120,9 @@ jobs:
           - platform: windows-latest
             qt_version: "6.2.12"
             target: x86_64
-          - platform: windows-latest
-            qt_version: "6.2.12"
-            target: i686
+          # - platform: windows-latest
+          #   qt_version: "6.2.12"
+          #   target: i686
       fail-fast: false
     runs-on: ${{ matrix.platform }}
     env:
