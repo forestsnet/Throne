@@ -9,6 +9,8 @@
 #include <QLocalSocket>
 #include <QLocalServer>
 #include <QThread>
+#include <QSettings>
+#include <QTimer>
 #include <3rdparty/WinCommander.hpp>
 
 #include "include/global/Configs.hpp"
