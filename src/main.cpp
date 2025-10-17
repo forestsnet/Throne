@@ -63,38 +63,68 @@ void loadTranslate(const QString& locale) {
 
 #define LOCAL_SERVER_PREFIX "throne-"
 
-void registerUrlScheme() {
+void registerUrlScheme()
+{
 #ifdef Q_OS_WIN
-    // Windows Registry - исправляем регистрацию
-    QSettings settings("HKEY_CURRENT_USER\\SOFTWARE\\Classes\\throne", QSettings::NativeFormat);
-    settings.setValue("Default", "URL:Throne Protocol");
-    settings.setValue("URL Protocol", "");
-    
-    // Правильная команда для открытия
-    QSettings commandSettings("HKEY_CURRENT_USER\\SOFTWARE\\Classes\\throne\\shell\\open\\command", QSettings::NativeFormat);
-    commandSettings.setValue("Default", QString("\"%1\" \"%2\"").arg(QApplication::applicationFilePath()).arg("%1"));
-    
+    // --- Windows ---
+    const QString appPath = QDir::toNativeSeparators(QApplication::applicationFilePath());
+    const QString protocolName = "throne";
+    const QString description = "URL:Throne Protocol";
+
+    // Основная ветка реестра
+    QSettings protocolKey(QString("HKEY_CURRENT_USER\\Software\\Classes\\%1").arg(protocolName),
+                          QSettings::NativeFormat);
+    protocolKey.setValue("Default", description);
+    protocolKey.setValue("URL Protocol", "");
+
+    // Команда для открытия
+    QSettings commandKey(QString("HKEY_CURRENT_USER\\Software\\Classes\\%1\\shell\\open\\command")
+                             .arg(protocolName),
+                         QSettings::NativeFormat);
+    commandKey.setValue("Default", QString("\"%1\" \"%%1\"").arg(appPath));
+
+    qDebug() << "Registered Windows URL scheme for" << protocolName << "->" << appPath;
+
 #elif defined(Q_OS_MACOS)
-    // macOS через Info.plist уже должно быть настроено
-    qDebug() << "URL scheme should be registered via Info.plist on macOS";
+    // --- macOS ---
+    // На macOS регистрация URL-схемы делается через Info.plist
+    // В Info.plist нужно добавить:
+    // <key>CFBundleURLTypes</key>
+    // <array>
+    //   <dict>
+    //     <key>CFBundleURLName</key>
+    //     <string>Throne</string>
+    //     <key>CFBundleURLSchemes</key>
+    //     <array>
+    //       <string>throne</string>
+    //     </array>
+    //   </dict>
+    // </array>
+    qDebug() << "URL scheme for macOS registered via Info.plist";
+
 #elif defined(Q_OS_LINUX)
-    // Linux .desktop file
-    QString desktopFile = QString("[Desktop Entry]\n"
-                                 "Type=Application\n"
-                                 "Name=Throne\n"
-                                 "Exec=%1 %u\n"
-                                 "MimeType=x-scheme-handler/throne;\n"
-                                 "NoDisplay=true\n").arg(QApplication::applicationFilePath());
-    
-    QString configDir = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
-    QDir().mkpath(configDir + "/applications");
-    QFile file(configDir + "/applications/throne.desktop");
-    if (file.open(QIODevice::WriteOnly)) {
-        file.write(desktopFile.toUtf8());
-        file.close();
-        
-        // Обновляем базу данных MIME типов
-        QProcess::execute("update-desktop-database", QStringList() << configDir + "/applications");
+    // --- Linux ---
+    const QString desktopEntry =
+        QString("[Desktop Entry]\n"
+                "Type=Application\n"
+                "Name=Throne\n"
+                "Exec=%1 %%u\n"
+                "MimeType=x-scheme-handler/throne;\n"
+                "NoDisplay=true\n")
+            .arg(QApplication::applicationFilePath());
+
+    const QString configDir = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
+    const QString desktopFilePath = configDir + "/applications/throne.desktop";
+    QDir().mkpath(QFileInfo(desktopFilePath).absolutePath());
+
+    QFile desktopFile(desktopFilePath);
+    if (desktopFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        desktopFile.write(desktopEntry.toUtf8());
+        desktopFile.close();
+        qDebug() << "Created desktop entry:" << desktopFilePath;
+        QProcess::execute("update-desktop-database", QStringList() << QFileInfo(desktopFilePath).absolutePath());
+    } else {
+        qWarning() << "Failed to write desktop entry:" << desktopFilePath;
     }
 #endif
 }
@@ -275,19 +305,19 @@ int main(int argc, char* argv[]) {
     QByteArray hashBytes = QCryptographicHash::hash(wd.absolutePath().toUtf8(), QCryptographicHash::Md5).toBase64(QByteArray::OmitTrailingEquals);
     hashBytes.replace('+', '0').replace('/', '1');
     auto serverName = LOCAL_SERVER_PREFIX + QString::fromUtf8(hashBytes);
-    qDebug() << "server name: " << serverName;
+    MW_show_log("server name: " + serverName);
     
     // Проверяем throne:// URL перед проверкой другого экземпляра
     QStringList arguments = a.arguments();
-    qDebug() << "Application arguments:" << arguments;
+    MW_show_log("Application arguments:" + arguments.join(", "));
     
     QString throneUrl;
     for (int i = 1; i < arguments.size(); ++i) {
         const QString &arg = arguments[i];
-        qDebug() << "Checking argument:" << arg;
+        MW_show_log("Checking argument:" + arg);
         if (arg.startsWith("throne://")) {
             throneUrl = arg;
-            qDebug() << "Found throne URL:" << throneUrl;
+            MW_show_log("Found throne URL:" + throneUrl);
             break;
         }
     }
@@ -299,7 +329,7 @@ int main(int argc, char* argv[]) {
         qDebug() << "Another instance is running";
         if (!throneUrl.isEmpty()) {
             // Передаем URL в запущенный экземпляр
-            qDebug() << "Sending URL to running instance:" << throneUrl;
+            MW_show_log("Sending URL to running instance:" + throneUrl);
             socket.write(throneUrl.toUtf8());
             socket.waitForBytesWritten(1000);
         }
@@ -316,18 +346,18 @@ int main(int argc, char* argv[]) {
     }
     QObject::connect(&server, &QLocalServer::newConnection, qApp, [&] {
         auto s = server.nextPendingConnection();
-        qDebug() << "Another instance tried to wake us up on " << serverName << s;
+        MW_show_log("Another instance tried to wake us up on " + serverName + s);
         
         // Читаем данные из соединения (если новый экземпляр передает URL)
         if (s->waitForReadyRead(1000)) {
             QByteArray data = s->readAll();
             QString receivedUrl = QString::fromUtf8(data);
-            qDebug() << "Received URL from another instance:" << receivedUrl;
+            MW_show_log("Received URL from another instance:" + receivedUrl);
             
             if (receivedUrl.startsWith("throne://")) {
                 // Открываем главное окно и обрабатываем URL
                 QTimer::singleShot(100, [receivedUrl]() {
-                    qDebug() << "Processing received throne URL:" << receivedUrl;
+                    MW_show_log("Processing received throne URL:" + receivedUrl);
                     
                     // Показываем окно
                     MW_dialog_message("", "Raise");
@@ -346,10 +376,10 @@ int main(int argc, char* argv[]) {
                     Subscription::groupUpdater->AsyncUpdate(receivedUrl, -1, nullptr);
                 });
             } else {
-                qDebug() << "Received data is not a throne URL:" << receivedUrl;
+                MW_show_log("Received data is not a throne URL:" + receivedUrl);
             }
         } else {
-            qDebug() << "Failed to read data from connection or no data received";
+            MW_show_log("Failed to read data from connection or no data received");
         }
         
         s->close();
@@ -381,6 +411,22 @@ int main(int argc, char* argv[]) {
 #endif
 
     registerUrlScheme();
+
+    // Проверяем, что схема реально записана корректно
+    #ifdef Q_OS_WIN
+    {
+        QSettings verify("HKEY_CURRENT_USER\\SOFTWARE\\Classes\\throne\\shell\\open\\command", QSettings::NativeFormat);
+        QString cmd = verify.value("Default").toString();
+        QString expected = QString("\"%1\" \"%%1\"").arg(QDir::toNativeSeparators(QApplication::applicationFilePath()));
+        if (cmd != expected) {
+            MW_show_log("URL scheme mismatch, re-registering...");
+            registerUrlScheme();
+        } else {
+            MW_show_log("URL scheme verified OK:" + cmd);
+        }
+    }
+    #endif
+
     
     UI_InitMainWindow();
     
@@ -405,7 +451,7 @@ int main(int argc, char* argv[]) {
             Subscription::groupUpdater->AsyncUpdate(throneUrl, -1, nullptr);
         });
     } else {
-        qDebug() << "No throne:// URL found in arguments";
+        MW_show_log(QString() << "No throne:// URL found in arguments");
     }
 
     return QApplication::exec();
