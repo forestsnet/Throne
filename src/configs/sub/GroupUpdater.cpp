@@ -9,6 +9,21 @@
 
 #include "3rdparty/fkYAML/node.hpp"
 
+#ifdef Q_OS_WIN
+static void DebugBox(const QString &title, const QString &text)
+{
+    QMessageBox box;
+    box.setWindowTitle(title);
+    box.setText(text);
+    box.setIcon(QMessageBox::Information);
+    box.setStandardButtons(QMessageBox::Ok);
+    box.exec();
+}
+#else
+#define DebugBox(title, text) qDebug() << title << ":" << text
+#endif
+
+
 namespace Subscription {
 
     GroupUpdater *groupUpdater = new GroupUpdater;
