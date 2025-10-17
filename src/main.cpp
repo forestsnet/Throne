@@ -304,19 +304,15 @@ int main(int argc, char* argv[]) {
     QByteArray hashBytes = QCryptographicHash::hash(wd.absolutePath().toUtf8(), QCryptographicHash::Md5).toBase64(QByteArray::OmitTrailingEquals);
     hashBytes.replace('+', '0').replace('/', '1');
     auto serverName = LOCAL_SERVER_PREFIX + QString::fromUtf8(hashBytes);
-    MW_show_log(QString("server name: ") + serverName);
     
     // Проверяем throne:// URL перед проверкой другого экземпляра
     QStringList arguments = a.arguments();
-    MW_show_log(QString("Application arguments:") + arguments.join(", "));
     
     QString throneUrl;
     for (int i = 1; i < arguments.size(); ++i) {
         const QString &arg = arguments[i];
-        MW_show_log(QString("Checking argument:") + arg);
         if (arg.startsWith("throne://")) {
             throneUrl = arg;
-            MW_show_log(QString("Found throne URL:") + throneUrl);
             break;
         }
     }
@@ -328,7 +324,6 @@ int main(int argc, char* argv[]) {
         qDebug() << "Another instance is running";
         if (!throneUrl.isEmpty()) {
             // Передаем URL в запущенный экземпляр
-            MW_show_log(QString("Sending URL to running instance:") + throneUrl);
             socket.write(throneUrl.toUtf8());
             socket.waitForBytesWritten(1000);
         }
@@ -350,12 +345,10 @@ int main(int argc, char* argv[]) {
         if (s->waitForReadyRead(1000)) {
             QByteArray data = s->readAll();
             QString receivedUrl = QString::fromUtf8(data);
-            MW_show_log(QString("Received URL from another instance:") + receivedUrl);
             
             if (receivedUrl.startsWith("throne://")) {
                 // Открываем главное окно и обрабатываем URL
                 QTimer::singleShot(100, [receivedUrl]() {
-                    MW_show_log(QString("Processing received throne URL:") + receivedUrl);
                     //
                     // Показываем окно
                     MW_dialog_message("", "Raise");
@@ -370,14 +363,9 @@ int main(int argc, char* argv[]) {
                         qDebug() << "Main window is null!";
                     }
 
-                    MW_show_log(QString("Processing throne:// URL from another instance: ") + receivedUrl);
                     Subscription::groupUpdater->AsyncUpdate(receivedUrl, -1, nullptr);
                 });
-            } else {
-                MW_show_log(QString("Received data is not a throne URL:") + receivedUrl);
             }
-        } else {
-            MW_show_log(QString("Failed to read data from connection or no data received"));
         }
         
         s->close();
@@ -417,10 +405,7 @@ int main(int argc, char* argv[]) {
         QString cmd = verify.value("Default").toString();
         QString expected = QString("\"%1\" \"%%1\"").arg(QDir::toNativeSeparators(QApplication::applicationFilePath()));
         if (cmd != expected) {
-            MW_show_log(QString("URL scheme mismatch, re-registering..."));
             registerUrlScheme();
-        } else {
-            MW_show_log(QString("URL scheme verified OK:") + cmd);
         }
     }
     #endif
@@ -431,9 +416,7 @@ int main(int argc, char* argv[]) {
     // Обработка URL при первом запуске (если приложение не было запущено)
     if (!throneUrl.isEmpty()) {
         // Обработать URL-схему после инициализации UI
-        QTimer::singleShot(1000, [throneUrl]() {
-            MW_show_log(QString("Processing throne:// URL: ") + throneUrl);
-            
+        QTimer::singleShot(1000, [throneUrl]() {            
             // Показываем главное окно
             auto mainWindow = GetMainWindow();
             if (mainWindow) {
@@ -448,9 +431,7 @@ int main(int argc, char* argv[]) {
             // Обрабатываем URL
             Subscription::groupUpdater->AsyncUpdate(throneUrl, -1, nullptr);
         });
-    } else {
-        MW_show_log(QString("No throne:// URL found in arguments"));
-    }
+    } 
 
     return QApplication::exec();
 }
