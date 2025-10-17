@@ -1,5 +1,7 @@
 # Throne (Formerly Nekoray)
 
+CLONE OF OFFICIAL THRONE.
+
 Qt based Desktop cross-platform GUI proxy utility, empowered by [Sing-box](https://github.com/SagerNet/sing-box)
 
 Supports Windows 11/10/8/7 / Linux / MacOS out of the box.
