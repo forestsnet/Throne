@@ -21,8 +21,8 @@
 #ifdef Q_OS_WIN
 #include "include/sys/windows/MiniDump.h"
 #include "include/sys/windows/eventHandler.h"
-#include "include/sys/windows/WinVersion.h"
-#include <qfontdatabase.h>
+#include "include/sys/windows/WinVer
+#include <windows.h>
 #endif
 #ifdef Q_OS_LINUX
 #include <qfontdatabase.h>
