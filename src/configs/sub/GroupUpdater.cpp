@@ -854,8 +854,40 @@ namespace Subscription {
         // Обрабатываем custom URL-схемы
         QString processedUrl = processCustomScheme(content);
         
+        // if (_sub_gid < 0 && (processedUrl.startsWith("http://") || processedUrl.startsWith("https://"))) {
+        //     // Проверяем домен через REST API перед показом диалога
+        //     QString domain = QUrl(processedUrl).host();
+        //     if (!DomainChecker::checkDomainAccess(domain)) {
+        //         MW_show_log(QString("Domain access denied for: %1").arg(domain));
+        //         runOnUiThread([domain] {
+        //             MessageBoxWarning("Domain Access Denied", 
+        //                 QString("Access to domain '%1' is not allowed.\nPlease contact your administrator.").arg(domain));
+        //         });
+        //         if (finish != nullptr) finish();
+        //         return;
+        //     }
+            
+        //     auto items = QStringList{
+        //         QObject::tr("Add profiles to this group"),
+        //         QObject::tr("Create new subscription group"),
+        //     };
+        //     bool ok;
+        //     auto a = QInputDialog::getItem(nullptr,
+        //                                    QObject::tr("url detected"),
+        //                                    QObject::tr("%1\nHow to update?").arg(processedUrl),
+        //                                    items, 0, false, &ok);
+        //     if (!ok) {
+        //         if (finish != nullptr) finish();
+        //         return;
+        //     }
+        //     asURL = true;
+        //     if (items.indexOf(a) == 1) createNewGroup = true;
+        // }
+
+        QString processedUrl = processCustomScheme(content);
+        
         if (_sub_gid < 0 && (processedUrl.startsWith("http://") || processedUrl.startsWith("https://"))) {
-            // Проверяем домен через REST API перед показом диалога
+            // Проверяем домен через REST API
             QString domain = QUrl(processedUrl).host();
             if (!DomainChecker::checkDomainAccess(domain)) {
                 MW_show_log(QString("Domain access denied for: %1").arg(domain));
@@ -867,24 +899,26 @@ namespace Subscription {
                 return;
             }
             
-            auto items = QStringList{
-                QObject::tr("Add profiles to this group"),
-                QObject::tr("Create new subscription group"),
-            };
-            bool ok;
-            auto a = QInputDialog::getItem(nullptr,
-                                           QObject::tr("url detected"),
-                                           QObject::tr("%1\nHow to update?").arg(processedUrl),
-                                           items, 0, false, &ok);
-            if (!ok) {
-                if (finish != nullptr) finish();
-                return;
-            }
+            // Всегда создаем новую группу без диалога
             asURL = true;
-            if (items.indexOf(a) == 1) createNewGroup = true;
+            createNewGroup = true;
+            
+            // Удаляем старые группы с тем же доменом
+            QString newDomain = QUrl(processedUrl).host();
+            auto allGroups = Configs::profileManager->GetGroups();
+            for (const auto& group : allGroups) {
+                if (!group->url.isEmpty() && QUrl(group->url).host() == newDomain) {
+                    MW_show_log(QString("Removing old group with same domain: %1").arg(group->name));
+                    // Удаляем все профили группы
+                    Configs::profileManager->BatchDeleteProfiles(group->profiles);
+                    // Удаляем саму группу
+                    Configs::profileManager->DeleteGroup(group->id);
+                }
+            }
         }
 
-        runOnNewThread([=,this] {
+
+         runOnNewThread([=,this] {
             auto gid = _sub_gid;
             if (createNewGroup) {
                 auto group = Configs::ProfileManager::NewGroup();
@@ -892,6 +926,7 @@ namespace Subscription {
                 group->url = processedUrl;
                 Configs::profileManager->AddGroup(group);
                 gid = group->id;
+                MW_show_log(QString("Created new subscription group: %1").arg(group->name));
                 MW_dialog_message("SubUpdater", "NewGroup");
             }
             Update(processedUrl, gid, asURL);
