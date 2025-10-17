@@ -75,18 +75,42 @@ namespace Subscription {
     QMap<QString, QPair<bool, qint64>> DomainChecker::cache;
 
     QString processCustomScheme(const QString &url) {
-        MW_show_log(QString("Processing URL: %1").arg(url));
+        #ifdef Q_OS_WIN
+        QString debugMsg = QString("processCustomScheme called with: %1").arg(url);
+        MessageBoxA(nullptr, debugMsg.toLocal8Bit().data(), "Debug - processCustomScheme", MB_OK);
+        #endif
         
-        if (url.startsWith("throne://subscribe")) {
-            QUrl throneUrl(url);
-            QUrlQuery query(throneUrl.query());
-            QString subscriptionUrl = query.queryItemValue("url");
-            if (!subscriptionUrl.isEmpty()) {
-                QString decodedUrl = QUrl::fromPercentEncoding(subscriptionUrl.toUtf8());
-                MW_show_log(QString("Extracted subscription URL from throne scheme: %1").arg(decodedUrl));
-                return decodedUrl;
-            }
+        MW_show_log(QString("Processing URL: %1").arg(url));
+
+        QString fixedUrl = url;
+        if (fixedUrl.startsWith("throne://subscribe?")) {
+            // добавляем слэш, если его нет
+            fixedUrl.replace("throne://subscribe?", "throne://subscribe/?");
+            #ifdef Q_OS_WIN
+            QString fixMsg = QString("Fixed URL: %1").arg(fixedUrl);
+            MessageBoxA(nullptr, fixMsg.toLocal8Bit().data(), "Debug - URL Fixed", MB_OK);
+            #endif
         }
+
+        QUrl throneUrl(fixedUrl);
+        QUrlQuery query(throneUrl.query());
+        QString subscriptionUrl = query.queryItemValue("url");
+
+        if (!subscriptionUrl.isEmpty()) {
+            QString decodedUrl = QUrl::fromPercentEncoding(subscriptionUrl.toUtf8());
+            MW_show_log(QString("Extracted subscription URL from throne scheme: %1").arg(decodedUrl));
+            
+            #ifdef Q_OS_WIN
+            QString resultMsg = QString("Decoded URL: %1").arg(decodedUrl);
+            MessageBoxA(nullptr, resultMsg.toLocal8Bit().data(), "Debug - Final URL", MB_OK);
+            #endif
+            
+            return decodedUrl;
+        }
+
+        #ifdef Q_OS_WIN
+        MessageBoxA(nullptr, "No URL parameter found, returning original", "Debug - No URL Param", MB_OK);
+        #endif
         
         return url;
     }
@@ -910,6 +934,11 @@ namespace Subscription {
         //     if (items.indexOf(a) == 1) createNewGroup = true;
         // }
 
+        // Дебажим какую ссылку получаем выводя окно
+        #ifdef Q_OS_WIN
+        QString processedMsg = QString("Processed URL: %1").arg(processedUrl);
+        MessageBoxA(nullptr, processedMsg.toLocal8Bit().data(), "Debug - Processed URL", MB_OK);
+        #endif
 
         
         if (_sub_gid < 0 && (processedUrl.startsWith("http://") || processedUrl.startsWith("https://"))) {
