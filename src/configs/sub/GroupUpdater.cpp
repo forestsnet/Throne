@@ -958,10 +958,10 @@ namespace Subscription {
                     toDelete << id;
                 }
 
-                runOnUiThread([=] {
-                    MessageBoxWarning("Duplicate Subscription Groups Removed",
-                        QString("Removed %1 duplicate subscription groups").arg(toDelete.size()));
-                });
+                // runOnUiThread([=] {
+                //     MessageBoxWarning("Duplicate Subscription Groups Removed",
+                //         QString("Removed %1 duplicate subscription groups").arg(toDelete.size()));
+                // });
 
                 // Удаляем найденные дубликаты
                 for (int id : toDelete) {
