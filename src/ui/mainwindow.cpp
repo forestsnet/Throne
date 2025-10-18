@@ -249,17 +249,17 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->menubar->setVisible(false);
     
     connect(ui->toolButton_update, &QToolButton::clicked, this, [=,this] { 
-        QMenu menu;
+        QMenu menu(this);
         
         // Опция 1: Проверить обновления (если есть updater)
-        // if (QFile::exists(QApplication::applicationDirPath() + "/updater") || 
-        //     QFile::exists(QApplication::applicationDirPath() + "/updater.exe")) {
-        //     auto checkAction = menu.addAction(tr("Check for updates"));
-        //     connect(checkAction, &QAction::triggered, this, [=,this] {
-        //         runOnNewThread([=,this] { CheckUpdate(); });
-        //     });
-        //     menu.addSeparator();
-        // }
+        if (QFile::exists(QApplication::applicationDirPath() + "/updater") || 
+            QFile::exists(QApplication::applicationDirPath() + "/updater.exe")) {
+            auto checkAction = menu.addAction(tr("Check for updates"));
+            connect(checkAction, &QAction::triggered, this, [=,this] {
+                runOnNewThread([=,this] { CheckUpdate(); });
+            });
+            menu.addSeparator();
+        }
         
         // Опция 2: Открыть GitHub релизы
         auto githubAction = menu.addAction(tr("Open GitHub Releases"));
@@ -273,9 +273,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             QDesktopServices::openUrl(QUrl("https://github.com/forestsnet/Throne"));
         });
         
-        // Показываем меню под кнопкой
+        // Показываем меню под кнопкой СИНХРОННО
         QPoint pos = ui->toolButton_update->mapToGlobal(QPoint(0, ui->toolButton_update->height()));
-        menu.exec(pos);
+        menu.exec(pos); // exec() блокирует выполнение до выбора пункта
     });
 
     // Показывать кнопку всегда, независимо от наличия updater
