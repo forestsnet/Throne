@@ -22,6 +22,32 @@ func SetSystemDNS(addr string, interfaceMonitor tun.DefaultInterfaceMonitor) err
 	return nil
 }
 
+func GetSystemDNS(interfaceMonitor tun.DefaultInterfaceMonitor) ([]string, error) {
+	if interfaceMonitor == nil {
+		return nil, E.New("InterfaceMonitor cannot be nil")
+	}
+	interfaceName := interfaceMonitor.DefaultInterface().Name
+	interfaceDisplayName, err := getInterfaceDisplayName(interfaceName)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := shell.Exec("/usr/sbin/networksetup", "-getdnsservers", interfaceDisplayName).Attach().ReadOutput()
+	if err != nil {
+		return nil, err
+	}
+
+	servers := make([]string, 0)
+	for _, line := range strings.Split(res, "\n") {
+		trimmed := strings.TrimSpace(line)
+		if len(trimmed) > 0 {
+			servers = append(servers, trimmed)
+		}
+	}
+
+	return servers, nil
+}
+
 func getInterfaceDisplayName(name string) (string, error) {
 	content, err := shell.Exec("/usr/sbin/networksetup", "-listallhardwareports").ReadOutput()
 	if err != nil {
