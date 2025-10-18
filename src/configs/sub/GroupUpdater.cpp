@@ -994,6 +994,24 @@ namespace Subscription {
                     MW_show_log(QString("Deleting duplicate group (id=%1)").arg(id));
                     Configs::profileManager->DeleteGroup(id);
                 }
+
+                // КРИТИЧЕСКИ ВАЖНО: Перерисовываем UI после удаления групп
+                    runOnUiThread([=] {
+                        // Обновляем список групп в UI
+                        MW_dialog_message("", "RefreshGroups");
+                        
+                        // Или используем прямой вызов если есть доступ к MainWindow
+                        auto mainWindow = GetMainWindow();
+                        if (mainWindow) {
+                            // Принудительно обновляем UI групп
+                            mainWindow->refresh_groups();
+                            // Или можно вызвать полное обновление
+                            // mainWindow->refresh_proxy_list();
+                        }
+                        
+                        // Также обновляем счетчики и статистику
+                        MW_dialog_message("", "UpdateStats");
+                    });
             }
 
             // Продолжаем обновление подписки
