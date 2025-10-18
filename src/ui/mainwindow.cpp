@@ -279,9 +279,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     });
 
     // Показывать кнопку всегда, независимо от наличия updater
-    if (Configs::dataStore->disable_update_button) {
-        ui->toolButton_update->hide();
-    }
+    ui->toolButton_update->setVisible(true);
 
     // setup connection UI
     setupConnectionList();
