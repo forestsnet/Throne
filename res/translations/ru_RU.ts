@@ -2173,8 +2173,20 @@ Deleted %3 Profiles:
         <translation>Выбор</translation>
     </message>
     <message>
-        <source>Update</source>
-        <translation>Обновление</translation>
+        <source>Update / Github</source>
+        <translation>Обновление / Github</translation>
+    </message>
+    <message>
+        <source>Check for updates</source>
+        <translation>Проверить обновления</translation>
+    </message>
+    <message>
+        <source>Open GitHub Releases</source>
+        <translation>Открыть обновления на GitHub</translation>
+    </message>
+    <message>
+        <source>Open Repository</source>    
+        <translation>Открыть репозиторий</translation>
     </message>
     <message>
         <source>No update</source>

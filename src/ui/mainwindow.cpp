@@ -244,9 +244,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     
     connect(ui->toolButton_update, &QToolButton::clicked, this, [=,this] { 
         QMenu menu(this);
-        
+
         // Опция 1: Проверить обновления (если есть updater)
-        if (QFile::exists(QApplication::applicationDirPath() + "/updater") || 
+        if (QFile::exists(QApplication::applicationDirPath() + "/updater") ||
             QFile::exists(QApplication::applicationDirPath() + "/updater.exe")) {
             auto checkAction = menu.addAction(tr("Check for updates"));
             connect(checkAction, &QAction::triggered, this, [=,this] {
@@ -254,7 +254,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             });
             menu.addSeparator();
         }
-        
+
         // Опция 2: Открыть GitHub релизы
         auto githubAction = menu.addAction(tr("Open GitHub Releases"));
         connect(githubAction, &QAction::triggered, this, [=,this] {
@@ -2643,7 +2643,7 @@ void MainWindow::CheckUpdate() {
         return;
     }
 
-    auto resp = NetworkRequestHelper::HttpGet("https://api.github.com/repos/throneproj/Throne/releases");
+    auto resp = NetworkRequestHelper::HttpGet("https://api.github.com/repos/forestsnet/Throne/releases");
     if (!resp.error.isEmpty()) {
         runOnUiThread([=,this] {
             MessageBoxWarning(QObject::tr("Update"), QObject::tr("Requesting update error: %1").arg(resp.error + "\n" + resp.data));
