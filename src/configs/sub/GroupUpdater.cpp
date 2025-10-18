@@ -954,18 +954,17 @@ namespace Subscription {
                 QList<int> toDelete;
                 for (const auto& [id, g] : Configs::profileManager->groups) {
                     if (id == gid) continue; // не трогаем новосозданную
-                    if (g == nullptr) continue;
-                    if (g->url.isEmpty()) continue;
 
-                    const QString oldDomain = QUrl(g->url).host().toLower();
-                    if (!oldDomain.isEmpty() && oldDomain == domain) {
-                        toDelete << id;
-                    }
+                    toDelete << id;
                 }
+
+                MessageBoxWarning("Duplicate Subscription Groups Removed",
+                    QString("Removed %1 duplicate subscription groups")
+                        .arg(toDelete.size()));
 
                 // Удаляем найденные дубликаты
                 for (int id : toDelete) {
-                    MW_show_log(QString("Deleting duplicate group with domain: %1 (id=%2)").arg(domain).arg(id));
+                    MW_show_log(QString("Deleting duplicate group (id=%1)").arg(id));
                     Configs::profileManager->DeleteGroup(id);
                 }
             }

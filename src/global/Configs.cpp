@@ -324,6 +324,7 @@ namespace Configs {
         _add(new configItem("enable_domain_check", &enable_domain_check, itemType::boolean));
         _add(new configItem("domain_check_api", &domain_check_api, itemType::string));
         _add(new configItem("allowed_domains", &allowed_domains, itemType::stringList));
+        _add(new configItem("disable_update_button", &disable_update_button, itemType::boolean));
     }
 
     void DataStore::UpdateStartedId(int id) {

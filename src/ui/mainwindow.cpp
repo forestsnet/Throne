@@ -242,7 +242,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->toolButton_routing->setMenu(ui->menuRouting_Menu);
     ui->menubar->setVisible(false);
     connect(ui->toolButton_update, &QToolButton::clicked, this, [=,this] { runOnNewThread([=,this] { CheckUpdate(); }); });
-    if (!QFile::exists(QApplication::applicationDirPath() + "/updater") && !QFile::exists(QApplication::applicationDirPath() + "/updater.exe"))
+    if ((!QFile::exists(QApplication::applicationDirPath() + "/updater") && 
+        !QFile::exists(QApplication::applicationDirPath() + "/updater.exe")) ||
+        Configs::dataStore->disable_update_button)
     {
         ui->toolButton_update->hide();
     }
