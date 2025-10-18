@@ -27,6 +27,10 @@
 #ifdef Q_OS_LINUX
 #include <qfontdatabase.h>
 #endif
+#ifdef Q_OS_MACOS
+#include <QFileOpenEvent>
+#include <qfontdatabase.h>
+#endif
 
 void signal_handler(int signum) {
     if (GetMainWindow()) {
@@ -136,6 +140,50 @@ static void DebugBox(const QString &title, const QString &text)
 #define DebugBox(title, text) qDebug() << title << ":" << text
 #endif
 
+class ThroneApplication : public QApplication {
+public:
+    ThroneApplication(int &argc, char **argv) : QApplication(argc, argv) {}
+
+protected:
+    bool event(QEvent *event) override {
+        if (event->type() == QEvent::FileOpen) {
+            QFileOpenEvent *openEvent = static_cast<QFileOpenEvent *>(event);
+            QString url = openEvent->url().toString();
+            
+            qDebug() << "macOS FileOpen event received:" << url;
+            
+            if (url.startsWith("throne://")) {
+                // Обрабатываем URL
+                handleThroneUrl(url);
+                return true;
+            }
+        }
+        return QApplication::event(event);
+    }
+
+private:
+    void handleThroneUrl(const QString &url) {
+        qDebug() << "Processing throne URL:" << url;
+        
+        // Проверяем, запущено ли главное окно
+        auto mainWindow = GetMainWindow();
+        if (mainWindow) {
+            // UI уже готов - обрабатываем сразу
+            mainWindow->show();
+            mainWindow->raise();
+            mainWindow->activateWindow();
+            Subscription::groupUpdater->AsyncUpdate(url, -1, nullptr);
+        } else {
+            // UI еще не готов - сохраняем URL для обработки после инициализации
+            pendingThroneUrl = url;
+        }
+    }
+
+public:
+    QString pendingThroneUrl;
+};
+
+
 int main(int argc, char* argv[]) {
     qDebug() << "=== APPLICATION STARTED ===";
     qDebug() << "argc:" << argc;
@@ -150,7 +198,7 @@ int main(int argc, char* argv[]) {
 
     QApplication::setAttribute(Qt::AA_DontUseNativeDialogs);
     QApplication::setQuitOnLastWindowClosed(false);
-    QApplication a(argc, argv);
+    ThroneApplication a(argc, argv);
 
 #if !defined(Q_OS_MACOS) && (QT_VERSION >= QT_VERSION_CHECK(6,9,0))
     // Load the emoji fonts
@@ -424,6 +472,24 @@ int main(int argc, char* argv[]) {
     // #endif
     
     UI_InitMainWindow();
+
+    // После инициализации UI
+    #ifdef Q_OS_MACOS
+    if (!a.pendingThroneUrl.isEmpty()) {
+        QTimer::singleShot(500, [&a]() {
+            const QString url = a.pendingThroneUrl;
+            qDebug() << "Processing pending throne URL after UI init:" << url;
+
+            auto mainWindow = GetMainWindow();
+            if (mainWindow) {
+                mainWindow->show();
+                mainWindow->raise();
+                mainWindow->activateWindow();
+                Subscription::groupUpdater->AsyncUpdate(url, -1, nullptr);
+            }
+        });
+    }
+    #endif
     
     // #ifdef Q_OS_WIN
     // DebugBox("Debug - After UI Init", "UI_InitMainWindow completed");
