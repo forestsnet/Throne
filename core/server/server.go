@@ -26,6 +26,7 @@ import (
 var boxInstance *boxbox.Box
 var extraProcess *process.Process
 var needUnsetDNS bool
+var darwinOriginalDNS string
 var systemProxyController settings.SystemProxy
 var systemProxyAddr metadata.Socksaddr
 var instanceCancel context.CancelFunc
@@ -91,11 +92,27 @@ func (s *server) Start(in *gen.LoadConfigReq, out *gen.ErrorResp) (_ error) {
 		}
 	}
 
+	needFixLocalDNS := runtime.GOOS == "darwin" && strings.Contains(*in.CoreConfig, "DARWIN_CUSTOM_DHCP")
+	if needFixLocalDNS {
+		darwinOriginalDNS = "Empty"
+		servers, err := sys.GetSystemDNS(sys.GetDefaultInterfaceMonitor())
+		if len(servers) == 0 {
+			fmt.Println("Failed to get system dns servers:", err)
+		} else {
+			if servers[0] != "172.19.0.2" {
+				*in.CoreConfig = strings.ReplaceAll(*in.CoreConfig, "DARWIN_CUSTOM_DHCP", servers[0])
+				darwinOriginalDNS = servers[0]
+			} else {
+				*in.CoreConfig = strings.ReplaceAll(*in.CoreConfig, "DARWIN_CUSTOM_DHCP", "0.0.0.0")
+			}
+		}
+	}
+
 	boxInstance, instanceCancel, err = boxmain.Create([]byte(*in.CoreConfig))
 	if err != nil {
 		return
 	}
-	if runtime.GOOS == "darwin" && strings.Contains(*in.CoreConfig, "tun-in") && strings.Contains(*in.CoreConfig, "172.19.0.1/24") {
+	if needFixLocalDNS {
 		err := sys.SetSystemDNS("172.19.0.2", boxInstance.Network().InterfaceMonitor())
 		if err != nil {
 			log.Println("Failed to set system DNS:", err)
@@ -121,7 +138,7 @@ func (s *server) Stop(in *gen.EmptyReq, out *gen.ErrorResp) (_ error) {
 
 	if needUnsetDNS {
 		needUnsetDNS = false
-		err := sys.SetSystemDNS("Empty", boxInstance.Network().InterfaceMonitor())
+		err := sys.SetSystemDNS(darwinOriginalDNS, boxInstance.Network().InterfaceMonitor())
 		if err != nil {
 			log.Println("Failed to unset system DNS:", err)
 		}
