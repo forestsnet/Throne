@@ -188,7 +188,7 @@ namespace Configs {
         QString core_box_underlying_dns = "";
         
         // Whitelist domain
-        bool enable_domain_check = true;
+        bool enable_domain_check = false;
         QString domain_check_api = "https://access.forestsnet.com/?domain={}";
         QStringList allowed_domains = {"vflex.ru", "fxccc.cc"}; // Локальный whitelist как fallback
 
