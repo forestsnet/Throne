@@ -423,8 +423,12 @@ namespace Configs {
     QJsonObject BuildDnsObject(QString address, bool tunEnabled)
     {
         bool usingSystemdResolved = false;
+        bool isDarwin = false;
 #ifdef Q_OS_LINUX
         usingSystemdResolved = ReadFileText("/etc/resolv.conf").contains("systemd-resolved");
+#endif
+#ifdef Q_OS_MACOS
+        isDarwin = true;
 #endif
         if (address.startsWith("local"))
         {
@@ -432,6 +436,13 @@ namespace Configs {
             {
                 return {
                     {"type", "underlying"}
+                };
+            }
+            if (tunEnabled && isDarwin)
+            {
+                return {
+                    {"type", "dhcp"},
+                    {"static_server", "DARWIN_CUSTOM_DHCP"}
                 };
             }
             return {
