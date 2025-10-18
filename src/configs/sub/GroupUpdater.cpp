@@ -978,7 +978,7 @@ namespace Subscription {
 
                 // --- Удаляем старые группы с тем же доменом ---
                 QList<int> toDelete;
-                for (auto [id, g] : Configs::profileManager->groups.toStdMap()) {
+                for (const auto& [id, g] : Configs::profileManager->groups) {
                     if (id == gid) continue; // не трогаем новосозданную
                     if (g == nullptr) continue;
                     if (g->url.isEmpty()) continue;
