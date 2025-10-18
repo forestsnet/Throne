@@ -6,7 +6,7 @@
 
 #include <QInputDialog>
 #include <QUrlQuery>
-
+#include "include/ui/mainwindow_interface.h"
 #include "3rdparty/fkYAML/node.hpp"
 
 
