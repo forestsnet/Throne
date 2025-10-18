@@ -236,7 +236,7 @@ private:
 
     void closeEvent(QCloseEvent *event) override;
 
-    void dragEnterEvent(QDragEnterEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event) override;
 
     void dropEvent(QDropEvent* event) override;
 
