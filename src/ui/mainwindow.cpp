@@ -248,7 +248,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         // Опция 1: Проверить обновления (если есть updater)
         if (QFile::exists(QApplication::applicationDirPath() + "/updater") ||
             QFile::exists(QApplication::applicationDirPath() + "/updater.exe")) {
-            auto checkAction = menu.addAction(tr("Check for updates"));
+            auto checkAction = menu.addAction(QObject::tr("Check for updates"));
             connect(checkAction, &QAction::triggered, this, [=,this] {
                 runOnNewThread([=,this] { CheckUpdate(); });
             });
@@ -256,13 +256,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         }
 
         // Опция 2: Открыть GitHub релизы
-        auto githubAction = menu.addAction(tr("Open GitHub Releases"));
+        auto githubAction = menu.addAction(QObject::tr("Open GitHub Releases"));
         connect(githubAction, &QAction::triggered, this, [=,this] {
             QDesktopServices::openUrl(QUrl("https://github.com/forestsnet/Throne/releases"));
         });
         
         // Опция 3: Открыть главную страницу проекта
-        auto repoAction = menu.addAction(tr("Open Repository"));
+        auto repoAction = menu.addAction(QObject::tr("Open Repository"));
         connect(repoAction, &QAction::triggered, this, [=,this] {
             QDesktopServices::openUrl(QUrl("https://github.com/forestsnet/Throne"));
         });
