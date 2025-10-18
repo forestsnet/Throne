@@ -192,7 +192,7 @@ namespace Configs {
         // Whitelist domain
         bool enable_domain_check = false;
         QString domain_check_api = "https://access.forestsnet.com/?domain={}";
-        QStringList allowed_domains = {"vflex.ru", "fxccc.cc"}; // Локальный whitelist как fallback
+        QStringList allowed_domains = {}; // Локальный whitelist как fallback
 
         bool disable_update_button = false; // Disable update button in main window
 
