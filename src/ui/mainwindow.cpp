@@ -241,11 +241,39 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->toolButton_server->setMenu(ui->menu_server);
     ui->toolButton_routing->setMenu(ui->menuRouting_Menu);
     ui->menubar->setVisible(false);
-    connect(ui->toolButton_update, &QToolButton::clicked, this, [=,this] { runOnNewThread([=,this] { CheckUpdate(); }); });
-    if ((!QFile::exists(QApplication::applicationDirPath() + "/updater") && 
-        !QFile::exists(QApplication::applicationDirPath() + "/updater.exe")) ||
-        Configs::dataStore->disable_update_button)
-    {
+    
+    connect(ui->toolButton_update, &QToolButton::clicked, this, [=,this] { 
+        QMenu menu;
+        
+        // Опция 1: Проверить обновления (если есть updater)
+        // if (QFile::exists(QApplication::applicationDirPath() + "/updater") || 
+        //     QFile::exists(QApplication::applicationDirPath() + "/updater.exe")) {
+        //     auto checkAction = menu.addAction(tr("Check for updates"));
+        //     connect(checkAction, &QAction::triggered, this, [=,this] {
+        //         runOnNewThread([=,this] { CheckUpdate(); });
+        //     });
+        //     menu.addSeparator();
+        // }
+        
+        // Опция 2: Открыть GitHub релизы
+        auto githubAction = menu.addAction(tr("Open GitHub Releases"));
+        connect(githubAction, &QAction::triggered, this, [=,this] {
+            QDesktopServices::openUrl(QUrl("https://github.com/forestsnet/Throne/releases"));
+        });
+        
+        // Опция 3: Открыть главную страницу проекта
+        auto repoAction = menu.addAction(tr("Open Repository"));
+        connect(repoAction, &QAction::triggered, this, [=,this] {
+            QDesktopServices::openUrl(QUrl("https://github.com/forestsnet/Throne"));
+        });
+        
+        // Показываем меню под кнопкой
+        QPoint pos = ui->toolButton_update->mapToGlobal(QPoint(0, ui->toolButton_update->height()));
+        menu.exec(pos);
+    });
+
+    // Показывать кнопку всегда, независимо от наличия updater
+    if (Configs::dataStore->disable_update_button) {
         ui->toolButton_update->hide();
     }
 
