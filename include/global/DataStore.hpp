@@ -191,7 +191,6 @@ namespace Configs {
         
         // Whitelist domain
         bool enable_domain_check = true;
-        QString domain_check_api = "https://access.forestsnet.com/check";
         QStringList allowed_domains = {}; // Локальный whitelist как fallback
 
         bool disable_update_button = false; // Disable update button in main window
