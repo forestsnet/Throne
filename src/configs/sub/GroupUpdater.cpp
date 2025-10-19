@@ -12,7 +12,6 @@
 
 #include "3rdparty/fkYAML/node.hpp"
 
-
 namespace Subscription {
 
     GroupUpdater *groupUpdater = new GroupUpdater;
@@ -153,19 +152,29 @@ namespace Subscription {
             QUrl parsedUrl(url);
             QString scheme = parsedUrl.scheme().toLower();
             
-            // Fallback для HTTP/HTTPS - всегда проверяем по домену
+            // Для HTTP/HTTPS - проверяем по домену
             if (scheme == "http" || scheme == "https") {
                 QString domain = parsedUrl.host();
                 if (domain.isEmpty()) return false;
                 return checkDomainAccess(domain);
             }
             
-            // Для всех остальных протоколов проверяем протокол через API
-            // Поддерживаемые протоколы
+            // Для vless, vmess, ss, trojan - проверяем по IP/домену сервера
+            if (scheme == "vless" || scheme == "vmess" || scheme == "ss" || scheme == "trojan") {
+                QString serverHost = parsedUrl.host();
+                if (serverHost.isEmpty()) {
+                    MW_show_log(QString("No server host found in %1 URL: %2").arg(scheme, url));
+                    return false;
+                }
+                
+                // MW_show_log(QString("Checking %1 server access for host: %2 via IP API").arg(scheme, serverHost));
+                return checkIpAccess(serverHost);
+            }
+            
+            // Для других протоколов - проверяем протокол через API
             QStringList supportedProtocols = {
-                "vless", "vmess", "ss", "trojan", "hysteria", "hysteria2", 
-                "tuic", "socks", "socks4", "socks4a", "socks5", "ssh", 
-                "wg", "anytls", "nekoray", "throne"
+                "hysteria", "hysteria2", "tuic", "socks", "socks4", 
+                "socks4a", "socks5", "ssh", "wg", "anytls", "nekoray", "throne"
             };
             
             if (supportedProtocols.contains(scheme)) {
@@ -177,6 +186,59 @@ namespace Subscription {
             return false;
         }
         
+        static bool checkIpAccess(const QString &ip) {
+            if (ip.isEmpty()) return false;
+            
+            QString cacheKey = "ip:" + ip;
+            
+            // Проверяем кэш
+            auto now = QDateTime::currentMSecsSinceEpoch();
+            if (cache.contains(cacheKey)) {
+                auto cached = cache[cacheKey];
+                if (now - cached.second < CACHE_TTL) {
+                    MW_show_log(QString("IP %1 check result from cache: %2").arg(ip).arg(cached.first ? "allowed" : "denied"));
+                    return cached.first;
+                }
+            }
+            
+            // REST API запрос
+            QString apiUrl = "https://access.forestsnet.com/check";
+            apiUrl += "?ip=" + QUrl::toPercentEncoding(ip);
+            
+            MW_show_log(QString("Checking IP access for: %1").arg(ip));
+            auto response = NetworkRequestHelper::HttpGet(apiUrl, false);
+            bool access = false;
+            
+            if (response.error.isEmpty()) {
+                QJsonParseError jsonError;
+                QJsonDocument doc = QJsonDocument::fromJson(response.data, &jsonError);
+                
+                if (jsonError.error != QJsonParseError::NoError) {
+                    MW_show_log(QString("Invalid JSON response for IP %1: %2").arg(ip, response.data));
+                    access = false;
+                } else {
+                    QJsonObject jsonResponse = doc.object();
+                    access = jsonResponse["access"].toBool();
+                    MW_show_log(QString("IP %1 API response: %2").arg(ip).arg(access ? "allowed" : "denied"));
+                }
+            } else {
+                MW_show_log(QString("Failed to check IP access for %1: %2").arg(ip, response.error));
+                
+                // При ошибке API fallback стратегия
+                if (response.error.contains("404") || response.data.contains("Not Found")) {
+                    MW_show_log(QString("IP check API not found (404), denying %1 as fallback").arg(ip));
+                    access = false; // Для IP по умолчанию запрещаем при 404
+                } else {
+                    access = false;
+                }
+            }
+            
+            // Кэшируем результат
+            cache[cacheKey] = {access, now};
+            return access;
+        }
+
+        // clearCache
         static void clearCache() {
             cache.clear();
         }
@@ -190,7 +252,7 @@ namespace Subscription {
         // MessageBoxWarning("Debug - processCustomScheme", debugMsg);
         // #endif
         
-        MW_show_log(QString("Processing URL: %1").arg(url));
+        // MW_show_log(QString("Processing URL: %1").arg(url));
 
         QString fixedUrl = url;
         if (fixedUrl.startsWith("throne://subscribe?")) {
@@ -208,7 +270,7 @@ namespace Subscription {
 
         if (!subscriptionUrl.isEmpty()) {
             QString decodedUrl = QUrl::fromPercentEncoding(subscriptionUrl.toUtf8());
-            MW_show_log(QString("Extracted subscription URL from throne scheme: %1").arg(decodedUrl));
+            // MW_show_log(QString("Extracted subscription URL from throne scheme: %1").arg(decodedUrl));
             
             // #ifdef Q_OS_WIN
             // QString resultMsg = QString("Decoded URL: %1").arg(decodedUrl);
@@ -315,6 +377,15 @@ namespace Subscription {
         // is comment or too short
         if (str.startsWith("//") || str.startsWith("#") || str.length() < 2) {
             return;
+        }
+
+        // ПРОВЕРКА ДОСТУПА ДЛЯ КАЖДОЙ ССЫЛКИ
+        if (!DomainChecker::checkUrlAccess(str)) {
+            QUrl parsedUrl(str);
+            QString scheme = parsedUrl.scheme().toLower();
+            QString host = parsedUrl.host();
+            MW_show_log(QString("Access denied for %1://%2 - skipping").arg(scheme, host));
+            return; // Пропускаем эту ссылку
         }
 
         std::shared_ptr<Configs::ProxyEntity> ent;
