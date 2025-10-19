@@ -112,7 +112,7 @@ namespace Configs {
         // Subscription
         QString user_agent = ""; // set at main.cpp
         int sub_auto_update = 60;
-        bool sub_clear = true;
+        bool sub_clear = false;
         bool sub_send_hwid = true;
 
         // Security
@@ -150,7 +150,7 @@ namespace Configs {
         QString vpn_implementation = "system";
 #endif
         int vpn_mtu = 1500;
-        bool vpn_ipv6 = true;
+        bool vpn_ipv6 = false;
         bool vpn_strict_route = true;
         bool disable_privilege_req = false;
 
@@ -188,7 +188,6 @@ namespace Configs {
         QString core_box_underlying_dns = "";
         
         // Whitelist domain
-        bool enable_domain_check = true;
         QStringList allowed_domains = {}; // Локальный whitelist как fallback
 
         bool disable_update_button = false; // Disable update button in main window
