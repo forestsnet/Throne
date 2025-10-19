@@ -17,13 +17,14 @@ namespace Subscription {
     class DomainChecker {
     private:
         static QMap<QString, QPair<bool, qint64>> cache; // domain -> (access, timestamp)
-        static const qint64 CACHE_TTL = 3600000; // 1 час в миллисекундах
+        static const qint64 CACHE_TTL = 300 * 1000; // 5 минут в миллисекундах
 
     public:
+        
         static bool checkDomainAccess(const QString &domain) {
-            if (!Configs::dataStore->enable_domain_check) {
-                return true; // Если проверка отключена, разрешаем все
-            }
+            // if (!Configs::dataStore->enable_domain_check) {
+            //     return true; // Если проверка отключена, разрешаем все
+            // }
             
             if (domain.isEmpty()) return false;
             
@@ -44,27 +45,149 @@ namespace Subscription {
                 return true;
             }
             
+            // Если API URL пустой, используем только локальный whitelist
+            if (Configs::dataStore->domain_check_api.isEmpty()) {
+                MW_show_log(QString("Domain check API not configured, denying %1").arg(domain));
+                cache[domain] = {false, now};
+                return false;
+            }
+            
             // REST API запрос
             QString apiUrl = Configs::dataStore->domain_check_api;
-            apiUrl.replace("{}", domain);
+            apiUrl += "?domain=" + QUrl::toPercentEncoding(domain);
             
             MW_show_log(QString("Checking domain access for: %1").arg(domain));
             auto response = NetworkRequestHelper::HttpGet(apiUrl, false);
             bool access = false;
             
             if (response.error.isEmpty()) {
-                QJsonObject jsonResponse = QString2QJsonObject(response.data);
-                access = jsonResponse["access"].toBool();
-                MW_show_log(QString("Domain %1 API response: %2").arg(domain).arg(access ? "allowed" : "denied"));
+                // Проверяем статус ответа
+                QJsonParseError jsonError;
+                QJsonDocument doc = QJsonDocument::fromJson(response.data, &jsonError);
+                
+                if (jsonError.error != QJsonParseError::NoError) {
+                    MW_show_log(QString("Invalid JSON response for domain %1: %2").arg(domain, response.data));
+                    access = false;
+                } else {
+                    QJsonObject jsonResponse = doc.object();
+                    access = jsonResponse["access"].toBool();
+                    MW_show_log(QString("Domain %1 API response: %2").arg(domain).arg(access ? "allowed" : "denied"));
+                }
             } else {
                 MW_show_log(QString("Failed to check domain access for %1: %2").arg(domain, response.error));
-                // При ошибке API разрешаем только домены из локального whitelist
-                access = false;
+                
+                // При ошибке API (включая 404) используем fallback стратегию
+                if (response.error.contains("404") || response.data.contains("Not Found")) {
+                    MW_show_log(QString("Domain check API not found (404), allowing %1 as fallback").arg(domain));
+                    access = true; // Разрешаем при 404 как fallback
+                } else {
+                    access = false; // При других ошибках запрещаем
+                }
             }
             
             // Кэшируем результат
             cache[domain] = {access, now};
             return access;
+        }
+                
+        static bool checkProtocolAccess(const QString &protocol) {
+            // if (!Configs::dataStore->enable_domain_check) {
+            //     return true; // Если проверка отключена, разрешаем все
+            // }
+            
+            if (protocol.isEmpty()) return false;
+            
+            QString cacheKey = "protocol:" + protocol;
+            
+            // Проверяем кэш
+            auto now = QDateTime::currentMSecsSinceEpoch();
+            if (cache.contains(cacheKey)) {
+                auto cached = cache[cacheKey];
+                if (now - cached.second < CACHE_TTL) {
+                    MW_show_log(QString("Protocol %1 check result from cache: %2").arg(protocol).arg(cached.first ? "allowed" : "denied"));
+                    return cached.first;
+                }
+            }
+            
+            // Если API URL пустой, разрешаем базовые протоколы
+            if (Configs::dataStore->domain_check_api.isEmpty()) {
+                QStringList allowedProtocols = {"http", "https", "vless", "vmess", "ss", "trojan"};
+                bool access = allowedProtocols.contains(protocol.toLower());
+                MW_show_log(QString("Protocol check API not configured, %1 %2").arg(protocol).arg(access ? "allowed" : "denied"));
+                cache[cacheKey] = {access, now};
+                return access;
+            }
+            
+            // REST API запрос
+            QString apiUrl = Configs::dataStore->domain_check_api;
+            apiUrl += "?protocol=" + QUrl::toPercentEncoding(protocol);
+            
+            MW_show_log(QString("Checking protocol access for: %1").arg(protocol));
+            auto response = NetworkRequestHelper::HttpGet(apiUrl, false);
+            bool access = false;
+            
+            if (response.error.isEmpty()) {
+                QJsonParseError jsonError;
+                QJsonDocument doc = QJsonDocument::fromJson(response.data, &jsonError);
+                
+                if (jsonError.error != QJsonParseError::NoError) {
+                    MW_show_log(QString("Invalid JSON response for protocol %1: %2").arg(protocol, response.data));
+                    access = false;
+                } else {
+                    QJsonObject jsonResponse = doc.object();
+                    access = jsonResponse["access"].toBool();
+                    MW_show_log(QString("Protocol %1 API response: %2").arg(protocol).arg(access ? "allowed" : "denied"));
+                }
+            } else {
+                MW_show_log(QString("Failed to check protocol access for %1: %2").arg(protocol, response.error));
+                
+                // При ошибке API fallback на базовые протоколы
+                if (response.error.contains("404") || response.data.contains("Not Found")) {
+                    QStringList allowedProtocols = {"http", "https", "vless", "vmess", "ss", "trojan"};
+                    access = allowedProtocols.contains(protocol.toLower());
+                    MW_show_log(QString("Protocol check API not found (404), using fallback for %1: %2").arg(protocol).arg(access ? "allowed" : "denied"));
+                } else {
+                    access = false;
+                }
+            }
+            
+            // Кэшируем результат
+            cache[cacheKey] = {access, now};
+            return access;
+        }
+
+        static bool checkUrlAccess(const QString &url) {
+            // if (!Configs::dataStore->enable_domain_check) {
+            //     return true; // Если проверка отключена, разрешаем все
+            // }
+            
+            if (url.isEmpty()) return false;
+            
+            QUrl parsedUrl(url);
+            QString scheme = parsedUrl.scheme().toLower();
+            
+            // Fallback для HTTP/HTTPS - всегда проверяем по домену
+            if (scheme == "http" || scheme == "https") {
+                QString domain = parsedUrl.host();
+                if (domain.isEmpty()) return false;
+                return checkDomainAccess(domain);
+            }
+            
+            // Для всех остальных протоколов проверяем протокол через API
+            // Поддерживаемые протоколы
+            QStringList supportedProtocols = {
+                "vless", "vmess", "ss", "trojan", "hysteria", "hysteria2", 
+                "tuic", "socks", "socks4", "socks4a", "socks5", "ssh", 
+                "wg", "anytls", "nekoray", "throne"
+            };
+            
+            if (supportedProtocols.contains(scheme)) {
+                return checkProtocolAccess(scheme);
+            }
+            
+            // Неизвестный протокол - запрещаем
+            MW_show_log(QString("Unknown protocol: %1, access denied").arg(scheme));
+            return false;
         }
         
         static void clearCache() {
@@ -879,66 +1002,53 @@ namespace Subscription {
         // Обрабатываем custom URL-схемы
         QString processedUrl = processCustomScheme(content);
         
-        // if (_sub_gid < 0 && (processedUrl.startsWith("http://") || processedUrl.startsWith("https://"))) {
-        //     // Проверяем домен через REST API перед показом диалога
-        //     QString domain = QUrl(processedUrl).host();
-        //     if (!DomainChecker::checkDomainAccess(domain)) {
-        //         MW_show_log(QString("Domain access denied for: %1").arg(domain));
-        //         runOnUiThread([domain] {
-        //             MessageBoxWarning("Domain Access Denied", 
-        //                 QString("Access to domain '%1' is not allowed.\nPlease contact your administrator.").arg(domain));
-        //         });
-        //         if (finish != nullptr) finish();
-        //         return;
-        //     }
+        // Проверяем любой URL на доступность
+        if (_sub_gid < 0 && !processedUrl.isEmpty()) {
+            QUrl parsedUrl(processedUrl);
+            QString scheme = parsedUrl.scheme().toLower();
             
-        //     auto items = QStringList{
-        //         QObject::tr("Add profiles to this group"),
-        //         QObject::tr("Create new subscription group"),
-        //     };
-        //     bool ok;
-        //     auto a = QInputDialog::getItem(nullptr,
-        //                                    QObject::tr("url detected"),
-        //                                    QObject::tr("%1\nHow to update?").arg(processedUrl),
-        //                                    items, 0, false, &ok);
-        //     if (!ok) {
-        //         if (finish != nullptr) finish();
-        //         return;
-        //     }
-        //     asURL = true;
-        //     if (items.indexOf(a) == 1) createNewGroup = true;
-        // }
-
-        // Дебажим какую ссылку получаем выводя окно
-        // #ifdef Q_OS_WIN
-        // QString processedMsg = QString("Processed URL: %1").arg(processedUrl);
-        // MessageBoxWarning("Debug - Processed URL", processedMsg);
-        // #endif
-
-        
-        if (_sub_gid < 0 && (processedUrl.startsWith("http://") || processedUrl.startsWith("https://"))) {
-            // Проверяем домен через REST API
-            QString domain = QUrl(processedUrl).host();
-            if (!DomainChecker::checkDomainAccess(domain)) {
-                MW_show_log(QString("Domain access denied for: %1").arg(domain));
-                runOnUiThread([domain] {
-                    MessageBoxWarning("Domain Access Denied", 
-                        QString("Access to domain '%1' is not allowed.\nPlease contact your administrator.").arg(domain));
+            // Проверяем доступ к URL
+            if (!DomainChecker::checkUrlAccess(processedUrl)) {
+                QString errorMsg;
+                if (scheme == "http" || scheme == "https") {
+                    errorMsg = QString("Domain access denied for: %1").arg(parsedUrl.host());
+                } else {
+                    errorMsg = QString("Protocol '%1' access denied").arg(scheme);
+                }
+                
+                MW_show_log(errorMsg);
+                runOnUiThread([errorMsg] {
+                    MessageBoxWarning("Access Denied", 
+                        QString("%1\nPlease contact your administrator.").arg(errorMsg));
                 });
                 if (finish != nullptr) finish();
                 return;
             }
             
-            // Всегда создаем новую группу без диалога
-            asURL = true;
-            createNewGroup = true;
+            // Для HTTP/HTTPS создаем новую группу автоматически
+            if (scheme == "http" || scheme == "https") {
+                asURL = true;
+                createNewGroup = true;
+            }
+            // Для других протоколов тоже можем создать группу, если это подписка
+            else if (scheme == "vless" || scheme == "vmess" || scheme == "ss" || 
+                     scheme == "trojan" || scheme == "hysteria" || scheme == "hysteria2" ||
+                     scheme == "tuic" || scheme == "socks" || scheme == "socks4" || 
+                     scheme == "socks4a" || scheme == "socks5" || scheme == "ssh" || 
+                     scheme == "wg" || scheme == "anytls") {
+                // Для отдельных прокси не создаем группу, добавляем в текущую
+                // Если это не подписка, а отдельный прокси
+                asURL = false;
+                createNewGroup = false;
+            }
         }
 
         runOnNewThread([=,this] {
             auto gid = _sub_gid;
 
             if (createNewGroup) {
-                const QString domain = QUrl(processedUrl).host().toLower();
+                QUrl parsedUrl(processedUrl);
+                const QString domain = parsedUrl.host().toLower();
 
                 // Создаём новую группу
                 auto group = Configs::ProfileManager::NewGroup();
@@ -954,14 +1064,8 @@ namespace Subscription {
                 QList<int> toDelete;
                 for (const auto& [id, g] : Configs::profileManager->groups) {
                     if (id == gid) continue; // не трогаем новосозданную
-
                     toDelete << id;
                 }
-
-                // runOnUiThread([=] {
-                //     MessageBoxWarning("Duplicate Subscription Groups Removed",
-                //         QString("Removed %1 duplicate subscription groups").arg(toDelete.size()));
-                // });
 
                 // Удаляем найденные дубликаты
                 for (int id : toDelete) {
@@ -970,22 +1074,20 @@ namespace Subscription {
                 }
 
                 // КРИТИЧЕСКИ ВАЖНО: Перерисовываем UI после удаления групп
-                    runOnUiThread([=] {
-                        // Обновляем список групп в UI
-                        MW_dialog_message("", "RefreshGroups");
-                        
-                        // Или используем прямой вызов если есть доступ к MainWindow
-                        auto mainWindow = GetMainWindow();
-                        if (mainWindow) {
-                            // Принудительно обновляем UI групп
-                            mainWindow->refresh_groups();
-                            // Или можно вызвать полное обновление
-                            // mainWindow->refresh_proxy_list();
-                        }
-                        
-                        // Также обновляем счетчики и статистику
-                        MW_dialog_message("", "UpdateStats");
-                    });
+                runOnUiThread([=] {
+                    // Обновляем список групп в UI
+                    MW_dialog_message("", "RefreshGroups");
+                    
+                    // Или используем прямой вызов если есть доступ к MainWindow
+                    auto mainWindow = GetMainWindow();
+                    if (mainWindow) {
+                        // Принудительно обновляем UI групп
+                        mainWindow->refresh_groups();
+                    }
+                    
+                    // Также обновляем счетчики и статистику
+                    MW_dialog_message("", "UpdateStats");
+                });
             }
 
             // Продолжаем обновление подписки
@@ -1010,10 +1112,24 @@ namespace Subscription {
 
         // сетевой запрос
         if (asURL) {
-            // Дополнительная проверка домена перед загрузкой
-            QString domain = QUrl(content).host();
-            if (!DomainChecker::checkDomainAccess(domain)) {
-                MW_show_log(QString("Domain access denied during update for: %1").arg(domain));
+            // Дополнительная проверка URL перед загрузкой
+            if (!DomainChecker::checkUrlAccess(content)) {
+                QUrl parsedUrl(content);
+                QString scheme = parsedUrl.scheme().toLower();
+                QString errorMsg;
+                
+                if (scheme == "http" || scheme == "https") {
+                    errorMsg = QString("Domain access denied during update for: %1").arg(parsedUrl.host());
+                } else {
+                    errorMsg = QString("Protocol '%1' access denied during update").arg(scheme);
+                }
+                
+                MW_show_log(errorMsg);
+                runOnUiThread([errorMsg] {
+                    MessageBoxWarning("Access Denied", 
+                        QString("%1\n\nPlease contact your administrator or check domain whitelist settings.")
+                        .arg(errorMsg));
+                });
                 return;
             }
 
@@ -1032,7 +1148,6 @@ namespace Subscription {
             MW_show_log("<<<<<<<< " + QObject::tr("Subscription request fininshed: %1").arg(groupName));
         }
 
-        // ...existing code...
         QList<std::shared_ptr<Configs::ProxyEntity>> in;          // 更新前
         QList<std::shared_ptr<Configs::ProxyEntity>> out_all;     // 更新前 + 更新後
         QList<std::shared_ptr<Configs::ProxyEntity>> out;         // 更新後

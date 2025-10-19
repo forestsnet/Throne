@@ -280,6 +280,10 @@ private:
 
     void queryCountryTest(const QMap<QString, int>& tag2entID, bool testCurrent);
 
+    void tcpPingTest(const QList<std::shared_ptr<Configs::ProxyEntity>>& profiles);
+
+    void handshakeTest(const QList<std::shared_ptr<Configs::ProxyEntity>>& profiles);
+
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
 

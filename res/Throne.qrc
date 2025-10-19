@@ -7,6 +7,8 @@
         <file alias="icon/b-dialog-question.png">icon/dialog-question.png</file>
         <file alias="icon/b-system-software-update.png">icon/system-software-update.png</file>
         <file alias="icon/b-network-routing.png">icon/network-routing.png</file>
+        <file alias="icon/hidden-menu.png">icon/hidden-menu.png</file>
+        <file alias="icon/network-ping.png">icon/network-ping.png</file>
         <file>icon/material/lock-open-outline.png</file>
         <file>icon/material/lock-outline.png</file>
         <file>icon/material/cancel.png</file>

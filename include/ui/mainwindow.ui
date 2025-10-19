@@ -17,7 +17,7 @@
             </size>
         </property>
         <property name="windowTitle">
-            <string notr="true">nya</string>
+            <string notr="true">Throne / ForestsNet</string>
         </property>
         <widget class="QWidget" name="centralwidget">
             <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0,0">
@@ -112,6 +112,28 @@
                             </widget>
                         </item>
                         <item>
+                            <widget class="QToolButton" name="toolButton_hidden">
+                                <property name="text">
+                                    <string>Service Menu</string>
+                                </property>
+                                <property name="icon">
+                                    <iconset theme="hidden-menu"/>
+                                </property>
+                                <property name="iconSize">
+                                    <size>
+                                        <width>24</width>
+                                        <height>24</height>
+                                    </size>
+                                </property>
+                                <property name="popupMode">
+                                    <enum>QToolButton::ToolButtonPopupMode::InstantPopup</enum>
+                                </property>
+                                <property name="toolButtonStyle">
+                                    <enum>Qt::ToolButtonStyle::ToolButtonTextUnderIcon</enum>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
                             <widget class="QToolButton" name="toolButton_update">
                                 <property name="text">
                                     <string>Update / Github</string>
@@ -163,6 +185,28 @@
                                     </widget>
                                 </item>
                             </layout>
+                        </item>
+                        <item>
+                            <widget class="QToolButton" name="toolButton_ping">
+                                <property name="text">
+                                    <string>Ping</string>
+                                </property>
+                                <property name="icon">
+                                    <iconset theme="network-ping"/>
+                                </property>
+                                <property name="iconSize">
+                                    <size>
+                                        <width>24</width>
+                                        <height>24</height>
+                                    </size>
+                                </property>
+                                <property name="popupMode">
+                                    <enum>QToolButton::ToolButtonPopupMode::InstantPopup</enum>
+                                </property>
+                                <property name="toolButtonStyle">
+                                    <enum>Qt::ToolButtonStyle::ToolButtonTextUnderIcon</enum>
+                                </property>
+                            </widget>
                         </item>
                         <item>
                             <widget class="QTextBrowser" name="data_view">
@@ -1056,6 +1100,32 @@
         <action name="actionAdd_profile_from_File">
             <property name="text">
                 <string>Add profile from File</string>
+            </property>
+        </action>
+        <action name="actionTcpPing_Selected">
+            <property name="text">
+                <string>TCP Ping Selected</string>
+            </property>
+            <property name="toolTip">
+                <string>Test selected servers with TCP ping</string>
+            </property>
+        </action>
+        <action name="actionTcpPing_Group">
+            <property name="text">
+                <string>TCP Ping Group</string>
+            </property>
+        </action>
+        <action name="actionHandshake_Selected">
+            <property name="text">
+                <string>Handshake Test Selected</string>
+            </property>
+            <property name="toolTip">
+                <string>Test selected servers with handshake</string>
+            </property>
+        </action>
+        <action name="actionHandshake_Group">
+            <property name="text">
+                <string>Handshake Test Group</string>
             </property>
         </action>
     </widget>
