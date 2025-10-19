@@ -11,6 +11,7 @@
 #include <QThread>
 #include <QSettings>
 #include <QTimer>
+#include <QFileOpenEvent>
 #include <3rdparty/WinCommander.hpp>
 
 #include "include/global/Configs.hpp"
@@ -28,7 +29,6 @@
 #include <qfontdatabase.h>
 #endif
 #ifdef Q_OS_MACOS
-#include <QFileOpenEvent>
 #include <qfontdatabase.h>
 #endif
 
@@ -150,10 +150,9 @@ protected:
             QFileOpenEvent *openEvent = static_cast<QFileOpenEvent *>(event);
             QString url = openEvent->url().toString();
             
-            qDebug() << "macOS FileOpen event received:" << url;
+            qDebug() << "FileOpen event received:" << url;
             
             if (url.startsWith("throne://")) {
-                // Обрабатываем URL
                 handleThroneUrl(url);
                 return true;
             }
@@ -165,16 +164,13 @@ private:
     void handleThroneUrl(const QString &url) {
         qDebug() << "Processing throne URL:" << url;
         
-        // Проверяем, запущено ли главное окно
         auto mainWindow = GetMainWindow();
         if (mainWindow) {
-            // UI уже готов - обрабатываем сразу
             mainWindow->show();
             mainWindow->raise();
             mainWindow->activateWindow();
             Subscription::groupUpdater->AsyncUpdate(url, -1, nullptr);
         } else {
-            // UI еще не готов - сохраняем URL для обработки после инициализации
             pendingThroneUrl = url;
         }
     }
@@ -473,8 +469,7 @@ int main(int argc, char* argv[]) {
     
     UI_InitMainWindow();
 
-    // После инициализации UI
-    #ifdef Q_OS_MACOS
+     // После инициализации UI - обработка отложенных URL для всех платформ
     if (!a.pendingThroneUrl.isEmpty()) {
         QTimer::singleShot(500, [&a]() {
             const QString url = a.pendingThroneUrl;
@@ -489,24 +484,14 @@ int main(int argc, char* argv[]) {
             }
         });
     }
-    #endif
-    
-    // #ifdef Q_OS_WIN
-    // DebugBox("Debug - After UI Init", "UI_InitMainWindow completed");
-    // #endif
     
     // Обработка URL при первом запуске (если приложение не было запущено)
     if (!throneUrl.isEmpty()) {
-        // #ifdef Q_OS_WIN
-        // QString debugMsg = QString("Found throne URL: %1").arg(throneUrl);
-        // DebugBox("Debug - URL Found", debugMsg);
-        // #endif
+        qDebug() << "Found throne URL in arguments:" << throneUrl;
         
         // Обработать URL-схему после инициализации UI
         QTimer::singleShot(1000, [throneUrl]() {
-            // #ifdef Q_OS_WIN
-            // DebugBox("Debug - Timer", "Timer triggered, processing URL...");
-            // #endif
+            qDebug() << "Timer triggered, processing URL:" << throneUrl;
             
             // Показываем главное окно
             auto mainWindow = GetMainWindow();
@@ -514,29 +499,18 @@ int main(int argc, char* argv[]) {
                 mainWindow->show();
                 mainWindow->raise();
                 mainWindow->activateWindow();
-                // #ifdef Q_OS_WIN
-                // DebugBox("Debug - Window", "Main window shown");
-                // #endif
+                qDebug() << "Main window shown and activated";
             } else {
                 MW_dialog_message("", "Raise");
-                // #ifdef Q_OS_WIN
-                // DebugBox("Debug - Window Null", "Main window was null, used MW_dialog_message");
-                // #endif
+                qDebug() << "Main window was null, used MW_dialog_message";
             }
-            
-            // #ifdef Q_OS_WIN
-            // QString processMsg = QString("About to call AsyncUpdate with: %1").arg(throneUrl);
-            // DebugBox("Debug - Before AsyncUpdate", processMsg);
-            // #endif
             
             // Обрабатываем URL
             Subscription::groupUpdater->AsyncUpdate(throneUrl, -1, nullptr);
-            
-            // #ifdef Q_OS_WIN
-            // DebugBox("AsyncUpdate called", "Debug - After AsyncUpdate");
-            // #endif
+            qDebug() << "AsyncUpdate called with URL:" << throneUrl;
         });
     }
+    
     // } else {
     //     #ifdef Q_OS_WIN
     //     // DebugBox("No throne URL found in arguments", "Debug - No URL");
