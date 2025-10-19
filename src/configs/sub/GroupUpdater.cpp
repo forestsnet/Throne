@@ -380,12 +380,14 @@ namespace Subscription {
         }
 
         // ПРОВЕРКА ДОСТУПА ДЛЯ КАЖДОЙ ССЫЛКИ
-        if (!DomainChecker::checkUrlAccess(str)) {
-            QUrl parsedUrl(str);
-            QString scheme = parsedUrl.scheme().toLower();
-            QString host = parsedUrl.host();
-            MW_show_log(QString("Access denied for %1://%2 - skipping").arg(scheme, host));
-            return; // Пропускаем эту ссылку
+        if (gid_add_to < 0) {
+            if (!DomainChecker::checkUrlAccess(str)) {
+                QUrl parsedUrl(str);
+                QString scheme = parsedUrl.scheme().toLower();
+                QString host = parsedUrl.host();
+                MW_show_log(QString("Access denied for %1://%2 - skipping").arg(scheme, host));
+                return; // Пропускаем эту ссылку
+            }
         }
 
         std::shared_ptr<Configs::ProxyEntity> ent;
