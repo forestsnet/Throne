@@ -1,3 +1,5 @@
+аменить строки 1-11:
+
 #include "include/dataStore/ProfileFilter.hpp"
 #include "include/configs/proxy/includes.h"
 #include "include/global/HTTPRequestHelper.hpp"
@@ -6,9 +8,12 @@
 
 #include <QInputDialog>
 #include <QUrlQuery>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonParseError>
+#include <QDateTime>
 #include "include/ui/mainwindow_interface.h"
 #include "3rdparty/fkYAML/node.hpp"
-
 
 namespace Subscription {
 
