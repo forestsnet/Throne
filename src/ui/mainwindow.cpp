@@ -2717,6 +2717,20 @@ bool MainWindow::StopVPNProcess() {
     return true;
 }
 
+bool isNewerByTag(const QString& releaseTag) {
+    if (QString(NKR_VERSION).isEmpty()) return false;
+    
+    QString version = releaseTag;
+    if (version.startsWith('v') || version.startsWith('V')) {
+        version = version.mid(1);
+    }
+    
+    auto parts = version.replace("-", ".").split(".");
+    auto currentParts = QString(NKR_VERSION).replace("-", ".").split('.');
+    
+    return compareVersions(parts, currentParts);
+}
+
 bool isNewer(QString assetName) {
     if (QString(NKR_VERSION).isEmpty()) return false;
     assetName = assetName.mid(7); // take out Throne-
@@ -2831,7 +2845,7 @@ void MainWindow::CheckUpdate() {
         return;
     }
 
-    QString assets_name, release_download_url, release_url, release_note, note_pre_release;
+    QString assets_name, release_download_url, release_url, release_note, note_pre_release, release_tag_name;
     bool exitFlag = false;
     QJsonArray array = QString2QJsonArray(resp.data);
     for (const QJsonValue value : array) {
@@ -2842,6 +2856,7 @@ void MainWindow::CheckUpdate() {
                 note_pre_release = release["prerelease"].toBool() ? " (Pre-release)" : "";
                 release_url = release["html_url"].toString();
                 release_note = release["body"].toString();
+                release_tag_name = release["tag_name"].toString();
                 assets_name = asset["name"].toString();
                 release_download_url = asset["browser_download_url"].toString();
                 exitFlag = true;
@@ -2851,7 +2866,7 @@ void MainWindow::CheckUpdate() {
         if (exitFlag) break;
     }
 
-    if (release_download_url.isEmpty() || !isNewer(assets_name)) {
+    if (release_download_url.isEmpty() || !isNewerByTag(release_tag_name)) {
         runOnUiThread([=,this] {
             MessageBoxInfo(QObject::tr("Update"), QObject::tr("No update"));
         });
