@@ -56,12 +56,132 @@
 #include <3rdparty/qv2ray/v2/proxy/QvProxyConfigurator.hpp>
 #include <include/global/HTTPRequestHelper.hpp>
 #include "include/global/DeviceDetailsHelper.hpp"
-
+#include <QTcpSocket>
 #include "include/sys/macos/MacOS.h"
 
 void UI_InitMainWindow() {
     mainwindow = new MainWindow;
 }
+
+
+void MainWindow::tcpPingTest(const QList<std::shared_ptr<Configs::ProxyEntity>>& profiles) {
+    if (profiles.isEmpty()) {
+        return;
+    }
+    if (!speedtestRunning.tryLock()) {
+        MessageBoxWarning(software_name, tr("The last test did not exit completely, please wait. If it persists, please restart the program."));
+        return;
+    }
+
+    runOnNewThread([this, profiles]() {
+        std::atomic<int> counter(0);
+        stopSpeedtest.store(false);
+        
+        for (const auto& profile : profiles) {
+            if (stopSpeedtest.load()) break;
+            
+            parallelCoreCallPool->start([this, profile, &counter, profiles]() {
+                if (stopSpeedtest.load()) {
+                    counter++;
+                    if (counter.load() == profiles.size()) {
+                        speedtestRunning.unlock();
+                    }
+                    return;
+                }
+                
+                // Простой TCP ping
+                auto start = QDateTime::currentMSecsSinceEpoch();
+                QTcpSocket socket;
+                socket.connectToHost(profile->bean->serverAddress, profile->bean->serverPort);
+                
+                if (socket.waitForConnected(5000)) {
+                    auto latency = QDateTime::currentMSecsSinceEpoch() - start;
+                    profile->latency = static_cast<int>(latency);
+                    socket.disconnectFromHost();
+                } else {
+                    profile->latency = -1;
+                }
+                
+                profile->Save();
+                counter++;
+                
+                runOnUiThread([this, profile]() {
+                    refresh_proxy_list(profile->id);
+                });
+                
+                if (counter.load() == profiles.size()) {
+                    speedtestRunning.unlock();
+                }
+            });
+        }
+        
+        // Ждем завершения всех тестов
+        while (counter.load() < profiles.size() && !stopSpeedtest.load()) {
+            QThread::msleep(100);
+        }
+        
+        runOnUiThread([this]() {
+            MW_show_log(tr("TCP Ping test finished!"));
+        });
+    });
+}
+
+void MainWindow::handshakeTest(const QList<std::shared_ptr<Configs::ProxyEntity>>& profiles) {
+    if (profiles.isEmpty()) {
+        return;
+    }
+    if (!speedtestRunning.tryLock()) {
+        MessageBoxWarning(software_name, tr("The last test did not exit completely, please wait. If it persists, please restart the program."));
+        return;
+    }
+
+    runOnNewThread([this, profiles]() {
+        auto buildObject = Configs::BuildTestConfig(profiles, ruleSetMap);
+        if (!buildObject->error.isEmpty()) {
+            MW_show_log(tr("Failed to build test config: ") + buildObject->error);
+            speedtestRunning.unlock();
+            return;
+        }
+
+        std::atomic<int> counter(0);
+        stopSpeedtest.store(false);
+        auto testCount = buildObject->fullConfigs.size() + (!buildObject->outboundTags.empty());
+        
+        for (const auto &entID: buildObject->fullConfigs.keys()) {
+            auto configStr = buildObject->fullConfigs[entID];
+            auto func = [this, &counter, testCount, configStr, entID]() {
+                // Используем существующий механизм URL теста, но с простым HTTP запросом
+                MainWindow::runURLTest(configStr, true, {}, {}, entID);
+                counter++;
+                if (counter.load() == testCount) {
+                    speedtestRunning.unlock();
+                }
+            };
+            parallelCoreCallPool->start(func);
+        }
+
+        if (!buildObject->outboundTags.empty()) {
+            auto func = [this, &buildObject, &counter, testCount]() {
+                MainWindow::runURLTest(QJsonObject2QString(buildObject->coreConfig, false), false, buildObject->outboundTags, buildObject->tag2entID);
+                counter++;
+                if (counter.load() == testCount) {
+                    speedtestRunning.unlock();
+                }
+            };
+            parallelCoreCallPool->start(func);
+        }
+        
+        if (testCount == 0) speedtestRunning.unlock();
+
+        speedtestRunning.lock();
+        speedtestRunning.unlock();
+        runOnUiThread([this](){
+            refresh_proxy_list();
+            MW_show_log(tr("Handshake test finished!"));
+        });
+    });
+}
+
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     mainwindow = this;
@@ -246,7 +366,46 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->toolButton_preferences->setMenu(ui->menu_preferences);
     ui->toolButton_server->setMenu(ui->menu_server);
     ui->toolButton_routing->setMenu(ui->menuRouting_Menu);
+    ui->toolButton_hidden->setMenu(ui->menuHidden_menu);
     ui->menubar->setVisible(false);
+    ui->horizontalLayout_2->addStretch();
+    ui->horizontalLayout_2->addWidget(ui->toolButton_ping);
+    ui->horizontalLayout_2->addSpacing(50);
+
+    
+    connect(ui->toolButton_ping, &QToolButton::clicked, this, [=,this]() {
+        // Проверяем текущую группу
+        auto currentGroup = Configs::profileManager->CurrentGroup();
+        if (currentGroup == nullptr) {
+            MessageBoxWarning(tr("Ping Test"), tr("No group selected."));
+            return;
+        }
+        
+        // // Получаем выбранные профили
+        // auto selected = get_now_selected_list();
+        
+        // // Если есть выбранные, тестируем их
+        // if (!selected.isEmpty()) {
+        //     MW_show_log(tr("Starting handshake test for %1 selected profiles...").arg(selected.size()));
+        //     handshakeTest(selected);
+        //     return;
+        // }
+        
+        // // Если ничего не выбрано, тестируем всю группу
+        auto allProfiles = currentGroup->GetProfileEnts();
+        if (allProfiles.isEmpty()) {
+            MessageBoxWarning(tr("Ping Test"), 
+                tr("Current group has no profiles.\n\n"
+                   "Please add some profiles first:\n"
+                   "• Use 'Add from clipboard' to import links\n"
+                   "• Import subscription URL\n"
+                   "• Add profile manually"));
+            return;
+        }
+        
+        MW_show_log(tr("Starting handshake test for all %1 profiles in group...").arg(allProfiles.size()));
+        handshakeTest(allProfiles);
+    });
     
     connect(ui->toolButton_update, &QToolButton::clicked, this, [=,this] { 
         QMenu menu(this);
@@ -453,9 +612,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             refresh_status();
         }
     });
-    if (Configs::dataStore->show_system_dns) ui->system_dns->show();
-    else ui->system_dns->hide();
+    // if (Configs::dataStore->show_system_dns) ui->system_dns->show();
+    // else 
+    ui->system_dns->hide();
 
+    
     connect(ui->menu_server, &QMenu::aboutToShow, this, [=,this](){
         if (running)
         {
@@ -469,11 +630,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             ui->actionSpeedtest_Selected->setEnabled(false);
             ui->actionUrl_Test_Selected->setEnabled(false);
             ui->menu_resolve_selected->setEnabled(false);
+            // Добавляем проверки для новых тестов
+            ui->actionTcpPing_Selected->setEnabled(false);
+            ui->actionHandshake_Selected->setEnabled(false);
         } else
         {
             ui->actionSpeedtest_Selected->setEnabled(true);
             ui->actionUrl_Test_Selected->setEnabled(true);
             ui->menu_resolve_selected->setEnabled(true);
+            ui->actionTcpPing_Selected->setEnabled(true);
+            ui->actionHandshake_Selected->setEnabled(true);
         }
         if (!speedtestRunning.tryLock()) {
             ui->menu_server->addAction(ui->menu_stop_testing);
@@ -482,6 +648,23 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             ui->menu_server->removeAction(ui->menu_stop_testing);
         }
     });
+
+    // Добавляем новые подключения для тестов
+    connect(ui->actionTcpPing_Selected, &QAction::triggered, this, [=,this]() {
+        tcpPingTest(get_now_selected_list());
+    });
+    connect(ui->actionTcpPing_Group, &QAction::triggered, this, [=,this]() {
+        tcpPingTest(Configs::profileManager->CurrentGroup()->GetProfileEnts());
+    });
+    connect(ui->actionHandshake_Selected, &QAction::triggered, this, [=,this]() {
+        handshakeTest(get_now_selected_list());
+    });
+    connect(ui->actionHandshake_Group, &QAction::triggered, this, [=,this]() {
+        handshakeTest(Configs::profileManager->CurrentGroup()->GetProfileEnts());
+    });
+
+	std::vector<uint8_t> srsvec(std::begin(srslist), std::end(srslist));
+    ruleSetMap = spb::pb::deserialize<libcore::RuleSet>(srsvec).items;
 
     auto getRemoteRouteProfiles = [=,this]
     {
