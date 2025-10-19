@@ -666,7 +666,7 @@
                 <addaction name="menu_clone"/>
                 <addaction name="menu_reset_traffic"/>
                 <addaction name="menu_delete"/>
-                <addaction name="menu_share_item"/>
+                <!-- <addaction name="menu_share_item"/> -->
                 <addaction name="separator"/>
                 <addaction name="actionUrl_Test_Selected"/>
                 <addaction name="menu_resolve_selected"/>
