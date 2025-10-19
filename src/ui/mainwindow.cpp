@@ -33,7 +33,6 @@
 #include <unistd.h>
 #endif
 
-inclu
 #include <QClipboard>
 #include <QLabel>
 #include <QTextBlock>
