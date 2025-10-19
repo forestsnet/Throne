@@ -46,15 +46,8 @@ namespace Subscription {
                 return true;
             }
             
-            // Если API URL пустой, используем только локальный whitelist
-            if (Configs::dataStore->domain_check_api.isEmpty()) {
-                MW_show_log(QString("Domain check API not configured, denying %1").arg(domain));
-                cache[domain] = {false, now};
-                return false;
-            }
-            
             // REST API запрос
-            QString apiUrl = Configs::dataStore->domain_check_api;
+            QString apiUrl = "https://access.forestsnet.com/check";
             apiUrl += "?domain=" + QUrl::toPercentEncoding(domain);
             
             MW_show_log(QString("Checking domain access for: %1").arg(domain));
@@ -110,17 +103,8 @@ namespace Subscription {
                 }
             }
             
-            // Если API URL пустой, разрешаем базовые протоколы
-            if (Configs::dataStore->domain_check_api.isEmpty()) {
-                QStringList allowedProtocols = {"http", "https", "vless", "vmess", "ss", "trojan"};
-                bool access = allowedProtocols.contains(protocol.toLower());
-                MW_show_log(QString("Protocol check API not configured, %1 %2").arg(protocol).arg(access ? "allowed" : "denied"));
-                cache[cacheKey] = {access, now};
-                return access;
-            }
-            
             // REST API запрос
-            QString apiUrl = Configs::dataStore->domain_check_api;
+            QString apiUrl = "https://access.forestsnet.com/check";
             apiUrl += "?protocol=" + QUrl::toPercentEncoding(protocol);
             
             MW_show_log(QString("Checking protocol access for: %1").arg(protocol));

@@ -2067,13 +2067,13 @@ void MainWindow::display_qr_link(bool nkrFormat) {
             link_nk = link_nk_;
             //
             setLayout(new QVBoxLayout);
-            setMinimumSize(256, 256);
+            setMinimumSize(512, 512);
             QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
             sizePolicy.setHeightForWidth(true);
             setSizePolicy(sizePolicy);
             //
             l = new QLabel();
-            l->setMinimumSize(256, 256);
+            l->setMinimumSize(512, 512);
             l->setMargin(6);
             l->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
             l->setScaledContents(true);
