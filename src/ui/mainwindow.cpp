@@ -34,6 +34,7 @@
 #include <unistd.h>
 #endif
 
+inclu
 #include <QClipboard>
 #include <QLabel>
 #include <QTextBlock>
@@ -2715,6 +2716,59 @@ bool MainWindow::StopVPNProcess() {
     waitStop.unlock();
 
     return true;
+}
+
+
+bool compareVersions(const QStringList& parts, const QStringList& currentParts) {
+    if (parts.size() < 3 || currentParts.size() < 3) {
+        MW_show_log("Version strings seem to be invalid in compareVersions");
+        return false;
+    }
+    
+    std::vector<int> verNums;
+    std::vector<int> currNums;
+    
+    // add base version first
+    verNums.push_back(parts[0].toInt());
+    verNums.push_back(parts[1].toInt());
+    verNums.push_back(parts[2].toInt());
+    if (parts.size() > 3) {
+        if (parts[3] == "alpha") verNums.push_back(1);
+        if (parts[3] == "beta") verNums.push_back(2);
+        if (parts[3] == "rc") verNums.push_back(3);
+        if (parts.size() > 4) verNums.push_back(parts[4].toInt());
+    }
+
+    currNums.push_back(currentParts[0].toInt());
+    currNums.push_back(currentParts[1].toInt());
+    currNums.push_back(currentParts[2].toInt());
+    if (currentParts.size() > 3) {
+        if (currentParts[3] == "alpha") currNums.push_back(1);
+        if (currentParts[3] == "beta") currNums.push_back(2);
+        if (currentParts[3] == "rc") currNums.push_back(3);
+        if (currentParts.size() > 4) currNums.push_back(currentParts[4].toInt());
+    }
+
+    if (verNums.size() < 3 || currNums.size() < 3) {
+        MW_show_log("Version parsing failed in compareVersions");
+        return false;
+    }
+
+    for (int i = 0; i < 3; i++) {
+        if (verNums[i] > currNums[i]) return true;
+        if (verNums[i] < currNums[i]) return false;
+    }
+
+    // equal base version, check beta-ness
+    if (verNums.size() == 5 && currNums.size() == 3) return false;
+    if (verNums.size() == 3 && currNums.size() == 5) return true;
+    if (verNums.size() == 5 && currNums.size() == 5) {
+        for (int i = 3; i < 5; i++) {
+            if (verNums[i] > currNums[i]) return true;
+            if (verNums[i] < currNums[i]) return false;
+        }
+    }
+    return false;
 }
 
 bool isNewerByTag(const QString& releaseTag) {
