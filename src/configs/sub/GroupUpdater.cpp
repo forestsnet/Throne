@@ -337,6 +337,15 @@ namespace Subscription {
     }
 
     void RawUpdater::update(const QString &str, bool needParse = true) {
+
+        if (str.isNull()) {
+            MW_show_log("Warning: Null string passed to update()");
+            return;
+        }
+        
+        if (str.isEmpty()) {
+            return;
+        }
         // Base64 encoded subscription
         if (auto str2 = DecodeB64IfValid(str); !str2.isEmpty()) {
             update(str2);
@@ -540,7 +549,7 @@ namespace Subscription {
             auto out = o.toObject();
             if (out.isEmpty())
             {
-                MW_show_log("invalid outbound of type: " + o.type());
+                // MW_show_log("invalid outbound of type: " + o.type());
                 continue;
             }
 
@@ -1101,17 +1110,17 @@ namespace Subscription {
             }
         }
 
-        runOnNewThread([=,this] {
+        runOnNewThread([=, this, contentCopy = QString(content), processedUrlCopy = QString(processedUrl)] {
             auto gid = _sub_gid;
 
             if (createNewGroup) {
-                QUrl parsedUrl(processedUrl);
+                QUrl parsedUrl(processedUrlCopy);
                 const QString domain = parsedUrl.host().toLower();
 
                 // Создаём новую группу
                 auto group = Configs::ProfileManager::NewGroup();
                 group->name = domain.isEmpty() ? QObject::tr("Subscription") : domain;
-                group->url = processedUrl;
+                group->url = processedUrlCopy; // Используем копию
                 Configs::profileManager->AddGroup(group);
                 gid = group->id;
 
@@ -1149,7 +1158,7 @@ namespace Subscription {
             }
 
             // Продолжаем обновление подписки
-            Update(processedUrl, gid, asURL);
+            Update(processedUrlCopy, gid, asURL);
             emit asyncUpdateCallback(gid);
             if (finish != nullptr) finish();
         });
@@ -1236,69 +1245,69 @@ namespace Subscription {
 
             QString change_text;
 
-            if (Configs::dataStore->sub_clear) {
-                // all is new profile
-                for (const auto &ent: out_all) {
-                    change_text += "[+] " + ent->bean->DisplayTypeAndName() + "\n";
+            // if (Configs::dataStore->sub_clear) {
+            //     // all is new profile
+            //     for (const auto &ent: out_all) {
+            //         change_text += "[+] " + ent->bean->DisplayTypeAndName() + "\n";
+            //     }
+            // } else {
+            // find and delete not updated profile by ProfileFilter
+            Configs::ProfileFilter::OnlyInSrc_ByPointer(out_all, in, out);
+            Configs::ProfileFilter::OnlyInSrc(in, out, only_in);
+            Configs::ProfileFilter::OnlyInSrc(out, in, only_out);
+            Configs::ProfileFilter::Common(in, out, update_keep, update_del, false);
+            QString notice_added;
+            QString notice_deleted;
+            if (only_out.size() < 1000)
+            {
+                for (const auto &ent: only_out) {
+                    notice_added += "[+] " + ent->bean->DisplayTypeAndName() + "\n";
                 }
-            } else {
-                // find and delete not updated profile by ProfileFilter
-                Configs::ProfileFilter::OnlyInSrc_ByPointer(out_all, in, out);
-                Configs::ProfileFilter::OnlyInSrc(in, out, only_in);
-                Configs::ProfileFilter::OnlyInSrc(out, in, only_out);
-                Configs::ProfileFilter::Common(in, out, update_keep, update_del, false);
-                QString notice_added;
-                QString notice_deleted;
-                if (only_out.size() < 1000)
-                {
-                    for (const auto &ent: only_out) {
-                        notice_added += "[+] " + ent->bean->DisplayTypeAndName() + "\n";
-                    }
-                } else
-                {
-                    notice_added += QString("[+] ") + "added " + Int2String(only_out.size()) + "\n";
-                }
-                if (only_in.size() < 1000)
-                {
-                    for (const auto &ent: only_in) {
-                        notice_deleted += "[-] " + ent->bean->DisplayTypeAndName() + "\n";
-                    }
-                } else
-                {
-                    notice_deleted += QString("[-] ") + "deleted " + Int2String(only_in.size()) + "\n";
-                }
-
-
-                // sort according to order in remote
-                group->profiles.clear();
-                for (const auto &ent: rawUpdater->updated_order) {
-                    auto deleted_index = update_del.indexOf(ent);
-                    if (deleted_index >= 0) {
-                        if (deleted_index >= update_keep.count()) continue; // should not happen
-                        const auto& ent2 = update_keep[deleted_index];
-                        group->profiles.append(ent2->id);
-                    } else {
-                        group->profiles.append(ent->id);
-                    }
-                }
-                group->Save();
-
-                // cleanup
-                QList<int> del_ids;
-                for (const auto &ent: out_all) {
-                    if (!group->HasProfile(ent->id)) {
-                        del_ids.append(ent->id);
-                    }
-                }
-                Configs::profileManager->BatchDeleteProfiles(del_ids);
-
-                change_text = "\n" + QObject::tr("Added %1 profiles:\n%2\nDeleted %3 Profiles:\n%4")
-                                         .arg(only_out.length())
-                                         .arg(notice_added)
-                                         .arg(only_in.length())
-                                         .arg(notice_deleted);
-                if (only_out.length() + only_in.length() == 0) change_text = QObject::tr("Nothing");
+            } else
+            {
+                notice_added += QString("[+] ") + "added " + Int2String(only_out.size()) + "\n";
             }
+            if (only_in.size() < 1000)
+            {
+                for (const auto &ent: only_in) {
+                    notice_deleted += "[-] " + ent->bean->DisplayTypeAndName() + "\n";
+                }
+            } else
+            {
+                notice_deleted += QString("[-] ") + "deleted " + Int2String(only_in.size()) + "\n";
+            }
+
+
+            // sort according to order in remote
+            group->profiles.clear();
+            for (const auto &ent: rawUpdater->updated_order) {
+                auto deleted_index = update_del.indexOf(ent);
+                if (deleted_index >= 0) {
+                    if (deleted_index >= update_keep.count()) continue; // should not happen
+                    const auto& ent2 = update_keep[deleted_index];
+                    group->profiles.append(ent2->id);
+                } else {
+                    group->profiles.append(ent->id);
+                }
+            }
+            group->Save();
+
+            // cleanup
+            QList<int> del_ids;
+            for (const auto &ent: out_all) {
+                if (!group->HasProfile(ent->id)) {
+                    del_ids.append(ent->id);
+                }
+            }
+            Configs::profileManager->BatchDeleteProfiles(del_ids);
+
+            change_text = "\n" + QObject::tr("Added %1 profiles:\n%2\nDeleted %3 Profiles:\n%4")
+                                        .arg(only_out.length())
+                                        .arg(notice_added)
+                                        .arg(only_in.length())
+                                        .arg(notice_deleted);
+            if (only_out.length() + only_in.length() == 0) change_text = QObject::tr("Nothing");
+            // }
 
             MW_show_log("<<<<<<<< " + QObject::tr("Change of %1:").arg(group->name) + "\n" + change_text);
             MW_dialog_message("SubUpdater", "finish-dingyue");
