@@ -369,8 +369,33 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->toolButton_hidden->setMenu(ui->menuHidden_menu);
     ui->menubar->setVisible(false);
     ui->horizontalLayout_2->addStretch();
+    ui->horizontalLayout_2->addWidget(ui->toolButton_speedtest);
     ui->horizontalLayout_2->addWidget(ui->toolButton_ping);
     ui->horizontalLayout_2->addSpacing(50);
+
+    connect(ui->toolButton_speedtest, &QToolButton::clicked, this, [=,this]() {
+        // Проверяем текущую группу
+        auto currentGroup = Configs::profileManager->CurrentGroup();
+        if (currentGroup == nullptr) {
+            MessageBoxWarning(tr("Speedtest"), tr("No group selected."));
+            return;
+        }
+        
+        // // Если ничего не выбрано, тестируем всю группу
+        auto allProfiles = currentGroup->GetProfileEnts();
+        if (allProfiles.isEmpty()) {
+            MessageBoxWarning(tr("Speedtest"), 
+                tr("Current group has no profiles.\n\n"
+                   "Please add some profiles first:\n"
+                   "• Use 'Add from clipboard' to import links\n"
+                   "• Import subscription URL\n"
+                   "• Add profile manually"));
+            return;
+        }
+        
+        MW_show_log(tr("Starting speedtest for all %1 profiles in group...").arg(allProfiles.size()));
+        speedtest_current_group(Configs::profileManager->CurrentGroup()->GetProfileEnts());
+    });
 
     
     connect(ui->toolButton_ping, &QToolButton::clicked, this, [=,this]() {
@@ -2076,13 +2101,13 @@ void MainWindow::display_qr_link(bool nkrFormat) {
             link_nk = link_nk_;
             //
             setLayout(new QVBoxLayout);
-            setMinimumSize(512, 512);
+            setMinimumSize(256, 256);
             QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
             sizePolicy.setHeightForWidth(true);
             setSizePolicy(sizePolicy);
             //
             l = new QLabel();
-            l->setMinimumSize(512, 512);
+            l->setMinimumSize(256, 256);
             l->setMargin(6);
             l->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
             l->setScaledContents(true);
