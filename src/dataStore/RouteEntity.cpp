@@ -784,18 +784,25 @@ namespace Configs {
 
     bool RoutingChain::add_simple_process_rule(const QString& content, const std::shared_ptr<RouteRule>& rule, ruleType type)
     {
-        if (!content.contains(":")) return false;
-        auto prefix = content.first(content.indexOf(':'));
-        const QString& address = content.section(':', 1);
-        if (prefix == "processPath" && type == simpleProcessPath)
+        int colonIdx = content.indexOf(':');
+        if (colonIdx == -1) return false;
+
+        QString subType = content.left(colonIdx).trimmed();
+        QString address = content.mid(colonIdx + 1).trimmed();
+
+        if (subType == "processName" && type == simpleProcessName)
         {
-            if (!rule->process_path.contains(address)) rule->process_path.append(address);
+            if (!rule->process_name.contains(address))
+                rule->process_name.append(address);
             return true;
-        } else if (prefix == "processName" && type == simpleProcessName)
+        }
+        else if (subType == "processPath" && type == simpleProcessPath)
         {
-            if (!rule->process_name.contains(address)) rule->process_name.append(address);
+            if (!rule->process_path.contains(address))
+                rule->process_path.append(address);
             return true;
-        } else
+        }
+        else
         {
             return false;
         }
