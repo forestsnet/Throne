@@ -116,7 +116,7 @@ set(PROJECT_SOURCES
         src/ui/setting/ThemeManager.cpp
         src/ui/setting/Icon.cpp
 
-        src/ui/mainwindow_grpc.cpp
+        src/ui/mainwindow_rpc.cpp
         src/ui/mainwindow.cpp
         include/ui/mainwindow.h
         include/ui/mainwindow.ui
@@ -221,6 +221,11 @@ set(PROJECT_SOURCES
         include/sys/windows/eventHandler.h
         src/dataStore/Group.cpp
         src/dataStore/ProxyEntity.cpp
+        include/configs/baseConfig.h
+        include/configs/common/DialFields.h
+        include/configs/common/TLS.h
+        include/configs/common/multiplex.h
+        include/configs/common/transport.h
 )
 
 if (NOT APPLE AND Qt6_VERSION VERSION_GREATER_EQUAL 6.9.0)

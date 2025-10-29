@@ -4,6 +4,15 @@
 #include "include/sys/Process.hpp"
 
 namespace Configs {
+    enum OSType
+    {
+        Unknown = 0,
+        Linux = 1,
+        Windows = 2,
+        Darwin = 3,
+    };
+
+
     class ExtraCoreData
     {
     public:
@@ -52,13 +61,27 @@ namespace Configs {
         QJsonArray endpoints;
     };
 
+    inline OSType getOS()
+    {
+    #ifdef Q_OS_MACOS
+            return Darwin;
+    #endif
+    #ifdef Q_OS_LINUX
+            return Linux;
+    #endif
+    #ifdef Q_OS_WIN
+            return Windows;
+    #endif
+            return Unknown;
+    };
+
     bool IsValid(const std::shared_ptr<ProxyEntity> &ent);
 
-    std::shared_ptr<BuildTestConfigResult> BuildTestConfig(const QList<std::shared_ptr<ProxyEntity>>& profiles, const std::map<std::string, std::string>& ruleSetMap);
+    std::shared_ptr<BuildTestConfigResult> BuildTestConfig(const QList<std::shared_ptr<ProxyEntity>>& profiles);
 
-    std::shared_ptr<BuildConfigResult> BuildConfig(const std::shared_ptr<ProxyEntity> &ent, const std::map<std::string, std::string>& ruleSetMap, bool forTest, bool forExport, int chainID = 0);
+    std::shared_ptr<BuildConfigResult> BuildConfig(const std::shared_ptr<ProxyEntity> &ent, bool forTest, bool forExport, int chainID = 0);
 
-    void BuildConfigSingBox(const std::shared_ptr<BuildConfigStatus> &status, const std::map<std::string, std::string>& ruleSetMap);
+    void BuildConfigSingBox(const std::shared_ptr<BuildConfigStatus> &status);
 
     QJsonObject BuildDnsObject(QString address, bool tunEnabled);
 

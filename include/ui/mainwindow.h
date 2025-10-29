@@ -207,8 +207,6 @@ private:
     // shortcuts
     QList<QShortcut*> hiddenMenuShortcuts;
 
-    std::map<std::string, std::string> ruleSetMap;
-
     QStringList remoteRouteProfiles;
     QMutex mu_remoteRouteProfiles;
 
@@ -254,9 +252,9 @@ private:
 
     void loadShortcuts();
 
-    // grpc
+    // rpc
 
-    static void setup_grpc();
+    static void setup_rpc();
 
     void urltest_current_group(const QList<std::shared_ptr<Configs::ProxyEntity>>& profiles);
 
