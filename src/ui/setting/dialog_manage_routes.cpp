@@ -59,7 +59,119 @@ bool DialogManageRoutes::validate_dns_rules(const QString &rawString) {
     return true;
 }
 
-DialogManageRoutes::DialogManageRoutes(QWidget *parent, const std::map<std::string, std::string>& dataMap) : QDialog(parent), ui(new Ui::DialogManageRoutes) {
+// DialogManageRoutes::DialogManageRoutes(QWidget *parent) : QDialog(parent), ui(new Ui::DialogManageRoutes) {
+//     ui->setupUi(this);
+//     auto profiles = Configs::profileManager->routes;
+//     for (const auto &item: profiles) {
+//         chainList << item.second;
+//     }
+//     if (chainList.empty()) {
+//         auto defaultChain = Configs::RoutingChain::GetDefaultChain();
+//         Configs::profileManager->AddRouteChain(defaultChain);
+//         chainList.append(defaultChain);
+//     }
+//     currentRoute = Configs::profileManager->GetRouteChain(Configs::dataStore->routing->current_route_id);
+//     if (currentRoute == nullptr) currentRoute = chainList[0];
+
+//     QStringList qsValue = {""};
+//     QString dnsHelpDocumentUrl;
+
+//     ui->outbound_domain_strategy->addItems(Preset::SingBox::DomainStrategy);
+//     ui->domainStrategyCombo->addItems(Preset::SingBox::DomainStrategy);
+//     qsValue += QString("prefer_ipv4 prefer_ipv6 ipv4_only ipv6_only").split(" ");
+//     ui->dns_object->setPlaceholderText(DecodeB64IfValid("ewogICJzZXJ2ZXJzIjogW10sCiAgInJ1bGVzIjogW10sCiAgImZpbmFsIjogIiIsCiAgInN0cmF0ZWd5IjogIiIsCiAgImRpc2FibGVfY2FjaGUiOiBmYWxzZSwKICAiZGlzYWJsZV9leHBpcmUiOiBmYWxzZSwKICAiaW5kZXBlbmRlbnRfY2FjaGUiOiBmYWxzZSwKICAicmV2ZXJzZV9tYXBwaW5nIjogZmFsc2UsCiAgImZha2VpcCI6IHt9Cn0="));
+//     dnsHelpDocumentUrl = "https://sing-box.sagernet.org/configuration/dns/";
+
+//     ui->direct_dns_strategy->addItems(qsValue);
+//     ui->remote_dns_strategy->addItems(qsValue);
+//     ui->enable_fakeip->setChecked(Configs::dataStore->fake_dns);
+//     //
+//     connect(ui->use_dns_object, &QCheckBox::stateChanged, this, [=,this](int state) {
+//         auto useDNSObject = state == Qt::Checked;
+//         ui->simple_dns_box->setDisabled(useDNSObject);
+//         ui->dns_object->setDisabled(!useDNSObject);
+//     });
+//     ui->use_dns_object->stateChanged(Qt::Unchecked); // uncheck to uncheck
+//     connect(ui->dns_document, &QPushButton::clicked, this, [=,this] {
+//         MessageBoxInfo("DNS", dnsHelpDocumentUrl);
+//     });
+//     connect(ui->format_dns_object, &QPushButton::clicked, this, [=,this] {
+//         auto obj = QString2QJsonObject(ui->dns_object->toPlainText());
+//         if (obj.isEmpty()) {
+//             MessageBoxInfo("DNS", "invaild json");
+//         } else {
+//             ui->dns_object->setPlainText(QJsonObject2QString(obj, false));
+//         }
+//     });
+//     ui->sniffing_mode->setCurrentIndex(Configs::dataStore->routing->sniffing_mode);
+//     ui->ruleset_mirror->setCurrentIndex(Configs::dataStore->routing->ruleset_mirror);
+//     ui->outbound_domain_strategy->setCurrentText(Configs::dataStore->routing->outbound_domain_strategy);
+//     ui->domainStrategyCombo->setCurrentText(Configs::dataStore->routing->domain_strategy);
+//     ui->use_dns_object->setChecked(Configs::dataStore->routing->use_dns_object);
+//     ui->dns_object->setPlainText(Configs::dataStore->routing->dns_object);
+//     ui->remote_dns->setCurrentText(Configs::dataStore->routing->remote_dns);
+//     ui->remote_dns_strategy->setCurrentText(Configs::dataStore->routing->remote_dns_strategy);
+//     ui->direct_dns->setCurrentText(Configs::dataStore->routing->direct_dns);
+//     ui->direct_dns_strategy->setCurrentText(Configs::dataStore->routing->direct_dns_strategy);
+//     ui->dns_final_out->setCurrentText(Configs::dataStore->routing->dns_final_out);
+//     reloadProfileItems();
+
+//     connect(ui->route_profiles, &QListWidget::itemDoubleClicked, this, [=,this](const QListWidgetItem* item){
+//         on_edit_route_clicked();
+//     });
+
+//     connect(ui->route_prof, SIGNAL(currentIndexChanged(int)), this, SLOT(updateCurrentRouteProfile(int)));
+
+//     deleteShortcut = new QShortcut(QKeySequence(Qt::Key_Delete), this);
+
+//     connect(deleteShortcut, &QShortcut::activated, this, [=,this]{
+//         on_delete_route_clicked();
+//     });
+
+//     // hijack
+//     ui->dnshijack_enable->setChecked(Configs::dataStore->enable_dns_server);
+//     set_dns_hijack_enability(Configs::dataStore->enable_dns_server);
+//     ui->dnshijack_allow_lan->setChecked(Configs::dataStore->dns_server_listen_lan);
+//     ui->dnshijack_listenport->setValidator(QRegExpValidator_Number);
+//     ui->dnshijack_listenport->setText(Int2String(Configs::dataStore->dns_server_listen_port));
+//     ui->dnshijack_v4resp->setText(Configs::dataStore->dns_v4_resp);
+//     ui->dnshijack_v6resp->setText(Configs::dataStore->dns_v6_resp);
+//     connect(ui->dnshijack_what, &QPushButton::clicked, this, [=,this] {
+//         MessageBoxInfo("What is this?", Configs::Information::HijackInfo);
+//     });
+//     QStringList ruleItems = {"domain:", "suffix:", "regex:"};
+//     // TODO: REVIEW
+//     // for (const auto& item : ruleSetMap) {
+//     //     ruleItems.append("ruleset:" + QString::fromStdString(item.first));
+//     // }
+//     rule_editor = new AutoCompleteTextEdit("", ruleItems, this);
+//     ui->hijack_box->layout()->replaceWidget(ui->dnshijack_rules, rule_editor);
+//     rule_editor->setPlainText(Configs::dataStore->dns_server_rules.join("\n"));
+//     ui->dnshijack_rules->hide();
+// #ifndef Q_OS_LINUX
+//     ui->dnshijack_listenport->setVisible(false);
+//     ui->dnshijack_listenport_l->setVisible(false);
+// #endif
+
+//     ui->redirect_enable->setChecked(Configs::dataStore->enable_redirect);
+//     ui->redirect_listenaddr->setEnabled(Configs::dataStore->enable_redirect);
+//     ui->redirect_listenaddr->setText(Configs::dataStore->redirect_listen_address);
+//     ui->redirect_listenport->setEnabled(Configs::dataStore->enable_redirect);
+//     ui->redirect_listenport->setValidator(QRegExpValidator_Number);
+//     ui->redirect_listenport->setText(Int2String(Configs::dataStore->redirect_listen_port));
+
+//     connect(ui->dnshijack_enable, &QCheckBox::stateChanged, this, [=,this](bool state) {
+//         set_dns_hijack_enability(state);
+//     });
+//     connect(ui->redirect_enable, &QCheckBox::stateChanged, this, [=,this](bool state) {
+//         ui->redirect_listenaddr->setEnabled(state);
+//         ui->redirect_listenport->setEnabled(state);
+//     });
+
+//     ADD_ASTERISK(this)
+// }
+
+DialogManageRoutes::DialogManageRoutes(QWidget *parent) : QDialog(parent), ui(new Ui::DialogManageRoutes) {
     ui->setupUi(this);
     auto profiles = Configs::profileManager->routes;
     for (const auto &item: profiles) {
@@ -84,6 +196,7 @@ DialogManageRoutes::DialogManageRoutes(QWidget *parent, const std::map<std::stri
 
     ui->direct_dns_strategy->addItems(qsValue);
     ui->remote_dns_strategy->addItems(qsValue);
+    ui->local_override->setText(Configs::dataStore->core_box_underlying_dns);
     ui->enable_fakeip->setChecked(Configs::dataStore->fake_dns);
     //
     connect(ui->use_dns_object, &QCheckBox::stateChanged, this, [=,this](int state) {
@@ -140,11 +253,8 @@ DialogManageRoutes::DialogManageRoutes(QWidget *parent, const std::map<std::stri
         MessageBoxInfo("What is this?", Configs::Information::HijackInfo);
     });
 
-    ruleSetMap = dataMap;
     QStringList ruleItems = {"domain:", "suffix:", "regex:"};
-    for (const auto& item : ruleSetMap) {
-        ruleItems.append("ruleset:" + QString::fromStdString(item.first));
-    }
+
     rule_editor = new AutoCompleteTextEdit("", ruleItems, this);
     ui->hijack_box->layout()->replaceWidget(ui->dnshijack_rules, rule_editor);
     rule_editor->setPlainText(Configs::dataStore->dns_server_rules.join("\n"));
@@ -200,6 +310,7 @@ void DialogManageRoutes::accept() {
     Configs::dataStore->routing->remote_dns_strategy = ui->remote_dns_strategy->currentText();
     Configs::dataStore->routing->direct_dns = ui->direct_dns->currentText();
     Configs::dataStore->routing->direct_dns_strategy = ui->direct_dns_strategy->currentText();
+    Configs::dataStore->core_box_underlying_dns = ui->local_override->text().trimmed();
     Configs::dataStore->routing->dns_final_out = ui->dns_final_out->currentText();
     Configs::dataStore->fake_dns = ui->enable_fakeip->isChecked();
 
@@ -232,7 +343,7 @@ void DialogManageRoutes::accept() {
 }
 
 void DialogManageRoutes::on_new_route_clicked() {
-    routeChainWidget = new RouteItem(this, Configs::ProfileManager::NewRouteChain(), ruleSetMap);
+    routeChainWidget = new RouteItem(this, Configs::ProfileManager::NewRouteChain());
     routeChainWidget->setWindowModality(Qt::ApplicationModal);
     routeChainWidget->show();
     connect(routeChainWidget, &RouteItem::settingsChanged, this, [=,this](const std::shared_ptr<Configs::RoutingChain>& chain) {
@@ -278,7 +389,7 @@ void DialogManageRoutes::on_edit_route_clicked() {
     auto idx = ui->route_profiles->currentRow();
     if (idx < 0) return;
 
-    routeChainWidget = new RouteItem(this, chainList[idx], ruleSetMap);
+    routeChainWidget = new RouteItem(this, chainList[idx]);
     routeChainWidget->setWindowModality(Qt::ApplicationModal);
     routeChainWidget->show();
     connect(routeChainWidget, &RouteItem::settingsChanged, this, [=,this](const std::shared_ptr<Configs::RoutingChain>& chain) {

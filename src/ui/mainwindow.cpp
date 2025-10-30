@@ -26,7 +26,6 @@
 #else
 #ifdef Q_OS_LINUX
 #include "include/sys/linux/LinuxCap.h"
-#include "include/sys/linux/desktopinfo.h"
 #include <QDBusInterface>
 #include <QDBusReply>
 #include <QUuid>
@@ -59,8 +58,6 @@
 #include "include/global/DeviceDetailsHelper.hpp"
 #include <QTcpSocket>
 #include "include/sys/macos/MacOS.h"
-
-#include <srslist.h>
 
 void UI_InitMainWindow() {
     mainwindow = new MainWindow;
@@ -139,7 +136,7 @@ void MainWindow::handshakeTest(const QList<std::shared_ptr<Configs::ProxyEntity>
     }
 
     runOnNewThread([this, profiles]() {
-        auto buildObject = Configs::BuildTestConfig(profiles, ruleSetMap);
+        auto buildObject = Configs::BuildTestConfig(profiles);
         if (!buildObject->error.isEmpty()) {
             MW_show_log(tr("Failed to build test config: ") + buildObject->error);
             speedtestRunning.unlock();
@@ -285,7 +282,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
                 core_process->start_profile_when_core_is_up = Configs::dataStore->remember_id;
             }
             // Setup
-            setup_grpc();
+            setup_rpc();
             core_process->Start();
         },
         DS_cores);
@@ -681,9 +678,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->actionHandshake_Group, &QAction::triggered, this, [=,this]() {
         handshakeTest(Configs::profileManager->CurrentGroup()->GetProfileEnts());
     });
-
-	std::vector<uint8_t> srsvec(std::begin(srslist), std::end(srslist));
-    ruleSetMap = spb::pb::deserialize<libcore::RuleSet>(srsvec).items;
 
     auto getRemoteRouteProfiles = [=,this]
     {
@@ -1140,7 +1134,7 @@ void MainWindow::on_menu_manage_groups_triggered() {
 void MainWindow::on_menu_routing_settings_triggered() {
     if (dialog_is_using) return;
     dialog_is_using = true;
-    auto dialog = new DialogManageRoutes(this, ruleSetMap);
+    auto dialog = new DialogManageRoutes(this);
     connect(dialog, &QDialog::finished, this, [=,this] {
         dialog->deleteLater();
         dialog_is_using = false;
@@ -1212,15 +1206,10 @@ void MainWindow::prepare_exit()
     Configs::dataStore->save_control_no_save = true; // don't change datastore after this line
     profile_stop(false, true);
 
-    QMutex coreKillMu;
-    coreKillMu.lock();
-    runOnThread([=, this, &coreKillMu]()
+    runOnThread([=, this]()
     {
         core_process->Kill();
-        coreKillMu.unlock();
-    }, DS_cores);
-    coreKillMu.lock();
-    coreKillMu.unlock();
+    }, DS_cores, true);
 
     mu_exit.unlock();
     qDebug() << "prepare exit done!";
@@ -2021,7 +2010,7 @@ void MainWindow::on_menu_export_config_triggered() {
     auto ent = ents.first();
     if (ent->bean->DisplayCoreType() != software_core_name) return;
 
-    auto result = BuildConfig(ent, ruleSetMap, false, true);
+    auto result = BuildConfig(ent, false, true);
     QString config_core = QJsonObject2QString(result->coreConfig, true);
     QApplication::clipboard()->setText(config_core);
 
@@ -2033,11 +2022,11 @@ void MainWindow::on_menu_export_config_triggered() {
     msg.setDefaultButton(QMessageBox::Ok);
     msg.exec();
     if (msg.clickedButton() == button_1) {
-        result = BuildConfig(ent, ruleSetMap, false, false);
+        result = BuildConfig(ent, false, false);
         config_core = QJsonObject2QString(result->coreConfig, true);
         QApplication::clipboard()->setText(config_core);
     } else if (msg.clickedButton() == button_2) {
-        result = BuildConfig(ent, ruleSetMap, true, false);
+        result = BuildConfig(ent, true, false);
         config_core = QJsonObject2QString(result->coreConfig, true);
         QApplication::clipboard()->setText(config_core);
     }
@@ -2148,8 +2137,7 @@ QPixmap grabScreen(QScreen* screen, bool& ok)
     QPixmap p;
     QRect geom = screen->geometry();
 #ifdef Q_OS_LINUX
-    DesktopInfo m_info;
-    if (m_info.waylandDetected()) {
+    if (qEnvironmentVariable("XDG_SESSION_TYPE") == "wayland" || qEnvironmentVariable("WAYLAND_DISPLAY").contains("wayland", Qt::CaseInsensitive)) {
         QDBusInterface screenshotInterface(
           QStringLiteral("org.freedesktop.portal.Desktop"),
           QStringLiteral("/org/freedesktop/portal/desktop"),
