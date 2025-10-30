@@ -1,95 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="ru_RU">
+<TS version="2.1" language="zh_CN">
 <context>
     <name>DialogBasicSettings</name>
     <message>
         <source>Basic Settings</source>
-        <translation>Основные настройки</translation>
-    </message>
-    <message>
-        <source>Common</source>
-        <translation>Общие</translation>
-    </message>
-    <message>
-        <source>Listen Address</source>
-        <translation>Прослушиваемый адрес</translation>
-    </message>
-    <message>
-        <source>Custom Inbound</source>
-        <translation>Польз. inbound</translation>
-    </message>
-    <message>
-        <source>Edit</source>
-        <translation>Изменить</translation>
+        <translation>基本设置</translation>
     </message>
     <message>
         <source>Enable</source>
-        <translation>Включить</translation>
+        <translation>启用</translation>
     </message>
     <message>
-        <source>Latency Test URL</source>
-        <translation>URL теста задержки</translation>
+        <source>Listen Address</source>
+        <translation>监听地址</translation>
     </message>
     <message>
-        <source>Simple Download URL</source>
-        <translation>URL для простого теста загрузки</translation>
+        <source>concurrency</source>
+        <translation>并发</translation>
     </message>
     <message>
-        <source>Concurrent</source>
-        <translation>Кол-во потоков</translation>
+        <source>User Agent</source>
+        <translation>UserAgent标识</translation>
     </message>
     <message>
-        <source>Disable tray</source>
-        <translation>Откл. сворачивание в трей</translation>
-    </message>
-    <message>
-        <source>Allow updating to beta versions</source>
-        <translation>Разрешить обновление до бета-версий</translation>
-    </message>
-    <message>
-        <source>Prevents the app from minimizing to the tray when the window is closed. The app will exit instead</source>
-        <translation>Предотвращает сворачивание приложения в системный трей при закрытии окна. Вместо этого приложение завершит работу</translation>
+        <source>Common</source>
+        <translation>通用</translation>
     </message>
     <message>
         <source>Style</source>
-        <translation>Интерфейс</translation>
+        <translation>样式</translation>
     </message>
     <message>
         <source>Theme</source>
-        <translation>Тема</translation>
+        <translation>主题</translation>
     </message>
     <message>
-        <source>Connection statistics</source>
-        <translation>Статистика подключения</translation>
+        <source>Subscription</source>
+        <translation>订阅</translation>
     </message>
     <message>
-        <source>Hide dashboard at startup</source>
-        <translation>Запускать приложение свёрнутым</translation>
+        <source>Core</source>
+        <translation>核心</translation>
     </message>
     <message>
-        <source>Max log lines</source>
-        <translation>Макс. кол-во строк в логах</translation>
+        <source>Edit</source>
+        <translation>编辑</translation>
     </message>
     <message>
         <source>Subscription</source>
         <translation>Подписка</translation>
     </message>
     <message>
-        <source>User Agent</source>
-        <translation>User Agent</translation>
+        <source>Security</source>
+        <translation>安全</translation>
     </message>
     <message>
-        <source>Use proxy</source>
-        <translation>Использовать прокси</translation>
-    </message>
-    <message>
-        <source>Ignore TLS errors</source>
-        <translation>Игнорировать ошибки TLS</translation>
+        <source>Connection statistics</source>
+        <translation>连接统计</translation>
     </message>
     <message>
         <source>Clear servers before updating subscription</source>
-        <translation>Очищать список серверов перед обновлением подписки</translation>
+        <translation>更新订阅前清除服务器</translation>
     </message>
     <message>
         <source>Enable sending HWID, device model, and OS version when updating subscription</source>
@@ -100,32 +72,32 @@
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HWID=%1&lt;/p&gt;&lt;p&gt;ОС=%2&lt;/p&gt;&lt;p&gt;Версия ОС=%3&lt;/p&gt;&lt;p&gt;Модель=%4&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <source>Core</source>
-        <translation>Ядро</translation>
+        <source>Skip TLS certificate authentication by default (allowInsecure)</source>
+        <translation>默认跳过 TLS 证书验证 (allowInsecure)</translation>
     </message>
     <message>
-        <source>Multiplex (mux)</source>
-        <translation>Протокол мультиплексирования</translation>
-    </message>
-    <message>
-        <source>concurrency</source>
-        <translation>Кол-во потоков</translation>
-    </message>
-    <message>
-        <source>Default On</source>
-        <translation>Вкл. по умолчанию</translation>
+        <source>Default uTLS Fingerprint</source>
+        <translation>默认 uTLS 指纹</translation>
     </message>
     <message>
         <source>Core Options</source>
-        <translation>Параметры ядра</translation>
+        <translation>核心选项</translation>
     </message>
     <message>
-        <source>Security</source>
-        <translation>Безопасность</translation>
+        <source>Default On</source>
+        <translation>默认开启</translation>
     </message>
     <message>
-        <source>Skip TLS certificate authentication by default (allowInsecure)</source>
-        <translation>Пропустить проверку подлинности TLS-сертификатов по умолчанию (allowInsecure)</translation>
+        <source>Multiplex (mux)</source>
+        <translation>多路复用(Mux)</translation>
+    </message>
+    <message>
+        <source>Latency Test URL</source>
+        <translation>延迟测试 URL</translation>
+    </message>
+    <message>
+        <source>Disable tray</source>
+        <translation>禁用托盘</translation>
     </message>
     <message>
         <source>Default uTLS Fingerprint</source>
@@ -141,78 +113,103 @@
     </message>
     <message>
         <source>Automatic update</source>
-        <translation>Автоматическое обновление</translation>
+        <translation>自动更新</translation>
     </message>
     <message>
         <source>Interval (minute, invalid if less than 30)</source>
         <translation>Интервал (в минутах; неверно, если значение меньше 30)</translation>
     </message>
+	<message>
+        <source>Loglevel</source>
+        <translation>Уровень логирования</translation>
+    </message>
     <message>
         <source>Disable Traffic Stats</source>
-        <translation>Отключить статистику трафика</translation>
+        <translation>禁用流量统计</translation>
     </message>
     <message>
         <source>NTP Settings</source>
-        <translation>Настройки NTP</translation>
+        <translation>NTP 设置</translation>
     </message>
     <message>
         <source>server</source>
-        <translation>Сервер</translation>
+        <translation>服务器</translation>
     </message>
     <message>
         <source>Port</source>
-        <translation>Порт</translation>
+        <translation>端口</translation>
     </message>
     <message>
         <source>sync interval</source>
-        <translation>Интервал синхронизации</translation>
+        <translation>同步间隔</translation>
     </message>
     <message>
         <source>5m</source>
-        <translation>5 мин.</translation>
+        <translation>5m</translation>
     </message>
     <message>
         <source>10m</source>
-        <translation>10 мин.</translation>
+        <translation>10m</translation>
     </message>
     <message>
         <source>30m</source>
-        <translation>30 мин.</translation>
+        <translation>30m</translation>
     </message>
     <message>
         <source>Listen Port</source>
         <translation>Прослушиваемый порт</translation>
     </message>
     <message>
+        <source>Assets</source>
+        <translation>Ресурсы</translation>
+    </message>
+    <message>
+        <source>Geo Assets and Rule-sets</source>
+        <translation>Geo-ресурсы и наборы правил</translation>
+    </message>
+    <message>
+        <source>Remove Generated Rule-sets</source>
+        <translation>Удалить сгенерированные наборы правил</translation>
+    </message>
+    <message>
+        <source>GeoIP URL</source>
+        <translation>Ссылка на GeoIP</translation>
+    </message>
+    <message>
+        <source>GeoSite URL</source>
+        <translation>Ссылка на GeoSite</translation>
+    </message>
+    <message>
+        <source>Download and Replace Geo files</source>
+        <translation>Загрузить и заменить Geo-ресурсы</translation>
+    </message>
+    <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Socks
                                                                 + HTTP Proxy&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                                                             </source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;SOCKS
-                                                                + HTTP-прокси&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
-                                                            </translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Socks+ HTTP 代理&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+</translation>
     </message>
     <message>
         <source>Font Size</source>
-        <translation>Размер шрифта</translation>
+        <translation>字体大小</translation>
     </message>
     <message>
         <source>Font</source>
-        <translation>Шрифт</translation>
+        <translation>字体</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Might
                                                                             Improve Ping and Performance&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                                                                         </source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Может
-                                                                            улучшить пинг и производительность&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
-                                                                        </translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;可能改善延迟和性能&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Settings for the
                                             sing-box&apos;s built-in NTP client&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                                         </source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Настройки для встроенного в
-                                            NTP-клиента sing-box&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+                                            sing-box&apos;s NTP-клиента&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                                         </translation>
     </message>
     <message>
@@ -224,314 +221,344 @@
                                                             </translation>
     </message>
     <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Remove the
+                                                        currently generated rule-sets so that they can be regenerated&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+                                                    </source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Удалить
+                                                        сгенерированные наборы правил, чтобы их можно было сгенерировать заново&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+                                                    </translation>
+    </message>
+    <message>
         <source>Proxy Format</source>
-        <translation>Формат прокси</translation>
+        <translation>代理格式</translation>
     </message>
     <message>
         <source>Language</source>
         <translation>Язык</translation>
     </message>
     <message>
+        <source>Removed all rule-set files</source>
+        <translation>Все файлы набора правил удалены</translation>
+    </message>
+    <message>
         <source>Speedtest mode</source>
-        <translation>Режим проверки скорости</translation>
+        <translation>速度测试模式</translation>
     </message>
     <message>
         <source>Download + Upload</source>
-        <translation>Скачивание + загрузка</translation>
+        <translation>下载 + 上传</translation>
     </message>
     <message>
         <source>Only Download</source>
-        <translation>Только скачивание</translation>
+        <translation>仅下载</translation>
     </message>
     <message>
         <source>Only Upload</source>
-        <translation>Только загрузка</translation>
+        <translation>仅上传</translation>
     </message>
     <message>
         <source>Disable Privilege request</source>
-        <translation>Откл. привилегированный запрос</translation>
+        <translation>禁止权限请求</translation>
     </message>
     <message>
         <source>Simple Download</source>
-        <translation>Простая загрузка</translation>
+        <translation>简单下载</translation>
+    </message>
+    <message>
+        <source>Simple Download URL</source>
+        <translation>简单下载 URL</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Do not attempt to start as Admin unless explicitly requested&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;除非明确要求，否则不要尝试以管理员身份启动&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Always Start as Standard User</source>
+        <translation>始终以标准用户身份启动</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selects a random available port on every run&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Выбирает случайный доступный порт при каждом запуске&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;每次运行时选择一个随机可用端口&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Random port</source>
-        <translation>Случайный порт</translation>
+        <translation>随机端口</translation>
+    </message>
+    <message>
+        <source>Auto Reset Assets</source>
+        <translation>Автоматический сброс ресурсов</translation>
+    </message>
+    <message>
+        <source>Disabled</source>
+        <translation>Отключено</translation>
+    </message>
+    <message>
+        <source>Every Day</source>
+        <translation>Каждый день</translation>
+    </message>
+    <message>
+        <source>Every 3 Days</source>
+        <translation>Каждые 3 дня</translation>
+    </message>
+    <message>
+        <source>Every Week</source>
+        <translation>Каждую неделю</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Downloads and replaces the geo asstes, and removes all generated rule-sets, then restarts the proxy&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Загружает и заменяет гео-ассеты, удаляет все сгенерированные наборы правил и перезапускает прокси&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Reset All Assets</source>
+        <translation>Сбросить все ресурсы</translation>
+    </message>
+    <message>
+        <source>It is recommended to leave it blank, but it sometimes does not work, at this time you can set this option.
+this rewrites the underlying(localhost) DNS in Tun Mode, normal mode, and also URL Test.</source>
+        <translation>Рекомендуется оставлять пустым, но иногда это не работает — в таком случае и стоит использовать этот параметр.
+Переопределяет нижестоящий (localhost) DNS в режиме TUN, обычном режиме и тесте задержки.</translation>
     </message>
     <message>
         <source>Use Mozilla Certificate Store</source>
         <translation>Исп. хранилище сертификатов Mozilla</translation>
-    </message>
-    <message>
-        <source>Network Settings</source>
-        <translation>Настройки соединения</translation>
-    </message>
-    <message>
-        <source>Test Settings</source>
-        <translation>Настройки тестирования</translation>
-    </message>
-    <message>
-        <source>Only Country</source>
-        <translation>Только проверка страны</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;timeout in milliseconds&lt;br/&gt;applies to all tests individually&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Таймаут в миллисекундах&lt;br/&gt;Применяется ко всем тестам индивидуально&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Timeout</source>
-        <translation>Таймаут</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Timeout for URLtest in ms&lt;br/&gt;Note that muxed connections take a much longer time for their initial request, and setting this value too low will cause the test to falsely report that the config is not working&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Таймаут для теста задержки в мс&lt;br/&gt;Обратите внимание, что мультиплексированным соединениям требуется намного больше времени для изначального запроса, отчего выбор слишком низкого значения в этом поле может привести к ложноотрицательным результатам тестирования такой конфигурации&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Show System DNS option</source>
-        <translation>Отображать режим «Системный DNS»</translation>
     </message>
 </context>
 <context>
     <name>DialogEditGroup</name>
     <message>
         <source>Edit Group</source>
-        <translation>Изменить группу</translation>
-    </message>
-    <message>
-        <source>Name</source>
-        <translation>Название</translation>
-    </message>
-    <message>
-        <source>Manually column width</source>
-        <translation>Уст. ширину колонок вручную</translation>
-    </message>
-    <message>
-        <source>Archive</source>
-        <translation>Архив</translation>
+        <translation>编辑分组</translation>
     </message>
     <message>
         <source>Type</source>
-        <translation>Тип</translation>
+        <translation>类型</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation>名称</translation>
     </message>
     <message>
         <source>Basic</source>
-        <translation>Стандартный</translation>
+        <translation>基本</translation>
     </message>
     <message>
         <source>Subscription</source>
-        <translation>Подписка</translation>
+        <translation>订阅</translation>
     </message>
     <message>
-        <source>Front Proxy</source>
-        <translation>Фронт-прокси</translation>
+        <source>Basic</source>
+        <translation>Стандартная</translation>
     </message>
     <message>
-        <source>URL</source>
-        <translation>URL</translation>
-    </message>
-    <message>
-        <source>Copy profile share links</source>
-        <translation>Копировать ссылки профилей</translation>
-    </message>
-    <message>
-        <source>Copied</source>
-        <translation>Скопировано</translation>
+        <source>Archive</source>
+        <translation>存档</translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation>Предупреждение</translation>
+        <translation>警告</translation>
     </message>
     <message>
         <source>Please input URL</source>
-        <translation>Пожалуйста, введите URL</translation>
+        <translation>请输入 URL</translation>
+    </message>
+    <message>
+        <source>Copy profile share links</source>
+        <translation>复制配置档分享链接</translation>
+    </message>
+    <message>
+        <source>Copied</source>
+        <translation>已复制</translation>
+    </message>
+    <message>
+        <source>Manually column width</source>
+        <translation>手动调节列宽</translation>
+    </message>
+    <message>
+        <source>Front Proxy</source>
+        <translation>前置代理</translation>
     </message>
     <message>
         <source>Skip automatic update</source>
-        <translation>Пропустить автоматическое обновление</translation>
+        <translation>跳过自动更新</translation>
     </message>
     <message>
         <source>Common</source>
-        <translation>Основные</translation>
+        <translation>通用</translation>
     </message>
     <message>
         <source>Share</source>
-        <translation>Поделиться</translation>
+        <translation>分享</translation>
     </message>
     <message>
         <source>Landing Proxy</source>
-        <translation>Выходной прокси</translation>
+        <translation>落地代理</translation>
     </message>
     <message>
         <source>Copy profile share links (Custom Links)</source>
-        <translation>Копировать ссылки профилей (польз. ссылки)</translation>
+        <translation>复制配置档分享链接(自定义链接)</translation>
     </message>
 </context>
 <context>
     <name>DialogEditProfile</name>
     <message>
         <source>Edit</source>
-        <translation>Редактировать</translation>
+        <translation>编辑</translation>
     </message>
     <message>
         <source>Common</source>
-        <translation>Основные</translation>
+        <translation>通用</translation>
     </message>
     <message>
         <source>Type</source>
-        <translation>Тип</translation>
+        <translation>类型</translation>
     </message>
     <message>
         <source>Port</source>
-        <translation>Порт</translation>
+        <translation>端口</translation>
     </message>
     <message>
         <source>Address</source>
-        <translation>Адрес</translation>
+        <translation>地址</translation>
     </message>
     <message>
         <source>Name</source>
-        <translation>Название</translation>
-    </message>
-    <message>
-        <source>Custom Outbound Settings</source>
-        <translation>Доп. настройки outbound</translation>
-    </message>
-    <message>
-        <source>Custom Config Settings</source>
-        <translation>Доп. настройки конфигурации</translation>
-    </message>
-    <message>
-        <source>Apply settings to this group</source>
-        <translation>Применить настройки к этой группе</translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation>Настройки</translation>
-    </message>
-    <message>
-        <source>The underlying transport method. It must be consistent with the server, otherwise, the connection cannot be established.</source>
-        <translation>Метод передачи данных. Должен соответствовать значению на сервере, в противном случае соединение не будет установлено.</translation>
+        <translation>名称</translation>
     </message>
     <message>
         <source>Network</source>
-        <translation>Сеть</translation>
-    </message>
-    <message>
-        <source>Transport Layer Security. It must be consistent with the server, otherwise, the connection cannot be established.</source>
-        <translation>TLS. Должно соответствовать значению на сервере, в противном случае соединение не будет установлено.</translation>
+        <translation>传输(网络)</translation>
     </message>
     <message>
         <source>Security</source>
-        <translation>Безопасность</translation>
-    </message>
-    <message>
-        <source>UDP FullCone Packet encoding for implementing features such as UDP FullCone. Server support is required, if the wrong selection is made, the connection cannot be made. Please leave it blank.</source>
-        <translation>Кодирование пакетов UDP Full-Cone для реализации функций вроде UDP Full-Cone. Поддержка со стороны сервера обязательна — если выбрано неверное значение, соединение установить не удастся. Рекомендуется оставить пустым.</translation>
-    </message>
-    <message>
-        <source>Packet Encoding</source>
-        <translation>Кодирование пакетов</translation>
-    </message>
-    <message>
-        <source>Server support is required</source>
-        <translation>Необходима поддержка со стороны сервера</translation>
-    </message>
-    <message>
-        <source>Multiplex</source>
-        <translation>Мультиплексирование</translation>
-    </message>
-    <message>
-        <source>Keep Default</source>
-        <translation>По умолчанию</translation>
-    </message>
-    <message>
-        <source>On</source>
-        <translation>Вкл.</translation>
-    </message>
-    <message>
-        <source>Off</source>
-        <translation>Выкл.</translation>
+        <translation>安全性</translation>
     </message>
     <message>
         <source>Network Settings (%1)</source>
-        <translation>Настройки соединения (%1)</translation>
+        <translation>传输设置 (%1)</translation>
     </message>
     <message>
-        <source>TLS Security Settings</source>
-        <translation>Настройки безопасности TLS</translation>
+        <source>The underlying transport method. It must be consistent with the server, otherwise, the connection cannot be established.</source>
+        <translation>底层传输方式。它必须与服务器一致，否则无法建立连接。</translation>
+    </message>
+    <message>
+        <source>Transport Layer Security. It must be consistent with the server, otherwise, the connection cannot be established.</source>
+        <translation>传输层安全性。它必须与服务器一致，否则无法建立连接。</translation>
+    </message>
+    <message>
+        <source>UDP FullCone Packet encoding for implementing features such as UDP FullCone. Server support is required, if the wrong selection is made, the connection cannot be made. Please leave it blank.</source>
+        <translation>用于实现 UDP FullCone 等特性的 UDF FullCone 数据包编码。需要服务器支持，若选错则无法连接。不懂请留空。</translation>
     </message>
     <message>
         <source>When enabled, V2Ray will not check the validity of the TLS certificate provided by the remote host (the security is equivalent to plaintext)</source>
-        <translation>Если включено, клиент не будет проверять валидность передаваемого сервером TLS-сертификата (безопасность будет идентична plaintext-протоколам)</translation>
-    </message>
-    <message>
-        <source>Allow insecure</source>
-        <translation>Разрешить небезопасн.</translation>
-    </message>
-    <message>
-        <source>Certificate</source>
-        <translation>Сертификат</translation>
+        <translation>启用时，V2Ray 将不会检查远端主机所提供的 TLS 证书的有效性 (安全性相当于明文)</translation>
     </message>
     <message>
         <source>Server name indication, clear text.</source>
-        <translation>SNI — идентификатор сервера, открытый текст.</translation>
+        <translation>服务器名称指示，明文。</translation>
     </message>
     <message>
         <source>Application layer protocol negotiation, clear text. Please separate them with commas.</source>
-        <translation>ALPN — идентификатор протокола приложения, открытый текст. Используйте запятую в качестве разделителя.</translation>
+        <translation>应用层协议协商，明文。多项则请用英文逗号分隔。</translation>
     </message>
     <message>
-        <source>TLS Camouflage Settings</source>
-        <translation>Настройки маскировки TLS</translation>
+        <source>Allow insecure</source>
+        <translation>允许不安全</translation>
     </message>
     <message>
-        <source>Reality public key. If not empty, turn TLS into REALITY.</source>
-        <translation>Публичный ключ Reality. Если задано значение, TLS будет превращён в REALITY.</translation>
-    </message>
-    <message>
-        <source>Custom (%1 outbound)</source>
-        <translation>Польз. (%1 outbound)</translation>
-    </message>
-    <message>
-        <source>Custom (%1 config)</source>
-        <translation>Польз. (%1 конфигурация)</translation>
+        <source>Certificate</source>
+        <translation>证书</translation>
     </message>
     <message>
         <source>Not set</source>
-        <translation>Не задано</translation>
+        <translation>未设置</translation>
     </message>
     <message>
         <source>Already set</source>
-        <translation>Уже задано</translation>
+        <translation>已设置</translation>
+    </message>
+    <message>
+        <source>Packet Encoding</source>
+        <translation>数据包编码</translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation>设置</translation>
+    </message>
+    <message>
+        <source>TLS Security Settings</source>
+        <translation>TLS 安全设置</translation>
+    </message>
+    <message>
+        <source>TLS Camouflage Settings</source>
+        <translation>TLS 伪装设置</translation>
+    </message>
+    <message>
+        <source>Reality public key. If not empty, turn TLS into REALITY.</source>
+        <translation>Reality 公钥。如果不为空则将 TLS 变为 REALITY。</translation>
+    </message>
+    <message>
+        <source>Custom (%1 outbound)</source>
+        <translation>自定义 (%1 出站)</translation>
+    </message>
+    <message>
+        <source>Custom (%1 config)</source>
+        <translation>自定义 (%1 配置)</translation>
+    </message>
+    <message>
+        <source>Custom Outbound Settings</source>
+        <translation>自定义出站设置 (JSON)</translation>
+    </message>
+    <message>
+        <source>Custom Config Settings</source>
+        <translation>自定义配置设置 (JSON)</translation>
+    </message>
+    <message>
+        <source>Apply settings to this group</source>
+        <translation>应用设置到这个分组</translation>
+    </message>
+    <message>
+        <source>Multiplex</source>
+        <translation>多路复用</translation>
+    </message>
+    <message>
+        <source>Keep Default</source>
+        <translation>保持默认</translation>
+    </message>
+    <message>
+        <source>On</source>
+        <translation>开启</translation>
+    </message>
+    <message>
+        <source>Off</source>
+        <translation>关闭</translation>
     </message>
     <message>
         <source>Confirm</source>
-        <translation>Подтвердить</translation>
+        <translation>确认</translation>
+    </message>
+    <message>
+        <source>Server support is required</source>
+        <translation>需要服务器支持</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Overrides mux to On&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Принудительно включает мультиплексирование&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;覆盖多路服用为开启&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Enable TCP Brutal</source>
-        <translation>Включить TCP Brutal</translation>
+        <translation>启用 TCP Brutal</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Server to Client TCP Brutal Speed&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Скорость TCP Brutal от сервера к клиенту&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;服务器到客户端的 TCP 极致速度&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>TCP Brutal Speed</source>
-        <translation>Скорость TCP Brutal</translation>
+        <translation>TCP Brutal 速度</translation>
     </message>
     <message>
         <source>Mb/s</source>
-        <translation>Мбит/с</translation>
+        <translation>Mb/s</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -539,11 +566,11 @@
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Method of http request, will be converted to uppercase&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Метод HTTP-запроса, будет преобразован в верхний регистр&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HTTP 请求的方法，将被转换为大写字母&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Method</source>
-        <translation>Метод</translation>
+        <translation>方法</translation>
     </message>
     <message>
         <source>Reality SID</source>
@@ -551,62 +578,70 @@
     </message>
     <message>
         <source>header type</source>
-        <translation>Тип заголовка</translation>
+        <translation>标头类型</translation>
     </message>
     <message>
         <source>Extra Core</source>
-        <translation>Доп. ядро</translation>
+        <translation>额外核心</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;May degrade performance, try record fragment first&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Может снизить производительность, сначала попробуйте фрагментацию записи TLS&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;可能降低性能，请先尝试记录片段&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Enable TLS fragment</source>
-        <translation>Вкл. фрагментацию TLS</translation>
+        <translation>启用 TLS 片段</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;time format, like 500ms, 10ms etc&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;формат времени, например 500 мс, 10 мс и т.д.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;时间格式，如 500ms, 10ms 等&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Fallback Delay</source>
-        <translation>Задержка отката (Fallback Delay)</translation>
+        <translation>回退延时</translation>
     </message>
     <message>
         <source>Enable TLS Record Fragment</source>
-        <translation>Включить фрагментацию записи TLS</translation>
+        <translation>启用 TLS 记录片段</translation>
     </message>
     <message>
         <source>Reality short id. Accept only one value.</source>
-        <translation>Reality short id. Принимает только одно значение.</translation>
+        <translation>Reality 短 ID。 仅接受一个值。</translation>
     </message>
 </context>
 <context>
     <name>DialogHotkey</name>
     <message>
         <source>Hotkey</source>
-        <translation>Горячие клавиши</translation>
+        <translation>热键</translation>
     </message>
     <message>
-        <source>Show routes</source>
-        <translation>Показать маршруты</translation>
+        <source>Global</source>
+        <translation>全局</translation>
     </message>
     <message>
         <source>Show groups</source>
-        <translation>Показать группы</translation>
+        <translation>显示分组</translation>
+    </message>
+    <message>
+        <source>Show routes</source>
+        <translation>显示路由</translation>
     </message>
     <message>
         <source>Trigger main window</source>
-        <translation>Показать главное окно</translation>
+        <translation>显示/隐藏主窗口</translation>
     </message>
     <message>
         <source>Proxy mode</source>
-        <translation>Режим прокси</translation>
+        <translation>代理模式</translation>
     </message>
     <message>
         <source>Toggle System Proxy</source>
-        <translation>Вкл. системный прокси</translation>
+        <translation>切换系统代理</translation>
+    </message>
+    <message>
+        <source>Shortcuts</source>
+        <translation>快捷键</translation>
     </message>
     <message>
         <source>Global</source>
@@ -621,46 +656,54 @@
     <name>DialogManageGroups</name>
     <message>
         <source>Groups</source>
-        <translation>Группы</translation>
+        <translation>分组</translation>
     </message>
     <message>
         <source>New group</source>
-        <translation>Новая группа</translation>
+        <translation>新建分组</translation>
     </message>
     <message>
         <source>Update all subscriptions</source>
-        <translation>Обновить все подписки</translation>
+        <translation>更新所有订阅</translation>
     </message>
     <message>
         <source>Confirmation</source>
-        <translation>Подтверждение</translation>
+        <translation>确认</translation>
     </message>
     <message>
         <source>Update all subscriptions?</source>
-        <translation>Обновить все подписки?</translation>
+        <translation>更新所有订阅吗？</translation>
     </message>
 </context>
 <context>
     <name>DialogManageRoutes</name>
     <message>
         <source>Routes</source>
-        <translation>Маршруты</translation>
-    </message>
-    <message>
-        <source>Common</source>
-        <translation>Основные</translation>
+        <translation>路由</translation>
     </message>
     <message>
         <source>Disable</source>
-        <translation>Выкл.</translation>
-    </message>
-    <message>
-        <source>Sniff result for routing</source>
-        <translation>Проверка результата для маршрутизации</translation>
+        <translation>禁用</translation>
     </message>
     <message>
         <source>Sniffing Mode</source>
-        <translation>Анализ трафика (сниффинг)</translation>
+        <translation>嗅探模式(流量探测)</translation>
+    </message>
+    <message>
+        <source>Sniff result for routing</source>
+        <translation>用于路由判断的嗅探结果</translation>
+    </message>
+    <message>
+        <source>Direct DNS</source>
+        <translation>直连 DNS</translation>
+    </message>
+    <message>
+        <source>Remote DNS</source>
+        <translation>远程 DNS</translation>
+    </message>
+    <message>
+        <source>Common</source>
+        <translation>通用</translation>
     </message>
     <message>
         <source>DNS</source>
@@ -668,187 +711,215 @@
     </message>
     <message>
         <source>Simple DNS Settings</source>
-        <translation>Основные настройки DNS</translation>
-    </message>
-    <message>
-        <source>Direct DNS</source>
-        <translation>DNS для прямых запросов</translation>
-    </message>
-    <message>
-        <source>Query Strategy</source>
-        <translation>Стратегия запросов</translation>
-    </message>
-    <message>
-        <source>Remote DNS</source>
-        <translation>Удалённый DNS</translation>
-    </message>
-    <message>
-        <source>DNS Object Settings</source>
-        <translation>Дополнительные настройки DNS</translation>
+        <translation>简易 DNS 设置</translation>
     </message>
     <message>
         <source>Use DNS Object</source>
-        <translation>Использовать DNS-объект</translation>
+        <translation>使用 DNS 对象</translation>
     </message>
     <message>
-        <source>Format</source>
-        <translation>Проверка форматирования</translation>
+        <source>DNS Object Settings</source>
+        <translation>DNS 对象设置</translation>
+    </message>
+    <message>
+        <source>Query Strategy</source>
+        <translation>查询策略</translation>
     </message>
     <message>
         <source>Document</source>
-        <translation>Документация</translation>
+        <translation>文档</translation>
+    </message>
+    <message>
+        <source>Format</source>
+        <translation>格式化</translation>
     </message>
     <message>
         <source>This is especially important and it is recommended to use the default value of &quot;localhost&quot;.
 If the default value does not work, try changing it to &quot;223.5.5.5&quot;.
 For more information, see the document &quot;Configuration/DNS&quot;.</source>
-        <translation>Это очень важно, рекомендуется использовать значение по умолчанию — &quot;localhost&quot;.
-Если значение по умолчанию не работает, попробуйте изменить его на &quot;223.5.5.5&quot;.
-Дополнительную информацию см. в документации &quot;Конфигурация/DNS&quot;.</translation>
+        <translation>这个尤其重要，建议使用默认值 &quot;localhost&quot;。
+如果默认值不起作用，请尝试改为 &quot;223.5.5.5&quot;。
+更多信息，请参阅文档 &quot;配置/DNS&quot;。</translation>
     </message>
     <message>
         <source>Sniffs the connections intial packet(s?) to identify the protocol and the SNI. Sniff result for destination also rewrites the destionation of the connection to the sniffed SNI. For more data on the sniffed protocol refer to the sing-box&apos;s documentation.</source>
-        <translation>Проверяет исходный пакет(ы) подключений, чтобы идентифицировать протокол и SNI. «Проверка трафика для пункта назначения» переписывает пункт назначения соединения на найденный SNI. Дополнительные сведения о протоколе проверки приведены в документации sing-box.</translation>
+        <translation>嗅探连接的初始数据包以识别协议和 SNI。目标的嗅探结果还会将重写连接的目标为嗅探到的 SNI。有关嗅探协议的更多数据，请参考 sing-box 的文档。</translation>
     </message>
     <message>
         <source>Routing Profile</source>
-        <translation>Профиль маршрутизации</translation>
-    </message>
-    <message>
-        <source>Remote Rule-set Mirror</source>
-        <translation>Источник профилей маршрутизации</translation>
+        <translation>路由配置档</translation>
     </message>
     <message>
         <source>Default DNS server</source>
-        <translation>DNS-сервер по умолчанию</translation>
+        <translation>默认 DNS 服务器</translation>
     </message>
     <message>
         <source>Route</source>
-        <translation>Маршрут</translation>
+        <translation>路由</translation>
     </message>
     <message>
         <source>Routing Profiles</source>
-        <translation>Профили маршрутизации</translation>
+        <translation>路由配置档</translation>
     </message>
     <message>
         <source>New</source>
-        <translation>Новый</translation>
+        <translation>新建</translation>
     </message>
     <message>
         <source>Edit</source>
-        <translation>Редактировать</translation>
+        <translation>编辑</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation>Удалить</translation>
+        <translation>删除</translation>
     </message>
     <message>
         <source>Outbound Domain Strategy</source>
-        <translation>Стратегия доменов (исходящая/outbound)</translation>
+        <translation>出站域名策略</translation>
     </message>
     <message>
         <source>Inbound Domain Strategy</source>
-        <translation>Стратегия доменов (входящая/inbound)</translation>
+        <translation>入站域名策略</translation>
+    </message>
+    <message>
+        <source>Remote Rule-set Mirror</source>
+        <translation>远程规则集镜像</translation>
     </message>
     <message>
         <source>Enable FakeIP</source>
-        <translation>Включить подделку IP</translation>
+        <translation>启用 FakeIP</translation>
     </message>
     <message>
         <source>Hijack</source>
-        <translation>Перехват</translation>
+        <translation>劫持</translation>
     </message>
     <message>
         <source>DNS Server</source>
-        <translation>DNS-сервер</translation>
+        <translation>DNS 服务器</translation>
     </message>
     <message>
         <source>Enable</source>
-        <translation>Вкл.</translation>
+        <translation>启用</translation>
     </message>
     <message>
         <source>How does it work?</source>
-        <translation>Как это работает?</translation>
+        <translation>它是如何运作的？</translation>
     </message>
     <message>
         <source>Listen Address</source>
-        <translation>Прослушиваемый адрес</translation>
+        <translation>监听地址</translation>
     </message>
     <message>
         <source>Listen Port</source>
-        <translation>Прослушиваемый порт</translation>
+        <translation>监听端口</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Following format should be used:&lt;br/&gt;domain:a.com&lt;/p&gt;&lt;p&gt;suffix:a.com&lt;/p&gt;&lt;p&gt;regex:someregex&lt;/p&gt;&lt;p&gt;rule_set:nameOfRuleSet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Необходимо использовать следующий формат:&lt;br/&gt;domain:a.com&lt;/p&gt;&lt;p&gt;suffix:a.com&lt;/p&gt;&lt;p&gt;regex:someregex&lt;/p&gt;&lt;p&gt;rule_set:nameOfRuleSet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;应使用以下格式：&lt;br/&gt;domain:a.com&lt;/p&gt;&lt;p&gt;suffix:a.com&lt;/p&gt;&lt;p&gt;regex:someregex&lt;/p&gt;&lt;p&gt;rule_set:nameOfRuleSet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Rules</source>
-        <translation>Правила</translation>
+        <translation>规则</translation>
     </message>
     <message>
         <source>IPv4 Response</source>
-        <translation>Ответ IPv4</translation>
+        <translation>IPv4 响应</translation>
     </message>
     <message>
         <source>IPv6 Response</source>
-        <translation>Ответ IPv6</translation>
+        <translation>IPv6 响应</translation>
     </message>
     <message>
         <source>Redirect Settings</source>
         <translation>Настройки перенаправления</translation>
     </message>
     <message>
+        <source>tls://8.8.8.8</source>
+        <translation>tls://8.8.8.8</translation>
+    </message>
+    <message>
         <source>Clone</source>
-        <translation>Клонировать</translation>
+        <translation>克隆</translation>
     </message>
     <message>
         <source>Export</source>
-        <translation>Экспорт</translation>
+        <translation>导出</translation>
     </message>
     <message>
         <source>Invalid state</source>
-        <translation>Неверный статус</translation>
+        <translation>无效状态</translation>
     </message>
     <message>
         <source>The list of routing profiles is empty, this should be an unreachable state, crashes may occur now</source>
-        <translation>Список профилей маршрутизации пуст. Это состояние не должно быть достижимо, поэтому сейчас могут происходить сбои и вылеты приложения</translation>
+        <translation>路由配置档列表为空，这应该是一个不可达的状态，现在可能会发生崩溃</translation>
     </message>
     <message>
         <source>Invalid settings</source>
-        <translation>Неверные настройки</translation>
+        <translation>无效设置</translation>
     </message>
     <message>
         <source>Routing profile cannot be empty</source>
-        <translation>Профиль маршрутизации не может быть пустым</translation>
+        <translation>路由配置档不能为空</translation>
     </message>
     <message>
         <source>DNS Rules are not valid</source>
-        <translation>Правила DNS недействительны</translation>
+        <translation>DNS 规则无效</translation>
     </message>
     <message>
         <source>Invalid operation</source>
-        <translation>Неверная операция</translation>
+        <translation>无效操作</translation>
     </message>
     <message>
         <source>Routing Profiles cannot be empty, try adding another profile or editing this one</source>
-        <translation>Профили маршрутизации не могут быть пустыми, попробуйте добавить другой профиль или отредактировать этот</translation>
+        <translation>路由配置档不能为空，请尝试添加另一个配置档或编辑这个配置档</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Whether to listen on 0.0.0.0 so that other devices on LAN can use this server&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Нужно ли прослушивать 0.0.0.0, чтобы другие устройства в локальной сети могли использовать этот сервер.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;是否监听 0.0.0.0 以便局域网上的其他设备可使用这个服务器&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Allow Lan to Connect</source>
-        <translation>Разрешить подключения из локальной сети</translation>
+        <translation>允许局域网连接</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Resolve domains to IP before connect, also affects the server address as well&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Преобразовывать домены в IP-адреса перед подключением, также затрагивает адреса серверов&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;连接前解析地址为 IP，也会影响服务器地址&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;examples:&lt;br/&gt;tls://8.8.8.8&lt;br/&gt;https://domain/path&lt;/p&gt;&lt;p&gt;tcp://8.8.8.8:1234&lt;/p&gt;&lt;p&gt;dhcp://auto&lt;/p&gt;&lt;p&gt;h3://domain/path&lt;/p&gt;&lt;p&gt;quic://domain:4632&lt;/p&gt;&lt;p&gt;etc&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;examples:&lt;br/&gt;tls://8.8.8.8&lt;br/&gt;https://домен/путь&lt;/p&gt;&lt;p&gt;tcp://8.8.8.8:1234&lt;/p&gt;&lt;p&gt;dhcp://auto&lt;/p&gt;&lt;p&gt;h3://домен/путь&lt;/p&gt;&lt;p&gt;quic://домен:4632&lt;/p&gt;&lt;p&gt;etc&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;示例:&lt;br/&gt;tls://8.8.8.8&lt;br/&gt;https://domain/path&lt;/p&gt;&lt;p&gt;tcp://8.8.8.8:1234&lt;/p&gt;&lt;p&gt;dhcp://auto&lt;/p&gt;&lt;p&gt;h3://domain/path&lt;/p&gt;&lt;p&gt;quic://domain:4632&lt;/p&gt;&lt;p&gt;等&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>GitHub</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>jsDelivr(Cloudflare)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>jsDelivr(Gcore)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>jsDelivr(Quantil)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>jsDelivr(Fastly)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>jsDelivr(CDN)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Local DNS can not be used in some configurations, you will have to set an ip here to be used as local dns in such situations&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Local Override</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>GitHub</source>
@@ -887,113 +958,113 @@ For more information, see the document &quot;Configuration/DNS&quot;.</source>
     <name>DialogVPNSettings</name>
     <message>
         <source>Tun Settings</source>
-        <translation>Настройки TUN</translation>
+        <translation>Tun 设置</translation>
     </message>
     <message>
         <source>Tun Enable IPv6</source>
-        <translation>Вкл. IPv6 в TUN</translation>
+        <translation>Tun 启用 IPv6</translation>
     </message>
     <message>
         <source>Troubleshooting</source>
-        <translation>Диагностика</translation>
+        <translation>排除故障</translation>
     </message>
     <message>
         <source>If you have trouble starting VPN, you can force reset Core process here.
 
 If still not working, see documentation for more information.
 https://matsuridayo.github.io/n-configuration/#vpn-tun</source>
-        <translation>Если возникают проблемы с запуском режима TUN, здесь вы можете принудительно сбросить процесс ядра.
+        <translation>如果您在启动 Tun 时有问题，可以在这里强制重置 Core 进程。
 
-Если ничего по-прежнему не работает, ознакомьтесь с документацией:
+如果仍无法工作，请查阅文档以获取更多信息。
 https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
     <message>
         <source>Reset</source>
-        <translation>Сброс</translation>
+        <translation>重置</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Отмена</translation>
+        <translation>取消</translation>
     </message>
     <message>
         <source>Strict Route</source>
-        <translation>Строгий маршрут</translation>
+        <translation>严格路由</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When enabled, Direct IP CIDRs and rule sets will also be added to the Tun setting to be excluded at OS routing level. IMPORTANT: Large rule sets have been reported to cause massive CPU usage in windows, please enable this option with caution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Если включено, прямые IP CIDR и наборы правил также будут добавлены в настройки TUN, чтобы исключить их на уровне маршрутизации ОС. ВАЖНО: сообщалось, что крупные наборы правил могут вызвать повышенную нагрузку на процессор в Windows, поэтому включайте эту опцию с осторожностью.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;启用时，Direct IP CIDR 和规则集也将添加到 Tun 设置中，以便在操作系统路由级别被排除。重要提示：已报告大型规则集会导致 Windows 中的 CPU 占用率大幅上升，请谨慎启用此选项。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Enable Tun Routing</source>
-        <translation>Вкл. TUN-маршрутизацию</translation>
+        <translation>启用 Tun 路由</translation>
     </message>
 </context>
 <context>
     <name>EditAnyTLS</name>
     <message>
         <source>Password</source>
-        <translation>Пароль</translation>
+        <translation>密码</translation>
     </message>
     <message>
         <source>Idle Session Check Interval</source>
-        <translation>Интервал проверки неактивной сессии</translation>
+        <translation>空闲会话检查时间间隔</translation>
     </message>
     <message>
         <source>Idle Session Timeout</source>
-        <translation>Таймаут неактивной сессии</translation>
+        <translation>空闲会话超时</translation>
     </message>
     <message>
         <source>Min Idle Session</source>
-        <translation>Мин. время неактивности сессии</translation>
+        <translation>最小空闲会话</translation>
     </message>
 </context>
 <context>
     <name>EditChain</name>
     <message>
-        <source>Traffic order is from top to bottom</source>
-        <translation>Порядок трафика — сверху вниз</translation>
+        <source>Select Profile</source>
+        <translation>选择配置档</translation>
     </message>
     <message>
-        <source>Select Profile</source>
-        <translation>Выбор профиля</translation>
+        <source>Traffic order is from top to bottom</source>
+        <translation>流量顺序是由上到下 (最底一个为流量的出口)</translation>
     </message>
     <message>
         <source>Name cannot be empty.</source>
-        <translation>Название не может быть пустым.</translation>
+        <translation>名称不能为空。</translation>
     </message>
 </context>
 <context>
     <name>EditCustom</name>
     <message>
         <source>Core</source>
-        <translation>Ядро</translation>
+        <translation>核心</translation>
     </message>
     <message>
         <source>Json Editor</source>
-        <translation>Редактор JSON</translation>
+        <translation>JSON 编辑器</translation>
     </message>
     <message>
         <source>Outbound JSON, please read the documentation.</source>
-        <translation>Outbound JSON — пожалуйста, прочтите документацию.</translation>
+        <translation>出站 JSON，详细请阅读文档。</translation>
     </message>
     <message>
         <source>Please fill the complete config.</source>
-        <translation>Пожалуйста, заполните конфигурацию полностью.</translation>
+        <translation>请填写完整的配置。</translation>
     </message>
     <message>
         <source>Name cannot be empty.</source>
-        <translation>Название не может быть пустым.</translation>
+        <translation>名称不能为空。</translation>
     </message>
 </context>
 <context>
     <name>EditExtraCore</name>
     <message>
         <source>Form</source>
-        <translation>Форма</translation>
+        <translation>表单</translation>
     </message>
     <message>
         <source>Socks address</source>
-        <translation>Адрес SOCKS</translation>
+        <translation>Socks 地址</translation>
     </message>
     <message>
         <source>127.0.0.1</source>
@@ -1001,7 +1072,7 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
     <message>
         <source>Socks port</source>
-        <translation>Порт SOCKS</translation>
+        <translation>Socks 端口</translation>
     </message>
     <message>
         <source>1080</source>
@@ -1009,19 +1080,19 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
     <message>
         <source>Core path</source>
-        <translation>Путь к ядру</translation>
+        <translation>核心路径</translation>
     </message>
     <message>
         <source>Choose from file</source>
-        <translation>Выбрать файл</translation>
+        <translation>从文件中选择</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;args to pass to the executable. You can insert a single %s and it will be replaced with the path to a file containing the config entered below.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Аргументы, которые будут переданы исполняемому файлу. Вы можете вставить один символ %s — он будет заменён на путь к файлу, содержащему нижеуказанную конфигурацию.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;传递到可执行文件的参数。您可以插入一个 %s，它将被替换为包含下面输入的配置的文件的路径。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Args</source>
-        <translation>Аргументы</translation>
+        <translation>参数</translation>
     </message>
     <message>
         <source>run -confPath %s</source>
@@ -1029,46 +1100,46 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;contents of the config file that will be passed to the extra core process if %s is specified in the args&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Содержимое конфигурационного файла, которое будет передано процессу дополнительного ядра, если %s указано в аргументах&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;若在参数中指定了 %s，则配置文件的内容将传递给额外核心进程&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Config</source>
-        <translation>Конфигурация</translation>
+        <translation>配置</translation>
     </message>
     <message>
         <source>No logs</source>
-        <translation>Не включать логирование</translation>
+        <translation>无日志</translation>
     </message>
 </context>
 <context>
     <name>EditQUIC</name>
     <message>
+        <source>Certificate</source>
+        <translation>证书</translation>
+    </message>
+    <message>
         <source>Auth Type</source>
-        <translation>Тип авторизации</translation>
+        <translation>认证类型</translation>
     </message>
     <message>
         <source>Download (Mbps)</source>
-        <translation>Скорость загрузки (Мбит/с)</translation>
+        <translation>下载 (Mbps)</translation>
     </message>
     <message>
         <source>Disable MTU Discovery</source>
-        <translation>Выкл. MTU Discovery</translation>
-    </message>
-    <message>
-        <source>Certificate</source>
-        <translation>Сертификат</translation>
+        <translation>禁用 MTU 探测</translation>
     </message>
     <message>
         <source>Allow Insecure</source>
-        <translation>Разрешить небезопасные</translation>
+        <translation>允许不安全</translation>
     </message>
     <message>
         <source>Upload (Mbps)</source>
-        <translation>Скорость загрузки (Мбит/с)</translation>
+        <translation>上传 (Mbps)</translation>
     </message>
     <message>
         <source>Obfs Password</source>
-        <translation>Пароль обфускации</translation>
+        <translation>混淆密码</translation>
     </message>
     <message>
         <source>SNI</source>
@@ -1076,136 +1147,195 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
     <message>
         <source>Auth Payload</source>
-        <translation>Payload для авторизации</translation>
-    </message>
-    <message>
-        <source>Disable SNI</source>
-        <translation>Отключить SNI</translation>
-    </message>
-    <message>
-        <source>Password</source>
-        <translation>Пароль</translation>
+        <translation>认证负载</translation>
     </message>
     <message>
         <source>Generate UUID</source>
-        <translation>Сгенерировать UUID</translation>
+        <translation>生成 UUID</translation>
     </message>
     <message>
-        <source>Heartbeat</source>
-        <translation>Сердцебиение (Heartbeat)</translation>
+        <source>Password</source>
+        <translation>密码</translation>
     </message>
     <message>
         <source>Zero Rtt Handshake</source>
-        <translation>Рукопожатие 0-RTT</translation>
-    </message>
-    <message>
-        <source>Congestion Control</source>
-        <translation>Контроль перегрузки</translation>
+        <translation>零 Rtt 握手</translation>
     </message>
     <message>
         <source>UDP Relay Mode</source>
-        <translation>Режим ретрансляции UDP</translation>
+        <translation>UDP 中继模式</translation>
+    </message>
+    <message>
+        <source>Congestion Control</source>
+        <translation>拥塞控制</translation>
+    </message>
+    <message>
+        <source>Heartbeat</source>
+        <translation>心跳包</translation>
+    </message>
+    <message>
+        <source>Disable SNI</source>
+        <translation>禁用 SNI (不发送服务器名称指示)</translation>
     </message>
     <message>
         <source>Port range</source>
-        <translation>Диапазон портов</translation>
+        <translation>端口范围</translation>
     </message>
     <message>
         <source>Hop Interval</source>
-        <translation>Интервал узлов</translation>
+        <translation>跃点间隔</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;100ms&lt;br/&gt;1s&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;100 мс&lt;br/&gt;1s&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;100ms&lt;br/&gt;1s&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Comma seperated ranges: 100:200,500:600&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Диапазоны, разделенные запятыми: 100:200,500:600&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;逗号分隔的范围：100:200,500:600&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
 </context>
 <context>
     <name>EditSSH</name>
     <message>
         <source>EditSSH</source>
-        <translation>Редактирование SSH</translation>
+        <translation>编辑SSH</translation>
     </message>
     <message>
         <source>User</source>
-        <translation>Пользователь</translation>
+        <translation>用户</translation>
     </message>
     <message>
         <source>Password</source>
-        <translation>Пароль</translation>
+        <translation>密码</translation>
     </message>
     <message>
         <source>Private Key</source>
-        <translation>Приватный ключ</translation>
+        <translation>私钥</translation>
     </message>
     <message>
         <source>Private Key Password</source>
-        <translation>Пароль к приватному ключу</translation>
+        <translation>私钥密码</translation>
     </message>
     <message>
         <source>Host Key</source>
-        <translation>Ключ хоста</translation>
+        <translation>主机钥匙</translation>
     </message>
     <message>
         <source>Host Key Algorithms</source>
-        <translation>Алгоритмы шифрования ключа</translation>
+        <translation>主机钥匙算法</translation>
     </message>
     <message>
         <source>Client Version</source>
-        <translation>Версия клиента</translation>
+        <translation>客户端版本</translation>
     </message>
     <message>
         <source>Private Key Path</source>
-        <translation>Путь к приватному ключу</translation>
+        <translation>私钥路径</translation>
     </message>
     <message>
         <source>Choose File</source>
-        <translation>Выбрать файл</translation>
+        <translation>选择文件</translation>
     </message>
 </context>
 <context>
     <name>EditShadowSocks</name>
     <message>
-        <source>Encryption</source>
-        <translation>Шифрование</translation>
-    </message>
-    <message>
-        <source>Plugin</source>
-        <translation>Плагин</translation>
+        <source>Plugin Args</source>
+        <translation>插件参数</translation>
     </message>
     <message>
         <source>Password</source>
-        <translation>Пароль</translation>
+        <translation>密码</translation>
     </message>
     <message>
-        <source>Plugin Args</source>
-        <translation>Аргументы</translation>
+        <source>Encryption</source>
+        <translation>加密</translation>
+    </message>
+    <message>
+        <source>Plugin</source>
+        <translation>插件</translation>
     </message>
     <message>
         <source>Version of UDP over TCP protocol, server support is required.</source>
-        <translation>Версия протокола UDP over TCP, требуется поддержка со стороны сервера.</translation>
+        <translation>UDP over TCP 协议的版本，需要服务器支持。</translation>
     </message>
     <message>
         <source>Off</source>
-        <translation>Выкл.</translation>
+        <translation>关闭</translation>
     </message>
 </context>
 <context>
     <name>EditSocksHttp</name>
     <message>
         <source>Version</source>
-        <translation>Версия</translation>
+        <translation>版本</translation>
     </message>
     <message>
         <source>Username</source>
-        <translation>Имя пользователя</translation>
+        <translation>用户名</translation>
     </message>
     <message>
         <source>Password</source>
-        <translation>Пароль</translation>
+        <translation>密码</translation>
+    </message>
+</context>
+<context>
+    <name>EditTailScale</name>
+    <message>
+        <source>State directory</source>
+        <translation>状态目录</translation>
+    </message>
+    <message>
+        <source>Auth key</source>
+        <translation>验证钥匙</translation>
+    </message>
+    <message>
+        <source>Control URL</source>
+        <translation>控制 URL</translation>
+    </message>
+    <message>
+        <source>Hostname</source>
+        <translation>主机名</translation>
+    </message>
+    <message>
+        <source>Accept routes</source>
+        <translation>接受路由</translation>
+    </message>
+    <message>
+        <source>Exit node allow lan access</source>
+        <translation>出口节点允许LAN访问</translation>
+    </message>
+    <message>
+        <source>Advertise exit node</source>
+        <translation>通告出口节点</translation>
+    </message>
+    <message>
+        <source>Exit node</source>
+        <translation>出口节点</translation>
+    </message>
+    <message>
+        <source>Advertise routes</source>
+        <translation>通告路由</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;comma seperated list of subnets&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;子网的逗号间隔列表&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Global DNS</source>
+        <translation>全局 DNS</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;use tailscale dns as the remote dns&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;使用 tailscale dns 作为远程 dns&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Form</source>
+        <translation type="unfinished">表单</translation>
+    </message>
+    <message>
+        <source>Ephemeral</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1271,61 +1401,61 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     <name>EditTrojanVLESS</name>
     <message>
         <source>Password</source>
-        <translation>Пароль</translation>
+        <translation>密码</translation>
     </message>
 </context>
 <context>
     <name>EditVMess</name>
     <message>
         <source>Security</source>
-        <translation>Шифрование</translation>
+        <translation>加密</translation>
     </message>
     <message>
         <source>Alter Id</source>
-        <translation>Альт. ID</translation>
+        <translation></translation>
     </message>
     <message>
         <source>UUID</source>
-        <translation>UUID</translation>
+        <translation></translation>
     </message>
     <message>
         <source>Generate UUID</source>
-        <translation>Сгенерировать UUID</translation>
+        <translation>生成 UUID</translation>
     </message>
 </context>
 <context>
     <name>EditWireguard</name>
     <message>
         <source>EditWireguard</source>
-        <translation>Редактирование WireGuard</translation>
+        <translation>编辑 Wireguard</translation>
     </message>
     <message>
         <source>Reserved</source>
-        <translation>Резервный (Reserved)</translation>
+        <translation>保留</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;comma seperated list of subnets&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Список подсетей, разделенных запятыми&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;逗号分隔的子网列表&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Local Address</source>
-        <translation>Локальный адрес</translation>
+        <translation>本地地址</translation>
     </message>
     <message>
         <source>Pre Shared Key</source>
-        <translation>Предв. раздел. ключ (Pre-shared Key, PSK)</translation>
+        <translation>预共享钥匙</translation>
     </message>
     <message>
         <source>Use System Interface</source>
-        <translation>Исп. системный интерфейс</translation>
+        <translation>使用系统接口</translation>
     </message>
     <message>
         <source>Public Key</source>
-        <translation>Публичный ключ</translation>
+        <translation>公钥</translation>
     </message>
     <message>
         <source>Private Key</source>
-        <translation>Приватный ключ</translation>
+        <translation>私钥</translation>
     </message>
     <message>
         <source>1420</source>
@@ -1337,11 +1467,11 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
     <message>
         <source>Workers</source>
-        <translation>Workers</translation>
+        <translation>工作线程</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;persistent_keepalive_interval in seconds&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Интервал отправки Persistent Keepalive (поддержания активности) в секундах&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;persistent_keepalive_interval（以秒为单位的持久保活间隔）&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -1349,480 +1479,484 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
     <message>
         <source>Persistent Keepalive</source>
-        <translation>Поддержание активности (Persistent Keepalive)</translation>
+        <translation>持久保持活动</translation>
     </message>
     <message>
         <source>Enable</source>
-        <translation>Вкл.</translation>
+        <translation>启用</translation>
     </message>
     <message>
         <source>Junk Packet Count</source>
-        <translation>Кол-во мусорных пакетов</translation>
+        <translation>垃圾数据包数量</translation>
     </message>
     <message>
         <source>Junk Packet Min Size</source>
-        <translation>Мин. размер мусорного пакета</translation>
+        <translation>垃圾数据包最小尺寸</translation>
     </message>
     <message>
         <source>Junk Packet Max Size</source>
-        <translation>Макс. размер мусорного пакета</translation>
+        <translation>垃圾数据包最大尺寸</translation>
     </message>
     <message>
         <source>Init Packet Junk Size</source>
-        <translation>Размер начального мусорного пакета</translation>
+        <translation>初始数据包垃圾大小</translation>
     </message>
     <message>
         <source>Response Packet Junk Size</source>
-        <translation>Размер ответного мусорного пакета</translation>
+        <translation>响应数据包垃圾大小</translation>
     </message>
     <message>
         <source>Init Packet Magic Header</source>
-        <translation>Магический заголовок (Magic Header) начального пакета</translation>
+        <translation>初始数据包魔术报头</translation>
     </message>
     <message>
         <source>Response Packet Magic Header</source>
-        <translation>Магический заголовок (Magic Header) начального пакета</translation>
+        <translation>响应数据包魔术报头</translation>
     </message>
     <message>
         <source>Underload Packet Magic Header</source>
-        <translation>Магический заголовок (Magic Header) пакета перегрузки</translation>
+        <translation>欠载数据包魔法报头</translation>
     </message>
     <message>
         <source>Transport Header Magic Header</source>
-        <translation>Магический заголовок (Magic Header) транспортного заголовка</translation>
+        <translation>传送报头魔法报头</translation>
     </message>
     <message>
         <source>Amnezia Settings</source>
-        <translation>Настройки Amnezia</translation>
+        <translation>Amnezia 设置</translation>
     </message>
 </context>
 <context>
     <name>GroupItem</name>
     <message>
         <source>Update Subscription</source>
-        <translation>Обновить подписку</translation>
+        <translation>更新订阅</translation>
     </message>
     <message>
         <source>Edit</source>
-        <translation>Изменить</translation>
-    </message>
-    <message>
-        <source>Remove</source>
-        <translation>Удалить</translation>
+        <translation>编辑</translation>
     </message>
     <message>
         <source>Basic</source>
-        <translation>Стандартный</translation>
+        <translation>Обычный</translation>
     </message>
     <message>
         <source>Subscription</source>
-        <translation>Подписка</translation>
-    </message>
-    <message>
-        <source>Archive</source>
-        <translation>Архив</translation>
-    </message>
-    <message>
-        <source>Last update: %1</source>
-        <translation>Последнее обновление: %1</translation>
+        <translation>订阅</translation>
     </message>
     <message>
         <source>Confirmation</source>
-        <translation>Подтверждение</translation>
+        <translation>确认</translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation>删除</translation>
     </message>
     <message>
         <source>Remove %1?</source>
-        <translation>Удалить %1?</translation>
+        <translation>删除 %1 吗?</translation>
+    </message>
+    <message>
+        <source>Archive</source>
+        <translation>存档</translation>
+    </message>
+    <message>
+        <source>Last update: %1</source>
+        <translation>最后更新 %1</translation>
     </message>
 </context>
 <context>
     <name>JsonEditor</name>
     <message>
         <source>JSON Editor</source>
-        <translation>Редактор JSON</translation>
+        <translation>JSON 编辑器</translation>
     </message>
     <message>
         <source>Format JSON</source>
-        <translation>Форматирование JSON</translation>
+        <translation>格式化 JSON</translation>
     </message>
     <message>
         <source>Remove All Comments</source>
-        <translation>Удалить все комментарии</translation>
+        <translation>移除所有注释</translation>
     </message>
     <message>
         <source>Json Editor</source>
-        <translation>Редактор JSON</translation>
+        <translation>JSON 编辑器</translation>
     </message>
     <message>
         <source>Structure Preview</source>
-        <translation>Предпросмотр структуры</translation>
+        <translation>结构预览</translation>
     </message>
     <message>
         <source>OK</source>
-        <translation>ОК</translation>
+        <translation>确定</translation>
     </message>
     <message>
         <source>Json Contains Syntax Errors</source>
-        <translation>JSON содержит синтаксические ошибки</translation>
+        <translation>JSON 包含语法错误</translation>
     </message>
     <message>
         <source>Original Json may contain syntax errors. Json tree is disabled.</source>
-        <translation>Кажется, оригинальный JSON содержит синтаксические ошибки. Дерево JSON отключено.</translation>
+        <translation>原始 JSON 可能包含语法错误。JSON 树已禁用。</translation>
     </message>
     <message>
         <source>You must correct these errors before continuing.</source>
-        <translation>Исправьте эти ошибки, прежде чем продолжить.</translation>
+        <translation>继续前，您必须修正这些错误。</translation>
     </message>
     <message>
         <source>Syntax Errors</source>
-        <translation>Синтаксические ошибки</translation>
+        <translation>语法错误</translation>
     </message>
     <message>
         <source>Please fix the JSON errors or remove the comments before continue</source>
-        <translation>Пожалуйста, исправьте ошибки JSON или удалите комментарии, прежде чем продолжить</translation>
+        <translation>请修正 JSON 错误或移除注释后再继续</translation>
     </message>
 </context>
 <context>
     <name>MainWindow</name>
     <message>
+        <source>Hide window</source>
+        <translation>隐藏窗口</translation>
+    </message>
+    <message>
+        <source>Add profile from File</source>
+        <translation>添加来自文件的配置档</translation>
+    </message>
+    <message>
         <source>Program</source>
-        <translation>Программа</translation>
+        <translation>程序</translation>
     </message>
     <message>
         <source>Preferences</source>
-        <translation>Настройки</translation>
+        <translation>首选项</translation>
     </message>
     <message>
         <source>Server</source>
-        <translation>Сервер</translation>
-    </message>
-    <message>
-        <source>Update</source>
-        <translation>Обновление</translation>
-    </message>
-    <message>
-        <source>Tun Mode</source>
-        <translation>Режим TUN</translation>
-    </message>
-    <message>
-        <source>System Proxy</source>
-        <translation>Системный прокси</translation>
+        <translation>服务器</translation>
     </message>
     <message>
         <source>Type</source>
-        <translation>Протокол</translation>
+        <translation>类型</translation>
     </message>
     <message>
         <source>Address</source>
-        <translation>Адрес</translation>
+        <translation>地址</translation>
     </message>
     <message>
         <source>Name</source>
-        <translation>Название</translation>
+        <translation>名称</translation>
     </message>
     <message>
         <source>Test Result</source>
-        <translation>Результат теста</translation>
+        <translation>测试结果</translation>
     </message>
     <message>
         <source>Traffic</source>
-        <translation>Трафик</translation>
+        <translation>流量</translation>
+    </message>
+    <message>
+        <source>System Proxy</source>
+        <translation>系统代理</translation>
     </message>
     <message>
         <source>Share</source>
-        <translation>Поделиться</translation>
+        <translation>分享</translation>
     </message>
     <message>
         <source>Exit</source>
-        <translation>Выход</translation>
-    </message>
-    <message>
-        <source>Show Window</source>
-        <translation>Показать окно</translation>
+        <translation>退出</translation>
     </message>
     <message>
         <source>Basic Settings</source>
-        <translation>Основные настройки</translation>
-    </message>
-    <message>
-        <source>New profile</source>
-        <translation>Новый профиль</translation>
+        <translation>基本设置</translation>
     </message>
     <message>
         <source>Groups</source>
-        <translation>Группы</translation>
-    </message>
-    <message>
-        <source>Start</source>
-        <translation>Запустить</translation>
+        <translation>分组</translation>
     </message>
     <message>
         <source>Stop</source>
-        <translation>Остановить</translation>
-    </message>
-    <message>
-        <source>Routing Settings</source>
-        <translation>Настройки маршрутизации</translation>
-    </message>
-    <message>
-        <source>Hide window</source>
-        <translation>Скрыть окно</translation>
+        <translation>停止</translation>
     </message>
     <message>
         <source>Add profile from clipboard</source>
-        <translation>Добавить профиль из буфера обмена</translation>
-    </message>
-    <message>
-        <source>Delete</source>
-        <translation>Удалить</translation>
+        <translation>添加来自剪贴板的配置档</translation>
     </message>
     <message>
         <source>Debug Info</source>
-        <translation>Отладочная информация</translation>
-    </message>
-    <message>
-        <source>QR Code and link</source>
-        <translation>QR-код и ссылка</translation>
+        <translation>调试信息</translation>
     </message>
     <message>
         <source>Copy Link</source>
-        <translation>Скопировать ссылку</translation>
+        <translation>复制链接</translation>
     </message>
     <message>
         <source>Clear Test Result</source>
-        <translation>Очистить результат теста</translation>
-    </message>
-    <message>
-        <source>Export %1 config</source>
-        <translation>Экспортировать конфигурацию %1</translation>
-    </message>
-    <message>
-        <source>Reset Traffic</source>
-        <translation>Сбросить трафик</translation>
+        <translation>清理测试结果</translation>
     </message>
     <message>
         <source>Scan QR Code</source>
-        <translation>Сканировать QR-код</translation>
-    </message>
-    <message>
-        <source>Enable System Proxy</source>
-        <translation>Активировать системный прокси</translation>
+        <translation>扫描二维码</translation>
     </message>
     <message>
         <source>Disable</source>
-        <translation>Отключить</translation>
-    </message>
-    <message>
-        <source>Remove Duplicates</source>
-        <translation>Удалить дубликаты</translation>
-    </message>
-    <message>
-        <source>fake</source>
-        <translation>фейк</translation>
-    </message>
-    <message>
-        <source>Move</source>
-        <translation>Переместить</translation>
-    </message>
-    <message>
-        <source>Start with system</source>
-        <translation>Запускать вместе с системой</translation>
-    </message>
-    <message>
-        <source>Remember last profile</source>
-        <translation>Запомнить последний профиль</translation>
-    </message>
-    <message>
-        <source>Allow other devices to connect</source>
-        <translation>Разрешить подключаться другим устройствам</translation>
-    </message>
-    <message>
-        <source>Remove Unavailable</source>
-        <translation>Удалить недоступные</translation>
-    </message>
-    <message>
-        <source>Full Test</source>
-        <translation>Полный тест</translation>
-    </message>
-    <message>
-        <source>Hotkey Settings</source>
-        <translation>Настройки горячих клавиш</translation>
-    </message>
-    <message>
-        <source>Select All</source>
-        <translation>Выбрать все</translation>
-    </message>
-    <message>
-        <source>Copy links of selected</source>
-        <translation>Скопировать ссылки выбранных</translation>
-    </message>
-    <message>
-        <source>Enable Tun</source>
-        <translation>Включить режим TUN</translation>
-    </message>
-    <message>
-        <source>Clone</source>
-        <translation>Клонировать</translation>
-    </message>
-    <message>
-        <source>Update subscription</source>
-        <translation>Обновить подписку</translation>
-    </message>
-    <message>
-        <source>Resolve domain</source>
-        <translation>Разрешить домен</translation>
-    </message>
-    <message>
-        <source>Tun Settings</source>
-        <translation>Настройки режима TUN</translation>
-    </message>
-    <message>
-        <source>Restart Program</source>
-        <translation>Перезапустить программу</translation>
-    </message>
-    <message>
-        <source>Open Config Folder</source>
-        <translation>Открыть папку конфигурации</translation>
-    </message>
-    <message>
-        <source>Restart Proxy</source>
-        <translation>Перезапустить прокси</translation>
+        <translation>禁用</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation>Ошибка</translation>
-    </message>
-    <message>
-        <source>Tun Settings changed</source>
-        <translation>Настройки TUN изменены</translation>
-    </message>
-    <message>
-        <source>Restart Tun to take effect.</source>
-        <translation>Перезапустите TUN, чтобы изменения вступили в силу.</translation>
+        <translation>错误</translation>
     </message>
     <message>
         <source>Confirmation</source>
-        <translation>Подтверждение</translation>
+        <translation>确认</translation>
     </message>
     <message>
         <source>Settings changed, restart proxy?</source>
-        <translation>Настройки изменены, перезапустить прокси?</translation>
-    </message>
-    <message>
-        <source>Settings changed</source>
-        <translation>Настройки изменены</translation>
-    </message>
-    <message>
-        <source>Restart the program to take effect.</source>
-        <translation>Перезапустите программу, чтобы изменения вступили в силу.</translation>
+        <translation>设置已改变，重启代理吗？</translation>
     </message>
     <message>
         <source>Imported %1 profile(s)</source>
-        <translation>Импортирован(ы) %1 профиль(ей)</translation>
-    </message>
-    <message>
-        <source>Not Running</source>
-        <translation>Не запущен</translation>
-    </message>
-    <message>
-        <source>Select</source>
-        <translation>Выбор</translation>
-    </message>
-    <message>
-        <source>Select mode, double-click or press Enter to select a profile, press ESC to exit.</source>
-        <translation>Режим выбора: дважды кликните или нажмите Enter для выбора профиля, нажмите ESC для выхода.</translation>
-    </message>
-    <message>
-        <source>Clone %1 item(s)</source>
-        <translation>Клонировать %1 записей</translation>
-    </message>
-    <message>
-        <source>Remove %1 item(s) ?</source>
-        <translation>Удалить %1 записей?</translation>
-    </message>
-    <message>
-        <source>Copied %1 item(s)</source>
-        <translation>Скопировано %1 записей</translation>
-    </message>
-    <message>
-        <source>Config copied</source>
-        <translation>Конфигурация скопирована</translation>
-    </message>
-    <message>
-        <source>QR Code not found</source>
-        <translation>QR-код не найден</translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation>Очистить</translation>
-    </message>
-    <message>
-        <source>[%1] test error: %2</source>
-        <translation>[%1] ошибка теста: %2</translation>
-    </message>
-    <message>
-        <source>Testing</source>
-        <translation>Проверка...</translation>
+        <translation>导入了 %1 个配置档</translation>
     </message>
     <message>
         <source>Unavailable</source>
-        <translation>Недоступен</translation>
+        <translation>不可用</translation>
     </message>
     <message>
-        <source>If there is no response for a long time, it is recommended to restart the software.</source>
-        <translation>Если нет ответа в течении долгого времени, рекомендуем перезапустить приложение.</translation>
+        <source>Remove %1 item(s) ?</source>
+        <translation>删除 %1 项吗？</translation>
+    </message>
+    <message>
+        <source>Config copied</source>
+        <translation>配置已复制</translation>
+    </message>
+    <message>
+        <source>[%1] test error: %2</source>
+        <translation>[%1] 测试错误: %2</translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation>清除</translation>
+    </message>
+    <message>
+        <source>fake</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Testing</source>
+        <translation>正在测试</translation>
+    </message>
+    <message>
+        <source>Update</source>
+        <translation>更新</translation>
+    </message>
+    <message>
+        <source>Select</source>
+        <translation>选择</translation>
+    </message>
+    <message>
+        <source>QR Code not found</source>
+        <translation>未找到二维码</translation>
+    </message>
+    <message>
+        <source>Move</source>
+        <translation>移动</translation>
     </message>
     <message>
         <source>Starting profile %1</source>
-        <translation>Запуск профиля %1</translation>
-    </message>
-    <message>
-        <source>Failed to start profile %1</source>
-        <translation>Не удалось запустить профиль %1</translation>
+        <translation>正在启动配置档 %1</translation>
     </message>
     <message>
         <source>Stopping profile %1</source>
-        <translation>Остановка профиля %1</translation>
+        <translation>正在停止配置档 %1</translation>
+    </message>
+    <message>
+        <source>Start with system</source>
+        <translation>跟随系统启动</translation>
+    </message>
+    <message>
+        <source>Remember last profile</source>
+        <translation>记住最后的配置档</translation>
+    </message>
+    <message>
+        <source>Remove Unavailable</source>
+        <translation>移除不可用项</translation>
+    </message>
+    <message>
+        <source>New profile</source>
+        <translation>手动新建配置档</translation>
+    </message>
+    <message>
+        <source>Hotkey Settings</source>
+        <translation>热键设置</translation>
+    </message>
+    <message>
+        <source>QR Code and link</source>
+        <translation>二维码和链接</translation>
+    </message>
+    <message>
+        <source>Copied %1 item(s)</source>
+        <translation>复制了 %1 项</translation>
+    </message>
+    <message>
+        <source>Full Test</source>
+        <translation>完整测试</translation>
+    </message>
+    <message>
+        <source>Reset Traffic</source>
+        <translation>重置流量</translation>
+    </message>
+    <message>
+        <source>Remove Duplicates</source>
+        <translation>移除重复项</translation>
+    </message>
+    <message>
+        <source>Select All</source>
+        <translation>全选</translation>
+    </message>
+    <message>
+        <source>Tun Mode</source>
+        <translation>Tun 模式</translation>
+    </message>
+    <message>
+        <source>Enable System Proxy</source>
+        <translation>启用系统代理</translation>
+    </message>
+    <message>
+        <source>Enable Tun</source>
+        <translation>启用 Tun</translation>
+    </message>
+    <message>
+        <source>Tun Settings changed</source>
+        <translation>Tun 设置已改变</translation>
+    </message>
+    <message>
+        <source>Restart Tun to take effect.</source>
+        <translation>重启 Tun 以生效。</translation>
+    </message>
+    <message>
+        <source>Start</source>
+        <translation>启动</translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation>删除</translation>
+    </message>
+    <message>
+        <source>Copy links of selected</source>
+        <translation>复制选中项的链接</translation>
+    </message>
+    <message>
+        <source>Clone</source>
+        <translation>克隆</translation>
+    </message>
+    <message>
+        <source>Update subscription</source>
+        <translation>更新订阅</translation>
+    </message>
+    <message>
+        <source>Clone %1 item(s)</source>
+        <translation>克隆 %1 项</translation>
+    </message>
+    <message>
+        <source>Allow other devices to connect</source>
+        <translation>允许其他设备连接</translation>
+    </message>
+    <message>
+        <source>Resolve domain</source>
+        <translation>解析(服务器)域名</translation>
+    </message>
+    <message>
+        <source>Export %1 config</source>
+        <translation>导出 %1 配置</translation>
+    </message>
+    <message>
+        <source>Routing Settings</source>
+        <translation>路由设置</translation>
+    </message>
+    <message>
+        <source>Tun Settings</source>
+        <translation>Tun 设置</translation>
+    </message>
+    <message>
+        <source>Restart Program</source>
+        <translation>重启程序</translation>
+    </message>
+    <message>
+        <source>Not Running</source>
+        <translation>未在运行</translation>
+    </message>
+    <message>
+        <source>Open Config Folder</source>
+        <translation>打开配置文件夹</translation>
+    </message>
+    <message>
+        <source>Show Window</source>
+        <translation>显示窗口</translation>
+    </message>
+    <message>
+        <source>Settings changed</source>
+        <translation>设置已改变</translation>
+    </message>
+    <message>
+        <source>Restart the program to take effect.</source>
+        <translation>重启程序以生效。</translation>
+    </message>
+    <message>
+        <source>Restart Proxy</source>
+        <translation>重启代理</translation>
+    </message>
+    <message>
+        <source>Failed to start profile %1</source>
+        <translation>启动配置档 %1 失败</translation>
     </message>
     <message>
         <source>Failed to stop, please restart the program.</source>
-        <translation>Не удалось остановить, пожалуйста, перезапустите приложение.</translation>
+        <translation>停止失败，请重启程序。</translation>
+    </message>
+    <message>
+        <source>If there is no response for a long time, it is recommended to restart the software.</source>
+        <translation>如果长时间没有反应，建议重启软件。</translation>
+    </message>
+    <message>
+        <source>Select mode, double-click or press Enter to select a profile, press ESC to exit.</source>
+        <translation>选择模式，双击或按回车键选择一个配置档，按 ESC 键退出。</translation>
     </message>
     <message>
         <source>Stop Testing</source>
-        <translation>Остановить тестирование</translation>
+        <translation>停止测试</translation>
     </message>
     <message>
         <source>Tun device misbehaving</source>
-        <translation>Некорректное поведение устройства TUN</translation>
+        <translation>Tun 设备运行异常</translation>
     </message>
     <message>
         <source>Reset</source>
-        <translation>Сброс</translation>
+        <translation>重置</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Отмена</translation>
+        <translation>取消</translation>
     </message>
     <message>
         <source>Add new Group</source>
-        <translation>Добавить новую группу</translation>
+        <translation>添加新分组</translation>
     </message>
     <message>
         <source>Delete selected Group</source>
-        <translation>Удалить выбранную группу</translation>
+        <translation>删除选定分组</translation>
     </message>
     <message>
         <source>Edit selected Group</source>
-        <translation>Редактировать выбранную группу</translation>
+        <translation>编辑选定分组</translation>
     </message>
     <message>
         <source>Remove %1?</source>
-        <translation>Удалить %1?</translation>
+        <translation>删除 %1 吗?</translation>
     </message>
     <message>
         <source>Url Test Selected</source>
-        <translation>Тест задержки выбранного профиля</translation>
+        <translation>URL 测试选定项</translation>
     </message>
     <message>
         <source>Ctrl+Shift+S</source>
@@ -1830,7 +1964,7 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
     <message>
         <source>Url Test Group</source>
-        <translation>Тест задержки всей группы</translation>
+        <translation>URL 测试分组</translation>
     </message>
     <message>
         <source>Ctrl+Shift+G</source>
@@ -1838,15 +1972,15 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
     <message>
         <source>Hidden menu</source>
-        <translation>Скрытое меню</translation>
+        <translation>隐藏菜单</translation>
     </message>
     <message>
         <source>Resolve Selected Domain</source>
-        <translation>Разрешить выбранный домен</translation>
+        <translation>解析选定域名</translation>
     </message>
     <message>
         <source>Remove Invalid</source>
-        <translation>Удалить недействительные</translation>
+        <translation>移除无效项</translation>
     </message>
     <message>
         <source>Ctrl+Alt+I</source>
@@ -1854,232 +1988,252 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
     <message>
         <source>If you have trouble starting VPN, you can force reset Core process here and then try starting the profile again. The error is %1</source>
-        <translation>Если у вас возникли проблемы с запуском режима TUN, можете принудительно сбросить процесс ядра здесь и попробовать перезапустить профиль. Ошибка: %1</translation>
+        <translation>如果启动 VPN 时有问题，您可以在这里强制重置 Core 进程，然后再次尝试启动配置档。错误是 %1</translation>
     </message>
     <message>
         <source> Confirmation </source>
-        <translation> Подтверждение </translation>
+        <translation> 确认 </translation>
     </message>
     <message>
         <source> Remove %1 item(s) ? </source>
-        <translation> Удалить %1 элемент(ов)? </translation>
+        <translation> 移除 %1 项吗？ </translation>
     </message>
     <message>
         <source>Remove %1 Unavailable item(s) ?</source>
-        <translation>Удалить %1 недоступных элемент(ов)?</translation>
+        <translation>移除 %1 个不可用项吗？</translation>
     </message>
     <message>
         <source>Remove %1 Invalid item(s) ?</source>
-        <translation>Удалить %1 неверных элемент(ов)?</translation>
+        <translation>移除 %1 个无效项吗？</translation>
     </message>
     <message>
         <source>Replace domain server addresses with their resolved IPs?</source>
-        <translation>Заменить домены в адресах серверов на их разрешённые IP-адреса?</translation>
+        <translation>替换域名服务器地址为其解析后的 IP 地址吗？</translation>
     </message>
     <message>
         <source>System DNS</source>
-        <translation>Системный DNS</translation>
+        <translation>系统 DNS</translation>
     </message>
     <message>
         <source>Connections</source>
-        <translation>Подключения</translation>
+        <translation>连接</translation>
     </message>
     <message>
         <source>Click To Disable Sorting</source>
-        <translation>Нажмите для отключения сортировки</translation>
+        <translation>点击以禁用排序</translation>
     </message>
     <message>
         <source>Protocol</source>
-        <translation>Протокол</translation>
+        <translation>协议</translation>
     </message>
     <message>
         <source>Logs</source>
         <translation>Логи</translation>
     </message>
     <message>
+        <source>Geo Assets are missing, want to download them now?</source>
+        <translation>Geo-ресурсы отсутствуют. Хотите загрузить их сейчас?</translation>
+    </message>
+    <message>
         <source>Please give the core root privileges</source>
-        <translation>Пожалуйста, предоставьте ядру права root.</translation>
+        <translation>请赋予核心根(root)权限</translation>
     </message>
     <message>
         <source>Requesting permission</source>
-        <translation>Запрос разрешения</translation>
+        <translation>请求权限</translation>
     </message>
     <message>
         <source>Please Enter your password in the opened terminal, then try again</source>
-        <translation>Введите пароль в открывшемся терминале и повторите попытку.</translation>
+        <translation>请在打开的终端中输入您的密码，然后重试</translation>
     </message>
     <message>
         <source>Application</source>
-        <translation>Приложение</translation>
+        <translation>应用程序</translation>
     </message>
     <message>
         <source>Settings</source>
-        <translation>Настройки</translation>
+        <translation>设置</translation>
     </message>
     <message>
         <source>Profiles</source>
-        <translation>Профили</translation>
+        <translation>配置档</translation>
     </message>
     <message>
         <source>Routing</source>
-        <translation>Маршрутизация</translation>
+        <translation>路由</translation>
     </message>
     <message>
         <source>Destination (Domain)</source>
-        <translation>Пункт назначения (Домен)</translation>
+        <translation>目标（域名）</translation>
     </message>
     <message>
         <source>Process</source>
-        <translation>Процесс</translation>
+        <translation>进程</translation>
     </message>
     <message>
         <source>Click To Sort By Process</source>
-        <translation>Нажмите для сортировки по процессу</translation>
+        <translation>点击以“按进程排序”</translation>
     </message>
     <message>
         <source>Routing Menu</source>
-        <translation>Меню маршрутизации</translation>
+        <translation>路由菜单</translation>
     </message>
     <message>
         <source>Open Manager</source>
-        <translation>Открыть менеджер</translation>
+        <translation>打开管理器</translation>
     </message>
     <message>
         <source>Profile test aborted</source>
-        <translation>Тест профиля прерван</translation>
+        <translation>配置档测试中止</translation>
     </message>
     <message>
         <source>Something is very wrong, the subject ent cannot be found!</source>
-        <translation>Что-то явно не так, объект ent не может быть найден!</translation>
+        <translation>发生了非常严重的问题，找不到主题 ent！</translation>
     </message>
     <message>
         <source>Profile manager data is corrupted, try again.</source>
-        <translation>Данные менеджера профилей повреждены, попробуйте еще раз.</translation>
+        <translation>配置档管理器数据损坏，请重试。</translation>
     </message>
     <message>
         <source>The last speed test did not exit completely, please wait. If it persists, please restart the program.</source>
-        <translation>Последний тест скорости не завершился полностью, пожалуйста, подождите. Если проблема сохраняется, пожалуйста, перезапустите программу.</translation>
+        <translation>上次的测速未完全退出，请稍候。如果持续存在，请重启程序。</translation>
     </message>
     <message>
         <source>Failed to build test config: </source>
-        <translation>Не удалось создать тестовую конфигурацию: </translation>
+        <translation>构建测试配置失败： </translation>
     </message>
     <message>
         <source>Speedtest finished!</source>
-        <translation>Тест скорости завершён!</translation>
+        <translation>测速完成！</translation>
     </message>
     <message>
         <source>Failed to stop tests</source>
-        <translation>Не удалось остановить тест</translation>
+        <translation>停止测试失败</translation>
     </message>
     <message>
         <source>You need to enable hijack DNS server first</source>
-        <translation>Сначала необходимо включить перехват DNS-сервера</translation>
+        <translation>您需要先启用劫持 DNS 服务器</translation>
     </message>
     <message>
         <source>Failed to set system dns: </source>
-        <translation>Не удалось установить системный DNS: </translation>
+        <translation>设置系统 DNS 失败： </translation>
     </message>
     <message>
         <source>BuildConfig return error</source>
-        <translation>Ошибка BuildConfig</translation>
+        <translation>BuildConfig 返回错误</translation>
     </message>
     <message>
         <source>Another profile is starting...</source>
-        <translation>Другой профиль запускается...</translation>
+        <translation>另一个配置档正在启动...</translation>
     </message>
     <message>
         <source>Another profile is stopping...</source>
-        <translation>Другой профиль останавливается...</translation>
+        <translation>另一个配置档正在停止...</translation>
     </message>
     <message>
-        <source>Try to start the config, but the core has not listened to the RPC port, so restart it...</source>
-        <translation>Попытка запустить конфигурацию — ядро не прослушивает порт RPC, поэтому перезапустите его...</translation>
+        <source>Try to start the config, but the core has not listened to the grpc port, so restart it...</source>
+        <translation>Попытка запустить конфигурацию — ядро не прослушивает порт gRPC, поэтому перезапустите его...</translation>
     </message>
     <message>
         <source>Stop return error</source>
-        <translation>Ошибка остановки</translation>
+        <translation>停止返回错误</translation>
     </message>
     <message>
         <source>Copy core config</source>
-        <translation>Копировать конфигурацию ядра</translation>
+        <translation>复制核心配置</translation>
     </message>
     <message>
         <source>Copy test config</source>
-        <translation>Копировать тестовую конфигурацию</translation>
+        <translation>复制测试配置</translation>
     </message>
     <message>
         <source>Cannot start</source>
-        <translation>Невозможно запустить</translation>
+        <translation>无法启动</translation>
     </message>
     <message>
         <source>Last download request has not finished yet</source>
         <translation>Последний запрос на загрузку еще не завершён</translation>
     </message>
     <message>
+        <source>Failed to download geoip: %1</source>
+        <translation>Не удалось загрузить GeoIP: %1</translation>
+    </message>
+    <message>
+        <source>Failed to download geosite: %1</source>
+        <translation>Не удалось загрузить GeoSite: %1</translation>
+    </message>
+    <message>
+        <source>Failed to download geo assets</source>
+        <translation>Не удалось загрузить Geo-ресурсы</translation>
+    </message>
+    <message>
+        <source>Geo Asset update completed!</source>
+        <translation>Обновление Geo-ресурсов завершено!</translation>
+    </message>
+    <message>
         <source>Traffic Graph</source>
-        <translation>График соединения</translation>
+        <translation>流量图</translation>
     </message>
     <message>
         <source>Failed to download update assets</source>
-        <translation>Не удалось загрузить обновлённые ресурсы</translation>
+        <translation>下载更新资产失败</translation>
     </message>
     <message>
         <source>Speedtest Current</source>
-        <translation>Тест скорости текущего профиля</translation>
+        <translation>速度测试当前项</translation>
     </message>
     <message>
         <source>Speedtest Selected</source>
-        <translation>Тест скорости выбранного профиля</translation>
+        <translation>速度测试选定项</translation>
     </message>
     <message>
         <source>Speedtest Group</source>
-        <translation>Тест скорости всей группы</translation>
+        <translation>速度测试该分组</translation>
     </message>
     <message>
         <source>The last url test did not exit completely, please wait. If it persists, please restart the program.</source>
-        <translation>Тест задержки не завершился до конца —&#xa0;пожалуйста, подождите. Если такое поведение повторяется, перезапустите программу</translation>
+        <translation>Тест задержки не завершился до конца — пожалуйста, подождите. Если такое поведение повторяется, перезапустите программу</translation>
     </message>
     <message>
         <source>URL test finished!</source>
-        <translation>Тест задержки завершён!</translation>
+        <translation>URL 测试完成！</translation>
     </message>
     <message>
         <source>Profile speed test aborted</source>
-        <translation>Тест скорости профиля был отменён</translation>
+        <translation>配置档速度测试已中止</translation>
     </message>
     <message>
         <source>[%1] speed test error: %2</source>
-        <translation>[%1] ошибка теста скорости: %2</translation>
+        <translation>[%1] 速度测试错误：%2</translation>
     </message>
     <message>
         <source>User opted for no privilege req, some features may not work</source>
-        <translation>Пользователь решил не запрашивать привилегии, некоторые функции могут не работать</translation>
+        <translation>用户选择无权限请求，某些功能可能不起作用</translation>
     </message>
     <message>
         <source>Unable to capture screen</source>
-        <translation>Невозможно захватить экран</translation>
+        <translation>无法捕获屏幕</translation>
     </message>
     <message>
         <source>Outbound</source>
-        <translation>Outbound</translation>
+        <translation>出站</translation>
     </message>
     <message>
         <source>Click To Toggle sort by Traffic</source>
-        <translation>Нажмите для сортировки по трафику</translation>
+        <translation>点击以切换“按流量排序”</translation>
     </message>
     <message>
         <source>Copy links of selected (Custom Links)</source>
-        <translation>Скопировать ссылки выбранных профилей (польз. ссылки)</translation>
+        <translation>复制选定项的链接(自定义链接)</translation>
     </message>
     <message>
         <source>Invalid JSON Array</source>
-        <translation>Неверный массив JSON</translation>
+        <translation>无效 JSON 数组</translation>
     </message>
     <message>
         <source>The provided input cannot be parsed to a valid route rule array:
 </source>
-        <translation>Введённые данные не могут быть преобразованы в допустимый массив правил маршрутизации:
+        <translation>提供的输入无法解析为有效的路由规则数组:
 </translation>
     </message>
     <message>
@@ -2087,12 +2241,20 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>Пожалуйста, запустите Throne от имени администратора</translation>
     </message>
     <message>
+        <source>A reset of assets is already in progress</source>
+        <translation>Сброс ресурсов уже запущен</translation>
+    </message>
+    <message>
+        <source>Removed all rule-set files</source>
+        <translation>Удалены все файлы c наборами правил</translation>
+    </message>
+    <message>
         <source>Click To Sort By Protocol</source>
-        <translation>Нажмите для сортировки по протоколу</translation>
+        <translation>点击“按协议排序”</translation>
     </message>
     <message>
         <source>Click To Sort By Outbound</source>
-        <translation>Нажмите для сортировки по Outbound</translation>
+        <translation>点击“按出站排序”</translation>
     </message>
     <message>
         <source>Add profile from File</source>
@@ -2103,175 +2265,179 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     <name>ProxyItem</name>
     <message>
         <source>Confirmation</source>
-        <translation>Подтверждение</translation>
+        <translation>确认</translation>
     </message>
     <message>
         <source>Remove %1?</source>
-        <translation>Удалить %1?</translation>
+        <translation>移除 %1 吗?</translation>
     </message>
 </context>
 <context>
     <name>QGuiApplication</name>
     <message>
         <source>QT_LAYOUT_DIRECTION</source>
-        <translation>QT_LAYOUT_DIRECTION</translation>
+        <translation>LTR</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <source>Proxy: %1
-Direct: %2</source>
-        <translation>Прокси: %1
-Напрямую: %2</translation>
-    </message>
-    <message>
-        <source>Chain Proxy</source>
-        <translation>Цепочка прокси</translation>
-    </message>
-    <message>
-        <source>Request with proxy but no profile started.</source>
-        <translation>Запрос через прокси, но профиль не запущен.</translation>
-    </message>
-    <message>
         <source>url detected</source>
-        <translation>Обнаружен URL</translation>
+        <translation>检测到 URL</translation>
     </message>
     <message>
         <source>%1
 How to update?</source>
         <translation>%1
-Как обновить?</translation>
-    </message>
-    <message>
-        <source>Requesting subscription: %1</source>
-        <translation>Запрос подписки: %1</translation>
-    </message>
-    <message>
-        <source>Requesting subscription %1 error: %2</source>
-        <translation>Ошибка запроса подписки %1: %2</translation>
-    </message>
-    <message>
-        <source>Subscription request fininshed: %1</source>
-        <translation>Запрос подписки завершён: %1</translation>
-    </message>
-    <message>
-        <source>Clearing servers...</source>
-        <translation>Очистка серверов...</translation>
+如何更新？</translation>
     </message>
     <message>
         <source>Added %1 profiles:
 %2
 Deleted %3 Profiles:
 %4</source>
-        <translation>Добавлено %1 профилей:
+        <translation>添加了 %1 个配置档：
 %2
-Удалено %3 профилей:
+删除了 %3 个配置档：
 %4</translation>
     </message>
     <message>
-        <source>Nothing</source>
-        <translation>Ничего</translation>
+        <source>Proxy: %1
+Direct: %2</source>
+        <translation>代理: %1
+直连: %2</translation>
     </message>
     <message>
-        <source>Change of %1:</source>
-        <translation>Изменение %1:</translation>
+        <source>Used: %1 Remain: %2 Expire: %3</source>
+        <translation>已用 %1 剩余 %2 过期 %3</translation>
     </message>
     <message>
-        <source>Core exits too frequently, stop automatic restart this profile.</source>
-        <translation>Ядро слишком часто останавливается, отмена автоматического перезапуска этого профиля.</translation>
+        <source>Update</source>
+        <translation>更新</translation>
     </message>
     <message>
-        <source>Select</source>
-        <translation>Выбор</translation>
+        <source>Core exited, restarting.</source>
+        <translation>Ядро остановлено, перезапуск.</translation>
     </message>
     <message>
-        <source>Update / Github</source>
-        <translation>Обновление / Github</translation>
+        <source>Open in browser</source>
+        <translation>在浏览器打开</translation>
     </message>
     <message>
-        <source>Check for updates</source>
-        <translation>Проверить обновления</translation>
+        <source>Close</source>
+        <translation>关闭</translation>
     </message>
     <message>
-        <source>Open GitHub Releases</source>
-        <translation>Открыть обновления на GitHub</translation>
-    </message>
-    <message>
-        <source>Open Repository</source>    
-        <translation>Открыть репозиторий</translation>
-    </message>
-    <message>
-        <source>No update</source>
-        <translation>Обновлений нет</translation>
+        <source>Update is ready, restart to install?</source>
+        <translation>更新已准备好，重启进行安装吗？</translation>
     </message>
     <message>
         <source>Update found: %1
 Release note:
 %2</source>
-        <translation>Найдено обновление: %1
-Список изменений:
+        <translation>发现更新: %1
+更新日志:
 %2</translation>
     </message>
     <message>
-        <source>Open in browser</source>
-        <translation>Открыть в браузере</translation>
+        <source>Request with proxy but no profile started.</source>
+        <translation>使用代理请求，但未启动代理配置档。</translation>
     </message>
     <message>
-        <source>Close</source>
-        <translation>Закрыть</translation>
+        <source>Chain Proxy</source>
+        <translation>链式代理</translation>
     </message>
     <message>
-        <source>Update is ready, restart to install?</source>
-        <translation>Обновление готово, перезапустить программу для установки?</translation>
+        <source>Requesting subscription: %1</source>
+        <translation>正在请求订阅: %1</translation>
     </message>
     <message>
-        <source>Used: %1 Remain: %2 Expire: %3</source>
-        <translation>Использовано: %1, осталось: %2, истекает: %3</translation>
+        <source>Requesting subscription %1 error: %2</source>
+        <translation>请求订阅 %1 时出错: %2</translation>
+    </message>
+    <message>
+        <source>Nothing</source>
+        <translation>无</translation>
+    </message>
+    <message>
+        <source>Change of %1:</source>
+        <translation>%1 的变化:</translation>
+    </message>
+    <message>
+        <source>Select</source>
+        <translation>选择</translation>
+    </message>
+    <message>
+        <source>Clearing servers...</source>
+        <translation>正在清理服务器...</translation>
+    </message>
+    <message>
+        <source>Subscription request fininshed: %1</source>
+        <translation>订阅请求完成: %1</translation>
+    </message>
+    <message>
+        <source>Core exits too frequently, stop automatic restart this profile.</source>
+        <translation>Core 退出太频繁，停止自动重启这个配置档。</translation>
     </message>
     <message>
         <source>Default</source>
-        <translation>По умолчанию</translation>
+        <translation>默认</translation>
     </message>
     <message>
         <source>Add profiles to this group</source>
-        <translation>Добавить профили в эту группу</translation>
+        <translation>添加配置档到这个分组</translation>
     </message>
     <message>
         <source>Create new subscription group</source>
-        <translation>Создать новую группу подписки</translation>
+        <translation>创建新的订阅分组</translation>
     </message>
     <message>
         <source>Could not open file.</source>
-        <translation>Не удалось открыть файл.</translation>
+        <translation>无法打开文件。</translation>
     </message>
     <message>
         <source>Not official support platform</source>
-        <translation>Платформа официально не поддерживается</translation>
+        <translation>非官方支持平台</translation>
     </message>
     <message>
         <source>Requesting update error: %1</source>
-        <translation>Ошибка запроса обновления: %1</translation>
+        <translation>请求更新时出错：%1</translation>
     </message>
     <message>
         <source>Tun mode cannot be used with Custom configs</source>
-        <translation>Режим TUN нельзя использовать с польз. конфигурациями</translation>
+        <translation>Tun 模式不能与自定义配置一起使用</translation>
     </message>
     <message>
         <source>Processing subscription data...</source>
-        <translation>Идёт обработка данных подписки...</translation>
+        <translation>正在处理订阅数据...</translation>
     </message>
     <message>
         <source>Process complete, applying...</source>
         <translation>Процесс завершён, применение...</translation>
     </message>
     <message>
+        <source>Enable AdBlock</source>
+        <translation>Включить AdBlock</translation>
+    </message>
+    <message>
         <source>Download Profiles</source>
-        <translation>Загрузка профилей</translation>
+        <translation>下载配置档</translation>
     </message>
     <message>
         <source>Requesting profile error: %1</source>
-        <translation>Ошибка запроса профиля: %1</translation>
+        <translation>请求配置档时出错: %1</translation>
+    </message>
+    <message>
+        <source>Local DNS and Tun mode do not work together, please set an IP to be used as the Local DNS server in the Routing Settings -&gt; Local override</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Core exited, cleaning up...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restarting the core ...</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Local DNS and Tun mode do not work together, please set an IP to be used as the Local DNS server in the Routing Settings -&gt; Local override</source>
@@ -2290,166 +2456,166 @@ Release note:
     <name>QPlatformTheme</name>
     <message>
         <source>Cancel</source>
-        <translation>Отмена</translation>
+        <translation>取消</translation>
     </message>
     <message>
         <source>Apply</source>
-        <translation>Применить</translation>
+        <translation>应用</translation>
     </message>
     <message>
         <source>Yes</source>
-        <translation>Да</translation>
+        <translation>是</translation>
     </message>
     <message>
         <source>No</source>
-        <translation>Нет</translation>
+        <translation>否</translation>
     </message>
     <message>
         <source>OK</source>
-        <translation>ОК</translation>
+        <translation>好的</translation>
     </message>
 </context>
 <context>
     <name>Qv2ray::ui::widgets::AutoCompleteTextEdit</name>
     <message>
         <source>You can not input space characters here.</source>
-        <translation>Ввод символа пробела запрещён.</translation>
+        <translation>您不能在这里输入空格字符。</translation>
     </message>
 </context>
 <context>
     <name>RouteItem</name>
     <message>
         <source>Route Profile</source>
-        <translation>Профиль маршрута</translation>
+        <translation>路由配置档</translation>
     </message>
     <message>
         <source>Name</source>
-        <translation>Название</translation>
+        <translation>名称</translation>
     </message>
     <message>
         <source>Rules</source>
-        <translation>Правила</translation>
+        <translation>规则</translation>
     </message>
     <message>
         <source>New</source>
-        <translation>Новый</translation>
+        <translation>新建</translation>
     </message>
     <message>
         <source>Move Up</source>
-        <translation>Поднять выше</translation>
+        <translation>上移</translation>
     </message>
     <message>
         <source>Move Down</source>
-        <translation>Опустить ниже</translation>
+        <translation>下移</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation>Удалить</translation>
+        <translation>删除</translation>
     </message>
     <message>
         <source>Rule Attributes</source>
-        <translation>Атрибуты правила</translation>
+        <translation>规则属性</translation>
     </message>
     <message>
         <source>Attribute</source>
-        <translation>Атрибут</translation>
+        <translation>属性</translation>
     </message>
     <message>
         <source>Name_Placeholder</source>
-        <translation>Пример_имени</translation>
+        <translation>名称_占位符</translation>
     </message>
     <message>
         <source>Import JSON</source>
-        <translation>Импорт JSON</translation>
+        <translation>导入 JSON</translation>
     </message>
     <message>
         <source>Basic</source>
-        <translation>Основные настройки</translation>
+        <translation>Основной</translation>
     </message>
     <message>
         <source>How to use</source>
-        <translation>Как пользоваться</translation>
+        <translation>如何使用</translation>
     </message>
     <message>
         <source>Direct</source>
-        <translation>Напрямую</translation>
+        <translation>直连</translation>
     </message>
     <message>
         <source>Proxy</source>
-        <translation>Прокси</translation>
+        <translation>代理</translation>
     </message>
     <message>
         <source>Block</source>
-        <translation>Блокировать</translation>
+        <translation>阻止</translation>
     </message>
     <message>
         <source>Advanced</source>
-        <translation>Дополнительно</translation>
+        <translation>Расширенный</translation>
     </message>
     <message>
         <source>Invalid rules</source>
-        <translation>Некорректные правила</translation>
+        <translation>无效规则</translation>
     </message>
     <message>
         <source>Some rules could not be added:
 </source>
-        <translation>Некоторые правила не удалось добавить:
+        <translation>无法添加某些规则：
 </translation>
     </message>
     <message>
         <source>Simple rule manual</source>
-        <translation>Инструкция по простым правилам</translation>
+        <translation>简单规则手册</translation>
     </message>
     <message>
         <source>Invalid JSON Array</source>
-        <translation>Неверный массив JSON</translation>
+        <translation>无效 JSON 数组</translation>
     </message>
     <message>
         <source>The provided input cannot be parsed to a valid route rule array:
 </source>
-        <translation>Введённые данные не могут быть преобразованы в допустимый массив правил маршрутизации:
+        <translation>提供的输入无法解析为有效的路由规则数组：
 </translation>
     </message>
     <message>
         <source>Invalid operation</source>
-        <translation>Неверная операция</translation>
+        <translation>无效操作</translation>
     </message>
     <message>
         <source>Cannot create Route Profile with empty name</source>
-        <translation>Невозможно создать профиль маршрута с пустым именем</translation>
+        <translation>无法使用空名称创建路由配置档</translation>
     </message>
     <message>
         <source>Empty Route Profile</source>
-        <translation>Пустой профиль маршрута</translation>
+        <translation>空路由配置档</translation>
     </message>
     <message>
         <source>No valid rules are in the profile</source>
-        <translation>В профиле нет доступных правил</translation>
+        <translation>配置档中没有有效的规则</translation>
     </message>
     <message>
         <source>Some rules could not be added, fix them before saving:
 </source>
-        <translation>Некоторые правила не удалось добавить, исправьте их перед сохранением:
+        <translation>某些规则无法添加，请在保存前修复它们：
 </translation>
     </message>
     <message>
         <source>General</source>
-        <translation>Основное</translation>
+        <translation>常规</translation>
     </message>
     <message>
         <source>Default outbound</source>
-        <translation>Outbound по умолчанию</translation>
+        <translation>默认出站</translation>
     </message>
 </context>
 <context>
     <name>SpeedWidget</name>
     <message>
         <source>Proxy</source>
-        <translation>Прокси</translation>
+        <translation>代理</translation>
     </message>
     <message>
         <source>Direct</source>
-        <translation>Напрямую</translation>
+        <translation>直连</translation>
     </message>
 </context>
 </TS>
