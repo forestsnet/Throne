@@ -136,7 +136,7 @@ void MainWindow::handshakeTest(const QList<std::shared_ptr<Configs::ProxyEntity>
     }
 
     runOnNewThread([this, profiles]() {
-        auto buildObject = Configs::BuildTestConfig(profiles, ruleSetMap);
+        auto buildObject = Configs::BuildTestConfig(profiles);
         if (!buildObject->error.isEmpty()) {
             MW_show_log(tr("Failed to build test config: ") + buildObject->error);
             speedtestRunning.unlock();
@@ -687,9 +687,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->actionHandshake_Group, &QAction::triggered, this, [=,this]() {
         handshakeTest(Configs::profileManager->CurrentGroup()->GetProfileEnts());
     });
-
-	std::vector<uint8_t> srsvec(std::begin(srslist), std::end(srslist));
-    ruleSetMap = spb::pb::deserialize<libcore::RuleSet>(srsvec).items;
 
     auto getRemoteRouteProfiles = [=,this]
     {

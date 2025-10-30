@@ -41,7 +41,7 @@ namespace Configs {
 
     // Common
 
-    std::shared_ptr<BuildConfigResult> BuildConfig(const std::shared_ptr<ProxyEntity> &ent, const std::map<std::string, std::string>& ruleSetMap, bool forTest, bool forExport, int chainID) {
+    std::shared_ptr<BuildConfigResult> BuildConfig(const std::shared_ptr<ProxyEntity> &ent, bool forTest, bool forExport, int chainID) {
         auto result = std::make_shared<BuildConfigResult>();
         result->extraCoreData = std::make_shared<ExtraCoreData>();
         auto status = std::make_shared<BuildConfigStatus>();
@@ -60,7 +60,7 @@ namespace Configs {
             }
             result->coreConfig = QString2QJsonObject(customBean->config_simple);
         } else {
-            BuildConfigSingBox(status, ruleSetMap);
+            BuildConfigSingBox(status);
         }
 
         // apply custom config
@@ -116,7 +116,7 @@ namespace Configs {
     }
 
 
-    std::shared_ptr<BuildTestConfigResult> BuildTestConfig(const QList<std::shared_ptr<ProxyEntity>>& profiles, const std::map<std::string, std::string>& ruleSetMap) {
+    std::shared_ptr<BuildTestConfigResult> BuildTestConfig(const QList<std::shared_ptr<ProxyEntity>>& profiles) {
         auto results = std::make_shared<BuildTestConfigResult>();
 
         QJsonArray outboundArray = {
@@ -140,7 +140,7 @@ namespace Configs {
                 item->latency = -1;
                 continue;
             }
-            auto res = BuildConfig(item, ruleSetMap, true, false, ++index);
+            auto res = BuildConfig(item, true, false, ++index);
             if (!res->error.isEmpty()) {
                 results->error = res->error;
                 return results;
@@ -423,12 +423,8 @@ namespace Configs {
     QJsonObject BuildDnsObject(QString address, bool tunEnabled)
     {
         bool usingSystemdResolved = false;
-        bool isDarwin = false;
 #ifdef Q_OS_LINUX
         usingSystemdResolved = ReadFileText("/etc/resolv.conf").contains("systemd-resolved");
-#endif
-#ifdef Q_OS_MACOS
-        isDarwin = true;
 #endif
         if (address.startsWith("local"))
         {
@@ -438,11 +434,11 @@ namespace Configs {
                     {"type", "underlying"}
                 };
             }
-            if (tunEnabled && isDarwin)
+            if (tunEnabled && getOS() == Darwin)
             {
-                MW_show_log(R"(DNS has been overriden to dhcp, if it does not work, please change both "Routing settings->Direct DNS" and "basic settings->Core->Core options->underlying dns" to something other than local)");
                 return {
-                        {"type", "dhcp"}
+                    {"type", "udp"},
+                    {"server", dataStore->core_box_underlying_dns}
                 };
             }
             return {
@@ -513,7 +509,7 @@ namespace Configs {
     }
 
 
-    void BuildConfigSingBox(const std::shared_ptr<BuildConfigStatus> &status, const std::map<std::string, std::string>& ruleSetMap) {
+    void BuildConfigSingBox(const std::shared_ptr<BuildConfigStatus> &status) {
         // Prefetch
         auto routeChain = profileManager->GetRouteChain(dataStore->routing->current_route_id);
         if (routeChain == nullptr) {
@@ -533,6 +529,12 @@ namespace Configs {
             }
         }
         routeChain->Save();
+
+        if (getOS() == Darwin && dataStore->core_box_underlying_dns.isEmpty() && dataStore->spmode_vpn)
+        {
+            status->result->error = QObject::tr("Local DNS and Tun mode do not work together, please set an IP to be used as the Local DNS server in the Routing Settings -> Local override");
+            return;
+        }
         
         // copy for modification
         routeChain = std::make_shared<RoutingChain>(*routeChain);
@@ -790,17 +792,18 @@ namespace Configs {
                         {"url", item},
                     };
                 }
-                else
-                    if(ruleSetMap.count(item.toStdString()) > 0) {
-                        ruleSetArray += QJsonObject{
-                            {"type", "remote"},
-                            {"tag", item},
-                            {"format", "binary"},
-                            {"url", get_jsdelivr_link(QString::fromStdString(ruleSetMap.at(item.toStdString())))},
-                        };
-                    }
+                // TODO: REVIEW
+                //else
+                    // if(ruleSetMap.count(item.toStdString()) > 0) {
+                    //     ruleSetArray += QJsonObject{
+                    //         {"type", "remote"},
+                    //         {"tag", item},
+                    //         {"format", "binary"},
+                    //         {"url", get_jsdelivr_link(QString::fromStdString(ruleSetMap.at(item.toStdString())))},
+                    //     };
+                    // }
             }
-            if (Configs::dataStore->adblock_enable) {
+            if (dataStore->adblock_enable) {
                 ruleSetArray += QJsonObject{
                     {"type", "remote"},
                     {"tag", "throne-adblocksingbox"},
@@ -936,7 +939,7 @@ namespace Configs {
             };
         }
 
-        // Underlying 100% Working DNS
+        // Underlying DNS
         auto dnsLocalAddress = dataStore->core_box_underlying_dns.isEmpty() ? "local" : dataStore->core_box_underlying_dns;
         auto dnsLocalObj = BuildDnsObject(dnsLocalAddress, dataStore->spmode_vpn);
         dnsLocalObj["tag"] = "dns-local";

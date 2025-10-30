@@ -468,7 +468,11 @@ void MainWindow::profile_start(int _id) {
     auto group = Configs::profileManager->GetGroup(ent->gid);
     if (group == nullptr || group->archive) return;
 
+<<<<<<< HEAD
     auto result = Configs::BuildSingBoxConfig(ent);
+=======
+    auto result = BuildConfig(ent, false, false);
+>>>>>>> 525abb8 (Refactor settings dialog and enhance outbound configurations)
     if (!result->error.isEmpty()) {
         MessageBoxWarning(tr("BuildConfig return error"), result->error);
         return;
