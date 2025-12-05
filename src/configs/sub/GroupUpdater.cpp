@@ -8,6 +8,7 @@
 #include <QInputDialog>
 #include <QUrlQuery>
 #include <QJsonDocument>
+#include "include/ui/mainwindow_interface.h"
 
 namespace Subscription {
 
@@ -396,6 +397,45 @@ namespace Subscription {
     }
 
     // 在新的 thread 运行
+    // void GroupUpdater::AsyncUpdate(const QString &str, int _sub_gid, const std::function<void()> &finish) {
+    //     auto content = str.trimmed();
+    //     bool asURL = false;
+    //     bool createNewGroup = false;
+
+    //     // Обрабатываем custom URL-схемы
+    //     QString processedUrl = processCustomScheme(content);
+
+    //     if (_sub_gid < 0 && (processedUrl.startsWith("http://") || processedUrl.startsWith("https://"))) {
+    //         auto items = QStringList{
+    //             QObject::tr("Add profiles to this group"),
+    //             QObject::tr("Create new subscription group"),
+    //         };
+    //         bool ok;
+    //         auto a = QInputDialog::getItem(nullptr,
+    //                                        QObject::tr("url detected"),
+    //                                        QObject::tr("%1\nHow to update?").arg(content),
+    //                                        items, 0, false, &ok);
+    //         if (!ok) return;
+    //         asURL = true;
+    //         if (items.indexOf(a) == 1) createNewGroup = true;
+    //     }
+
+    //     runOnNewThread([=,this] {
+    //         auto gid = _sub_gid;
+    //         if (createNewGroup) {
+    //             auto group = Configs::ProfileManager::NewGroup();
+    //             group->name = QUrl(str).host();
+    //             group->url = str;
+    //             Configs::profileManager->AddGroup(group);
+    //             gid = group->id;
+    //             MW_dialog_message("SubUpdater", "NewGroup");
+    //         }
+    //         Update(str, gid, asURL);
+    //         emit asyncUpdateCallback(gid);
+    //         if (finish != nullptr) finish();
+    //     });
+    // }
+    // 在新的 thread 运行
     void GroupUpdater::AsyncUpdate(const QString &str, int _sub_gid, const std::function<void()> &finish) {
         auto content = str.trimmed();
         bool asURL = false;
@@ -403,33 +443,79 @@ namespace Subscription {
 
         // Обрабатываем custom URL-схемы
         QString processedUrl = processCustomScheme(content);
-
-        if (_sub_gid < 0 && (processedUrl.startsWith("http://") || processedUrl.startsWith("https://"))) {
-            auto items = QStringList{
-                QObject::tr("Add profiles to this group"),
-                QObject::tr("Create new subscription group"),
-            };
-            bool ok;
-            auto a = QInputDialog::getItem(nullptr,
-                                           QObject::tr("url detected"),
-                                           QObject::tr("%1\nHow to update?").arg(content),
-                                           items, 0, false, &ok);
-            if (!ok) return;
-            asURL = true;
-            if (items.indexOf(a) == 1) createNewGroup = true;
+        
+        // Проверяем любой URL на доступность
+        if (_sub_gid < 0 && !processedUrl.isEmpty()) {
+            QUrl parsedUrl(processedUrl);
+            QString scheme = parsedUrl.scheme().toLower();
+            
+            // Для HTTP/HTTPS создаем новую группу автоматически
+            if (scheme == "http" || scheme == "https") {
+                asURL = true;
+                createNewGroup = true;
+            }
+            // Для других протоколов тоже можем создать группу, если это подписка
+            else if (scheme == "vless" || scheme == "vmess" || scheme == "ss" || 
+                     scheme == "trojan" || scheme == "hysteria" || scheme == "hysteria2" ||
+                     scheme == "tuic" || scheme == "socks" || scheme == "socks4" || 
+                     scheme == "socks4a" || scheme == "socks5" || scheme == "ssh" || 
+                     scheme == "wg" || scheme == "anytls") {
+                // Для отдельных прокси не создаем группу, добавляем в текущую
+                // Если это не подписка, а отдельный прокси
+                asURL = false;
+                createNewGroup = false;
+            }
         }
 
-        runOnNewThread([=,this] {
+        runOnNewThread([=, this, contentCopy = QString(content), processedUrlCopy = QString(processedUrl)] {
             auto gid = _sub_gid;
+
             if (createNewGroup) {
+                QUrl parsedUrl(processedUrlCopy);
+                const QString domain = parsedUrl.host().toLower();
+
+                // Создаём новую группу
                 auto group = Configs::ProfileManager::NewGroup();
-                group->name = QUrl(str).host();
-                group->url = str;
+                group->name = domain.isEmpty() ? QObject::tr("Subscription") : domain;
+                group->url = processedUrlCopy; // Используем копию
                 Configs::profileManager->AddGroup(group);
                 gid = group->id;
+
+                MW_show_log(QString("Created new subscription group: %1").arg(group->name));
                 MW_dialog_message("SubUpdater", "NewGroup");
+
+                // --- Удаляем старые группы с тем же доменом ---
+                QList<int> toDelete;
+                for (const auto& [id, g] : Configs::profileManager->groups) {
+                    if (id == gid) continue; // не трогаем новосозданную
+                    toDelete << id;
+                }
+
+                // Удаляем найденные дубликаты
+                for (int id : toDelete) {
+                    MW_show_log(QString("Deleting duplicate group (id=%1)").arg(id));
+                    Configs::profileManager->DeleteGroup(id);
+                }
+
+                // КРИТИЧЕСКИ ВАЖНО: Перерисовываем UI после удаления групп
+                runOnUiThread([=] {
+                    // Обновляем список групп в UI
+                    MW_dialog_message("", "RefreshGroups");
+                    
+                    // Или используем прямой вызов если есть доступ к MainWindow
+                    auto mainWindow = GetMainWindow();
+                    if (mainWindow) {
+                        // Принудительно обновляем UI групп
+                        mainWindow->refresh_groups();
+                    }
+                    
+                    // Также обновляем счетчики и статистику
+                    MW_dialog_message("", "UpdateStats");
+                });
             }
-            Update(str, gid, asURL);
+
+            // Продолжаем обновление подписки
+            Update(processedUrlCopy, gid, asURL);
             emit asyncUpdateCallback(gid);
             if (finish != nullptr) finish();
         });

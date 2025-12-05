@@ -346,6 +346,36 @@ namespace Configs {
         if (auto obj = reality->Build().object;!obj.isEmpty()) object["reality"] = obj;
         return {object, ""};
     }
+    BuildResult TLS::BuildForDNS()
+    {
+        QJsonObject object;
+        if (!enabled) return {};
+        
+        object["enabled"] = enabled;
+        if (disable_sni) object["disable_sni"] = disable_sni;
+        if (!server_name.isEmpty()) object["server_name"] = server_name;
+        if (insecure) object["insecure"] = insecure;
+        
+        // КРИТИЧНО: НЕ добавляем ALPN для DNS over TLS
+        // DNS over TLS (RFC 7858) не использует ALPN
+        // ALPN используется только для HTTP/2, HTTP/3
+        
+        if (!min_version.isEmpty()) object["min_version"] = min_version;
+        if (!max_version.isEmpty()) object["max_version"] = max_version;
+        if (!cipher_suites.isEmpty()) {
+            object["cipher_suites"] = QListStr2QJsonArray(cipher_suites);
+        }
+        if (!curve_preferences.isEmpty()) {
+            object["curve_preferences"] = QListStr2QJsonArray(curve_preferences);
+        }
+        if (!certificate.isEmpty()) {
+            object["certificate"] = QListStr2QJsonArray(certificate);
+        }
+        if (!certificate_path.isEmpty()) object["certificate_path"] = certificate_path;
+        
+        return {object, ""};
+    }
+
 }
 
 
