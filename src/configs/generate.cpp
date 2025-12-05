@@ -316,20 +316,6 @@ namespace Configs {
         if (port != -1) res["server_port"] = port;
         if (!path.isEmpty()) res["path"] = path;
         
-        // ИСПРАВЛЕНИЕ: Для DNS over TLS НЕ добавляем ALPN
-        // DNS over TLS (RFC 7858) не использует ALPN протокол
-        // ALPN нужен только для HTTP/2, HTTP/3
-        if (type == "tls") {
-            QJsonObject tls;
-            tls["enabled"] = true;
-            // Можно добавить server_name если нужно
-            // if (!addr.isEmpty() && !IsIpAddress(addr)) {
-            //     tls["server_name"] = addr;
-            // }
-            // НЕ добавляем ALPN для DoT - это вызывает ошибку "no application protocol"
-            res["tls"] = tls;
-        }
-        
         return res;
     }
 
