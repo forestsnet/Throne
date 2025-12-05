@@ -354,13 +354,57 @@ namespace Subscription {
         }
     }
 
+    QString processCustomScheme(const QString &url) {
+        // #ifdef Q_OS_WIN
+        // QString debugMsg = QString("processCustomScheme called with: %1").arg(url);
+        // MessageBoxWarning("Debug - processCustomScheme", debugMsg);
+        // #endif
+        
+        // MW_show_log(QString("Processing URL: %1").arg(url));
+
+        QString fixedUrl = url;
+        if (fixedUrl.startsWith("throne://subscribe?")) {
+            // добавляем слэш, если его нет
+            fixedUrl.replace("throne://subscribe?", "throne://subscribe/?");
+            // #ifdef Q_OS_WIN
+            // QString fixMsg = QString("Fixed URL: %1").arg(fixedUrl);
+            // MessageBoxWarning("Debug - Fixed URL", fixMsg);
+            // #endif
+        }
+
+        QUrl throneUrl(fixedUrl);
+        QUrlQuery query(throneUrl.query());
+        QString subscriptionUrl = query.queryItemValue("url");
+
+        if (!subscriptionUrl.isEmpty()) {
+            QString decodedUrl = QUrl::fromPercentEncoding(subscriptionUrl.toUtf8());
+            // MW_show_log(QString("Extracted subscription URL from throne scheme: %1").arg(decodedUrl));
+            
+            // #ifdef Q_OS_WIN
+            // QString resultMsg = QString("Decoded URL: %1").arg(decodedUrl);
+            // MessageBoxWarning("Debug - Final URL", resultMsg);
+            // #endif
+            
+            return decodedUrl;
+        }
+
+        // #ifdef Q_OS_WIN
+        // MessageBoxWarning("Debug - No URL Param", "No URL parameter found, returning original");
+        // #endif
+        
+        return url;
+    }
+
     // 在新的 thread 运行
     void GroupUpdater::AsyncUpdate(const QString &str, int _sub_gid, const std::function<void()> &finish) {
         auto content = str.trimmed();
         bool asURL = false;
         bool createNewGroup = false;
 
-        if (_sub_gid < 0 && (content.startsWith("http://") || content.startsWith("https://"))) {
+        // Обрабатываем custom URL-схемы
+        QString processedUrl = processCustomScheme(content);
+
+        if (_sub_gid < 0 && (processedUrl.startsWith("http://") || processedUrl.startsWith("https://"))) {
             auto items = QStringList{
                 QObject::tr("Add profiles to this group"),
                 QObject::tr("Create new subscription group"),

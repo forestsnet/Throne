@@ -9,11 +9,15 @@
 #include <QLocalSocket>
 #include <QLocalServer>
 #include <QThread>
+#include <QTimer>
+#include <QFileOpenEvent>
 #include <3rdparty/WinCommander.hpp>
 
 #include "include/global/Configs.hpp"
+#include "include/configs/sub/GroupUpdater.hpp"
 
 #include "include/ui/mainwindow_interface.h"
+
 
 #ifdef Q_OS_WIN
 #include "include/sys/windows/MiniDump.h"
@@ -22,6 +26,9 @@
 #include <qfontdatabase.h>
 #endif
 #ifdef Q_OS_LINUX
+#include <qfontdatabase.h>
+#endif
+#ifdef Q_OS_MACOS
 #include <qfontdatabase.h>
 #endif
 
@@ -59,6 +66,120 @@ void loadTranslate(const QString& locale) {
 
 #define LOCAL_SERVER_PREFIX "throne-"
 
+
+void registerUrlScheme()
+{
+#ifdef Q_OS_WIN
+    const QString appPath = QDir::toNativeSeparators(QApplication::applicationFilePath());
+    const QString protocolName = "throne";
+    const QString description = "URL:Throne Protocol";
+
+    // Основная ветка реестра
+    QSettings protocolKey(QString("HKEY_CURRENT_USER\\Software\\Classes\\%1").arg(protocolName),
+                          QSettings::NativeFormat);
+    protocolKey.setValue(".", description);  // "." вместо "Default" — чтобы точно попало в (Default)
+    protocolKey.setValue("URL Protocol", "");
+
+    // Команда для открытия
+    const QString correctValue = QString("\"%1\" \"%2\"").arg(appPath, "%1");
+    QSettings commandKey(QString("HKEY_CURRENT_USER\\Software\\Classes\\%1\\shell\\open\\command")
+                             .arg(protocolName),
+                         QSettings::NativeFormat);
+
+    QString currentValue = commandKey.value(".").toString();
+
+    if (currentValue != correctValue)
+    {
+        commandKey.setValue(".", correctValue);
+        qDebug() << "Fixed registry command for throne://" << correctValue;
+    }
+    else
+    {
+        qDebug() << "Registry command already correct:" << correctValue;
+    }
+
+#elif defined(Q_OS_MACOS)
+    qDebug() << "URL scheme for macOS is handled via Info.plist";
+
+#elif defined(Q_OS_LINUX)
+    const QString desktopEntry =
+        QString("[Desktop Entry]\n"
+                "Type=Application\n"
+                "Name=Throne\n"
+                "Exec=%1 %%u\n"
+                "MimeType=x-scheme-handler/throne;\n"
+                "NoDisplay=true\n")
+            .arg(QApplication::applicationFilePath());
+
+    const QString configDir = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
+    const QString desktopFilePath = configDir + "/applications/throne.desktop";
+    QDir().mkpath(QFileInfo(desktopFilePath).absolutePath());
+
+    QFile desktopFile(desktopFilePath);
+    if (desktopFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        desktopFile.write(desktopEntry.toUtf8());
+        desktopFile.close();
+        QProcess::execute("update-desktop-database", QStringList() << QFileInfo(desktopFilePath).absolutePath());
+        qDebug() << "Created desktop entry:" << desktopFilePath;
+    } else {
+        qWarning() << "Failed to write desktop entry:" << desktopFilePath;
+    }
+#endif
+}
+
+#ifdef Q_OS_WIN
+static void DebugBox(const QString &title, const QString &text)
+{
+    QMessageBox box;
+    box.setWindowTitle(title);
+    box.setText(text);
+    box.setIcon(QMessageBox::Information);
+    box.setStandardButtons(QMessageBox::Ok);
+    box.exec();
+}
+#else
+#define DebugBox(title, text) qDebug() << title << ":" << text
+#endif
+
+class ThroneApplication : public QApplication {
+public:
+    ThroneApplication(int &argc, char **argv) : QApplication(argc, argv) {}
+
+protected:
+    bool event(QEvent *event) override {
+        if (event->type() == QEvent::FileOpen) {
+            QFileOpenEvent *openEvent = static_cast<QFileOpenEvent *>(event);
+            QString url = openEvent->url().toString();
+            
+            qDebug() << "FileOpen event received:" << url;
+            
+            if (url.startsWith("throne://")) {
+                handleThroneUrl(url);
+                return true;
+            }
+        }
+        return QApplication::event(event);
+    }
+
+private:
+    void handleThroneUrl(const QString &url) {
+        qDebug() << "Processing throne URL:" << url;
+        
+        auto mainWindow = GetMainWindow();
+        if (mainWindow) {
+            mainWindow->show();
+            mainWindow->raise();
+            mainWindow->activateWindow();
+            Subscription::groupUpdater->AsyncUpdate(url, -1, nullptr);
+        } else {
+            pendingThroneUrl = url;
+        }
+    }
+
+public:
+    QString pendingThroneUrl;
+};
+
 int main(int argc, char* argv[]) {
     // Core dump
 #ifdef Q_OS_WIN
@@ -67,7 +188,7 @@ int main(int argc, char* argv[]) {
 
     QApplication::setAttribute(Qt::AA_DontUseNativeDialogs);
     QApplication::setQuitOnLastWindowClosed(false);
-    QApplication a(argc, argv);
+    ThroneApplication a(argc, argv);
 
 #if !defined(Q_OS_MACOS) && (QT_VERSION >= QT_VERSION_CHECK(6,9,0))
     // Load the emoji fonts
@@ -229,6 +350,19 @@ int main(int argc, char* argv[]) {
     QByteArray hashBytes = QCryptographicHash::hash(wd.absolutePath().toUtf8(), QCryptographicHash::Md5).toBase64(QByteArray::OmitTrailingEquals);
     hashBytes.replace('+', '0').replace('/', '1');
     auto serverName = LOCAL_SERVER_PREFIX + QString::fromUtf8(hashBytes);
+
+    // throne url-scheme
+    QStringList arguments = a.arguments();
+    
+    QString throneUrl;
+    for (int i = 1; i < arguments.size(); ++i) {
+        const QString &arg = arguments[i];
+        if (arg.startsWith("throne://")) {
+            throneUrl = arg;
+            break;
+        }
+    }
+
     qDebug() << "server name: " << serverName;
     QLocalSocket socket;
     socket.connectToServer(serverName);
@@ -246,11 +380,45 @@ int main(int argc, char* argv[]) {
         qWarning() << "Failed to start QLocalServer! Error:" << server.errorString();
         return 1;
     }
+    // QObject::connect(&server, &QLocalServer::newConnection, qApp, [&] {
+    //     auto s = server.nextPendingConnection();
+    //     qDebug() << "Another instance tried to wake us up on " << serverName << s;
+    //     s->close();
+    //     // raise main window
+    //     MW_dialog_message("", "Raise");
+    // });
     QObject::connect(&server, &QLocalServer::newConnection, qApp, [&] {
         auto s = server.nextPendingConnection();
-        qDebug() << "Another instance tried to wake us up on " << serverName << s;
+        
+        // Читаем данные из соединения (если новый экземпляр передает URL)
+        if (s->waitForReadyRead(1000)) {
+            QByteArray data = s->readAll();
+            QString receivedUrl = QString::fromUtf8(data);
+            
+            if (receivedUrl.startsWith("throne://")) {
+                // Открываем главное окно и обрабатываем URL
+                QTimer::singleShot(100, [receivedUrl]() {
+                    //
+                    // Показываем окно
+                    MW_dialog_message("", "Raise");
+                    
+                    auto mainWindow = GetMainWindow();
+                    if (mainWindow) {
+                        mainWindow->show();
+                        mainWindow->raise();
+                        mainWindow->activateWindow();
+                        qDebug() << "Main window activated";
+                    } else {
+                        qDebug() << "Main window is null!";
+                    }
+
+                    Subscription::groupUpdater->AsyncUpdate(receivedUrl, -1, nullptr);
+                });
+            }
+        }
+        
         s->close();
-        // raise main window
+        // raise main window в любом случае
         MW_dialog_message("", "Raise");
     });
     QObject::connect(qApp, &QApplication::aboutToQuit, [&]
@@ -277,6 +445,62 @@ int main(int argc, char* argv[]) {
     });
 #endif
 
+    registerUrlScheme();
+
+    // Проверяем, что схема реально записана корректно
+    #ifdef Q_OS_WIN
+    {
+        QSettings verify("HKEY_CURRENT_USER\\SOFTWARE\\Classes\\throne\\shell\\open\\command", QSettings::NativeFormat);
+        QString cmd = verify.value("Default").toString();
+        QString expected = QString("\"%1\" \"%%1\"").arg(QDir::toNativeSeparators(QApplication::applicationFilePath()));
+        if (cmd != expected) {
+            registerUrlScheme();
+        }
+    }
+    #endif
+
     UI_InitMainWindow();
+
+     // После инициализации UI - обработка отложенных URL для всех платформ
+    if (!a.pendingThroneUrl.isEmpty()) {
+        QTimer::singleShot(500, [&a]() {
+            const QString url = a.pendingThroneUrl;
+            qDebug() << "Processing pending throne URL after UI init:" << url;
+
+            auto mainWindow = GetMainWindow();
+            if (mainWindow) {
+                mainWindow->show();
+                mainWindow->raise();
+                mainWindow->activateWindow();
+                Subscription::groupUpdater->AsyncUpdate(url, -1, nullptr);
+            }
+        });
+    }
+    
+    // Обработка URL при первом запуске (если приложение не было запущено)
+    if (!throneUrl.isEmpty()) {
+        qDebug() << "Found throne URL in arguments:" << throneUrl;
+        
+        // Обработать URL-схему после инициализации UI
+        QTimer::singleShot(1000, [throneUrl]() {
+            qDebug() << "Timer triggered, processing URL:" << throneUrl;
+            
+            // Показываем главное окно
+            auto mainWindow = GetMainWindow();
+            if (mainWindow) {
+                mainWindow->show();
+                mainWindow->raise();
+                mainWindow->activateWindow();
+                qDebug() << "Main window shown and activated";
+            } else {
+                MW_dialog_message("", "Raise");
+                qDebug() << "Main window was null, used MW_dialog_message";
+            }
+            
+            // Обрабатываем URL
+            Subscription::groupUpdater->AsyncUpdate(throneUrl, -1, nullptr);
+            qDebug() << "AsyncUpdate called with URL:" << throneUrl;
+        });
+    }
     return QApplication::exec();
 }

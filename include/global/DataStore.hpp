@@ -13,18 +13,18 @@ namespace Configs {
 
         // DNS
         QString remote_dns = "tls://8.8.8.8";
-        QString remote_dns_strategy = "";
-        QString direct_dns = "localhost";
-        QString direct_dns_strategy = "";
+        QString remote_dns_strategy = "prefer_ipv4";
+        QString direct_dns = "tls://8.8.8.8";
+        QString direct_dns_strategy = "prefer_ipv4";
         bool use_dns_object = false;
         QString dns_object = "";
         QString dns_final_out = "proxy";
 
         // Misc
-        QString domain_strategy = "AsIs";
-        QString outbound_domain_strategy = "AsIs";
+        QString domain_strategy = "prefer_ipv4";
+        QString outbound_domain_strategy = "prefer_ipv4";
         int sniffing_mode = SniffingMode::FOR_ROUTING;
-        int ruleset_mirror = Mirrors::CLOUDFLARE;
+        int ruleset_mirror = Mirrors::GITHUB;
 
         explicit Routing(int preset = 0);
 
@@ -79,7 +79,7 @@ namespace Configs {
         // Misc
         QString mainWindowGeometry;
         QString log_level = "info";
-        QString test_latency_url = "http://cp.cloudflare.com/";
+        QString test_latency_url = "https://www.gstatic.com/generate_204";
         int url_test_timeout_ms = 3000;
         bool disable_tray = false;
         int test_concurrent = 10;
@@ -89,8 +89,8 @@ namespace Configs {
         bool mux_padding = false;
         int mux_concurrency = 8;
         bool mux_default_on = false;
-        QString theme = "0";
-        int language = 0;
+        QString theme = "qdarkstyle"; // 0 - Default (System), but we use qdarkstyle
+        int language = 4;
         QString font = "";
         int font_size = 0;
         QString mw_size = "";
@@ -105,7 +105,7 @@ namespace Configs {
         QString simple_dl_url = "http://cachefly.cachefly.net/1mb.test";
         bool allow_beta_update = false;
         bool show_system_dns = false;
-        bool use_custom_icons = false;
+        bool use_custom_icons = true;
 
         // Network
         bool net_use_proxy = false;
@@ -114,26 +114,26 @@ namespace Configs {
         // Subscription
         QString user_agent = ""; // set at main.cpp
         int sub_auto_update = -30;
-        bool sub_clear = false;
-        bool sub_send_hwid = false;
+        bool sub_clear = true;
+        bool sub_send_hwid = true;
 
         // Security
         bool skip_cert = false;
-        QString utlsFingerprint = "";
+        QString utlsFingerprint = "chrome";
         bool disable_run_admin = false; // windows only
         bool use_mozilla_certs = false;
 
         // Remember
         QStringList remember_spmode = {};
         int remember_id = -1919;
-        bool remember_enable = false;
+        bool remember_enable = true;
         bool windows_set_admin = false;
         std::unique_ptr<Shortcuts> shortcuts;
 
         // Socks & HTTP Inbound
         QString inbound_address = "127.0.0.1";
         int inbound_socks_port = 2080; // Mixed, actually
-        bool random_inbound_port = false;
+        bool random_inbound_port = true;
         QString custom_inbound = "{\"inbounds\": []}";
 
         // Routing
@@ -143,15 +143,16 @@ namespace Configs {
 
         // VPN
         bool fake_dns = false;
-        bool enable_tun_routing = false;
+        bool enable_tun_routing = true;
 #ifdef Q_OS_MACOS
         QString vpn_implementation = "gvisor";
 #elif defined(Q_OS_WIN)
-        QString vpn_implementation = WinVersion::IsBuildNumGreaterOrEqual(BuildNumber::Windows_10_1507) ? "system" : "gvisor";
+        // QString vpn_implementation = WinVersion::IsBuildNumGreaterOrEqual(BuildNumber::Windows_10_1507) ? "system" : "gvisor";
+        QString vpn_implementation = "gvisor";
 #else
         QString vpn_implementation = "system";
 #endif
-        int vpn_mtu = 1500;
+        int vpn_mtu = 1420;
         bool vpn_ipv6 = false;
         bool vpn_strict_route = true;
         bool disable_privilege_req = false;

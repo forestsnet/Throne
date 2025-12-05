@@ -57,10 +57,130 @@
 #include <include/global/HTTPRequestHelper.hpp>
 #include "include/global/DeviceDetailsHelper.hpp"
 
+#include <QTcpSocket>
 #include "include/sys/macos/MacOS.h"
 
 void UI_InitMainWindow() {
     mainwindow = new MainWindow;
+}
+
+
+void MainWindow::tcpPingTest(const QList<std::shared_ptr<Configs::ProxyEntity>>& profiles) {
+    if (profiles.isEmpty()) {
+        return;
+    }
+    if (!speedtestRunning.tryLock()) {
+        MessageBoxWarning(software_name, tr("The last test did not exit completely, please wait. If it persists, please restart the program."));
+        return;
+    }
+
+    runOnNewThread([this, profiles]() {
+        std::atomic<int> counter(0);
+        stopSpeedtest.store(false);
+        
+        for (const auto& profile : profiles) {
+            if (stopSpeedtest.load()) break;
+            
+            parallelCoreCallPool->start([this, profile, &counter, profiles]() {
+                if (stopSpeedtest.load()) {
+                    counter++;
+                    if (counter.load() == profiles.size()) {
+                        speedtestRunning.unlock();
+                    }
+                    return;
+                }
+                
+                // Простой TCP ping
+                auto start = QDateTime::currentMSecsSinceEpoch();
+                QTcpSocket socket;
+                socket.connectToHost(profile->_bean->serverAddress, profile->_bean->serverPort);
+                
+                if (socket.waitForConnected(5000)) {
+                    auto latency = QDateTime::currentMSecsSinceEpoch() - start;
+                    profile->latency = static_cast<int>(latency);
+                    socket.disconnectFromHost();
+                } else {
+                    profile->latency = -1;
+                }
+                
+                profile->Save();
+                counter++;
+                
+                runOnUiThread([this, profile]() {
+                    refresh_proxy_list(profile->id);
+                });
+                
+                if (counter.load() == profiles.size()) {
+                    speedtestRunning.unlock();
+                }
+            });
+        }
+        
+        // Ждем завершения всех тестов
+        while (counter.load() < profiles.size() && !stopSpeedtest.load()) {
+            QThread::msleep(100);
+        }
+        
+        runOnUiThread([this]() {
+            MW_show_log(tr("TCP Ping test finished!"));
+        });
+    });
+}
+
+void MainWindow::handshakeTest(const QList<std::shared_ptr<Configs::ProxyEntity>>& profiles) {
+    if (profiles.isEmpty()) {
+        return;
+    }
+    if (!speedtestRunning.tryLock()) {
+        MessageBoxWarning(software_name, tr("The last test did not exit completely, please wait. If it persists, please restart the program."));
+        return;
+    }
+
+    runOnNewThread([this, profiles]() {
+        auto buildObject = Configs::BuildTestConfig(profiles);
+        if (!buildObject->error.isEmpty()) {
+            MW_show_log(tr("Failed to build test config: ") + buildObject->error);
+            speedtestRunning.unlock();
+            return;
+        }
+
+        std::atomic<int> counter(0);
+        stopSpeedtest.store(false);
+        auto testCount = buildObject->fullConfigs.size() + (!buildObject->outboundTags.empty());
+        
+        for (const auto &entID: buildObject->fullConfigs.keys()) {
+            auto configStr = buildObject->fullConfigs[entID];
+            auto func = [this, &counter, testCount, configStr, entID]() {
+                // Используем существующий механизм URL теста, но с простым HTTP запросом
+                MainWindow::runURLTest(configStr, true, {}, {}, entID);
+                counter++;
+                if (counter.load() == testCount) {
+                    speedtestRunning.unlock();
+                }
+            };
+            parallelCoreCallPool->start(func);
+        }
+
+        if (!buildObject->outboundTags.empty()) {
+            auto func = [this, &buildObject, &counter, testCount]() {
+                MainWindow::runURLTest(QJsonObject2QString(buildObject->coreConfig, false), false, buildObject->outboundTags, buildObject->tag2entID);
+                counter++;
+                if (counter.load() == testCount) {
+                    speedtestRunning.unlock();
+                }
+            };
+            parallelCoreCallPool->start(func);
+        }
+        
+        if (testCount == 0) speedtestRunning.unlock();
+
+        speedtestRunning.lock();
+        speedtestRunning.unlock();
+        runOnUiThread([this](){
+            refresh_proxy_list();
+            MW_show_log(tr("Handshake test finished!"));
+        });
+    });
 }
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -222,7 +342,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     }
 
     // software_name
-    software_name = "Throne";
+    QString version = SubStrBefore(NKR_VERSION, "-");
+    if (!version.contains(".")) version = "1.0.0";
+    software_name = "Throne | " + version + " | FSNT Fork";
     software_core_name = "sing-box";
     //
     if (auto dashDir = QDir("dashboard"); !dashDir.exists("dashboard") && QDir().mkdir("dashboard")) {
@@ -246,12 +368,109 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->toolButton_preferences->setMenu(ui->menu_preferences);
     ui->toolButton_server->setMenu(ui->menu_server);
     ui->toolButton_routing->setMenu(ui->menuRouting_Menu);
+    ui->toolButton_hidden->setMenu(ui->menuHidden_menu);
     ui->menubar->setVisible(false);
-    connect(ui->toolButton_update, &QToolButton::clicked, this, [=,this] { runOnNewThread([=,this] { CheckUpdate(); }); });
-    if (!QFile::exists(QApplication::applicationDirPath() + "/updater") && !QFile::exists(QApplication::applicationDirPath() + "/updater.exe"))
-    {
-        ui->toolButton_update->hide();
-    }
+    ui->horizontalLayout_2->addStretch();
+    ui->horizontalLayout_2->addWidget(ui->toolButton_speedtest);
+    ui->horizontalLayout_2->addWidget(ui->toolButton_ping);
+    ui->horizontalLayout_2->addSpacing(50);
+    // connect(ui->toolButton_update, &QToolButton::clicked, this, [=,this] { runOnNewThread([=,this] { CheckUpdate(); }); });
+    // if (!QFile::exists(QApplication::applicationDirPath() + "/updater") && !QFile::exists(QApplication::applicationDirPath() + "/updater.exe"))
+    // {
+    //     ui->toolButton_update->hide();
+    // }
+
+    connect(ui->toolButton_speedtest, &QToolButton::clicked, this, [=,this]() {
+        // Проверяем текущую группу
+        auto currentGroup = Configs::profileManager->CurrentGroup();
+        if (currentGroup == nullptr) {
+            MessageBoxWarning(tr("Speedtest"), tr("No group selected."));
+            return;
+        }
+        
+        // // Если ничего не выбрано, тестируем всю группу
+        auto allProfiles = currentGroup->GetProfileEnts();
+        if (allProfiles.isEmpty()) {
+            MessageBoxWarning(tr("Speedtest"), 
+                tr("Current group has no profiles.\n\n"
+                   "Please add some profiles first:\n"
+                   "• Use 'Add from clipboard' to import links\n"
+                   "• Import subscription URL\n"
+                   "• Add profile manually"));
+            return;
+        }
+        
+        MW_show_log(tr("Starting speedtest for all %1 profiles in group...").arg(allProfiles.size()));
+        speedtest_current_group(Configs::profileManager->CurrentGroup()->GetProfileEnts());
+    });
+
+    
+    connect(ui->toolButton_ping, &QToolButton::clicked, this, [=,this]() {
+        // Проверяем текущую группу
+        auto currentGroup = Configs::profileManager->CurrentGroup();
+        if (currentGroup == nullptr) {
+            MessageBoxWarning(tr("Ping Test"), tr("No group selected."));
+            return;
+        }
+        
+        // // Получаем выбранные профили
+        // auto selected = get_now_selected_list();
+        
+        // // Если есть выбранные, тестируем их
+        // if (!selected.isEmpty()) {
+        //     MW_show_log(tr("Starting handshake test for %1 selected profiles...").arg(selected.size()));
+        //     handshakeTest(selected);
+        //     return;
+        // }
+        
+        // // Если ничего не выбрано, тестируем всю группу
+        auto allProfiles = currentGroup->GetProfileEnts();
+        if (allProfiles.isEmpty()) {
+            MessageBoxWarning(tr("Ping Test"), 
+                tr("Current group has no profiles.\n\n"
+                   "Please add some profiles first:\n"
+                   "• Use 'Add from clipboard' to import links\n"
+                   "• Import subscription URL\n"
+                   "• Add profile manually"));
+            return;
+        }
+        
+        MW_show_log(tr("Starting handshake test for all %1 profiles in group...").arg(allProfiles.size()));
+        handshakeTest(allProfiles);
+    });
+    
+    connect(ui->toolButton_update, &QToolButton::clicked, this, [=,this] { 
+        QMenu menu(this);
+
+        // Опция 1: Проверить обновления (если есть updater)
+        if (QFile::exists(QApplication::applicationDirPath() + "/updater") ||
+            QFile::exists(QApplication::applicationDirPath() + "/updater.exe")) {
+            auto checkAction = menu.addAction(QObject::tr("Check for updates"));
+            connect(checkAction, &QAction::triggered, this, [=,this] {
+                runOnNewThread([=,this] { CheckUpdate(); });
+            });
+            menu.addSeparator();
+        }
+
+        // Опция 2: Открыть GitHub релизы
+        auto githubAction = menu.addAction(QObject::tr("Open GitHub Releases"));
+        connect(githubAction, &QAction::triggered, this, [=,this] {
+            QDesktopServices::openUrl(QUrl("https://github.com/forestsnet/Throne/releases"));
+        });
+        
+        // Опция 3: Открыть главную страницу проекта
+        auto repoAction = menu.addAction(QObject::tr("Open Repository"));
+        connect(repoAction, &QAction::triggered, this, [=,this] {
+            QDesktopServices::openUrl(QUrl("https://github.com/forestsnet/Throne"));
+        });
+        
+        // Показываем меню под кнопкой СИНХРОННО
+        QPoint pos = ui->toolButton_update->mapToGlobal(QPoint(0, ui->toolButton_update->height()));
+        menu.exec(pos); // exec() блокирует выполнение до выбора пункта
+    });
+
+    // Показывать кнопку всегда, независимо от наличия updater
+    ui->toolButton_update->setVisible(true);
 
     // setup connection UI
     setupConnectionList();
@@ -453,6 +672,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             speedtestRunning.unlock();
             ui->menu_server->removeAction(ui->menu_stop_testing);
         }
+    });
+
+    connect(ui->actionTcpPing_Selected, &QAction::triggered, this, [=,this]() {
+        tcpPingTest(get_now_selected_list());
+    });
+    connect(ui->actionTcpPing_Group, &QAction::triggered, this, [=,this]() {
+        tcpPingTest(Configs::profileManager->CurrentGroup()->GetProfileEnts());
+    });
+    connect(ui->actionHandshake_Selected, &QAction::triggered, this, [=,this]() {
+        handshakeTest(get_now_selected_list());
+    });
+    connect(ui->actionHandshake_Group, &QAction::triggered, this, [=,this]() {
+        handshakeTest(Configs::profileManager->CurrentGroup()->GetProfileEnts());
     });
 
     auto getRemoteRouteProfiles = [=,this]
@@ -2508,6 +2740,73 @@ bool MainWindow::StopVPNProcess() {
     return true;
 }
 
+
+bool compareVersions(const QStringList& parts, const QStringList& currentParts) {
+    if (parts.size() < 3 || currentParts.size() < 3) {
+        MW_show_log("Version strings seem to be invalid in compareVersions");
+        return false;
+    }
+    
+    std::vector<int> verNums;
+    std::vector<int> currNums;
+    
+    // add base version first
+    verNums.push_back(parts[0].toInt());
+    verNums.push_back(parts[1].toInt());
+    verNums.push_back(parts[2].toInt());
+    if (parts.size() > 3) {
+        if (parts[3] == "alpha") verNums.push_back(1);
+        if (parts[3] == "beta") verNums.push_back(2);
+        if (parts[3] == "rc") verNums.push_back(3);
+        if (parts.size() > 4) verNums.push_back(parts[4].toInt());
+    }
+
+    currNums.push_back(currentParts[0].toInt());
+    currNums.push_back(currentParts[1].toInt());
+    currNums.push_back(currentParts[2].toInt());
+    if (currentParts.size() > 3) {
+        if (currentParts[3] == "alpha") currNums.push_back(1);
+        if (currentParts[3] == "beta") currNums.push_back(2);
+        if (currentParts[3] == "rc") currNums.push_back(3);
+        if (currentParts.size() > 4) currNums.push_back(currentParts[4].toInt());
+    }
+
+    if (verNums.size() < 3 || currNums.size() < 3) {
+        MW_show_log("Version parsing failed in compareVersions");
+        return false;
+    }
+
+    for (int i = 0; i < 3; i++) {
+        if (verNums[i] > currNums[i]) return true;
+        if (verNums[i] < currNums[i]) return false;
+    }
+
+    // equal base version, check beta-ness
+    if (verNums.size() == 5 && currNums.size() == 3) return false;
+    if (verNums.size() == 3 && currNums.size() == 5) return true;
+    if (verNums.size() == 5 && currNums.size() == 5) {
+        for (int i = 3; i < 5; i++) {
+            if (verNums[i] > currNums[i]) return true;
+            if (verNums[i] < currNums[i]) return false;
+        }
+    }
+    return false;
+}
+
+bool isNewerByTag(const QString& releaseTag) {
+    if (QString(NKR_VERSION).isEmpty()) return false;
+    
+    QString version = releaseTag;
+    if (version.startsWith('v') || version.startsWith('V')) {
+        version = version.mid(1);
+    }
+    
+    auto parts = version.replace("-", ".").split(".");
+    auto currentParts = QString(NKR_VERSION).replace("-", ".").split('.');
+    
+    return compareVersions(parts, currentParts);
+}
+
 bool isNewer(QString assetName) {
     if (QString(NKR_VERSION).isEmpty()) return false;
     assetName = assetName.mid(7); // take out Throne-
@@ -2614,7 +2913,7 @@ void MainWindow::CheckUpdate() {
         return;
     }
 
-    auto resp = NetworkRequestHelper::HttpGet("https://api.github.com/repos/throneproj/Throne/releases");
+    auto resp = NetworkRequestHelper::HttpGet("https://api.github.com/repos/forestsnet/Throne/releases");
     if (!resp.error.isEmpty()) {
         runOnUiThread([=,this] {
             MessageBoxWarning(QObject::tr("Update"), QObject::tr("Requesting update error: %1").arg(resp.error + "\n" + resp.data));
@@ -2622,7 +2921,7 @@ void MainWindow::CheckUpdate() {
         return;
     }
 
-    QString assets_name, release_download_url, release_url, release_note, note_pre_release;
+    QString assets_name, release_download_url, release_url, release_note, note_pre_release, release_tag_name;
     bool exitFlag = false;
     QJsonArray array = QString2QJsonArray(resp.data);
     for (const QJsonValue value : array) {
@@ -2633,6 +2932,7 @@ void MainWindow::CheckUpdate() {
                 note_pre_release = release["prerelease"].toBool() ? " (Pre-release)" : "";
                 release_url = release["html_url"].toString();
                 release_note = release["body"].toString();
+                release_tag_name = release["tag_name"].toString();
                 assets_name = asset["name"].toString();
                 release_download_url = asset["browser_download_url"].toString();
                 exitFlag = true;
@@ -2642,7 +2942,7 @@ void MainWindow::CheckUpdate() {
         if (exitFlag) break;
     }
 
-    if (release_download_url.isEmpty() || !isNewer(assets_name)) {
+    if (release_download_url.isEmpty() || !isNewerByTag(release_tag_name)) {
         runOnUiThread([=,this] {
             MessageBoxInfo(QObject::tr("Update"), QObject::tr("No update"));
         });
@@ -2696,4 +2996,87 @@ void MainWindow::CheckUpdate() {
             QDesktopServices::openUrl(QUrl(release_url));
         }
     });
+
+    // auto resp = NetworkRequestHelper::HttpGet("https://api.github.com/repos/throneproj/Throne/releases");
+    // if (!resp.error.isEmpty()) {
+    //     runOnUiThread([=,this] {
+    //         MessageBoxWarning(QObject::tr("Update"), QObject::tr("Requesting update error: %1").arg(resp.error + "\n" + resp.data));
+    //     });
+    //     return;
+    // }
+
+    // QString assets_name, release_download_url, release_url, release_note, note_pre_release;
+    // bool exitFlag = false;
+    // QJsonArray array = QString2QJsonArray(resp.data);
+    // for (const QJsonValue value : array) {
+    //     QJsonObject release = value.toObject();
+    //     if (release["prerelease"].toBool() && !Configs::dataStore->allow_beta_update) continue;
+    //     for (const QJsonValue asset : release["assets"].toArray()) {
+    //         if (asset["name"].toString().contains(search) && asset["name"].toString().section('.', -1) == QString("zip")) {
+    //             note_pre_release = release["prerelease"].toBool() ? " (Pre-release)" : "";
+    //             release_url = release["html_url"].toString();
+    //             release_note = release["body"].toString();
+    //             assets_name = asset["name"].toString();
+    //             release_download_url = asset["browser_download_url"].toString();
+    //             exitFlag = true;
+    //             break;
+    //         }
+    //     }
+    //     if (exitFlag) break;
+    // }
+
+    // if (release_download_url.isEmpty() || !isNewer(assets_name)) {
+    //     runOnUiThread([=,this] {
+    //         MessageBoxInfo(QObject::tr("Update"), QObject::tr("No update"));
+    //     });
+    //     return;
+    // }
+
+    // runOnUiThread([=,this] {
+    //     auto allow_updater = !Configs::dataStore->flag_use_appdata;
+    //     QMessageBox box(QMessageBox::Question, QObject::tr("Update") + note_pre_release,
+    //                     QObject::tr("Update found: %1\nRelease note:\n%2").arg(assets_name, release_note));
+    //     //
+    //     QAbstractButton *btn1 = nullptr;
+    //     if (allow_updater) {
+    //         btn1 = box.addButton(QObject::tr("Update"), QMessageBox::AcceptRole);
+    //     }
+    //     QAbstractButton *btn2 = box.addButton(QObject::tr("Open in browser"), QMessageBox::AcceptRole);
+    //     box.addButton(QObject::tr("Close"), QMessageBox::RejectRole);
+    //     box.exec();
+    //     //
+    //     if (btn1 == box.clickedButton() && allow_updater) {
+    //         // Download Update
+    //         runOnNewThread([=,this] {
+    //             if (!mu_download_update.tryLock()) {
+    //                 runOnUiThread([=,this](){
+    //                     MessageBoxWarning(tr("Cannot start"), tr("Last download request has not finished yet"));
+    //                 });
+    //                 return;
+    //             }
+    //             QString errors;
+    //             if (!release_download_url.isEmpty()) {
+    //                 auto res = NetworkRequestHelper::DownloadAsset(release_download_url, "Throne.zip");
+    //                 if (!res.isEmpty()) {
+    //                     errors += res;
+    //                 }
+    //             }
+    //             mu_download_update.unlock();
+    //             runOnUiThread([=,this] {
+    //                 if (errors.isEmpty()) {
+    //                     auto q = QMessageBox::question(nullptr, QObject::tr("Update"),
+    //                                                    QObject::tr("Update is ready, restart to install?"));
+    //                     if (q == QMessageBox::StandardButton::Yes) {
+    //                         this->exit_reason = 1;
+    //                         on_menu_exit_triggered();
+    //                     }
+    //                 } else {
+    //                     MessageBoxWarning(tr("Failed to download update assets"), errors);
+    //                 }
+    //             });
+    //         });
+    //     } else if (btn2 == box.clickedButton()) {
+    //         QDesktopServices::openUrl(QUrl(release_url));
+    //     }
+    // });
 }
