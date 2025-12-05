@@ -26,7 +26,6 @@ if [ -z $DEST ]; then
   echo "Please set GOOS GOARCH"
   exit 1
 fi
-
 rm -rf $DEST
 mkdir -p $DEST
 
@@ -37,7 +36,6 @@ if [[ "$GOOS" == "windows" ]]; then
     curl -fLso $DEST/updater.exe "https://github.com/throneproj/updater/releases/latest/download/updater-windows64.exe"
   fi
 fi
-
 if [[ "$GOOS" == "linux" ]]; then
   if [[ "$GOARCH" == "arm64" ]]; then
     curl -fLso $DEST/updater "https://github.com/throneproj/updater/releases/latest/download/updater-linux-arm64"
@@ -49,19 +47,16 @@ fi
 
 export CGO_ENABLED=0
 
-### FIX: правильная генерация .pb.go без cd gen ###
+#### Go: core ####
 pushd core/server
 
-protoc --go_out=gen --go_opt=paths=source_relative \
-       --protorpc_out=gen gen/libcore.proto
 
-# гарантируем что go работает в контексте правильно найденного go.mod
-export GOMOD=$(pwd)/go.mod
+# Синхронизируем go.mod и go.sum с зависимостями
+go mod tidy
 
-VERSION_SINGBOX=$($GOCMD list -m -f '{{.Version}}' github.com/sagernet/sing-box)
-
-$GOCMD build -v -o $DEST -trimpath \
-  -ldflags "-w -s -X 'github.com/sagernet/sing-box/constant.Version=${VERSION_SINGBOX}'" \
-  -tags "with_clash_api,with_gvisor,with_quic,with_wireguard,with_utls,with_dhcp,with_tailscale"
-
+pushd gen
+protoc -I . --go_out=. --protorpc_out=. libcore.proto
+popd
+VERSION_SINGBOX=$(go list -m -f '{{.Version}}' github.com/sagernet/sing-box)
+$GOCMD build -v -o $DEST -trimpath -ldflags "-w -s -X 'github.com/sagernet/sing-box/constant.Version=${VERSION_SINGBOX}'" -tags "with_clash_api,with_gvisor,with_quic,with_wireguard,with_utls,with_dhcp,with_tailscale"
 popd
