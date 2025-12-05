@@ -11,6 +11,7 @@
 #include <QThread>
 #include <QTimer>
 #include <QFileOpenEvent>
+#include <QSettings>
 #include <3rdparty/WinCommander.hpp>
 
 #include "include/global/Configs.hpp"
