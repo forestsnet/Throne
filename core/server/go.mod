@@ -23,8 +23,6 @@ replace github.com/sagernet/wireguard-go => github.com/throneproj/wireguard-go v
 
 replace github.com/chai2010/protorpc => ../protorpc
 
-replace github.com/quic-go/qpack => github.com/quic-go/qpack v0.5.1
-
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/ajg/form v1.5.1 // indirect
