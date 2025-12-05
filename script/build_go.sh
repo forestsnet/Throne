@@ -49,11 +49,6 @@ export CGO_ENABLED=0
 
 #### Go: core ####
 pushd core/server
-
-
-# Синхронизируем go.mod и go.sum с зависимостями
-go mod tidy
-
 pushd gen
 protoc -I . --go_out=. --protorpc_out=. libcore.proto
 popd

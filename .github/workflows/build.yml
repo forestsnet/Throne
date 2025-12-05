@@ -72,6 +72,11 @@ jobs:
         run: |
           go install github.com/golang/protobuf/protoc-gen-go@latest
           go install github.com/chai2010/protorpc/protoc-gen-protorpc@latest
+      - name: Disable readonly gomod
+        if: steps.cache-common.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          echo "GOFLAGS=" >> $GITHUB_ENV
       - name: Build golang parts
         if: steps.cache-common.outputs.cache-hit != 'true'
         shell: bash

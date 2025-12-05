@@ -18,7 +18,10 @@ import (
 
 	_ "Core/internal/distro/all"
 	C "github.com/sagernet/sing-box/constant"
+	_ "golang.org/x/image/draw"
+    _ "github.com/nfnt/resize"
 )
+
 
 func RunCore() {
 	_port := flag.Int("port", 19810, "")

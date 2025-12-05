@@ -9,12 +9,14 @@ require (
 	github.com/gofrs/uuid/v5 v5.3.2
 	github.com/golang/protobuf v1.5.4
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
+	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/sagernet/sing v0.7.13
 	github.com/sagernet/sing-box v1.12.12
 	github.com/sagernet/sing-tun v0.7.3
 	github.com/spf13/cobra v1.10.1
 	github.com/throneproj/clash2singbox v0.1.5-0.20251204215643-2a0d5666be7e
 	github.com/xtls/xray-core v1.251202.0
+	golang.org/x/image v0.23.0
 	golang.org/x/sys v0.38.0
 	google.golang.org/protobuf v1.36.10
 	gopkg.in/yaml.v3 v3.0.1
