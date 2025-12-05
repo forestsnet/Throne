@@ -370,6 +370,11 @@ int main(int argc, char* argv[]) {
     if (socket.waitForConnected(250))
     {
         qDebug() << "Another instance is running, let's wake it up and quit";
+        if (!throneUrl.isEmpty()) {
+            // Передаем URL в запущенный экземпляр
+            socket.write(throneUrl.toUtf8());
+            socket.waitForBytesWritten(1000);
+        }
         socket.disconnectFromServer();
         return 0;
     }
