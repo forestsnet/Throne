@@ -6,7 +6,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/xtls/xray-core/core"
 	"log"
 	"net"
 	"os"
@@ -18,10 +17,7 @@ import (
 
 	_ "Core/internal/distro/all"
 	C "github.com/sagernet/sing-box/constant"
-	_ "golang.org/x/image/draw"
-    _ "github.com/nfnt/resize"
 )
-
 
 func RunCore() {
 	_port := flag.Int("port", 19810, "")
@@ -76,7 +72,6 @@ func main() {
 		}
 	}()
 	fmt.Println("sing-box:", C.Version)
-	fmt.Println("Xray-core:", core.Version())
 	fmt.Println()
 	runtimeDebug.SetMemoryLimit(2 * 1024 * 1024 * 1024) // 2GB
 	go func() {

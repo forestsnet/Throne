@@ -335,7 +335,14 @@ namespace Configs {
         if (!fragment_fallback_delay.isEmpty()) object["fragment_fallback_delay"] = fragment_fallback_delay;
         if (record_fragment) object["record_fragment"] = record_fragment;
         if (auto obj = ech->Build().object;!obj.isEmpty()) object["ech"] = obj;
-        if (auto obj = utls->Build().object;!obj.isEmpty()) object["utls"] = obj;
+        if (auto obj = utls->Build().object;!obj.isEmpty()) {
+            object["utls"] = obj;
+        } else if (reality->enabled) {
+            object["utls"] = QJsonObject{
+                    {"enabled", true},
+                    {"fingerprint", "random"},
+                };
+        }
         if (auto obj = reality->Build().object;!obj.isEmpty()) object["reality"] = obj;
         return {object, ""};
     }

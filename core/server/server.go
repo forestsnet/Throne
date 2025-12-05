@@ -6,7 +6,6 @@ import (
 	"Core/internal/boxmain"
 	"Core/internal/process"
 	"Core/internal/sys"
-	"Core/internal/xray"
 	"context"
 	"encoding/json"
 	"errors"
@@ -19,7 +18,6 @@ import (
 	"github.com/throneproj/clash2singbox/convert"
 	"github.com/throneproj/clash2singbox/model"
 	"github.com/throneproj/clash2singbox/model/clash"
-	"github.com/xtls/xray-core/core"
 	"gopkg.in/yaml.v3"
 	"log"
 	"os"
@@ -33,9 +31,6 @@ var extraProcess *process.Process
 var needUnsetDNS bool
 var instanceCancel context.CancelFunc
 var debug bool
-
-// Xray core
-var xrayInstance *core.Instance
 
 type server int
 
@@ -97,28 +92,8 @@ func (s *server) Start(in *gen.LoadConfigReq, out *gen.ErrorResp) (_ error) {
 		}
 	}
 
-	if *in.NeedXray {
-		xrayInstance, err = xray.CreateXrayInstance(*in.XrayConfig)
-		if err != nil {
-			return
-		}
-		err = xrayInstance.Start()
-		if err != nil {
-			xrayInstance = nil
-			return
-		}
-	}
-
 	boxInstance, instanceCancel, err = boxmain.Create([]byte(*in.CoreConfig))
 	if err != nil {
-		if extraProcess != nil {
-			extraProcess.Stop()
-			extraProcess = nil
-		}
-		if xrayInstance != nil {
-			xrayInstance.Close()
-			xrayInstance = nil
-		}
 		return
 	}
 	if runtime.GOOS == "darwin" && strings.Contains(*in.CoreConfig, "tun-in") && strings.Contains(*in.CoreConfig, "172.19.0.1/24") {
@@ -161,11 +136,6 @@ func (s *server) Stop(in *gen.EmptyReq, out *gen.ErrorResp) (_ error) {
 		extraProcess = nil
 	}
 
-	if xrayInstance != nil {
-		xrayInstance.Close()
-		xrayInstance = nil
-	}
-
 	return
 }
 
@@ -180,7 +150,6 @@ func (s *server) CheckConfig(in *gen.LoadConfigReq, out *gen.ErrorResp) error {
 
 func (s *server) Test(in *gen.TestReq, out *gen.TestResp) error {
 	var testInstance *boxbox.Box
-	var xrayTestIntance *core.Instance
 	var cancel context.CancelFunc
 	var err error
 	var twice = true
@@ -196,17 +165,6 @@ func (s *server) Test(in *gen.TestReq, out *gen.TestResp) error {
 		testInstance = boxInstance
 		twice = false
 	} else {
-		if *in.NeedXray {
-			xrayTestIntance, err = xray.CreateXrayInstance(*in.XrayConfig)
-			if err != nil {
-				return err
-			}
-			err = xrayTestIntance.Start()
-			if err != nil {
-				return err
-			}
-			defer xrayTestIntance.Close()
-		}
 		testInstance, cancel, err = boxmain.Create([]byte(*in.Config))
 		if err != nil {
 			return err
@@ -356,7 +314,6 @@ func (s *server) SpeedTest(in *gen.SpeedTestRequest, out *gen.SpeedTestResponse)
 		return errors.New("cannot run empty test")
 	}
 	var testInstance *boxbox.Box
-	var xrayTestIntance *core.Instance
 	var cancel context.CancelFunc
 	outboundTags := in.OutboundTags
 	var err error
@@ -370,17 +327,6 @@ func (s *server) SpeedTest(in *gen.SpeedTestRequest, out *gen.SpeedTestResponse)
 		}
 		testInstance = boxInstance
 	} else {
-		if *in.NeedXray {
-			xrayTestIntance, err = xray.CreateXrayInstance(*in.XrayConfig)
-			if err != nil {
-				return err
-			}
-			err = xrayTestIntance.Start()
-			if err != nil {
-				return err
-			}
-			defer xrayTestIntance.Close()
-		}
 		testInstance, cancel, err = boxmain.Create([]byte(*in.Config))
 		if err != nil {
 			return err
