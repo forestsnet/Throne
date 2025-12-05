@@ -344,7 +344,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // software_name
     QString version = SubStrBefore(NKR_VERSION, "-");
     if (!version.contains(".")) version = "1.0.0";
-    software_name = "Throne | " + version + " | FSNT Fork";
+    software_name = "Throne | FSNT Fork |";
     software_core_name = "sing-box";
     //
     if (auto dashDir = QDir("dashboard"); !dashDir.exists("dashboard") && QDir().mkdir("dashboard")) {
