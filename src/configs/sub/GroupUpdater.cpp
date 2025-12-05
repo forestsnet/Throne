@@ -611,7 +611,7 @@ namespace Subscription {
             Configs::ProfileFilter::OnlyInSrc_ByPointer(out_all, in, out);
             Configs::ProfileFilter::OnlyInSrc(in, out, only_in);
             Configs::ProfileFilter::OnlyInSrc(out, in, only_out);
-            Configs::ProfileFilter::Common(in, out, update_keep, update_del, false);
+            Configs::ProfileFilter::Common(in, out, update_keep, update_del);
             QString notice_added;
             QString notice_deleted;
             if (only_out.size() < 1000)
