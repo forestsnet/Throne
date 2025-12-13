@@ -9,11 +9,13 @@ namespace Configs
     class uTLS : public baseConfig
     {
         public:
+        bool supported = true;
         bool enabled = false;
         QString fingerPrint;
 
         uTLS()
         {
+            _add(new configItem("supported", &supported, boolean));
             _add(new configItem("enabled", &enabled, itemType::boolean));
             _add(new configItem("fingerprint", &fingerPrint, string));
         }

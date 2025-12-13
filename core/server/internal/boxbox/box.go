@@ -38,7 +38,7 @@ import (
 var _ adapter.SimpleLifecycle = (*Box)(nil)
 
 type Box struct {
-	ctx             context.Context
+	context         context.Context
 	createdAt       time.Time
 	logFactory      log.Factory
 	logger          log.ContextLogger
@@ -93,10 +93,6 @@ func Context(
 		ctx = service.ContextWith[adapter.ServiceRegistry](ctx, serviceRegistry)
 	}
 	return ctx
-}
-
-func (b *Box) Context() context.Context {
-	return b.ctx
 }
 
 func New(options Options) (*Box, error) {
@@ -188,7 +184,7 @@ func New(options Options) (*Box, error) {
 	service.MustRegister[adapter.ServiceManager](ctx, serviceManager)
 	dnsRouter := dns.NewRouter(ctx, logFactory, dnsOptions)
 	service.MustRegister[adapter.DNSRouter](ctx, dnsRouter)
-	networkManager, err := route.NewNetworkManager(ctx, logFactory.NewLogger("network"), routeOptions)
+	networkManager, err := route.NewNetworkManager(ctx, logFactory.NewLogger("network"), routeOptions, dnsOptions)
 	if err != nil {
 		return nil, E.Cause(err, "initialize network manager")
 	}
@@ -327,13 +323,14 @@ func New(options Options) (*Box, error) {
 			option.DirectOutboundOptions{},
 		)
 	})
-	dnsTransportManager.Initialize(common.Must1(
-		local.NewTransport(
+	dnsTransportManager.Initialize(func() (adapter.DNSTransport, error) {
+		return local.NewTransport(
 			ctx,
 			logFactory.NewLogger("dns/local"),
 			"local",
 			option.LocalDNSServerOptions{},
-		)))
+		)
+	})
 	if platformInterface != nil {
 		err = platformInterface.Initialize(networkManager)
 		if err != nil {
@@ -384,7 +381,7 @@ func New(options Options) (*Box, error) {
 		internalServices = append(internalServices, adapter.NewLifecycleService(ntpService, "ntp service"))
 	}
 	return &Box{
-		ctx:             ctx,
+		context:         ctx,
 		network:         networkManager,
 		endpoint:        endpointManager,
 		inbound:         inboundManager,
@@ -514,6 +511,10 @@ func (s *Box) Close() error {
 		return E.Cause(err, "close logger")
 	})
 	return err
+}
+
+func (s *Box) Context() context.Context {
+	return s.context
 }
 
 func (s *Box) Network() adapter.NetworkManager {

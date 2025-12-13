@@ -29,9 +29,12 @@ jobs:
             go_version: "1.25.5"
           - cross_os: darwin
             cross_arch: amd64
-            go_version: "1.24.11"
+            go_version: "1.25.5"
           - cross_os: darwin
             cross_arch: arm64
+            go_version: "1.25.5"
+          - cross_os: darwin-legacy
+            cross_arch: amd64
             go_version: "1.25.5"
           - cross_os: windowslegacy
             cross_arch: amd64
@@ -57,8 +60,8 @@ jobs:
           go-version: ${{ matrix.go_version }}
           cache-dependency-path: |
             core/server/go.sum
-      - name: Install Golang For Legacy Windows
-        if: matrix.cross_os == 'windowslegacy'
+      - name: Install Golang For Legacy OS
+        if: matrix.cross_os == 'windowslegacy' || matrix.cross_os == 'darwin-legacy'
         run: |
           curl -L -o go.7z https://github.com/throneproj/env_windows_legacy/releases/download/latest/go.7z
           7z x go.7z
@@ -354,9 +357,9 @@ jobs:
           rm -rf Throne
           ####
           mkdir Throne
-          mv macoslegacy-amd64/Throne.app Throne/Throne.app
+          mv macos-legacy-amd64/Throne.app Throne/Throne.app
           zip -9 --symlinks -r $version_standalone-macoslegacy-amd64.zip Throne
-          rm -rf macoslegacy-amd64
+          rm -rf macos-legacy-amd64
           rm -rf Throne
       - name: Clean Up
         run: |
@@ -369,7 +372,7 @@ jobs:
           rm -rf windowslegacy64
           rm -rf macos-amd64
           rm -rf macos-arm64
-          rm -rf macoslegacy-amd64
+          rm -rf macos-legacy-amd64
           rm -rf *.pdb
       - name: Uploading Artifact
         uses: actions/upload-artifact@v4.6.2

@@ -58,6 +58,7 @@ namespace Configs {
         }
         
         tls->ParseFromLink(link);
+        tls->enabled = true; // Hysteria always uses tls
         
         if (server_port == 0 && server_ports.isEmpty()) server_port = 443;
 

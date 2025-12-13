@@ -28,6 +28,7 @@ namespace Configs
 
         hysteria() : outbound()
         {
+            tls->utls->supported = false;
             _add(new configItem("protocol_version", &protocol_version, string));
             _add(new configItem("server_ports", &server_ports, stringList));
             _add(new configItem("hop_interval", &hop_interval, string));

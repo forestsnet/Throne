@@ -22,6 +22,7 @@ namespace Configs
 
         tuic() : outbound()
         {
+            tls->utls->supported = false;
             _add(new configItem("uuid", &uuid, string));
             _add(new configItem("password", &password, string));
             _add(new configItem("congestion_control", &congestion_control, string));

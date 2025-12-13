@@ -290,6 +290,9 @@ set(PROJECT_SOURCES
         include/ui/profile/edit_advanced.h
         src/ui/profile/edit_advanced.cpp
         include/ui/profile/edit_advanced.ui
+        include/configs/common/xrayStreamSetting.h
+        include/configs/outbounds/xrayVless.h
+        include/configs/common/xrayMultiplex.h
 )
 
 if (NOT APPLE AND Qt6_VERSION VERSION_GREATER_EQUAL 6.9.0)

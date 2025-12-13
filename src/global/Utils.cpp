@@ -21,6 +21,9 @@
 #ifdef Q_OS_WIN
 #include "include/sys/windows/guihelper.h"
 #endif
+#ifdef Q_OS_MAC
+#include <ApplicationServices/ApplicationServices.h>
+#endif
 
 QStringList SplitLines(const QString &_string) {
     return _string.split(QRegularExpression("[\r\n]"), Qt::SplitBehaviorFlags::SkipEmptyParts);
@@ -257,9 +260,20 @@ void ActivateWindow(QWidget *w) {
     w->setVisible(true);
 #ifdef Q_OS_WIN
     Windows_QWidget_SetForegroundWindow(w);
+#elif defined(Q_OS_MAC)
+    ProcessSerialNumber psn = { 0, kCurrentProcess };
+    TransformProcessType(&psn, kProcessTransformToForegroundApplication);
 #endif
     w->raise();
     w->activateWindow();
+}
+
+void HideWindow(QWidget *w) {
+    w->hide();
+#ifdef Q_OS_MAC
+    ProcessSerialNumber psn = { 0, kCurrentProcess };
+    TransformProcessType(&psn, kProcessTransformToUIElementApplication);
+#endif
 }
 
 void runOnUiThread(const std::function<void()> &callback, bool wait) {

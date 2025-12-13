@@ -93,8 +93,19 @@ namespace Configs {
         if (object.contains("headers") && object["headers"].isObject()) {
             auto headerObj = object["headers"].toObject();
             if (type == "ws") {
-                if (headerObj.contains("Host")) host = headerObj["Host"].toString();
-                headerObj.remove("Host");
+                if (headerObj.contains("Host")) {
+                    if (headerObj["Host"].isString()) {
+                        host = headerObj["Host"].toString();
+                    } else if (headerObj["Host"].isArray()) {
+                        for (const auto& v : headerObj["Host"].toArray()) {
+                            if (v.isString()) {
+                                host = v.toString();
+                                break;
+                            }
+                        }
+                    }
+                    headerObj.remove("Host");
+                }
             }
             headers = jsonObjectToQStringList(headerObj);
         }

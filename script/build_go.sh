@@ -10,13 +10,18 @@ source script/env_deploy.sh
 [ "$GOOS" == "darwin" ] && [ "$GOARCH" == "amd64" ] && DEST=$DEPLOYMENT/macos-amd64 || true
 [ "$GOOS" == "darwin" ] && [ "$GOARCH" == "arm64" ] && DEST=$DEPLOYMENT/macos-arm64 || true
 
-if [[ "$GOOS" == "windowslegacy" ]]; then
-  GOOS="windows"
+if [[ "$GOOS" =~ legacy$ ]]; then
   GOCMD="$PWD/go/bin/go"
-  if [[ $GOARCH == 'amd64' ]]; then
-    DEST=$DEPLOYMENT/windowslegacy64
+  if [[ "$GOOS" == "windowslegacy" ]]; then
+    GOOS="windows"
+    if [[ $GOARCH == 'amd64' ]]; then
+      DEST=$DEPLOYMENT/windowslegacy64
+    else
+      DEST=$DEPLOYMENT/windows32
+    fi
   else
-    DEST=$DEPLOYMENT/windows32
+    GOOS="darwin"
+    DEST=$DEPLOYMENT/macos-legacy-amd64
   fi
 else
   GOCMD="go"

@@ -23,6 +23,7 @@ namespace Configs {
         if (query.hasQueryItem("heartbeat")) heartbeat = query.queryItemValue("heartbeat");
         
         tls->ParseFromLink(link);
+        tls->enabled = true; // TUIC always uses tls
         
         if (server_port == 0) server_port = 443;
 

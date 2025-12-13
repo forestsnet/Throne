@@ -78,6 +78,8 @@ namespace Configs
             return QString("[%1] %2").arg(DisplayType(), DisplayName());
         }
 
+        virtual bool IsXray() { return false; }
+
         virtual bool HasMux() { return false; }
 
         virtual bool HasTransport() { return false; }

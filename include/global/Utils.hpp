@@ -169,6 +169,8 @@ int MessageBoxInfo(const QString &title, const QString &text);
 
 void ActivateWindow(QWidget *w);
 
+void HideWindow(QWidget *w);
+
 //
 
 void runOnUiThread(const std::function<void()> &callback, bool wait = false);
