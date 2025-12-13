@@ -41,6 +41,8 @@ message LoadConfigReq {
   optional string extra_process_conf = 6 [default = ""];
   optional string extra_process_conf_dir = 7 [default = ""];
   optional bool extra_no_out = 8 [default = false];
+  optional bool need_xray = 9 [default = false];
+  optional string xray_config = 10 [default = ""];
 }
 
 message URLTestResp {
@@ -57,6 +59,8 @@ message TestReq {
   optional bool test_current = 5 [default = false];
   optional int32 max_concurrency = 6 [default = 0];
   optional int32 test_timeout_ms = 7 [default = 0];
+  optional bool need_xray = 8 [default = false];
+  optional string xray_config = 9 [default = ""];
 }
 
 message TestResp {
@@ -105,6 +109,8 @@ message SpeedTestRequest {
   optional int32 timeout_ms = 9 [default = 0];
   optional bool only_country = 10 [default = false];
   optional int32 country_concurrency = 11 [default = 0];
+  optional bool need_xray = 12 [default = false];
+  optional string xray_config = 13 [default = ""];
 }
 
 message SpeedTestResult {
