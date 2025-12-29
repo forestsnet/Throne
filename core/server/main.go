@@ -6,6 +6,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/xtls/xray-core/core"
 	"log"
 	"net"
 	"os"
