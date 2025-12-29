@@ -20,6 +20,10 @@ public:
 
     ~DialogEditProfile() override;
 
+    void toggleSingboxWidgets(bool show);
+
+    void toggleXrayWidgets(bool show);
+
 public slots:
 
     void accept() override;

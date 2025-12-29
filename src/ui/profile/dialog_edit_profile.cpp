@@ -25,15 +25,33 @@
 #include "include/ui/profile/edit_socks.h"
 #include "include/ui/profile/edit_trojan.h"
 #include "include/ui/profile/edit_tuic.h"
+#include "include/ui/profile/edit_xrayvless.h"
 
 #define ADJUST_SIZE runOnThread([=,this] { adjustSize(); adjustPosition(mainwindow); }, this);
 #define LOAD_TYPE(a) ui->type->addItem(Configs::ProfileManager::NewProxyEntity(a)->outbound->DisplayType(), a);
+
+void DialogEditProfile::toggleSingboxWidgets(bool show) {
+    ui->stream_box->setVisible(show);
+    ui->right_all_w->setVisible(show);
+}
+
+void DialogEditProfile::toggleXrayWidgets(bool show) {
+    ui->xray_settings_box->setVisible(show);
+    ui->xray_widget->setVisible(show);
+}
 
 DialogEditProfile::DialogEditProfile(const QString &_type, int profileOrGroupId, QWidget *parent)
     : QDialog(parent), ui(new Ui::DialogEditProfile) {
     // setup UI
     ui->setupUi(this);
     ui->dialog_layout->setAlignment(ui->left, Qt::AlignTop);
+
+    // Xray init
+    ui->xray_security->addItems({"", "tls", "reality"});
+    ui->xray_network->addItems(Configs::XrayNetworks);
+    ui->xray_fp->addItems(Configs::tlsFingerprints);
+    ui->xray_mode->addItems(Configs::XrayXHTTPModes);
+    toggleXrayWidgets(false);
 
     // network changed
     network_title_base = ui->network_box->title();
@@ -139,6 +157,40 @@ DialogEditProfile::DialogEditProfile(const QString &_type, int profileOrGroupId,
         advancedWidget->show();
     });
 
+    // Xray
+    ui->xray_network_box->hide();
+    connect(ui->xray_network, &QComboBox::currentTextChanged, this, [=,this](const QString &txt) {
+       if (txt == "raw") {
+           ui->xray_network_box->setVisible(false);
+           if (ui->xray_security_box->isHidden()) ui->xray_widget->hide();
+       }
+       else {
+           ui->xray_widget->show();
+           ui->xray_network_box->setVisible(true);
+       }
+        ADJUST_SIZE
+    });
+
+    ui->xray_security_box->hide();
+    connect(ui->xray_security, &QComboBox::currentTextChanged, this, [=,this](const QString &txt) {
+        if (txt.isEmpty()) {
+            ui->xray_security_box->setVisible(false);
+            if (ui->xray_network_box->isHidden()) ui->xray_widget->hide();
+        }
+        else if (txt == "tls") {
+            ui->xray_widget->show();
+            ui->xray_security_box->setVisible(true);
+            ui->xray_tls_only->setVisible(true);
+            ui->xray_reality_box->setVisible(false);
+        } else {
+            ui->xray_widget->show();
+            ui->xray_security_box->setVisible(true);
+            ui->xray_tls_only->setVisible(false);
+            ui->xray_reality_box->setVisible(true);
+        }
+        ADJUST_SIZE
+    });
+
     newEnt = _type != "";
     if (newEnt) {
         this->groupId = profileOrGroupId;
@@ -151,6 +203,7 @@ DialogEditProfile::DialogEditProfile(const QString &_type, int profileOrGroupId,
         LOAD_TYPE("trojan")
         LOAD_TYPE("vmess")
         LOAD_TYPE("vless")
+        ui->type->addItem("VLESS (Xray)", "xrayvless");
         LOAD_TYPE("hysteria")
         LOAD_TYPE("tuic")
         LOAD_TYPE("anytls")
@@ -220,6 +273,10 @@ void DialogEditProfile::typeSelected(const QString &newType) {
                 ui->multiplex->setDisabled(false);
             }
         });
+    } else if (type == "xrayvless") {
+        auto _innerWidget = new EditXrayVless(this);
+        innerWidget = _innerWidget;
+        innerEditor = _innerWidget;
     } else if (type == "trojan") {
         auto _innerWidget = new EditTrojan(this);
         innerWidget = _innerWidget;
@@ -322,6 +379,44 @@ void DialogEditProfile::typeSelected(const QString &newType) {
         CACHE.certificate = tls->certificate;
     } else {
         ui->right_all_w->setVisible(false);
+    }
+
+    if (ent->outbound->IsXray()) {
+        auto xrayStream = ent->outbound->GetXrayStream();
+        auto xrayMux = ent->outbound->GetXrayMultiplex();
+
+        ui->xray_network->setCurrentText(xrayStream->network);
+        ui->xray_security->setCurrentText(xrayStream->security);
+        ui->xray_mux->setCurrentIndex(xrayMux->getMuxState());
+
+        ui->xray_sni->setText(xrayStream->security == "tls" ? xrayStream->TLS->serverName : xrayStream->reality->serverName);
+        ui->xray_fp->setCurrentText(xrayStream->security == "tls" ? xrayStream->TLS->fingerprint : xrayStream->reality->fingerprint);
+        ui->xray_alpn->setText(xrayStream->TLS->alpn.join(","));
+        ui->xray_insecure->setChecked(xrayStream->TLS->allowInsecure);
+        ui->xray_reality_pbk->setText(xrayStream->reality->password);
+        ui->xray_reality_sid->setText(xrayStream->reality->shortId);
+        ui->xray_reality_spiderx->setText(xrayStream->reality->spiderX);
+
+        ui->xray_host->setText(xrayStream->xhttp->host);
+        ui->xray_path->setText(xrayStream->xhttp->path);
+        ui->xray_mode->setCurrentText(xrayStream->xhttp->mode);
+        ui->xray_headers->setText(xrayStream->xhttp->getHeadersString());
+        ui->xray_xpaddingbytes->setText(xrayStream->xhttp->xPaddingBytes);
+        ui->xray_no_grpc->setChecked(xrayStream->xhttp->noGRPCHeader);
+        ui->xray_scMaxEachPostBytes->setText(Int2String(xrayStream->xhttp->scMaxEachPostBytes));
+        ui->xray_scMinPostsIntervalMs->setText(Int2String(xrayStream->xhttp->scMinPostsIntervalMs));
+        ui->xray_max_concurrency->setText(xrayStream->xhttp->maxConcurrency);
+        ui->xray_max_connections->setText(Int2String(xrayStream->xhttp->maxConnections));
+        ui->xray_hMaxRequestTimes->setText(xrayStream->xhttp->hMaxRequestTimes);
+        ui->xray_hMaxReusableSecs->setText(xrayStream->xhttp->hMaxReusableSecs);
+        ui->xray_max_reuse_times->setText(Int2String(xrayStream->xhttp->cMaxReuseTimes));
+        ui->xray_keep_alive_period->setText(Int2String(xrayStream->xhttp->hKeepAlivePeriod));
+
+        toggleXrayWidgets(true);
+        toggleSingboxWidgets(false);
+    } else {
+        toggleXrayWidgets(false);
+        toggleSingboxWidgets(true);
     }
 
     if (ent->outbound->HasMux()) {
@@ -446,6 +541,43 @@ bool DialogEditProfile::onEnd() {
         mux->brutal->enabled = ui->brutal_enable->isChecked();
         mux->brutal->down_mbps = ui->brutal_d_speed->text().toInt();
         mux->brutal->up_mbps = ui->brutal_u_speed->text().toInt();
+    }
+    if (ent->outbound->IsXray()) {
+        auto xrayStream = ent->outbound->GetXrayStream();
+        auto xrayMux = ent->outbound->GetXrayMultiplex();
+
+        xrayStream->network = ui->xray_network->currentText();
+        xrayStream->security = ui->xray_security->currentText();
+        xrayMux->saveMuxState(ui->xray_mux->currentIndex());
+
+        auto sni = ui->xray_sni->text();
+        if (xrayStream->security == "tls") xrayStream->TLS->serverName = sni;
+        else if (xrayStream->security == "reality") xrayStream->reality->serverName = sni;
+
+        auto fp = ui->xray_fp->currentText();
+        if (xrayStream->security == "tls") xrayStream->TLS->fingerprint = fp;
+        else if (xrayStream->security == "reality") xrayStream->reality->fingerprint = fp;
+
+        xrayStream->TLS->alpn = ui->xray_alpn->text().split(",");
+        xrayStream->TLS->allowInsecure = ui->xray_insecure->isChecked();
+        xrayStream->reality->password = ui->xray_reality_pbk->text();
+        xrayStream->reality->shortId = ui->xray_reality_sid->text();
+        xrayStream->reality->spiderX = ui->xray_reality_spiderx->text();
+
+        xrayStream->xhttp->host = ui->xray_host->text();
+        xrayStream->xhttp->path = ui->xray_path->text();
+        xrayStream->xhttp->mode = ui->xray_mode->currentText();
+        xrayStream->xhttp->headers = xrayStream->xhttp->getHeaderPairs(ui->xray_headers->text());
+        xrayStream->xhttp->xPaddingBytes = ui->xray_xpaddingbytes->text();
+        xrayStream->xhttp->noGRPCHeader = ui->xray_no_grpc->isChecked();
+        xrayStream->xhttp->scMaxEachPostBytes = ui->xray_scMaxEachPostBytes->text().toInt();
+        xrayStream->xhttp->scMinPostsIntervalMs = ui->xray_scMinPostsIntervalMs->text().toInt();
+        xrayStream->xhttp->maxConcurrency = ui->xray_max_concurrency->text();
+        xrayStream->xhttp->maxConnections = ui->xray_max_connections->text().toInt();
+        xrayStream->xhttp->hMaxRequestTimes = ui->xray_hMaxRequestTimes->text();
+        xrayStream->xhttp->hMaxReusableSecs = ui->xray_hMaxReusableSecs->text();
+        xrayStream->xhttp->cMaxReuseTimes = ui->xray_max_reuse_times->text().toInt();
+        xrayStream->xhttp->hKeepAlivePeriod = ui->xray_keep_alive_period->text().toInt();
     }
 
     return true;

@@ -31,7 +31,7 @@ void MainWindow::setup_rpc() {
     runOnNewThread([=] {Stats::connection_lister->Loop(); });
 }
 
-void MainWindow::runURLTest(const QString& config, bool useDefault, const QStringList& outboundTags, const QMap<QString, int>& tag2entID, int entID) {
+void MainWindow::runURLTest(const QString& config, const QString& xrayConfig, bool useDefault, const QStringList& outboundTags, const QMap<QString, int>& tag2entID, int entID) {
     if (stopSpeedtest.load()) {
         MW_show_log(tr("Profile test aborted"));
         return;
@@ -46,6 +46,8 @@ void MainWindow::runURLTest(const QString& config, bool useDefault, const QStrin
     req.use_default_outbound = useDefault;
     req.max_concurrency = Configs::dataStore->test_concurrent;
     req.test_timeout_ms = Configs::dataStore->url_test_timeout_ms;
+    req.xray_config = xrayConfig.toStdString();
+    req.need_xray = !xrayConfig.isEmpty();
 
     auto done = new QMutex;
     done->lock();
@@ -157,7 +159,7 @@ void MainWindow::urltest_current_group(const QList<std::shared_ptr<Configs::Prox
         for (const auto &entID: buildObject->fullConfigs.keys()) {
             auto configStr = buildObject->fullConfigs[entID];
             auto func = [this, &counter, testCount, configStr, entID]() {
-                MainWindow::runURLTest(configStr, true, {}, {}, entID);
+                MainWindow::runURLTest(configStr, "", true, {}, {}, entID);
                 counter++;
                 if (counter.load() == testCount) {
                     speedtestRunning.unlock();
@@ -168,7 +170,7 @@ void MainWindow::urltest_current_group(const QList<std::shared_ptr<Configs::Prox
 
         if (!buildObject->outboundTags.empty()) {
             auto func = [this, &buildObject, &counter, testCount]() {
-                MainWindow::runURLTest(QJsonObject2QString(buildObject->coreConfig, false), false, buildObject->outboundTags, buildObject->tag2entID);
+                MainWindow::runURLTest(QJsonObject2QString(buildObject->coreConfig, false),QJsonObject2QString(buildObject->xrayConfig, false), false, buildObject->outboundTags, buildObject->tag2entID);
                 counter++;
                 if (counter.load() == testCount) {
                     speedtestRunning.unlock();
@@ -249,16 +251,16 @@ void MainWindow::speedtest_current_group(const QList<std::shared_ptr<Configs::Pr
             stopSpeedtest.store(false);
             for (const auto &entID: buildObject->fullConfigs.keys()) {
                 auto configStr = buildObject->fullConfigs[entID];
-                runSpeedTest(configStr, true, false, {}, {}, entID);
+                runSpeedTest(configStr, "", true, false, {}, {}, entID);
             }
 
             if (!buildObject->outboundTags.empty()) {
-                runSpeedTest(QJsonObject2QString(buildObject->coreConfig, false), false, false, buildObject->outboundTags, buildObject->tag2entID);
+                runSpeedTest(QJsonObject2QString(buildObject->coreConfig, false), QJsonObject2QString(buildObject->xrayConfig, false), false, false, buildObject->outboundTags, buildObject->tag2entID);
             }
         } else
         {
             stopSpeedtest.store(false);
-            runSpeedTest("", true, true, {}, {});
+            runSpeedTest("", "", true, true, {}, {});
         }
 
         speedtestRunning.unlock();
@@ -329,7 +331,7 @@ void MainWindow::queryCountryTest(const QMap<QString, int>& tag2entID, bool test
 }
 
 
-void MainWindow::runSpeedTest(const QString& config, bool useDefault, bool testCurrent, const QStringList& outboundTags, const QMap<QString, int>& tag2entID, int entID)
+void MainWindow::runSpeedTest(const QString& config, const QString& xrayConfig, bool useDefault, bool testCurrent, const QStringList& outboundTags, const QMap<QString, int>& tag2entID, int entID)
 {
     if (stopSpeedtest.load()) {
         MW_show_log(tr("Profile speed test aborted"));
@@ -351,6 +353,8 @@ void MainWindow::runSpeedTest(const QString& config, bool useDefault, bool testC
     req.timeout_ms = Configs::dataStore->speed_test_timeout_ms;
     req.only_country = speedtestConf == Configs::TestConfig::COUNTRY;
     req.country_concurrency = Configs::dataStore->test_concurrent;
+    req.xray_config = xrayConfig.toStdString();
+    req.need_xray = !xrayConfig.isEmpty();
 
     // loop query result
     auto doneMu = new QMutex;
@@ -478,6 +482,8 @@ void MainWindow::profile_start(int _id) {
         libcore::LoadConfigReq req;
         req.core_config = QJsonObject2QString(result->coreConfig, true).toStdString();
         req.disable_stats = Configs::dataStore->disable_traffic_stats;
+        req.xray_config = QJsonObject2QString(result->xrayConfig, true).toStdString();
+        req.need_xray = !result->xrayConfig.isEmpty();
         if (ent->type == "extracore")
         {
             req.need_extra_process = true;

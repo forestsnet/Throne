@@ -224,7 +224,7 @@ namespace Configs {
         mergeUrlQuery(query, peer->ExportToLink());
         
         if (!query.isEmpty()) url.setQuery(query);
-        return url.toString();
+        return url.toString(QUrl::FullyEncoded);
     }
 
     QJsonObject wireguard::ExportToJson()

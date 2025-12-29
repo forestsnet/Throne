@@ -55,4 +55,8 @@ namespace Configs {
             CDN,
         };
     }
+
+    namespace Xray {
+        inline QStringList XrayLogLevels = {"debug", "info", "warning", "error", "none"};
+    }
 } // namespace Configs

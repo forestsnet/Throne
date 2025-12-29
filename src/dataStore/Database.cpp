@@ -72,12 +72,17 @@ namespace Configs {
             groups[id] = ent;
             if (ent->profiles.isEmpty()) needToCheckGroups << id;
         }
+        QList<int> orphanProfiles;
         for (const auto& [id, proxy] : profiles)
         {
             // corrupted data
-            if (groups.count(proxy->gid) < 1 || !needToCheckGroups.contains(proxy->gid)) continue;
-            groups[proxy->gid]->AddProfile(id);
+            if (!groups.contains(proxy->gid) || (!needToCheckGroups.contains(proxy->gid) && !groups[proxy->gid]->HasProfile(id))) {
+                orphanProfiles << id;
+                continue;
+            }
+            if (needToCheckGroups.contains(proxy->gid)) groups[proxy->gid]->AddProfile(id);
         }
+        for (int id : orphanProfiles) deleteProfile(id);
         for (const auto groupID : needToCheckGroups)
         {
             groups[groupID]->Save();
@@ -257,6 +262,9 @@ namespace Configs {
         } else if (type == "vless") {
             bean = new Configs::TrojanVLESSBean(Configs::TrojanVLESSBean::proxy_VLESS);
             outbound = new Configs::vless();
+        } else if (type == "xrayvless") {
+            bean = new Configs::TrojanVLESSBean(Configs::TrojanVLESSBean::proxy_VLESS);
+            outbound = new Configs::xrayVless();
         } else if (type == "hysteria" || type == "hysteria2") {
             bean = new Configs::QUICBean(type == "hysteria" ? Configs::QUICBean::proxy_Hysteria : Configs::QUICBean::proxy_Hysteria2);
             outbound = new Configs::hysteria();

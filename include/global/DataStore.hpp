@@ -116,6 +116,7 @@ namespace Configs {
         int sub_auto_update = -30;
         bool sub_clear = true;
         bool sub_send_hwid = true;
+        QString sub_custom_hwid_params = ""; // Custom system parameters: format "hwid=value,os=value,osVersion=value,model=value"
 
         // Security
         bool skip_cert = false;
@@ -189,6 +190,11 @@ namespace Configs {
         QString core_box_clash_listen_addr = "127.0.0.1";
         QString core_box_clash_api_secret = "";
         QString core_box_underlying_dns = "";
+
+        // Xray
+        QString xray_log_level = "warning";
+        int xray_mux_concurrency = 8;
+        bool xray_mux_default_on = false;
 
         // Methods
 

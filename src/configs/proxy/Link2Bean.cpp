@@ -1,6 +1,5 @@
 #include "include/dataStore/ProxyEntity.hpp"
 #include "include/configs/proxy/includes.h"
-#include "3rdparty/URLParser/url_parser.h"
 
 #include <QUrlQuery>
 
@@ -303,16 +302,8 @@ namespace Configs {
 
     bool QUICBean::TryParseLink(const QString &link) {
         auto url = QUrl(link);
-        if (!url.isValid()) {
-            if(!url.errorString().startsWith("Invalid port"))
-                return false;
-            serverPort = 0;
-            serverPorts = QString::fromStdString(URLParser::Parse((link.split("?")[0] + "/").toStdString()).port).split(",");
-            for (auto & serverPort : serverPorts) {
-                serverPort.replace("-", ":");
-            }
-        }
         auto query = QUrlQuery(url.query());
+        if (url.host().isEmpty() || url.port() == -1) return false;
 
         if (url.scheme() == "hysteria") {
             // https://hysteria.network/docs/uri-scheme/
@@ -320,7 +311,7 @@ namespace Configs {
 
             name = url.fragment(QUrl::FullyDecoded);
             serverAddress = url.host();
-            if (serverPort > 0) serverPort = url.port();
+            serverPort = url.port();
             obfsPassword = QUrl::fromPercentEncoding(query.queryItemValue("obfsParam").toUtf8());
             allowInsecure = QStringList{"1", "true"}.contains(query.queryItemValue("insecure"));
             uploadMbps = query.queryItemValue("upmbps").toInt();
@@ -344,10 +335,13 @@ namespace Configs {
             connectionReceiveWindow = query.queryItemValue("recv_window").toInt();
             streamReceiveWindow = query.queryItemValue("recv_window_conn").toInt();
 
-            if (query.hasQueryItem("mport")) {
-                serverPorts = query.queryItemValue("mport").split(",");
-                for (int i=0; i < serverPorts.size(); i++) {
-                    serverPorts[i].replace("-", ":");
+            if (query.hasQueryItem("server_ports"))
+            {
+                auto portList = query.queryItemValue("server_ports").split("-");
+                for (int i=0;i<portList.size();i+=2)
+                {
+                    if (i+1 >= portList.size()) break;
+                    serverPorts += portList[i]+":"+portList[i+1];
                 }
             }
             hop_interval = query.queryItemValue("hop_interval");
@@ -372,7 +366,7 @@ namespace Configs {
         } else if (QStringList{"hy2", "hysteria2"}.contains(url.scheme())) {
             name = url.fragment(QUrl::FullyDecoded);
             serverAddress = url.host();
-            if (serverPort > 0) serverPort = url.port();
+            serverPort = url.port();
             obfsPassword = QUrl::fromPercentEncoding(query.queryItemValue("obfs-password").toUtf8());
             allowInsecure = QStringList{"1", "true"}.contains(query.queryItemValue("insecure"));
 
@@ -381,10 +375,13 @@ namespace Configs {
             } else {
                 password = url.userName() + ":" + url.password();
             }
-            if (query.hasQueryItem("mport")) {
-                serverPorts = query.queryItemValue("mport").split(",");
-                for (int i=0; i < serverPorts.size(); i++) {
-                    serverPorts[i].replace("-", ":");
+            if (query.hasQueryItem("server_ports"))
+            {
+                auto portList = query.queryItemValue("server_ports").split("-");
+                for (int i=0;i<portList.size();i+=2)
+                {
+                    if (i+1 >= portList.size()) break;
+                    serverPorts += portList[i]+":"+portList[i+1];
                 }
             }
             hop_interval = query.queryItemValue("hop_interval");

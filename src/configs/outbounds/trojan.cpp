@@ -41,7 +41,7 @@ namespace Configs {
         if (!transport->type.isEmpty()) mergeUrlQuery(query, transport->ExportToLink());
         if (multiplex->enabled) mergeUrlQuery(query, multiplex->ExportToLink());
         if (!query.isEmpty()) url.setQuery(query);
-        return url.toString();
+        return url.toString(QUrl::FullyEncoded);
     }
     QJsonObject Trojan::ExportToJson()
     {

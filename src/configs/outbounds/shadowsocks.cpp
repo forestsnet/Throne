@@ -53,10 +53,10 @@ namespace Configs {
         if (object.contains("password")) password = object["password"].toString();
         if (object.contains("plugin")) plugin = object["plugin"].toString();
         if (object.contains("plugin_opts")) plugin_opts = object["plugin_opts"].toString();
-        if (object.contains("uot"))
+        if (object.contains("udp_over_tcp"))
         {
-            if (object["uot"].isBool()) uot = object["uot"].toBool();
-            if (object["uot"].isObject()) uot = object["uot"].toObject()["enabled"].toBool();
+            if (object["udp_over_tcp"].isBool()) uot = object["udp_over_tcp"].toBool();
+            if (object["udp_over_tcp"].isObject()) uot = object["udp_over_tcp"].toObject()["enabled"].toBool();
         }
         if (object.contains("multiplex")) multiplex->ParseFromJson(object["multiplex"].toObject());
         return true;
@@ -100,15 +100,18 @@ namespace Configs {
         url.setPort(server_port);
         if (!name.isEmpty()) url.setFragment(name);
         
-        if (!plugin.isEmpty()) query.addQueryItem("plugin", plugin);
-        if (!plugin_opts.isEmpty()) query.addQueryItem("plugin-opts", plugin_opts);
-        if (uot) query.addQueryItem("uot", "true");
+        if (!plugin.isEmpty()) {
+            QString pluginString = plugin;
+            if (!plugin_opts.isEmpty()) pluginString.append(";" + plugin_opts);
+            query.addQueryItem("plugin", QUrl::toPercentEncoding(pluginString));
+        }
+        if (uot) query.addQueryItem("uot", "1");
         
         mergeUrlQuery(query, multiplex->ExportToLink());
         mergeUrlQuery(query, outbound::ExportToLink());
         
         if (!query.isEmpty()) url.setQuery(query);
-        return url.toString();
+        return url.toString(QUrl::FullyEncoded);
     }
 
     QJsonObject shadowsocks::ExportToJson()
@@ -120,7 +123,7 @@ namespace Configs {
         if (!password.isEmpty()) object["password"] = password;
         if (!plugin.isEmpty()) object["plugin"] = plugin;
         if (!plugin_opts.isEmpty()) object["plugin_opts"] = plugin_opts;
-        if (uot) object["uot"] = uot;
+        if (uot) object["udp_over_tcp"] = uot;
         if (multiplex->enabled) object["multiplex"] = multiplex->ExportToJson();
         return object;
     }
@@ -138,7 +141,7 @@ namespace Configs {
         if (!password.isEmpty()) object["password"] = password;
         if (!plugin.isEmpty()) object["plugin"] = plugin;
         if (!plugin_opts.isEmpty()) object["plugin_opts"] = plugin_opts;
-        if (uot) object["uot"] = uot;
+        if (uot) object["udp_over_tcp"] = uot;
         if (auto obj = multiplex->Build().object; !obj.isEmpty()) object["multiplex"] = obj;
         return {object, ""};
     }

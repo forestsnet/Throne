@@ -534,6 +534,7 @@ namespace Configs {
     {
         bool hasExtracore = false;
         bool hasCustom = false;
+        bool hasXray = false;
         for (auto id : entIDs)
         {
             auto ent = profileManager->GetProfile(id);
@@ -549,11 +550,12 @@ namespace Configs {
             }
             if (ent->type == "extracore") hasExtracore = true;
             if (ent->type == "custom") hasCustom = true;
+            if (ent->outbound->IsXray()) hasXray = true;
             ents.append(ent);
         }
-        if (ents.size() > 1 && (hasExtracore || hasCustom))
+        if (ents.size() > 1 && (hasExtracore || hasCustom || hasXray))
         {
-            error = "Cannot use Extracore or Custom configs in a chain";
+            error = "Cannot use Extracore or Custom or Xray configs in a chain";
         }
     }
 
@@ -590,6 +592,17 @@ namespace Configs {
             }
             object["tag"] = tag;
             if (!nextTag.isEmpty() && link) object["detour"] = nextTag;
+            if (ent->outbound->IsXray()) {
+                auto [xrayObj, xrayErr] = ent->outbound->BuildXray();
+                if (!xrayErr.isEmpty()) {
+                    ctx->error += xrayErr;
+                    return;
+                }
+                int port = MkPort();
+                object["server_port"] = port;
+                xrayObj["tag"] = tag;
+                ctx->xrayOutbounds.append({port, xrayObj});
+            }
             if (ent->outbound->IsEndpoint())
             {
                 ctx->endpoints.append(object);
@@ -605,6 +618,7 @@ namespace Configs {
 
     void buildOutboundsSection(std::shared_ptr<BuildSingBoxConfigContext> &ctx) {
         // First, our own ent
+        bool noChain = ctx->ent->outbound->IsXray();
         QList<int> entIDs;
         auto group = profileManager->GetGroup(ctx->ent->gid);
         if (group == nullptr)
@@ -612,7 +626,7 @@ namespace Configs {
             ctx->error = "No group found for ent, data is corrupted";
             return;
         }
-        if (group->landing_proxy_id >= 0) entIDs.append(group->landing_proxy_id);
+        if (group->landing_proxy_id >= 0 && !noChain) entIDs.prepend(group->landing_proxy_id);
         if (ctx->ent->type == "chain")
         {
             auto chain = ctx->ent->Chain();
@@ -626,7 +640,7 @@ namespace Configs {
         {
             entIDs.append(ctx->ent->id);
         }
-        if (group->front_proxy_id >= 0) entIDs.append(group->front_proxy_id);
+        if (group->front_proxy_id >= 0 && !noChain) entIDs.append(group->front_proxy_id);
         buildOutboundChain(ctx, entIDs, "config", true, true);
 
         // Now, build the outbounds needed by the route profile
@@ -692,6 +706,11 @@ namespace Configs {
 
         // rules
         auto routeRules = routeChain->get_route_rules(false, routeDeps->outboundMap);
+        routeRules.prepend(QJsonObject{
+            {"action", "route"},
+            {"process_path", FindCoreRealPath()},
+            {"outbound", "direct"},
+        });
 
         // rulesets
         auto ruleSetArray = QJsonArray();
@@ -771,6 +790,41 @@ namespace Configs {
         ctx->buildConfigResult->coreConfig["experimental"] = experimentalObj;
     }
 
+    void buildXrayConfig(std::shared_ptr<BuildSingBoxConfigContext> &ctx) {
+        if (ctx->xrayOutbounds.isEmpty()) return;
+        ctx->buildConfigResult->isXrayNeeded = true;
+        QJsonArray inbounds;
+        QJsonArray outbounds;
+        QJsonArray routeRules;
+
+        for (auto [port, outboundObj] : ctx->xrayOutbounds) {
+            auto inboundTag = outboundObj["tag"].toString() + "-inbound";
+            inbounds << QJsonObject{
+                {"tag", inboundTag},
+                {"listen", "127.0.0.1"},
+                {"port", port},
+                {"protocol", "socks"},
+                {"settings", QJsonObject{{"auth", "noauth"}, {"udp", true}}}
+            };
+            outbounds << outboundObj;
+            routeRules << QJsonObject{
+                {"type", "field"},
+                {"inboundTag", QJsonArray{inboundTag}},
+                {"outboundTag", outboundObj["tag"].toString()}
+            };
+        }
+
+        ctx->buildConfigResult->xrayConfig["log"] = QJsonObject{
+        {"loglevel", dataStore->xray_log_level}
+        };
+        ctx->buildConfigResult->xrayConfig["inbounds"] = inbounds;
+        ctx->buildConfigResult->xrayConfig["outbounds"] = outbounds;
+        ctx->buildConfigResult->xrayConfig["routing"] = QJsonObject{
+            {"domainStrategy", "AsIs"},
+            {"rules", routeRules},
+        };
+    }
+
     std::shared_ptr<BuildConfigResult> BuildSingBoxConfig(const std::shared_ptr<ProxyEntity>& ent) {
         if (ent->type == "custom")
         {
@@ -836,6 +890,13 @@ namespace Configs {
         buildExperimentalSection(ctx);
         if (!ctx->error.isEmpty())
         {
+            MW_show_log("Config build error:" + ctx->error);
+            ctx->buildConfigResult->error = ctx->error;
+            return ctx->buildConfigResult;
+        }
+        // xray
+        buildXrayConfig(ctx);
+        if (!ctx->error.isEmpty()) {
             MW_show_log("Config build error:" + ctx->error);
             ctx->buildConfigResult->error = ctx->error;
             return ctx->buildConfigResult;
@@ -960,7 +1021,15 @@ namespace Configs {
                     continue;
                 }
             }
-            buildOutboundChain(ctx, unwrapChain(item->id), "proxy-" + Int2String(suffix), false, true);
+            auto IDs = unwrapChain(item->id);
+            auto group = profileManager->GetGroup(item->gid);
+            if (group == nullptr) {
+                res->error = "Null group on profile, data is corrupted";
+                return res;
+            }
+            if (group->landing_proxy_id >= 0 && !item->outbound->IsXray()) IDs.prepend(group->landing_proxy_id);
+            if (group->front_proxy_id >= 0 && !item->outbound->IsXray()) IDs.append(group->front_proxy_id);
+            buildOutboundChain(ctx, IDs, "proxy-" + Int2String(suffix), false, true);
             if (!ctx->error.isEmpty()) {
                 res->error = ctx->error;
                 return res;
@@ -969,6 +1038,11 @@ namespace Configs {
             res->outboundTags << tag;
             res->tag2entID.insert(tag, item->id);
             suffix++;
+        }
+        buildXrayConfig(ctx);
+        if (!ctx->error.isEmpty()) {
+            res->error = ctx->error;
+            return res;
         }
         ctx->outbounds << QJsonObject{{"type", "direct"}, {"tag", "direct"}};
         ctx->buildConfigResult->coreConfig["outbounds"] = ctx->outbounds;
@@ -981,6 +1055,8 @@ namespace Configs {
                    }}
         };
         res->coreConfig = ctx->buildConfigResult->coreConfig;
+        res->xrayConfig = ctx->buildConfigResult->xrayConfig;
+        res->isXrayNeeded = ctx->buildConfigResult->isXrayNeeded;
 
         return res;
     }

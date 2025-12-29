@@ -78,12 +78,12 @@ namespace Stats {
                 // 停止
                 if (looping) {
                     looping = false;
-                    runOnUiThread([=,this] {
+                    runOnUiThread([=] {
                         auto m = GetMainWindow();
                         m->refresh_status("STOP");
                     });
                 }
-                runOnUiThread([=,this]
+                runOnUiThread([=]
                 {
                    auto m = GetMainWindow();
                    m->update_traffic_graph(0, 0, 0, 0);

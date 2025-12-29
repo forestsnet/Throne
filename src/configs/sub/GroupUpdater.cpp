@@ -10,6 +10,8 @@
 #include <QJsonDocument>
 #include "include/ui/mainwindow_interface.h"
 
+#include "include/configs/common/utils.h"
+
 namespace Subscription {
 
     GroupUpdater *groupUpdater = new GroupUpdater;
@@ -56,6 +58,27 @@ namespace Subscription {
             return;
         }
 
+        // Json
+        QJsonParseError error;
+        QJsonDocument::fromJson(str.toUtf8(), &error);
+        if (error.error == error.NoError) {
+            // SingBox
+            if (str.contains("outbounds") || str.contains("endpoints"))
+            {
+                updateSingBox(str);
+                return;
+            }
+
+            // SIP008
+            if (str.contains("version") && str.contains("servers"))
+            {
+                updateSIP008(str);
+                return;
+            }
+
+            return;
+        }
+
         // Clash
         if (str.contains("proxies:")) {
             bool ok;
@@ -67,24 +90,10 @@ namespace Subscription {
             return;
         }
 
-        // SingBox
-        if (str.contains("outbounds") || str.contains("endpoints"))
-        {
-            updateSingBox(str);
-            return;
-        }
-
         // Wireguard Config
         if (str.contains("[Interface]") && str.contains("[Peer]"))
         {
             updateWireguardFileConfig(str);
-            return;
-        }
-
-        // SIP008
-        if (str.contains("version") && str.contains("servers"))
-        {
-            updateSIP008(str);
             return;
         }
 
@@ -112,7 +121,11 @@ namespace Subscription {
             if (dataBytes.isEmpty()) return;
             auto data = QJsonDocument::fromJson(dataBytes).object();
             if (data.isEmpty()) return;
-            ent = Configs::ProfileManager::NewProxyEntity(data["type"].toString());
+            if (data.contains("protocol")) {
+                ent = Configs::ProfileManager::NewProxyEntity("xray" + data["protocol"].toString());
+            } else {
+                ent = data["type"].toString() == "hysteria2" ? Configs::ProfileManager::NewProxyEntity("hysteria") : Configs::ProfileManager::NewProxyEntity(data["type"].toString());
+            }
             if (ent->outbound->invalid) return;
             ent->outbound->ParseFromJson(data);
         }
@@ -164,9 +177,15 @@ namespace Subscription {
 
         // VLESS
         if (str.startsWith("vless://")) {
-            ent = Configs::ProfileManager::NewProxyEntity("vless");
-            auto ok = ent->VLESS()->ParseFromLink(str);
-            if (!ok) return;
+            if (Configs::useXrayVless(str)) {
+                ent = Configs::ProfileManager::NewProxyEntity("xrayvless");
+                auto ok = ent->XrayVLESS()->ParseFromLink(str);
+                if (!ok) return;
+            } else {
+                ent = Configs::ProfileManager::NewProxyEntity("vless");
+                auto ok = ent->VLESS()->ParseFromLink(str);
+                if (!ok) return;
+            }
         }
 
         // Trojan
@@ -254,6 +273,7 @@ namespace Subscription {
 
             // HTTP
             if (out["type"] == "http") {
+                ent = Configs::ProfileManager::NewProxyEntity("http");
                 auto ok = ent->Http()->ParseFromJson(out);
                 if (!ok) continue;
             }

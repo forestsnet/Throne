@@ -73,6 +73,8 @@ namespace Configs
     public:
         QString error;
         QJsonObject coreConfig;
+        bool isXrayNeeded = false;
+        QJsonObject xrayConfig;
         std::shared_ptr<ExtraCoreData> extraCoreData = std::make_shared<ExtraCoreData>();
 
         QList<std::shared_ptr<Stats::TrafficData>> outboundStats;
@@ -93,6 +95,7 @@ namespace Configs
         QStringList warnings;
         QJsonArray outbounds;
         QJsonArray endpoints;
+        QList<std::pair<int, QJsonObject>> xrayOutbounds; // (inbound port, object)
         std::shared_ptr<BuildConfigResult> buildConfigResult = std::make_shared<BuildConfigResult>();
     };
 
@@ -147,6 +150,8 @@ namespace Configs
 
     void buildExperimentalSection(std::shared_ptr<BuildSingBoxConfigContext> &ctx);
 
+    void buildXrayConfig(std::shared_ptr<BuildSingBoxConfigContext> &ctx);
+
     std::shared_ptr<BuildConfigResult> BuildSingBoxConfig(const std::shared_ptr<ProxyEntity> &ent);
 
     class BuildTestConfigResult {
@@ -155,6 +160,8 @@ namespace Configs
         QMap<int, QString> fullConfigs;
         QMap<QString, int> tag2entID;
         QJsonObject coreConfig;
+        QJsonObject xrayConfig;
+        bool isXrayNeeded = false;
         QStringList outboundTags;
     };
 

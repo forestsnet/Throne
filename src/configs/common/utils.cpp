@@ -44,4 +44,16 @@ namespace Configs
         return result;
     }
 
+    // TODO add setting items and use them here
+    bool useXrayVless(const QString& link) {
+        auto url = QUrl(link);
+        if (!url.isValid()) return false;
+        auto query = QUrlQuery(url.query(QUrl::ComponentFormattingOption::FullyDecoded));
+
+        if (query.queryItemValue("type") == "xhttp"
+            || query.queryItemValue("security") == "reality"
+            || (query.queryItemValue("encryption") != "none" && query.queryItemValue("encryption") != "")
+            || query.queryItemValue("extra") != "") return true;
+        return false;
+    }
 }

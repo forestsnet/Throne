@@ -4,7 +4,7 @@
 #include "include/configs/common/xrayStreamSetting.h"
 
 namespace Configs {
-    inline QStringList xrayFlows = {"", "xtls-rprx-vision", "xtls-rprx-vision-udp443"};
+    inline QStringList xrayFlows = {"xtls-rprx-vision", "xtls-rprx-vision-udp443"};
 
     class xrayVless : public outbound {
         public:
@@ -27,6 +27,11 @@ namespace Configs {
         QString ExportToLink() override;
         QJsonObject ExportToJson() override;
         BuildResult Build() override;
+        BuildResult BuildXray() override;
+
+        std::shared_ptr<xrayStreamSetting> GetXrayStream() override { return streamSetting; }
+
+        std::shared_ptr<xrayMultiplex> GetXrayMultiplex() override { return multiplex; }
 
         QString DisplayType() override {
             return "VLESS (Xray)";

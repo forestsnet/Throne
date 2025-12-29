@@ -287,6 +287,7 @@ namespace Configs {
         _add(new configItem("net_insecure", &net_insecure, itemType::boolean));
         _add(new configItem("sub_auto_update", &sub_auto_update, itemType::integer));
         _add(new configItem("sub_send_hwid", &sub_send_hwid, itemType::boolean));
+        _add(new configItem("sub_custom_hwid_params", &sub_custom_hwid_params, itemType::string));
         _add(new configItem("start_minimal", &start_minimal, itemType::boolean));
         _add(new configItem("max_log_line", &max_log_line, itemType::integer));
         _add(new configItem("splitter_state", &splitter_state, itemType::string));
@@ -325,6 +326,9 @@ namespace Configs {
         _add(new configItem("show_system_dns", &show_system_dns, itemType::boolean));
         _add(new configItem("main_window_geometry", &mainWindowGeometry, itemType::string));
         _add(new configItem("use_custom_icons", &use_custom_icons, itemType::boolean));
+        _add(new configItem("xray_log_level", &xray_log_level, itemType::string));
+        _add(new configItem("xray_mux_concurrency", &xray_mux_concurrency, itemType::integer));
+        _add(new configItem("xray_mux_default_on", &xray_mux_default_on, itemType::boolean));
     }
 
     void DataStore::UpdateStartedId(int id) {
@@ -401,9 +405,17 @@ namespace Configs {
 
     QString FindCoreRealPath() {
         auto fn = QApplication::applicationDirPath() + "/Core";
+#ifdef Q_OS_WIN
+        fn += ".exe";
+#endif
         auto fi = QFileInfo(fn);
-        if (fi.isSymLink()) return fi.symLinkTarget();
-        return fn;
+        QString path;
+        if (fi.isSymLink()) path =  fi.symLinkTarget();
+        path = fn;
+#ifdef Q_OS_WIN
+        path.replace("/", "\\");
+#endif
+        return path;
     }
 
     short isAdminCache = -1;

@@ -220,11 +220,10 @@ namespace Configs {
 
     QString QUICBean::ToShareLink() {
         QUrl url;
-        QString portRange;
         if (proxy_type == proxy_Hysteria) {
             url.setScheme("hysteria");
             url.setHost(serverAddress);
-            url.setPort(0);
+            url.setPort(serverPort);
             QUrlQuery q;
             q.addQueryItem("upmbps", Int2String(uploadMbps));
             q.addQueryItem("downmbps", Int2String(downloadMbps));
@@ -240,16 +239,15 @@ namespace Configs {
             if (!alpn.isEmpty()) q.addQueryItem("alpn", alpn);
             if (connectionReceiveWindow > 0) q.addQueryItem("recv_window", Int2String(connectionReceiveWindow));
             if (streamReceiveWindow > 0) q.addQueryItem("recv_window_conn", Int2String(streamReceiveWindow));
-            if (!serverPorts.empty()) {
+            if (!serverPorts.empty())
+            {
                 QStringList portList;
-                for (const auto& range : serverPorts) {
-                    QString modifiedRange = range;
-                    modifiedRange.replace(":", "-");
-                    portList.append(modifiedRange);
+                for (const auto& range : serverPorts)
+                {
+                    portList.append(range.split(":"));
                 }
-                portRange = portList.join(",");
-            } else
-                url.setPort(serverPort);
+                q.addQueryItem("server_ports", portList.join("-"));
+            }
             if (!hop_interval.isEmpty()) q.addQueryItem("hop_interval", hop_interval);
             if (!q.isEmpty()) url.setQuery(q);
             if (!name.isEmpty()) url.setFragment(name);
@@ -272,7 +270,7 @@ namespace Configs {
         } else if (proxy_type == proxy_Hysteria2) {
             url.setScheme("hy2");
             url.setHost(serverAddress);
-            url.setPort(0);
+            url.setPort(serverPort);
             if (password.contains(":")) {
                 url.setUserName(SubStrBefore(password, ":"));
                 url.setPassword(SubStrAfter(password, ":"));
@@ -286,24 +284,20 @@ namespace Configs {
             }
             if (allowInsecure) q.addQueryItem("insecure", "1");
             if (!sni.isEmpty()) q.addQueryItem("sni", sni);
-            if (!serverPorts.empty()) {
+            if (!serverPorts.empty())
+            {
                 QStringList portList;
-                for (const auto& range : serverPorts) {
-                    QString modifiedRange = range;
-                    modifiedRange.replace(":", "-");
-                    portList.append(modifiedRange);
+                for (const auto& range : serverPorts)
+                {
+                    portList.append(range.split(":"));
                 }
-                portRange = portList.join(",");
-            } else
-                url.setPort(serverPort);
+                q.addQueryItem("server_ports", portList.join("-"));
+            }
             if (!hop_interval.isEmpty()) q.addQueryItem("hop_interval", hop_interval);
             if (!q.isEmpty()) url.setQuery(q);
             if (!name.isEmpty()) url.setFragment(name);
         }
-        if (portRange.isEmpty())
-            return url.toString(QUrl::FullyEncoded);
-        else
-            return url.toString(QUrl::FullyEncoded).replace(":0?", ":" + portRange + "?");
+        return url.toString(QUrl::FullyEncoded);
     }
 
     QString WireguardBean::ToShareLink() {

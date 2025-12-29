@@ -74,7 +74,7 @@ namespace Configs {
         if (globalDNS) query.addQueryItem("global_dns", "true");
         
         if (!query.isEmpty()) url.setQuery(query);
-        return url.toString();
+        return url.toString(QUrl::FullyEncoded);
     }
 
     QJsonObject tailscale::ExportToJson()

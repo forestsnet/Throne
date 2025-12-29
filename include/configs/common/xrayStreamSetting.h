@@ -28,17 +28,14 @@ namespace Configs {
 
     class xrayReality : public baseConfig {
         public:
-        QString target;
-        QString privateKey;
-        QString fingerprint;
         QString serverName;
+        QString fingerprint;
         QString password;
         QString shortId;
         QString spiderX;
 
         xrayReality() {
-            _add(new configItem("target", &target, string));
-            _add(new configItem("privateKey", &privateKey, string));
+            _add(new configItem("serverName", &serverName, string));
             _add(new configItem("fingerprint", &fingerprint, string));
             _add(new configItem("serverName", &serverName, string));
             _add(new configItem("password", &password, string));
@@ -57,20 +54,20 @@ namespace Configs {
         public:
         QString host;
         QString path;
-        QString mode;
+        QString mode = "auto";
         // extra
         QStringList headers;
         QString xPaddingBytes;
         bool noGRPCHeader = false;
-        int scMaxEachPostBytes = 1000000; // packet-up only
-        int scMinPostsIntervalMs = 30; // packet-up only
+        int scMaxEachPostBytes = 0; // packet-up only
+        int scMinPostsIntervalMs = 0; // packet-up only
         // extra/xmux
         QString maxConcurrency;
-        int maxConnections;
-        int cMaxReuseTimes;
+        int maxConnections = 0;
+        int cMaxReuseTimes = 0;
         QString hMaxRequestTimes;
         QString hMaxReusableSecs;
-        int hKeepAlivePeriod;
+        int hKeepAlivePeriod = 0;
         // todo do we need to add downloadsettings or is it useless?
 
         xrayXHTTP() {
@@ -90,6 +87,11 @@ namespace Configs {
             _add(new configItem("hKeepAlivePeriod", &hKeepAlivePeriod, integer));
         }
 
+        QString getHeadersString();
+
+        QStringList getHeaderPairs(QString rawHeader);
+
+        bool ParseExtraJson(QString str);
         bool ParseFromLink(const QString& link) override;
         bool ParseFromJson(const QJsonObject& object) override;
         QString ExportToLink() override;
@@ -99,8 +101,8 @@ namespace Configs {
 
     class xrayStreamSetting : public baseConfig {
         public:
-        QString network;
-        QString security;
+        QString network = "raw";
+        QString security = "none";
         std::shared_ptr<xrayTLS> TLS = std::make_shared<xrayTLS>();
         std::shared_ptr<xrayReality> reality = std::make_shared<xrayReality>();
         std::shared_ptr<xrayXHTTP> xhttp = std::make_shared<xrayXHTTP>();

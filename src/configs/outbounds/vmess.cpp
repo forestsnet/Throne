@@ -106,7 +106,7 @@ namespace Configs {
         if (!packet_encoding.isEmpty()) query.addQueryItem("packetEncoding", packet_encoding);
         
         if (!query.isEmpty()) url.setQuery(query);
-        return url.toString();
+        return url.toString(QUrl::FullyEncoded);
     }
 
     QJsonObject vmess::ExportToJson()

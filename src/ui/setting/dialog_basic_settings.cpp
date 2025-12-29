@@ -26,6 +26,7 @@ DialogBasicSettings::DialogBasicSettings(QWidget *parent)
     // Common
     ui->inbound_socks_port_l->setText(ui->inbound_socks_port_l->text().replace("Socks", "Mixed (SOCKS+HTTP)"));
     ui->log_level->addItems(QString("trace debug info warn error fatal panic").split(" "));
+    ui->xray_loglevel->addItems(Configs::Xray::XrayLogLevels);
     ui->mux_protocol->addItems({"h2mux", "smux", "yamux"});
     ui->disable_stats->setChecked(Configs::dataStore->disable_traffic_stats);
     ui->proxy_scheme->setCurrentText(Configs::dataStore->proxy_scheme);
@@ -155,6 +156,7 @@ DialogBasicSettings::DialogBasicSettings(QWidget *parent)
     D_LOAD_BOOL(sub_clear)
     D_LOAD_BOOL(net_insecure)
     D_LOAD_BOOL(sub_send_hwid)
+    D_LOAD_STRING(sub_custom_hwid_params)
     D_LOAD_INT_ENABLE(sub_auto_update, sub_auto_update_enable)
     auto details = GetDeviceDetails();
 	ui->sub_send_hwid->setToolTip(
@@ -164,14 +166,16 @@ DialogBasicSettings::DialogBasicSettings(QWidget *parent)
                 details.osVersion.isEmpty() ? "N/A" : details.osVersion,
                 details.model.isEmpty() ? "N/A" : details.model));
 
-    // Core
-    ui->groupBox_core->setTitle(software_core_name);
-
     // Mux
     D_LOAD_INT(mux_concurrency)
     D_LOAD_COMBO_STRING(mux_protocol)
     D_LOAD_BOOL(mux_padding)
     D_LOAD_BOOL(mux_default_on)
+
+    // Xray
+    ui->xray_loglevel->setCurrentText(Configs::dataStore->xray_log_level);
+    ui->xray_mux_concurrency->setText(Int2String(Configs::dataStore->xray_mux_concurrency));
+    ui->xray_default_mux->setChecked(Configs::dataStore->xray_mux_default_on);
 
     // NTP
     ui->ntp_enable->setChecked(Configs::dataStore->enable_ntp);
@@ -253,10 +257,16 @@ void DialogBasicSettings::accept() {
     D_SAVE_BOOL(sub_clear)
     D_SAVE_BOOL(net_insecure)
     D_SAVE_BOOL(sub_send_hwid)
+    D_SAVE_STRING(sub_custom_hwid_params)
     D_SAVE_INT_ENABLE(sub_auto_update, sub_auto_update_enable)
 
     // Core
     Configs::dataStore->disable_traffic_stats = ui->disable_stats->isChecked();
+
+    // Xray
+    Configs::dataStore->xray_log_level = ui->xray_loglevel->currentText();
+    Configs::dataStore->xray_mux_concurrency = ui->xray_mux_concurrency->text().toInt();
+    Configs::dataStore->xray_mux_default_on = ui->xray_default_mux->isChecked();
 
     // Mux
     D_SAVE_INT(mux_concurrency)

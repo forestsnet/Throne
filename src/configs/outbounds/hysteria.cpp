@@ -2,7 +2,6 @@
 
 #include <QJsonArray>
 #include <QUrlQuery>
-#include <3rdparty/URLParser/url_parser.h>
 #include <include/global/Utils.hpp>
 
 #include "include/configs/common/utils.h"
@@ -15,10 +14,14 @@ namespace Configs {
         {
             if(!url.errorString().startsWith("Invalid port"))
                 return false;
-            server_port = 0;
-            server_ports = QString::fromStdString(URLParser::Parse((link.split("?")[0] + "/").toStdString()).port).split(",");
-            for (auto & serverPort : server_ports) {
-                serverPort.replace("-", ":");
+            QString authority = url.authority();
+            int portStartIndex = link.indexOf(authority) + authority.length();
+            QRegularExpressionMatch match = QRegularExpression("^:([\\d,\\-]+)").match(link.mid(portStartIndex));
+            if (match.hasMatch()) {
+                server_ports = match.captured(1).split(",");
+                for (auto & serverPort : server_ports) {
+                    serverPort.replace("-", ":");
+                }
             }
         }
         auto query = QUrlQuery(url.query(QUrl::ComponentFormattingOption::FullyDecoded));
@@ -113,20 +116,6 @@ namespace Configs {
         QUrlQuery query;
         url.setScheme(protocol_version == "1" ? "hysteria" : "hysteria2");
         url.setHost(server);
-        url.setPort(0);
-        
-        if (!server_ports.isEmpty()) {
-            QStringList portList;
-            for (const auto& port : server_ports) {
-                QString modified = port;
-                modified.replace(":", "-");
-                portList.append(modified);
-            }
-            url.setPort(0);
-            query.addQueryItem("mport", portList.join(","));
-        } else {
-            url.setPort(server_port);
-        }
         
         if (!name.isEmpty()) url.setFragment(name);
 
@@ -160,10 +149,23 @@ namespace Configs {
         
         if (!query.isEmpty()) url.setQuery(query);
         
-        QString result = url.toString();
+        QString result;
         if (!server_ports.isEmpty()) {
-            result = result.replace(":0?", ":" + query.queryItemValue("mport") + "?");
+            QStringList portList;
+            for (const auto& port : server_ports) {
+                QString modified = port;
+                modified.replace(":", "-");
+                portList.append(modified);
+            }
+            result = url.toString(QUrl::FullyEncoded);
+            QString authority = url.authority(QUrl::FullyEncoded);
+            int portStartIndex = result.indexOf(authority) + authority.length();
+            result.insert(portStartIndex, ":" + portList.join(","));
+        } else {
+            url.setPort(server_port);
+            result = url.toString(QUrl::FullyEncoded);
         }
+        
         return result;
     }
 

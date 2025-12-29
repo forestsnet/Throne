@@ -569,6 +569,23 @@
          </property>
         </widget>
        </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_custom_hwid_params">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Format: hwid=value,os=value,osVersion=value,model=value&lt;/p&gt;&lt;p&gt;Leave empty to use default values. Only specify the parameters you want to override.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Custom System Parameters (optional)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="sub_custom_hwid_params">
+         <property name="placeholderText">
+          <string>hwid=custom_value,os=custom_os,osVersion=custom_version,model=custom_model</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_20">
          <property name="sizePolicy">
@@ -605,7 +622,7 @@
           </sizepolicy>
          </property>
          <property name="title">
-          <string notr="true">core_name</string>
+          <string notr="true">Sing-box</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
@@ -698,88 +715,142 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QGroupBox" name="ntp_box">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Settings for the
+                                            sing-box's built-in NTP client&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+                                        </string>
+            </property>
+            <property name="title">
+             <string>NTP Settings</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_6">
+             <item row="0" column="0">
+              <widget class="QCheckBox" name="ntp_enable">
+               <property name="text">
+                <string>Enable</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_22">
+               <item>
+                <widget class="QLabel" name="ntp_server_l">
+                 <property name="text">
+                  <string>server</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="ntp_server"/>
+               </item>
+               <item>
+                <widget class="QLabel" name="ntp_port_l">
+                 <property name="text">
+                  <string>Port</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="ntp_port">
+                 <property name="maximumSize">
+                  <size>
+                   <width>162</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="ntp_interval_l">
+                 <property name="text">
+                  <string>sync interval</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="ntp_interval">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In
+                                                                minutes&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+                                                            </string>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>5m</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>10m</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>30m</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="ntp_box">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Settings for the
-                                            sing-box's built-in NTP client&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
-                                        </string>
-         </property>
+        <widget class="QGroupBox" name="xray_core_box">
          <property name="title">
-          <string>NTP Settings</string>
+          <string>Xray Core</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_6">
+         <layout class="QFormLayout" name="formLayout">
           <item row="0" column="0">
-           <widget class="QCheckBox" name="ntp_enable">
+           <widget class="QLabel" name="label_10">
             <property name="text">
-             <string>Enable</string>
+             <string>Loglevel</string>
             </property>
            </widget>
           </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="xray_loglevel"/>
+          </item>
           <item row="1" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout_22">
-            <item>
-             <widget class="QLabel" name="ntp_server_l">
-              <property name="text">
-               <string>server</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="ntp_server"/>
-            </item>
-            <item>
-             <widget class="QLabel" name="ntp_port_l">
-              <property name="text">
-               <string>Port</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="ntp_port">
-              <property name="maximumSize">
-               <size>
-                <width>162</width>
-                <height>16777215</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="ntp_interval_l">
-              <property name="text">
-               <string>sync interval</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="ntp_interval">
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In
-                                                                minutes&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
-                                                            </string>
-              </property>
-              <item>
+           <widget class="QLabel" name="label_23">
+            <property name="text">
+             <string>Mux Concurrency</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QWidget" name="widget" native="true">
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLineEdit" name="xray_mux_concurrency"/>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="xray_default_mux">
                <property name="text">
-                <string>5m</string>
+                <string>Default Mux On</string>
                </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>10m</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>30m</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-           </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
           </item>
          </layout>
         </widget>

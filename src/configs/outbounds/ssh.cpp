@@ -103,7 +103,7 @@ namespace Configs {
         mergeUrlQuery(query, outbound::ExportToLink());
         
         if (!query.isEmpty()) url.setQuery(query);
-        return url.toString();
+        return url.toString(QUrl::FullyEncoded);
     }
 
     QJsonObject ssh::ExportToJson()

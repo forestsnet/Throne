@@ -11,4 +11,6 @@ namespace Configs
     QStringList jsonObjectToQStringList(const QJsonObject& obj);
 
     QJsonObject qStringListToJsonObject(const QStringList& list);
+
+    bool useXrayVless(const QString& link);
 }

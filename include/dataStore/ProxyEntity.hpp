@@ -17,6 +17,7 @@
 #include "include/configs/outbounds/tuic.h"
 #include "include/configs/outbounds/vless.h"
 #include "include/configs/outbounds/vmess.h"
+#include "include/configs/outbounds/xrayVless.h"
 
 #include "include/global/Configs.hpp"
 #include "include/global/CountryHelper.hpp"
@@ -70,6 +71,10 @@ namespace Configs {
         [[nodiscard]] Configs::vless *VLESS() const {
             return dynamic_cast<Configs::vless *>(outbound.get());
         };
+
+        [[nodiscard]] Configs::xrayVless *XrayVLESS() const {
+            return dynamic_cast<Configs::xrayVless *>(outbound.get());
+        }
 
         [[nodiscard]] Configs::anyTLS *AnyTLS() const {
             return dynamic_cast<Configs::anyTLS *>(outbound.get());

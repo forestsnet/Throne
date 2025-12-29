@@ -5,11 +5,17 @@ namespace Configs {
     bool outbound::ParseFromLink(const QString& link)
     {
         auto url = QUrl(link);
-        if (!url.isValid()) return false;
+        if (!url.isValid())
+        {
+            if(!url.errorString().startsWith("Invalid port"))
+                return false;
+            server_port = 0;
+        } else {
+            server_port = url.port();
+        }
 
         if (url.hasFragment()) name = url.fragment(QUrl::FullyDecoded);
         server = url.host();
-        server_port = url.port();
         dialFields->ParseFromLink(link);
         return true;
     }
