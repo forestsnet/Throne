@@ -13,4 +13,8 @@ namespace Configs
     QJsonObject qStringListToJsonObject(const QStringList& list);
 
     bool useXrayVless(const QString& link);
+
+    QString getHeadersString(QStringList headers);
+
+    QStringList parseHeaderPairs(const QString& rawHeader);
 }

@@ -21,6 +21,7 @@ namespace Configs {
                 
                 QString net = objN["net"].toString();
                 if (net == "h2") net = "http";
+                if (QString type = objN["type"].toString(); type == "http") net = "http";
                 transport->type = net;
                 transport->host = objN["host"].toString();
                 transport->path = objN["path"].toString();

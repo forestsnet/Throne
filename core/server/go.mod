@@ -3,7 +3,7 @@ module Core
 go 1.25
 
 require (
-	github.com/Mahdi-zarei/speedtest-go v1.7.12
+	github.com/Mahdi-zarei/speedtest-go v1.7.13-0.20260107171856-79c565dfd83a
 	github.com/chai2010/protorpc v0.0.0-00010101000000-000000000000
 	github.com/dustin/go-humanize v1.0.1
 	github.com/gofrs/uuid/v5 v5.3.2
@@ -14,7 +14,7 @@ require (
 	github.com/sagernet/sing-tun v0.8.0-beta.11
 	github.com/spf13/cobra v1.10.1
 	github.com/throneproj/clash2singbox v0.1.5-0.20251204215643-2a0d5666be7e
-	github.com/xtls/xray-core v1.251202.0
+	github.com/xtls/xray-core v1.251208.0
 	golang.org/x/sys v0.38.0
 	google.golang.org/protobuf v1.36.10
 	gopkg.in/yaml.v3 v3.0.1

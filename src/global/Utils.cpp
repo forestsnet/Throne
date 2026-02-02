@@ -189,6 +189,20 @@ int MkPort() {
     return port;
 }
 
+QList<int> MkManyPorts(int num) {
+    QList<int> res;
+    QList<QTcpServer*> servers;
+    for (int i=0;i<num;i++) {
+        QTcpServer s;
+        s.listen();
+        servers.append(&s);
+        res.append(s.serverPort());
+    }
+    for (const auto s: servers) s->close();
+    servers.clear();
+    return res;
+}
+
 QString ReadableSize(const qint64 &size) {
     double sizeAsDouble = size;
     static QStringList measures;

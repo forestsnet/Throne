@@ -57,7 +57,7 @@ namespace Configs {
         if (!name.isEmpty()) url.setFragment(name);
 
         if (!congestion_control.isEmpty()) query.addQueryItem("congestion_control", congestion_control);
-        if (!udp_relay_mode.isEmpty()) query.addQueryItem("udp_relay_mode", udp_relay_mode);
+        if (!udp_relay_mode.isEmpty() && !udp_over_stream) query.addQueryItem("udp_relay_mode", udp_relay_mode);
         if (udp_over_stream) query.addQueryItem("udp_over_stream", "true");
         if (zero_rtt_handshake) query.addQueryItem("zero_rtt_handshake", "true");
         if (!heartbeat.isEmpty()) query.addQueryItem("heartbeat", heartbeat);
@@ -77,7 +77,7 @@ namespace Configs {
         if (!uuid.isEmpty()) object["uuid"] = uuid;
         if (!password.isEmpty()) object["password"] = password;
         if (!congestion_control.isEmpty()) object["congestion_control"] = congestion_control;
-        if (!udp_relay_mode.isEmpty()) object["udp_relay_mode"] = udp_relay_mode;
+        if (!udp_relay_mode.isEmpty() && !udp_over_stream) object["udp_relay_mode"] = udp_relay_mode;
         if (udp_over_stream) object["udp_over_stream"] = udp_over_stream;
         if (zero_rtt_handshake) object["zero_rtt_handshake"] = zero_rtt_handshake;
         if (!heartbeat.isEmpty()) object["heartbeat"] = heartbeat;
@@ -93,7 +93,7 @@ namespace Configs {
         if (!uuid.isEmpty()) object["uuid"] = uuid;
         if (!password.isEmpty()) object["password"] = password;
         if (!congestion_control.isEmpty()) object["congestion_control"] = congestion_control;
-        if (!udp_relay_mode.isEmpty()) object["udp_relay_mode"] = udp_relay_mode;
+        if (!udp_relay_mode.isEmpty() && !udp_over_stream) object["udp_relay_mode"] = udp_relay_mode;
         if (udp_over_stream) object["udp_over_stream"] = udp_over_stream;
         if (zero_rtt_handshake) object["zero_rtt_handshake"] = zero_rtt_handshake;
         if (!heartbeat.isEmpty()) object["heartbeat"] = heartbeat;

@@ -56,4 +56,61 @@ namespace Configs
             || query.queryItemValue("extra") != "") return true;
         return false;
     }
+
+    QString getHeadersString(QStringList headers) {
+        QString result;
+        if (headers.length()%2 != 0) {
+            return "";
+        }
+        for (int i=0;i<headers.length();i+=2) {
+            result += headers[i]+"=";
+            result += "\""+headers[i+1]+"\" ";
+        }
+        return result;
+    }
+
+    QStringList parseHeaderPairs(const QString& rawHeader) {
+        bool inQuote = false;
+        QString curr;
+        QStringList list;
+        for (const auto &ch: rawHeader) {
+            if (inQuote) {
+                if (ch == '"') {
+                    inQuote = false;
+                    list << curr;
+                    curr = "";
+                    continue;
+                } else {
+                    curr += ch;
+                    continue;
+                }
+            }
+            if (ch == '"') {
+                inQuote = true;
+                continue;
+            }
+            if (ch == ' ') {
+                if (!curr.isEmpty()) {
+                    list << curr;
+                    curr = "";
+                }
+                continue;
+            }
+            if (ch == '=') {
+                if (!curr.isEmpty()) {
+                    list << curr;
+                    curr = "";
+                }
+                continue;
+            }
+            curr+=ch;
+        }
+        if (!curr.isEmpty()) list<<curr;
+
+        if (list.size()%2 != 0) {
+            return {};
+        }
+
+        return list;
+    }
 }

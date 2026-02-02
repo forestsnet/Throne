@@ -1,63 +1,11 @@
 #include "include/configs/common/transport.h"
 
 #include <QJsonArray>
-#include <QUrlQuery>
 #include <include/global/Utils.hpp>
 
 #include "include/configs/common/utils.h"
 
 namespace Configs {
-
-    QString Transport::getHeadersString() {
-        QString result;
-        for (int i=0;i<headers.length();i+=2) {
-            result += headers[i]+"=";
-            result += "\""+headers[i+1]+"\" ";
-        }
-        return result;
-    }
-
-    QStringList Transport::getHeaderPairs(QString rawHeader) {
-        bool inQuote = false;
-        QString curr;
-        QStringList list;
-        for (const auto &ch: rawHeader) {
-            if (inQuote) {
-                if (ch == '"') {
-                    inQuote = false;
-                    list << curr;
-                    curr = "";
-                    continue;
-                } else {
-                    curr += ch;
-                    continue;
-                }
-            }
-            if (ch == '"') {
-                inQuote = true;
-                continue;
-            }
-            if (ch == ' ') {
-                if (!curr.isEmpty()) {
-                    list << curr;
-                    curr = "";
-                }
-                continue;
-            }
-            if (ch == '=') {
-                if (!curr.isEmpty()) {
-                    list << curr;
-                    curr = "";
-                }
-                continue;
-            }
-            curr+=ch;
-        }
-        if (!curr.isEmpty()) list<<curr;
-
-        return list;
-    }
-
     bool Transport::ParseFromLink(const QString& link)
     {
         auto url = QUrl(link);
@@ -75,7 +23,14 @@ namespace Configs {
         if (query.hasQueryItem("host")) host = query.queryItemValue("host");
         if (query.hasQueryItem("path")) path = query.queryItemValue("path", QUrl::FullyDecoded);
         if (query.hasQueryItem("method")) method = query.queryItemValue("method");
-        if (query.hasQueryItem("headers")) headers = query.queryItemValue("headers", QUrl::FullyDecoded).split(",");
+        if (query.hasQueryItem("headers")) {
+            auto raw = query.queryItemValue("headers", QUrl::FullyDecoded);
+            headers = raw.split("|");
+            if (headers.length()%2 != 0) {
+                MW_show_log("Failed to import invalid headers: " + raw);
+                headers.clear();
+            }
+        }
         if (query.hasQueryItem("idle_timeout")) idle_timeout = query.queryItemValue("idle_timeout");
         if (query.hasQueryItem("ping_timeout")) ping_timeout = query.queryItemValue("ping_timeout");
         if (query.hasQueryItem("max_early_data")) max_early_data = query.queryItemValue("max_early_data").toInt();
@@ -124,13 +79,13 @@ namespace Configs {
         if (!host.isEmpty()) query.addQueryItem("host", host);
         if (!path.isEmpty()) query.addQueryItem("path", path);
         if (!method.isEmpty()) query.addQueryItem("method", method);
-        if (!headers.isEmpty()) query.addQueryItem("headers", headers.join(","));
+        if (!headers.isEmpty()) query.addQueryItem("headers", headers.join("|"));
         if (!idle_timeout.isEmpty()) query.addQueryItem("idle_timeout", idle_timeout);
         if (!ping_timeout.isEmpty()) query.addQueryItem("ping_timeout", ping_timeout);
         if (max_early_data > 0) query.addQueryItem("max_early_data", QString::number(max_early_data));
         if (!early_data_header_name.isEmpty()) query.addQueryItem("early_data_header_name", early_data_header_name);
         if (!service_name.isEmpty()) query.addQueryItem("serviceName", service_name);
-        return query.toString();
+        return query.toString(QUrl::FullyEncoded);
     }
     QJsonObject Transport::ExportToJson()
     {

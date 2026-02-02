@@ -1,5 +1,4 @@
 #include "include/global/Configs.hpp"
-#include "include/configs/proxy/Preset.hpp"
 
 #include <QApplication>
 #include <QDir>
@@ -13,6 +12,10 @@
 #include <QStandardPaths>
 #include <utility>
 #include <include/api/RPC.h>
+
+#include "include/database/GroupsRepo.h"
+#include "include/database/RoutesRepo.h"
+
 
 #ifdef Q_OS_WIN
 #include "include/sys/windows/guihelper.h"
@@ -401,7 +404,22 @@ namespace Configs {
         return {"Default"};
     }
 
-    // System Utils
+} // namespace Configs_ConfigItem
+
+namespace Configs {
+    void initDB(const std::string& dbPath) {
+        dataManager = new DatabaseManager(dbPath);
+
+        if (dataManager->groupsRepo->GetAllGroupIds().empty()) {
+            auto defaultGroup = GroupsRepo::NewGroup();
+            defaultGroup->name = QObject::tr("Default");
+            dataManager->groupsRepo->AddGroup(defaultGroup);
+        }
+        if (dataManager->routesRepo->GetAllRouteProfileIds().empty()) {
+            auto defaultRoute = RouteProfile::GetDefaultChain();
+            dataManager->routesRepo->AddRouteProfile(defaultRoute);
+        }
+    }
 
     QString FindCoreRealPath() {
         auto fn = QApplication::applicationDirPath() + "/Core";
@@ -445,7 +463,7 @@ namespace Configs {
         bool admin = false;
 #ifdef Q_OS_WIN
         admin = Windows_IsInAdmin();
-        dataStore->windows_set_admin = admin;
+        Configs::dataManager->settingsRepo->windows_set_admin = admin;
 #else
         bool ok;
         auto isPrivileged = API::defaultClient->IsPrivileged(&ok);
@@ -456,7 +474,7 @@ namespace Configs {
     };
 
     QString GetBasePath() {
-        if (dataStore->flag_use_appdata) return QStandardPaths::writableLocation(
+        if (Configs::dataManager->settingsRepo->flag_use_appdata) return QStandardPaths::writableLocation(
               QStandardPaths::AppConfigLocation);
         return qApp->applicationDirPath();
     }

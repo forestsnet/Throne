@@ -147,6 +147,8 @@ inline QString DisplayDest(const QString& dest, QString domain)
 
 int MkPort();
 
+QList<int> MkManyPorts(int num);
+
 QString DisplayTime(long long time, int formatType = 0);
 
 QString ReadableSize(const qint64 &size);
