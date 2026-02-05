@@ -5,6 +5,7 @@
 #include "include/configs/sub/GroupUpdater.hpp"
 
 #include <QInputDialog>
+#include <QUrl>
 #include <QUrlQuery>
 #include <QJsonDocument>
 
@@ -258,7 +259,7 @@ namespace Subscription {
             auto out = o.toObject();
             if (out.isEmpty())
             {
-                MW_show_log("invalid outbound of type: " + o.type());
+                MW_show_log("invalid outbound, skipping");
                 continue;
             }
 
@@ -378,34 +379,61 @@ namespace Subscription {
     // 在新的 thread 运行
     void GroupUpdater::AsyncUpdate(const QString &str, int _sub_gid, const std::function<void()> &finish) {
         auto content = str.trimmed();
-        bool asURL = false;
-        bool createNewGroup = false;
-
-        if (_sub_gid < 0 && (content.startsWith("http://") || content.startsWith("https://"))) {
-            auto items = QStringList{
-                QObject::tr("Add profiles to this group"),
-                QObject::tr("Create new subscription group"),
-            };
-            bool ok;
-            auto a = QInputDialog::getItem(nullptr,
-                                           QObject::tr("url detected"),
-                                           QObject::tr("%1\nHow to update?").arg(content),
-                                           items, 0, false, &ok);
-            if (!ok) return;
-            asURL = true;
-            if (items.indexOf(a) == 1) createNewGroup = true;
-        }
 
         runOnNewThread([=,this] {
             auto gid = _sub_gid;
-            if (createNewGroup) {
-                auto group = Configs::GroupsRepo::NewGroup();
-                group->name = QUrl(str).host();
-                group->url = str;
-                Configs::dataManager->groupsRepo->AddGroup(group);
-                gid = group->id;
-                MW_dialog_message("SubUpdater", "NewGroup");
+            bool asURL = false;
+            
+            // Если это URL и группа не задана (_sub_gid < 0)
+            if (_sub_gid < 0 && (content.startsWith("http://") || content.startsWith("https://"))) {
+                asURL = true;
+                QUrl url(content);
+                QString domain = url.host();
+                
+                // Ищем группу с таким же доменом
+                auto allGroups = Configs::dataManager->groupsRepo->GetAllGroupIds();
+                std::shared_ptr<Configs::Group> existingGroup = nullptr;
+                
+                for (int groupId : allGroups) {
+                    auto group = Configs::dataManager->groupsRepo->GetGroup(groupId);
+                    if (group && !group->url.isEmpty()) {
+                        QUrl groupUrl(group->url);
+                        if (groupUrl.host() == domain) {
+                            existingGroup = group;
+                            break;
+                        }
+                    }
+                }
+                
+                if (existingGroup) {
+                    // Перезаписываем существующую группу с тем же доменом
+                    gid = existingGroup->id;
+                    existingGroup->url = content;
+                    Configs::dataManager->groupsRepo->Save(existingGroup);
+                } else {
+                    // Создаем новую группу для нового домена
+                    auto group = Configs::GroupsRepo::NewGroup();
+                    group->name = domain.isEmpty() ? "Subscription" : domain;
+                    group->url = content;
+                    Configs::dataManager->groupsRepo->AddGroup(group);
+                    gid = group->id;
+                    
+                    // Удаляем группу Default, если она пустая и это не единственная группа
+                    auto allGroupsAfter = Configs::dataManager->groupsRepo->GetAllGroupIds();
+                    if (allGroupsAfter.size() > 1) {
+                        for (int groupId : allGroupsAfter) {
+                            auto defaultGroup = Configs::dataManager->groupsRepo->GetGroup(groupId);
+                            if (defaultGroup && defaultGroup->name == QObject::tr("Default") && defaultGroup->Profiles().isEmpty()) {
+                                Configs::dataManager->groupsRepo->DeleteGroup(groupId);
+                                break;
+                            }
+                        }
+                    }
+                    
+                    MW_dialog_message("SubUpdater", "NewGroup");
+                }
             }
+            
             Update(str, gid, asURL);
             emit asyncUpdateCallback(gid);
             if (finish != nullptr) finish();

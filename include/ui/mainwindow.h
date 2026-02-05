@@ -285,6 +285,10 @@ private:
 
     void queryCountryTest(const QMap<QString, int>& tag2entID, bool testCurrent);
 
+    void tcpPingTest(const QList<int>& profileIDs);
+
+    void handshakeTest(const QList<int>& profileIDs);
+
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
 
