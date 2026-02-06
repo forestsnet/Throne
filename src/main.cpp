@@ -11,6 +11,7 @@
 #include <QThread>
 #include <QSettings>
 #include <QTimer>
+#include <QUrlQuery>
 #include <QFileOpenEvent>
 #include <3rdparty/WinCommander.hpp>
 
@@ -138,7 +139,10 @@ protected:
             qDebug() << "FileOpen event received:" << url;
             
             if (url.startsWith("throne://")) {
-                handleThroneUrl(url);
+                // Обрабатываем URL с небольшой задержкой, чтобы UI успел инициализироваться
+                QTimer::singleShot(100, this, [this, url]() {
+                    handleThroneUrl(url);
+                });
                 return true;
             }
         }
@@ -149,13 +153,34 @@ private:
     void handleThroneUrl(const QString &url) {
         qDebug() << "Processing throne URL:" << url;
         
+        // Извлекаем реальный URL из throne:// схемы
+        QString actualUrl = url;
+        if (url.startsWith("throne://subscribe?")) {
+            QUrl throneUrl(url);
+            QUrlQuery query(throneUrl);
+            actualUrl = query.queryItemValue("url", QUrl::FullyDecoded);
+            
+            if (actualUrl.isEmpty()) {
+                qDebug() << "Error: throne:// URL does not contain 'url' parameter";
+                return;
+            }
+            qDebug() << "Extracted actual URL:" << actualUrl;
+        }
+        
         auto mainWindow = GetMainWindow();
         if (mainWindow) {
+            qDebug() << "Main window found, showing and processing URL";
             mainWindow->show();
             mainWindow->raise();
             mainWindow->activateWindow();
-            Subscription::groupUpdater->AsyncUpdate(url, -1, nullptr);
+            
+            // Даем еще немного времени для UI
+            QTimer::singleShot(200, [actualUrl]() {
+                qDebug() << "Calling AsyncUpdate for:" << actualUrl;
+                Subscription::groupUpdater->AsyncUpdate(actualUrl, -1, nullptr);
+            });
         } else {
+            qDebug() << "Main window not ready, storing URL for later";
             pendingThroneUrl = url;
         }
     }
@@ -356,8 +381,19 @@ int main(int argc, char* argv[]) {
             QString receivedUrl = QString::fromUtf8(data);
             
             if (receivedUrl.startsWith("throne://")) {
+                qDebug() << "Received throne URL from another instance:" << receivedUrl;
+                
+                // Извлекаем реальный URL
+                QString actualUrl = receivedUrl;
+                if (receivedUrl.startsWith("throne://subscribe?")) {
+                    QUrl throneUrl(receivedUrl);
+                    QUrlQuery query(throneUrl);
+                    actualUrl = query.queryItemValue("url", QUrl::FullyDecoded);
+                    qDebug() << "Extracted actual URL:" << actualUrl;
+                }
+                
                 // Открываем главное окно и обрабатываем URL
-                QTimer::singleShot(100, [receivedUrl]() {
+                QTimer::singleShot(100, [actualUrl]() {
                     //
                     // Показываем окно
                     MW_dialog_message("", "Raise");
@@ -372,7 +408,7 @@ int main(int argc, char* argv[]) {
                         qDebug() << "Main window is null!";
                     }
 
-                    Subscription::groupUpdater->AsyncUpdate(receivedUrl, -1, nullptr);
+                    Subscription::groupUpdater->AsyncUpdate(actualUrl, -1, nullptr);
                 });
             }
         }
@@ -425,15 +461,31 @@ int main(int argc, char* argv[]) {
     // После инициализации UI - обработка отложенных URL для всех платформ
     if (!a.pendingThroneUrl.isEmpty()) {
         QTimer::singleShot(500, [&a]() {
-            const QString url = a.pendingThroneUrl;
+            QString url = a.pendingThroneUrl;
             qDebug() << "Processing pending throne URL after UI init:" << url;
+            
+            // Извлекаем реальный URL
+            QString actualUrl = url;
+            if (url.startsWith("throne://subscribe?")) {
+                QUrl throneUrl(url);
+                QUrlQuery query(throneUrl);
+                actualUrl = query.queryItemValue("url", QUrl::FullyDecoded);
+                qDebug() << "Extracted actual URL:" << actualUrl;
+            }
 
             auto mainWindow = GetMainWindow();
             if (mainWindow) {
                 mainWindow->show();
                 mainWindow->raise();
                 mainWindow->activateWindow();
-                Subscription::groupUpdater->AsyncUpdate(url, -1, nullptr);
+                
+                // Дополнительная задержка для стабильности
+                QTimer::singleShot(300, [actualUrl]() {
+                    qDebug() << "Actually calling AsyncUpdate for pending URL:" << actualUrl;
+                    Subscription::groupUpdater->AsyncUpdate(actualUrl, -1, nullptr);
+                });
+            } else {
+                qDebug() << "Main window still null after init!";
             }
         });
     }
@@ -442,9 +494,18 @@ int main(int argc, char* argv[]) {
     if (!throneUrl.isEmpty()) {
         qDebug() << "Found throne URL in arguments:" << throneUrl;
         
+        // Извлекаем реальный URL
+        QString actualUrl = throneUrl;
+        if (throneUrl.startsWith("throne://subscribe?")) {
+            QUrl url(throneUrl);
+            QUrlQuery query(url);
+            actualUrl = query.queryItemValue("url", QUrl::FullyDecoded);
+            qDebug() << "Extracted actual URL:" << actualUrl;
+        }
+        
         // Обработать URL-схему после инициализации UI
-        QTimer::singleShot(1000, [throneUrl]() {
-            qDebug() << "Timer triggered, processing URL:" << throneUrl;
+        QTimer::singleShot(1000, [actualUrl]() {
+            qDebug() << "Timer triggered, processing URL:" << actualUrl;
             
             // Показываем главное окно
             auto mainWindow = GetMainWindow();
@@ -453,14 +514,16 @@ int main(int argc, char* argv[]) {
                 mainWindow->raise();
                 mainWindow->activateWindow();
                 qDebug() << "Main window shown and activated";
+                
+                // Дополнительная задержка перед обработкой
+                QTimer::singleShot(300, [actualUrl]() {
+                    qDebug() << "Actually calling AsyncUpdate for command line URL:" << actualUrl;
+                    Subscription::groupUpdater->AsyncUpdate(actualUrl, -1, nullptr);
+                });
             } else {
                 MW_dialog_message("", "Raise");
                 qDebug() << "Main window was null, used MW_dialog_message";
             }
-            
-            // Обрабатываем URL
-            Subscription::groupUpdater->AsyncUpdate(throneUrl, -1, nullptr);
-            qDebug() << "AsyncUpdate called with URL:" << throneUrl;
         });
     }
 

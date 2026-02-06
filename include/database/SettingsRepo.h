@@ -73,8 +73,8 @@ namespace Configs {
         bool mux_padding = false;
         int mux_concurrency = 8;
         bool mux_default_on = false;
-        QString theme = "0";
-        int language = 0;
+        QString theme = "qdarkstyle";
+        int language = 4; // 0 - system, 1 - english, 2 - chinese-simplified, 3 - chinese-traditional, 4 - auto (default)
         QString font = "";
         int font_size = 0;
         QString mw_size = "";
@@ -99,13 +99,13 @@ namespace Configs {
         // Subscription
         QString user_agent = ""; // set at main.cpp
         int sub_auto_update = -30;
-        bool sub_clear = false;
-        bool sub_send_hwid = false;
+        bool sub_clear = true;
+        bool sub_send_hwid = true;
         QString sub_custom_hwid_params = "";
 
         // Security
         bool skip_cert = false;
-        QString utlsFingerprint = "";
+        QString utlsFingerprint = "chrome";
         bool disable_run_admin = false; // windows only
         bool use_mozilla_certs = false;
 
@@ -120,7 +120,7 @@ namespace Configs {
         int current_route_id = 0;
         QString remote_dns = "tls://8.8.8.8";
         QString remote_dns_strategy = "";
-        QString direct_dns = "localhost";
+        QString direct_dns = "tls://77.88.8.8";
         QString direct_dns_strategy = "";
         bool use_dns_object = false;
         QString dns_object = "";
@@ -128,7 +128,7 @@ namespace Configs {
         QString domain_strategy = "AsIs";
         QString outbound_domain_strategy = "AsIs";
         int sniffing_mode = SniffingMode::FOR_ROUTING;
-        int ruleset_mirror = Mirrors::CLOUDFLARE;
+        int ruleset_mirror = Mirrors::GITHUB;
 
         // Socks & HTTP Inbound
         QString inbound_address = "127.0.0.1";
@@ -148,7 +148,8 @@ namespace Configs {
 #ifdef Q_OS_MACOS
         QString vpn_implementation = "gvisor";
 #elif defined(Q_OS_WIN)
-        QString vpn_implementation = WinVersion::IsBuildNumGreaterOrEqual(BuildNumber::Windows_10_1507) ? "system" : "gvisor";
+        // QString vpn_implementation = WinVersion::IsBuildNumGreaterOrEqual(BuildNumber::Windows_10_1507) ? "system" : "gvisor";
+        QString vpn_implementation = "gvisor";
 #else
         QString vpn_implementation = "system";
 #endif

@@ -380,6 +380,23 @@ namespace Subscription {
     void GroupUpdater::AsyncUpdate(const QString &str, int _sub_gid, const std::function<void()> &finish) {
         auto content = str.trimmed();
 
+        // Обрабатываем throne:// URL схему
+        if (content.startsWith("throne://subscribe?")) {
+            QUrl throneUrl(content);
+            QUrlQuery query(throneUrl);
+            QString actualUrl = query.queryItemValue("url", QUrl::FullyDecoded);
+            
+            if (actualUrl.isEmpty()) {
+                MW_show_log("Error: throne:// URL does not contain 'url' parameter");
+                if (finish != nullptr) finish();
+                return;
+            }
+            
+            // Рекурсивно вызываем с извлеченным URL
+            AsyncUpdate(actualUrl, _sub_gid, finish);
+            return;
+        }
+
         runOnNewThread([=,this] {
             auto gid = _sub_gid;
             bool asURL = false;
@@ -390,51 +407,84 @@ namespace Subscription {
                 QUrl url(content);
                 QString domain = url.host();
                 
-                // Ищем группу с таким же доменом
+                // Ищем группу с таким же доменом и пустую группу Default
                 auto allGroups = Configs::dataManager->groupsRepo->GetAllGroupIds();
                 std::shared_ptr<Configs::Group> existingGroup = nullptr;
+                std::shared_ptr<Configs::Group> defaultGroup = nullptr;
+                
+                MW_show_log(QString("DEBUG: Checking %1 groups for domain '%2'").arg(allGroups.size()).arg(domain));
                 
                 for (int groupId : allGroups) {
                     auto group = Configs::dataManager->groupsRepo->GetGroup(groupId);
-                    if (group && !group->url.isEmpty()) {
+                    if (!group) continue;
+                    
+                    MW_show_log(QString("DEBUG: Group %1 - name='%2', url='%3', profiles=%4")
+                        .arg(groupId)
+                        .arg(group->name)
+                        .arg(group->url)
+                        .arg(group->Profiles().size()));
+                    
+                    // Ищем группу с таким же доменом
+                    if (!group->url.isEmpty()) {
                         QUrl groupUrl(group->url);
                         if (groupUrl.host() == domain) {
                             existingGroup = group;
-                            break;
+                            MW_show_log(QString("DEBUG: Found existing group with same domain: %1").arg(groupId));
                         }
+                    }
+                    
+                    // Ищем пустую группу Default
+                    if (group->name == "Default" && group->Profiles().isEmpty()) {
+                        defaultGroup = group;
+                        MW_show_log(QString("DEBUG: Found empty Default group: %1").arg(groupId));
                     }
                 }
                 
                 if (existingGroup) {
                     // Перезаписываем существующую группу с тем же доменом
+                    MW_show_log(QObject::tr("Updating existing subscription for domain: %1").arg(domain));
                     gid = existingGroup->id;
                     existingGroup->url = content;
                     Configs::dataManager->groupsRepo->Save(existingGroup);
                 } else {
                     // Создаем новую группу для нового домена
-                    auto group = Configs::GroupsRepo::NewGroup();
-                    group->name = domain.isEmpty() ? "Subscription" : domain;
-                    group->url = content;
-                    Configs::dataManager->groupsRepo->AddGroup(group);
-                    gid = group->id;
+                    MW_show_log(QObject::tr("Creating new subscription group for domain: %1").arg(domain));
+                    auto newGroup = Configs::GroupsRepo::NewGroup();
+                    newGroup->name = domain.isEmpty() ? "Subscription" : domain;
+                    newGroup->url = content;
+                    Configs::dataManager->groupsRepo->AddGroup(newGroup);
+                    gid = newGroup->id;
                     
-                    // Удаляем группу Default, если она пустая и это не единственная группа
-                    auto allGroupsAfter = Configs::dataManager->groupsRepo->GetAllGroupIds();
-                    if (allGroupsAfter.size() > 1) {
-                        for (int groupId : allGroupsAfter) {
-                            auto defaultGroup = Configs::dataManager->groupsRepo->GetGroup(groupId);
-                            if (defaultGroup && defaultGroup->name == QObject::tr("Default") && defaultGroup->Profiles().isEmpty()) {
-                                Configs::dataManager->groupsRepo->DeleteGroup(groupId);
-                                break;
-                            }
+                    MW_show_log(QString("DEBUG: New group created with id: %1").arg(gid));
+                    
+                    // Удаляем пустую группу Default ПОСЛЕ создания новой
+                    if (defaultGroup) {
+                        MW_show_log(QString("DEBUG: Attempting to delete Default group (id: %1)").arg(defaultGroup->id));
+                        
+                        // Проверяем количество групп ПОСЛЕ создания новой
+                        auto updatedGroups = Configs::dataManager->groupsRepo->GetAllGroupIds();
+                        MW_show_log(QString("DEBUG: Total groups after creating new: %1").arg(updatedGroups.size()));
+                        
+                        if (updatedGroups.size() > 1) {
+                            MW_show_log(QObject::tr("Removing empty Default group (id: %1)").arg(defaultGroup->id));
+                            Configs::dataManager->groupsRepo->DeleteGroup(defaultGroup->id);
+                            
+                            // Обновляем UI сразу после удаления
+                            runOnUiThread([=] {
+                                MW_dialog_message("", "RefreshProxyList");
+                            });
+                        } else {
+                            MW_show_log("DEBUG: Not deleting Default - it's the only group");
                         }
+                    } else {
+                        MW_show_log("DEBUG: No Default group found to delete");
                     }
                     
                     MW_dialog_message("SubUpdater", "NewGroup");
                 }
             }
             
-            Update(str, gid, asURL);
+            Update(content, gid, asURL);
             emit asyncUpdateCallback(gid);
             if (finish != nullptr) finish();
         });
