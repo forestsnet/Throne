@@ -73,153 +73,6 @@ void UI_InitMainWindow() {
     mainwindow = new MainWindow;
 }
 
-void MainWindow::tcpPingTest(const QList<int>& profileIDs) {
-    if (profileIDs.isEmpty()) {
-        return;
-    }
-    if (!speedtestRunning.tryLock()) {
-        MessageBoxWarning(software_name, tr("The last test did not exit completely, please wait. If it persists, please restart the program."));
-        return;
-    }
-
-    runOnNewThread([this, profileIDs]() {
-        stopSpeedtest.store(false);
-        
-        auto tcpPingFunc = [=, this](const QList<std::shared_ptr<Configs::Profile>>& profileSlice) {
-            std::atomic<int> counter(0);
-            auto testCount = profileSlice.size();
-            
-            for (const auto& profile : profileSlice) {
-                if (stopSpeedtest.load()) {
-                    ++counter;
-                    if (counter.load() == testCount) {
-                        speedtestRunning.unlock();
-                    }
-                    continue;
-                }
-                
-                parallelCoreCallPool->start([this, profile, &counter, testCount]() {
-                    if (stopSpeedtest.load()) {
-                        counter++;
-                        if (counter.load() == testCount) {
-                            speedtestRunning.unlock();
-                        }
-                        return;
-                    }
-                    
-                    // Простой TCP ping
-                    auto start = QDateTime::currentMSecsSinceEpoch();
-                    QTcpSocket socket;
-                    socket.connectToHost(profile->outbound->server, profile->outbound->server_port);
-                    
-                    if (socket.waitForConnected(5000)) {
-                        auto latency = QDateTime::currentMSecsSinceEpoch() - start;
-                        profile->latency = static_cast<int>(latency);
-                        socket.disconnectFromHost();
-                    } else {
-                        profile->latency = -1;
-                    }
-                    
-                    Configs::dataManager->profilesRepo->Save(profile);
-                    counter++;
-                    
-                    runOnUiThread([this, profile]() {
-                        refresh_proxy_list(profile->id);
-                    });
-                    
-                    if (counter.load() == testCount) {
-                        speedtestRunning.unlock();
-                    }
-                });
-            }
-            
-            if (testCount == 0) speedtestRunning.unlock();
-            
-            speedtestRunning.lock();
-            MW_show_log("TCP Ping test for batch done.");
-            runOnUiThread([=, this]() {
-                refresh_proxy_list();
-            });
-        };
-        
-        for (int i = 0; i < profileIDs.length(); i += 100) {
-            if (stopSpeedtest.load()) break;
-            auto profileIDsSlice = profileIDs.mid(i, 100);
-            auto profiles = Configs::dataManager->profilesRepo->GetProfileBatch(profileIDsSlice);
-            tcpPingFunc(profiles);
-        }
-        
-        speedtestRunning.unlock();
-        MW_show_log(tr("TCP Ping test finished!"));
-    });
-}
-
-void MainWindow::handshakeTest(const QList<int>& profileIDs) {
-    if (profileIDs.isEmpty()) {
-        return;
-    }
-    if (!speedtestRunning.tryLock()) {
-        MessageBoxWarning(software_name, tr("The last test did not exit completely, please wait. If it persists, please restart the program."));
-        return;
-    }
-
-    runOnNewThread([this, profileIDs]() {
-        stopSpeedtest.store(false);
-        
-        auto handshakeFunc = [=, this](const QList<std::shared_ptr<Configs::Profile>>& profileSlice) {
-            auto buildObject = Configs::BuildTestConfig(profileSlice);
-            if (!buildObject->error.isEmpty()) {
-                MW_show_log(tr("Failed to build test config for batch: ") + buildObject->error);
-                return;
-            }
-
-            std::atomic<int> counter(0);
-            auto testCount = buildObject->fullConfigs.size() + (!buildObject->outboundTags.empty());
-            
-            for (const auto &entID: buildObject->fullConfigs.keys()) {
-                auto configStr = buildObject->fullConfigs[entID];
-                auto func = [this, &counter, testCount, configStr, entID]() {
-                    MainWindow::runURLTest(configStr, QString(), true, {}, {}, entID);
-                    counter++;
-                    if (counter.load() == testCount) {
-                        speedtestRunning.unlock();
-                    }
-                };
-                parallelCoreCallPool->start(func);
-            }
-
-            if (!buildObject->outboundTags.empty()) {
-                auto func = [this, &buildObject, &counter, testCount]() {
-                    MainWindow::runURLTest(QJsonObject2QString(buildObject->coreConfig, false), QString(), false, buildObject->outboundTags, buildObject->tag2entID, -1);
-                    counter++;
-                    if (counter.load() == testCount) {
-                        speedtestRunning.unlock();
-                    }
-                };
-                parallelCoreCallPool->start(func);
-            }
-            
-            if (testCount == 0) speedtestRunning.unlock();
-
-            speedtestRunning.lock();
-            MW_show_log("Handshake test for batch done.");
-            runOnUiThread([=, this]() {
-                refresh_proxy_list();
-            });
-        };
-        
-        for (int i = 0; i < profileIDs.length(); i += 100) {
-            if (stopSpeedtest.load()) break;
-            auto profileIDsSlice = profileIDs.mid(i, 100);
-            auto profiles = Configs::dataManager->profilesRepo->GetProfileBatch(profileIDsSlice);
-            handshakeFunc(profiles);
-        }
-        
-        speedtestRunning.unlock();
-        MW_show_log(tr("Handshake test finished!"));
-    });
-}
-
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     mainwindow = this;
     setAcceptDrops(true);
@@ -416,62 +269,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // }
 
     connect(ui->toolButton_speedtest, &QToolButton::clicked, this, [=,this]() {
-        // Проверяем текущую группу
-        auto currentGroup = Configs::dataManager->groupsRepo->CurrentGroup();
-        if (currentGroup == nullptr) {
-            MessageBoxWarning(tr("Speedtest"), tr("No group selected."));
-            return;
-        }
-        
-        // // Если ничего не выбрано, тестируем всю группу
-        auto allProfiles = currentGroup->Profiles();
-        if (allProfiles.isEmpty()) {
-            MessageBoxWarning(tr("Speedtest"), 
-                tr("Current group has no profiles.\n\n"
-                   "Please add some profiles first:\n"
-                   "• Use 'Add from clipboard' to import links\n"
-                   "• Import subscription URL\n"
-                   "• Add profile manually"));
-            return;
-        }
-        
-        MW_show_log(tr("Starting speedtest for all %1 profiles in group...").arg(allProfiles.size()));
-        speedtest_current_group(Configs::dataManager->groupsRepo->CurrentGroup()->Profiles());
+        // Используем существующий action из меню
+        ui->actionSpeedtest_Group->trigger();
     });
 
     
     connect(ui->toolButton_ping, &QToolButton::clicked, this, [=,this]() {
-        // Проверяем текущую группу
+        // Используем TCP Ping для быстрого теста
         auto currentGroup = Configs::dataManager->groupsRepo->CurrentGroup();
-        if (currentGroup == nullptr) {
-            MessageBoxWarning(tr("Ping Test"), tr("No group selected."));
+        if (!currentGroup || currentGroup->Profiles().isEmpty()) {
+            MessageBoxWarning(tr("Ping Test"), tr("No profiles in current group."));
             return;
         }
-        
-        // // Получаем выбранные профили
-        // auto selected = get_now_selected_list();
-        
-        // // Если есть выбранные, тестируем их
-        // if (!selected.isEmpty()) {
-        //     MW_show_log(tr("Starting handshake test for %1 selected profiles...").arg(selected.size()));
-        //     handshakeTest(selected);
-        //     return;
-        // }
-        
-        // // Если ничего не выбрано, тестируем всю группу
-        auto allProfiles = currentGroup->Profiles();
-        if (allProfiles.isEmpty()) {
-            MessageBoxWarning(tr("Ping Test"), 
-                tr("Current group has no profiles.\n\n"
-                   "Please add some profiles first:\n"
-                   "• Use 'Add from clipboard' to import links\n"
-                   "• Import subscription URL\n"
-                   "• Add profile manually"));
-            return;
-        }
-        
-        MW_show_log(tr("Starting handshake test for all %1 profiles in group...").arg(allProfiles.size()));
-        handshakeTest(get_now_selected_list());
+        iptest_current_group(currentGroup->Profiles());
     });
     
     connect(ui->toolButton_update, &QToolButton::clicked, this, [=,this] { 
@@ -1086,6 +896,14 @@ void MainWindow::on_tabWidget_currentChanged(int index) {
     show_group(gid);
 }
 
+void MainWindow::refreshColumnWidths() {
+    auto ent = Configs::dataManager->groupsRepo->CurrentGroup();
+    if (!ent) return;
+    ent->column_width.clear();
+    Configs::dataManager->groupsRepo->Save(ent);
+    show_group(ent->id);
+}
+
 void MainWindow::show_group(int gid) {
     if (Configs::dataManager->settingsRepo->refreshing_group) return;
     Configs::dataManager->settingsRepo->refreshing_group = true;
@@ -1149,6 +967,13 @@ void MainWindow::show_group(int gid) {
     }
 
     Configs::dataManager->settingsRepo->refreshing_group = false;
+    
+    // Принудительно обновляем ширину колонок при первом показе
+    if (group->column_width.isEmpty() || group->column_width[0] <= 0) {
+        QTimer::singleShot(100, this, [this]() {
+            refreshColumnWidths();
+        });
+    }
 }
 
 // callback
@@ -1247,8 +1072,12 @@ void MainWindow::dialog_message_impl(const QString &sender, const QString &info)
             if (!info.contains("dingyue")) {
                 show_log_impl(tr("Imported %1 profile(s)").arg(Configs::dataManager->settingsRepo->imported_count));
             }
+            // Обновляем ширину колонок после обновления подписки
+            refreshColumnWidths();
         } else if (info == "NewGroup") {
             refresh_groups();
+            // Обновляем ширину колонок при создании новой группы
+            refreshColumnWidths();
         }
     } else if (sender == "ExternalProcess") {
         if (info == "Crashed") {

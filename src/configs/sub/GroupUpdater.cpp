@@ -392,6 +392,8 @@ namespace Subscription {
                 return;
             }
             
+            MW_show_log(QString("DEBUG: Extracted URL from throne:// : %1").arg(actualUrl));
+            
             // Рекурсивно вызываем с извлеченным URL
             AsyncUpdate(actualUrl, _sub_gid, finish);
             return;

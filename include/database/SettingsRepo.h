@@ -119,21 +119,21 @@ namespace Configs {
         // Routing
         int current_route_id = 0;
         QString remote_dns = "tls://8.8.8.8";
-        QString remote_dns_strategy = "";
+        QString remote_dns_strategy = "prefer_ipv4";
         QString direct_dns = "tls://77.88.8.8";
-        QString direct_dns_strategy = "";
+        QString direct_dns_strategy = "prefer_ipv4";
         bool use_dns_object = false;
         QString dns_object = "";
         QString dns_final_out = "proxy";
-        QString domain_strategy = "AsIs";
-        QString outbound_domain_strategy = "AsIs";
+        QString domain_strategy = "prefer_ipv4";
+        QString outbound_domain_strategy = "prefer_ipv4";
         int sniffing_mode = SniffingMode::FOR_ROUTING;
         int ruleset_mirror = Mirrors::GITHUB;
 
         // Socks & HTTP Inbound
         QString inbound_address = "127.0.0.1";
         int inbound_socks_port = 2080; // Mixed, actually
-        bool random_inbound_port = false;
+        bool random_inbound_port = true;
         QString custom_inbound = "{\"inbounds\": []}";
         QString proxy_scheme = "{ip}:{port}";
 
@@ -144,7 +144,7 @@ namespace Configs {
 
         // VPN
         bool fake_dns = false;
-        bool enable_tun_routing = false;
+        bool enable_tun_routing = true;
 #ifdef Q_OS_MACOS
         QString vpn_implementation = "gvisor";
 #elif defined(Q_OS_WIN)
@@ -153,7 +153,7 @@ namespace Configs {
 #else
         QString vpn_implementation = "system";
 #endif
-        int vpn_mtu = 1500;
+        int vpn_mtu = 1420;
         bool vpn_ipv6 = false;
         bool vpn_strict_route = true;
         bool disable_privilege_req = false;
@@ -192,7 +192,7 @@ namespace Configs {
         QString core_box_underlying_dns = "";
 
         // Xray
-        QString xray_log_level = "warning";
+        QString xray_log_level = "info";
         int xray_mux_concurrency = 8;
         bool xray_mux_default_on = false;
 

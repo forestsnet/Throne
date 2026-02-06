@@ -55,6 +55,8 @@ public:
     void refresh_proxy_list(const int &id = -1);
 
     void show_group(int gid);
+    
+    void refreshColumnWidths();
 
     void refresh_groups();
 
@@ -239,7 +241,7 @@ private:
 
     void closeEvent(QCloseEvent *event) override;
 
-    void dragEnterEvent(QDragEnterEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event) override;
 
     void dropEvent(QDropEvent* event) override;
 
@@ -284,10 +286,6 @@ private:
     void querySpeedtest(QDateTime lastProxyListUpdate, const QMap<QString, int>& tag2entID, bool testCurrent);
 
     void queryCountryTest(const QMap<QString, int>& tag2entID, bool testCurrent);
-
-    void tcpPingTest(const QList<int>& profileIDs);
-
-    void handshakeTest(const QList<int>& profileIDs);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;

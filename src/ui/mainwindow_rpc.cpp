@@ -413,8 +413,12 @@ void MainWindow::iptest_current_group(const QList<int>& profileIDs) {
             ipTestFunc(profiles);
         }
         speedtestRunning.unlock();
-        MW_show_log(tr("IP test finished!"));
-    });
+        MW_show_log(tr("IP test finished!"));        
+        // Обновляем ширину колонок после завершения теста
+        runOnUiThread([this]() {
+            refresh_proxy_list();
+            refreshColumnWidths();
+        });    });
 }
 
 void MainWindow::speedtest_current_group(const QList<int>& profileIDs, bool testCurrent)
@@ -463,6 +467,8 @@ void MainWindow::speedtest_current_group(const QList<int>& profileIDs, bool test
         runOnUiThread([=,this]{
             refresh_proxy_list();
             MW_show_log(tr("Speedtest finished!"));
+            // Обновляем ширину колонок после завершения теста
+            refreshColumnWidths();
         });
     });
 }

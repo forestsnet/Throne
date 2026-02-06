@@ -52,7 +52,7 @@ namespace Configs
         BuildResult Build() override;
 
         void SetPort(int newPort) override;
-        QString GetPort();
+        QString GetPort() override;
         void SetAddress(QString newAddr) override;
         QString GetAddress() override;
         QString DisplayAddress() override;
