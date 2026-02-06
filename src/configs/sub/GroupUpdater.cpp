@@ -380,6 +380,8 @@ namespace Subscription {
     void GroupUpdater::AsyncUpdate(const QString &str, int _sub_gid, const std::function<void()> &finish) {
         auto content = str.trimmed();
 
+        MW_show_log(QString("DEBUG AsyncUpdate: input='%1', _sub_gid=%2").arg(content.left(100)).arg(_sub_gid));
+
         // Обрабатываем throne:// URL схему
         if (content.startsWith("throne://subscribe?")) {
             QUrl throneUrl(content);
@@ -387,7 +389,8 @@ namespace Subscription {
             QString actualUrl = query.queryItemValue("url", QUrl::FullyDecoded);
             
             if (actualUrl.isEmpty()) {
-                MW_show_log("Error: throne:// URL does not contain 'url' parameter");
+                MW_show_log("ERROR: throne:// URL does not contain 'url' parameter");
+                MW_show_log(QString("DEBUG: Query items: %1").arg(query.toString()));
                 if (finish != nullptr) finish();
                 return;
             }
@@ -402,6 +405,10 @@ namespace Subscription {
         runOnNewThread([=,this] {
             auto gid = _sub_gid;
             bool asURL = false;
+            
+            MW_show_log(QString("DEBUG: In thread - checking URL logic, _sub_gid=%1, isHTTP=%2")
+                .arg(_sub_gid)
+                .arg(content.startsWith("http://") || content.startsWith("https://")));
             
             // Если это URL и группа не задана (_sub_gid < 0)
             if (_sub_gid < 0 && (content.startsWith("http://") || content.startsWith("https://"))) {
@@ -543,7 +550,10 @@ namespace Subscription {
         }
 
         MW_show_log(">>>>>>>> " + QObject::tr("Processing subscription data..."));
+        MW_show_log(QString("DEBUG: Content to parse (first 200 chars): %1").arg(content.left(200)));
+        MW_show_log(QString("DEBUG: Content length: %1 bytes").arg(content.length()));
         rawUpdater->update(content);
+        MW_show_log(QString("DEBUG: rawUpdater->updated_order size: %1").arg(rawUpdater->updated_order.size()));
         Configs::dataManager->profilesRepo->AddProfileBatch(rawUpdater->updated_order, rawUpdater->gid_add_to);
         MW_show_log(">>>>>>>> " + QObject::tr("Process complete, applying..."));
 

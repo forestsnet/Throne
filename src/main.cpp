@@ -150,8 +150,14 @@ protected:
     }
 
 private:
-    void handleThroneUrl(const QString &url) {
-        qDebug() << "Processing throne URL:" << url;
+    void handleThroneUrl(QString url) {
+        // Очистка URL от пробелов и кавычек
+        url = url.trimmed();
+        if (url.startsWith('\"') && url.endsWith('\"')) {
+            url = url.mid(1, url.length() - 2);
+        }
+        
+        qDebug() << "handleThroneUrl called with (cleaned):" << url;
         
         // Извлекаем реальный URL из throne:// схемы
         QString actualUrl = url;
@@ -162,6 +168,11 @@ private:
             
             if (actualUrl.isEmpty()) {
                 qDebug() << "Error: throne:// URL does not contain 'url' parameter";
+                qDebug() << "Full query string:" << throneUrl.query();
+                qDebug() << "All query items:";
+                for (auto item : query.queryItems()) {
+                    qDebug() << "  " << item.first << "=" << item.second;
+                }
                 return;
             }
             qDebug() << "Extracted actual URL:" << actualUrl;
@@ -333,9 +344,15 @@ int main(int argc, char* argv[]) {
     // Проверяем throne:// URL перед проверкой другого экземпляра    
     QString throneUrl;
     for (int i = 1; i < arguments.size(); ++i) {
-        const QString &arg = arguments[i];
+        QString arg = arguments[i].trimmed();
+        // Убираем кавычки если есть (Windows может передавать в кавычках)
+        if (arg.startsWith('"') && arg.endsWith('"')) {
+            arg = arg.mid(1, arg.length() - 2);
+        }
+        qDebug() << "Checking argument" << i << ":" << arg;
         if (arg.startsWith("throne://")) {
             throneUrl = arg;
+            qDebug() << "Found throne URL in arguments:" << throneUrl;
             break;
         }
     }
@@ -378,7 +395,12 @@ int main(int argc, char* argv[]) {
         // Читаем данные из соединения (если новый экземпляр передает URL)
         if (s->waitForReadyRead(1000)) {
             QByteArray data = s->readAll();
-            QString receivedUrl = QString::fromUtf8(data);
+            QString receivedUrl = QString::fromUtf8(data).trimmed();
+            // Убираем кавычки если есть
+            if (receivedUrl.startsWith('"') && receivedUrl.endsWith('"')) {
+                receivedUrl = receivedUrl.mid(1, receivedUrl.length() - 2);
+            }
+            qDebug() << "Received data from socket:" << receivedUrl;
             
             if (receivedUrl.startsWith("throne://")) {
                 qDebug() << "Received throne URL from another instance:" << receivedUrl;
