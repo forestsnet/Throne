@@ -140,9 +140,7 @@ namespace Configs {
             QJsonObject obj;
             auto shortcutsMap = value.value<QMap<QString,QKeySequence>>();
             for (auto it = shortcutsMap.begin(); it != shortcutsMap.end(); ++it) {
-                if (!it.value().isEmpty()) {
-                    obj[it.key()] = it.value().toString();
-                }
+                obj[it.key()] = it.value().toString();
             }
             QJsonDocument doc(obj);
             return QString::fromUtf8(doc.toJson(QJsonDocument::Compact));
@@ -178,9 +176,7 @@ namespace Configs {
                 for (auto it = obj.begin(); it != obj.end(); ++it) {
                     QString keyName = it.key();
                     QString valueStr = it.value().toString();
-                    if (!valueStr.isEmpty()) {
-                        shortcutsMap[keyName] = QKeySequence(valueStr);
-                    }
+                    shortcutsMap[keyName] = QKeySequence(valueStr);
                 }
                 return QVariant::fromValue(shortcutsMap);
             }

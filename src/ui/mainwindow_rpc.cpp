@@ -780,10 +780,7 @@ void MainWindow::profile_start(int _id) {
     runOnNewThread([=, this] {
         // stop current running
         if (running != nullptr) {
-            runOnUiThread([=, this]
-            {
-                profile_stop(false, false, true);
-            }, true);
+            profile_stop(false, false, true);
             mu_stopping.lock();
             mu_stopping.unlock();
         }
@@ -851,23 +848,25 @@ void MainWindow::profile_stop(bool crash, bool block, bool manual) {
     if (block) blocker.lock();
 
     // timeout message
-    auto restartMsgbox = new QMessageBox(QMessageBox::Question, software_name, tr("If there is no response for a long time, it is recommended to restart the software."),
-                                         QMessageBox::Yes | QMessageBox::No, this);
-    connect(restartMsgbox, &QMessageBox::accepted, this, [=,this] { MW_dialog_message("", "RestartProgram"); });
-    auto restartMsgboxTimer = new MessageBoxTimer(this, restartMsgbox, 5000);
-
-    Stats::trafficLooper->loop_enabled = false;
-    Stats::connection_lister->suspend = true;
+    
     UpdateConnectionListWithRecreate({});
-    Stats::trafficLooper->loop_mutex.lock();
-    Stats::trafficLooper->UpdateAll();
-    Stats::trafficLooper->loop_mutex.unlock();
-
-    restartMsgboxTimer->cancel();
-    restartMsgboxTimer->deleteLater();
-    restartMsgbox->deleteLater();
 
     runOnNewThread([=, this, &blocker] {
+        Stats::trafficLooper->loop_enabled = false;
+        Stats::connection_lister->suspend = true;
+        Stats::trafficLooper->loop_mutex.lock();
+        Stats::trafficLooper->UpdateAll();
+        Stats::trafficLooper->loop_mutex.unlock();
+
+        QMessageBox* restartMsgbox;
+        MessageBoxTimer* restartMsgboxTimer;
+        runOnUiThread([=, this, &restartMsgbox, &restartMsgboxTimer] {
+            restartMsgbox = new QMessageBox(QMessageBox::Question, software_name, tr("If there is no response for a long time, it is recommended to restart the software."),
+                             QMessageBox::Yes | QMessageBox::No, this);
+            connect(restartMsgbox, &QMessageBox::accepted, this, [=] { MW_dialog_message("", "RestartProgram"); });
+            restartMsgboxTimer = new MessageBoxTimer(this, restartMsgbox, 5000);
+        }, true);
+
         // do stop
         MW_show_log(">>>>>>>> " + tr("Stopping profile %1").arg(running->outbound->DisplayTypeAndName()));
         if (!profile_stop_stage2()) {
@@ -880,12 +879,15 @@ void MainWindow::profile_stop(bool crash, bool block, bool manual) {
 
         if (block) blocker.unlock();
 
-        runOnUiThread([=, this] {
+        runOnUiThread([=, this, &restartMsgboxTimer, &restartMsgbox] {
+            restartMsgboxTimer->cancel();
+            restartMsgboxTimer->deleteLater();
+            restartMsgbox->deleteLater();
             refresh_status();
             refresh_proxy_list_impl_refresh_data(id, true);
 
             mu_stopping.unlock();
-        });
+        }, true);
     });
 
     if (block)

@@ -372,7 +372,7 @@ namespace Configs {
         db.execBatchInsertProfiles(rows);
 
         for (const auto& profile : toAdd) {
-            group->AddProfile(profile->id);
+            profileIDs << profile->id;
         }
         dataManager->groupsRepo->Save(group);
 
@@ -437,15 +437,14 @@ namespace Configs {
             return profiles;
         }
 
-        for (int off = 0; off < missingIds.size(); off += Configs::BATCH_LIMIT) {
-            int end = std::min(off + Configs::BATCH_LIMIT, static_cast<int>(missingIds.size()));
-            QList<int> chunk;
-            for (int i = off; i < end; ++i) chunk.append(missingIds[i]);
+        for (int off = 0; off < missingIds.size(); off += Configs::BATCH_LIMIT_READ) {
+            int end = std::min(off + Configs::BATCH_LIMIT_READ, static_cast<int>(missingIds.size()));
+            auto chunk = missingIds.sliced(off, end - off);
             std::map<int, std::shared_ptr<Profile>> loaded = loadProfilesByIdsChunk(chunk);
             for (auto& p : loaded) byId[p.first] = std::move(p.second);
         }
         for (const auto& p : byId) {
-            if (missingIds.contains(p.first)) identityMap[p.first] = std::weak_ptr<Profile>(p.second);
+            identityMap[p.first] = std::weak_ptr<Profile>(p.second);
         }
         for (int id : ids) {
             auto it = byId.find(id);
@@ -477,9 +476,7 @@ namespace Configs {
 
     void ProfilesRepo::DeleteProfile(int id) {
         if (id == dataManager->settingsRepo->started_id) {
-            runOnUiThread([=] {
-                GetMainWindow()->profile_stop(false, true, false);
-            }, true);
+            GetMainWindow()->profile_stop(false, true, false);
         }
         auto profile = GetProfile(id);
         if (profile) {
@@ -495,23 +492,18 @@ namespace Configs {
     }
 
     void ProfilesRepo::BatchDeleteProfiles(const QList<int>& ids) {
-        QSet<std::shared_ptr<Group>> groups;
-        for (auto& id : ids) {
-            if (id == dataManager->settingsRepo->started_id) {
-                if (id == dataManager->settingsRepo->started_id) {
-                    runOnUiThread([=] {
-                        GetMainWindow()->profile_stop(false, true, false);
-                    }, true);
-                }
+        QSet<int> groupIDs;
+        auto profiles = GetProfileBatch(ids);
+        for (const auto& ent : profiles) {
+            if (ent->id == dataManager->settingsRepo->started_id) {
+                GetMainWindow()->profile_stop(false, true, false);
             }
-            if (auto profile = GetProfile(id)) {
-                if (auto group = dataManager->groupsRepo->GetGroup(profile->gid)) {
-                    group->RemoveProfile(id);
-                    groups.insert(group);
-                }
-            }
+            groupIDs.insert(ent->gid);
         }
-        for (auto& group : groups) {
+        for (auto groupID : groupIDs) {
+            auto group = dataManager->groupsRepo->GetGroup(groupID);
+            if (!group) continue;
+            group->RemoveProfileBatch(ids);
             dataManager->groupsRepo->Save(group);
         }
         QMutexLocker locker(&mutex);

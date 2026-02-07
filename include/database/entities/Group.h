@@ -50,7 +50,11 @@ namespace Configs
 
         bool RemoveProfile(int ID);
 
+        bool RemoveProfileBatch(QList<int> IDs);
+
         bool AddProfile(int ID);
+
+        bool AddProfileBatch(QList<int> IDs);
 
         bool SwapProfiles(int idx1, int idx2);
 

@@ -81,11 +81,40 @@ namespace Configs
         return true;
     }
 
+    bool Group::AddProfileBatch(QList<int> IDs) {
+        QSet<int> currentProfiles;
+        for (const auto& profileID : profiles) {
+            currentProfiles.insert(profileID);
+        }
+        QMutexLocker locker(&mutex);
+        for (auto profileID : IDs) {
+            if (!currentProfiles.contains(profileID)) {
+                profiles.append(profileID);
+            }
+        }
+        column_width.clear();
+        return true;
+    }
+
     bool Group::RemoveProfile(int ID)
     {
         QMutexLocker locker(&mutex);
-        if (!HasProfile(ID)) return false;
-        profiles.removeAll(ID);
+        return true;
+    }
+
+    bool Group::RemoveProfileBatch(QList<int> IDs) {
+        QSet<int> toDel;
+        for (auto ID : IDs) {
+            toDel.insert(ID);
+        }
+        QList<int> newIDs;
+        QMutexLocker locker(&mutex);
+        for (auto inID : profiles) {
+            if (!toDel.contains(inID)) {
+                newIDs.append(inID);
+            }
+        }
+        profiles = newIDs;
         return true;
     }
 

@@ -546,6 +546,8 @@ namespace Subscription {
             if (Configs::dataManager->settingsRepo->sub_clear) {
                 MW_show_log(QObject::tr("Clearing servers..."));
                 Configs::dataManager->profilesRepo->BatchDeleteProfiles(group->Profiles());
+            } else {
+                in = Configs::dataManager->profilesRepo->GetProfileBatch(group->Profiles());
             }
         }
 
@@ -553,21 +555,32 @@ namespace Subscription {
         MW_show_log(QString("DEBUG: Content to parse (first 200 chars): %1").arg(content.left(200)));
         MW_show_log(QString("DEBUG: Content length: %1 bytes").arg(content.length()));
         rawUpdater->update(content);
+        content.clear();
         MW_show_log(QString("DEBUG: rawUpdater->updated_order size: %1").arg(rawUpdater->updated_order.size()));
         Configs::dataManager->profilesRepo->AddProfileBatch(rawUpdater->updated_order, rawUpdater->gid_add_to);
         MW_show_log(">>>>>>>> " + QObject::tr("Process complete, applying..."));
 
         if (group != nullptr) {
+            QList<std::shared_ptr<Configs::Profile>> out_all;
             out_all = Configs::dataManager->profilesRepo->GetProfileBatch(group->Profiles());;
 
             QString change_text;
 
             if (Configs::dataManager->settingsRepo->sub_clear) {
                 // all is new profile
-                for (const auto &ent: out_all) {
-                    change_text += "[+] " + ent->outbound->DisplayTypeAndName() + "\n";
+                if (out_all.size() >= 1000) {
+                    change_text += "[+] " + Int2String(out_all.size()) + " profiles\n";
+                } else {
+                    for (const auto &ent: out_all) {
+                        change_text += "[+] " + ent->outbound->DisplayTypeAndName() + "\n";
+                    }
                 }
             } else {
+                QList<std::shared_ptr<Configs::Profile>> update_keep;
+                QList<std::shared_ptr<Configs::Profile>> update_del;
+                QList<std::shared_ptr<Configs::Profile>> only_out;
+                QList<std::shared_ptr<Configs::Profile>> only_in;
+                QList<std::shared_ptr<Configs::Profile>> out;
                 // find and delete not updated profile by ProfileFilter
                 Configs::ProfileFilter::OnlyInSrc_ByPointer(out_all, in, out);
                 Configs::ProfileFilter::OnlyInSrc(in, out, only_in);

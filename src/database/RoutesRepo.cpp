@@ -514,8 +514,8 @@ namespace Configs {
 
         if (byId.empty()) return routeProfiles;
 
-        for (int off = 0; off < idsInOrder.size(); off += Configs::BATCH_LIMIT) {
-            int end = std::min(off + Configs::BATCH_LIMIT, static_cast<int>(idsInOrder.size()));
+        for (int off = 0; off < idsInOrder.size(); off += Configs::BATCH_LIMIT_READ) {
+            int end = std::min(off + Configs::BATCH_LIMIT_READ, static_cast<int>(idsInOrder.size()));
             QList<int> chunk;
             for (int i = off; i < end; ++i) chunk.append(idsInOrder[i]);
             loadRulesForProfileIdsChunk(chunk, byId);

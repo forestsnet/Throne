@@ -22,7 +22,8 @@ namespace Configs {
         std::string traffic_json;
     };
     // Max bound parameters per statement (SQLite default SQLITE_MAX_VARIABLE_NUMBER is 999).
-    constexpr int BATCH_LIMIT = 1000;
+    constexpr int BATCH_LIMIT_WRITE = 1500;
+    constexpr int BATCH_LIMIT_READ = 4096;
 
     class Database {
         SQLite::Database db;
@@ -88,8 +89,8 @@ namespace Configs {
 
         // 4. Execute DELETE FROM table WHERE idColumn IN (ids), chunked by BATCH_LIMIT
         void execDeleteByIdIn(const std::string& table, const std::string& idColumn, const std::vector<int>& ids) {
-            for (size_t off = 0; off < ids.size(); off += BATCH_LIMIT) {
-                size_t end = std::min(off + BATCH_LIMIT, ids.size());
+            for (size_t off = 0; off < ids.size(); off += BATCH_LIMIT_WRITE) {
+                size_t end = std::min(off + BATCH_LIMIT_WRITE, ids.size());
                 std::vector<int> chunk(ids.begin() + static_cast<std::ptrdiff_t>(off), ids.begin() + static_cast<std::ptrdiff_t>(end));
                 execDeleteByIdInChunk(table, idColumn, chunk);
             }
@@ -97,7 +98,7 @@ namespace Configs {
 
         // 5. Execute INSERT OR REPLACE INTO settings (key, value) VALUES ..., chunked (2 params per row -> BATCH_LIMIT/2 rows per chunk)
         void execBatchSettingsReplace(const std::vector<std::pair<std::string, std::string>>& keyValues) {
-            const size_t chunkSize = BATCH_LIMIT / 2;
+            const size_t chunkSize = BATCH_LIMIT_WRITE / 2;
             for (size_t off = 0; off < keyValues.size(); off += chunkSize) {
                 size_t end = std::min(off + chunkSize, keyValues.size());
                 std::vector<std::pair<std::string, std::string>> chunk(keyValues.begin() + static_cast<std::ptrdiff_t>(off),
@@ -110,7 +111,7 @@ namespace Configs {
         void execBatchInsertIntPairs(const std::string& table, const std::string& colA, const std::string& colB,
                                      const std::vector<int>& pairs) {
             if (pairs.size() < 2 || pairs.size() % 2 != 0) return;
-            const size_t chunkPairs = BATCH_LIMIT / 2;
+            const size_t chunkPairs = BATCH_LIMIT_WRITE / 2;
             for (size_t off = 0; off < pairs.size() / 2; off += chunkPairs) {
                 size_t pairCount = std::min(chunkPairs, pairs.size() / 2 - off);
                 std::vector<int> chunk;
@@ -126,7 +127,7 @@ namespace Configs {
 
         // Chunked (12 params per row -> BATCH_LIMIT/12 rows per chunk)
         void execBatchInsertProfiles(const std::vector<ProfileInsertRow>& rows) {
-            const size_t chunkSize = BATCH_LIMIT / 12;
+            const size_t chunkSize = BATCH_LIMIT_WRITE / 12;
             for (size_t off = 0; off < rows.size(); off += chunkSize) {
                 size_t end = std::min(off + chunkSize, rows.size());
                 std::vector<ProfileInsertRow> chunk(rows.begin() + static_cast<std::ptrdiff_t>(off),

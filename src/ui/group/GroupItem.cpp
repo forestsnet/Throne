@@ -122,9 +122,7 @@ void GroupItem::on_remove_clicked() {
     if (Configs::dataManager->groupsRepo->GetAllGroupIds().size() <= 1) return;
     if (QMessageBox::question(this, tr("Confirmation"), tr("Remove %1?").arg(ent->name)) ==
         QMessageBox::StandardButton::Yes) {
-        runOnUiThread([=] {
-            GetMainWindow()->profile_stop(false, true, false);
-        }, true);
+        GetMainWindow()->profile_stop(false, true, false);
         Configs::dataManager->groupsRepo->DeleteGroup(ent->id);
         MW_dialog_message(Dialog_DialogManageGroups, "refresh-1");
         delete item;
