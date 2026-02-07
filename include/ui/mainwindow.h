@@ -84,6 +84,8 @@ public:
 
     bool StopVPNProcess();
 
+    QStringList CheckConflictingProcesses();
+
     void UpdateConnectionList(const QMap<QString, Stats::ConnectionMetadata>& toUpdate, const QMap<QString, Stats::ConnectionMetadata>& toAdd);
 
     void UpdateConnectionListWithRecreate(const QList<Stats::ConnectionMetadata>& connections);

@@ -54,6 +54,7 @@
 #include <QThread>
 #include <QTimer>
 #include <QMessageBox>
+#include <QPushButton>
 #include <QDir>
 #include <QFileInfo>
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
@@ -1349,6 +1350,29 @@ void MainWindow::set_spmode_vpn(bool enable, bool save) {
     if (enable == Configs::dataManager->settingsRepo->spmode_vpn) return;
 
     if (enable) {
+        // Проверяем конфликтующие процессы перед включением VPN
+        QStringList conflicting = CheckConflictingProcesses();
+        if (!conflicting.isEmpty()) {
+            QString message = tr("Обнаружены программы, которые могут помешать работе TUN режима:\n\n");
+            message += conflicting.join("\n");
+            message += tr("\n\nЭти программы могут конфликтовать с виртуальным сетевым адаптером TUN.\n");
+            message += tr("Рекомендуется закрыть эти программы перед включением VPN режима.\n\n");
+            message += tr("Продолжить включение VPN режима?");
+            
+            QMessageBox msgBox(this);
+            msgBox.setWindowTitle(tr("Предупреждение"));
+            msgBox.setText(message);
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.addButton(tr("Продолжить"), QMessageBox::AcceptRole);
+            QPushButton* cancelBtn = msgBox.addButton(tr("Отмена"), QMessageBox::RejectRole);
+            msgBox.setDefaultButton(cancelBtn);
+            
+            if (msgBox.exec() == QMessageBox::RejectRole) {
+                refresh_status();
+                return;
+            }
+        }
+        
         bool requestPermission = !Configs::IsAdmin();
         if (requestPermission) {
 #ifdef Q_OS_WIN
@@ -2670,6 +2694,136 @@ bool MainWindow::StopVPNProcess() {
     }, DS_cores, true);
 
     return true;
+}
+
+QStringList MainWindow::CheckConflictingProcesses() {
+    QStringList conflictingProcesses;
+    
+    // Список конфликтующих процессов (имена в нижнем регистре)
+    QStringList conflictingNames = {
+        // VPN клиенты
+        "radmin-vpn", "rserver3", "r_server", "rvpn",
+        "hamachi", "logmein-hamachi", "hamachi-2", "logmein",
+        "nordvpn", "nordvpnd", "nordvpnservice",
+        "expressvpn", "expressvpnservice",
+        "protonvpn", "protonvpn-service",
+        "windscribe", "windscribeservice",
+        "surfshark", "surfsharkservice",
+        "cyberghost", "cyberghostservice",
+        "privatevpn", "privatevpnservice",
+        "tunnelbear", "tunnelbearservice",
+        "hotspotshield", "hsscp", "hsssrv",
+        "vyprvpn", "vyprvpnservice",
+        "ipvanish", "ipvanishservice",
+        "purevpn", "purevpnservice",
+        "hidemyass", "hmavpn",
+        "zenmate", "zenmateservice",
+        "betternet", "betternetservice",
+        "hola", "holavpn",
+        "opera_vpn", "operavpn",
+        // Антивирусы с встроенным VPN/Firewall
+        "eset", "ekrn", "egui", "eguiproxy", "ekrnepfw",
+        "avast", "avastui", "avastsvc", "avastservice",
+        "avg", "avgui", "avgsvc", "avgservice",
+        "kaspersky", "avp", "kavfs", "kavfsslp",
+        "bitdefender", "bdagent", "bdservicehost",
+        "mcafee", "mcuicnt", "mcshield", "mcapexe",
+        "norton", "nortonlifelock", "nortonservice",
+        "comodo", "cfp", "cis",
+        // Другие VPN решения
+        "openvpn", "openvpnserv", "openvpn-gui",
+        "wireguard", "wireguard-service",
+        "softether", "vpnserver", "vpnbridge", "vpnclient",
+        "zerotier", "zerotier-one",
+        "tailscale", "tailscaled",
+        "pritunl", "pritunl-client",
+        "viscosity",
+        "tunnelblick",
+        // Virtual network adapters managers
+        "vmware", "vmnat", "vmnetdhcp",
+        "virtualbox", "vboxheadless", "vboxsvc",
+    };
+
+#ifdef Q_OS_WIN
+    // Windows: используем WMI или tasklist
+    QProcess process;
+    process.start("tasklist", QStringList() << "/FO" << "CSV" << "/NH");
+    
+    if (process.waitForFinished(3000)) {
+        QString output = QString::fromLocal8Bit(process.readAllStandardOutput());
+        QStringList lines = output.split('\n', Qt::SkipEmptyParts);
+        
+        for (const QString& line : lines) {
+            // Формат: "processname.exe","PID","Session Name","Session#","Mem Usage"
+            QString processName = line.split(',').first().replace("\"", "").toLower();
+            
+            for (const QString& conflicting : conflictingNames) {
+                if (processName.contains(conflicting)) {
+                    QString displayName = line.split(',').first().replace("\"", "");
+                    if (!conflictingProcesses.contains(displayName)) {
+                        conflictingProcesses.append(displayName);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+#elif defined(Q_OS_MAC)
+    // macOS: используем ps
+    QProcess process;
+    process.start("ps", QStringList() << "ax" << "-o" << "comm=");
+    
+    if (process.waitForFinished(3000)) {
+        QString output = QString::fromUtf8(process.readAllStandardOutput());
+        QStringList lines = output.split('\n', Qt::SkipEmptyParts);
+        
+        for (const QString& line : lines) {
+            QString processName = line.trimmed().toLower();
+            // Убираем путь, оставляем только имя процесса
+            if (processName.contains('/')) {
+                processName = processName.split('/').last();
+            }
+            
+            for (const QString& conflicting : conflictingNames) {
+                if (processName.contains(conflicting)) {
+                    QString displayName = line.trimmed();
+                    if (displayName.contains('/')) {
+                        displayName = displayName.split('/').last();
+                    }
+                    if (!conflictingProcesses.contains(displayName)) {
+                        conflictingProcesses.append(displayName);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+#elif defined(Q_OS_LINUX)
+    // Linux: используем ps
+    QProcess process;
+    process.start("ps", QStringList() << "ax" << "-o" << "comm=");
+    
+    if (process.waitForFinished(3000)) {
+        QString output = QString::fromUtf8(process.readAllStandardOutput());
+        QStringList lines = output.split('\n', Qt::SkipEmptyParts);
+        
+        for (const QString& line : lines) {
+            QString processName = line.trimmed().toLower();
+            
+            for (const QString& conflicting : conflictingNames) {
+                if (processName.contains(conflicting)) {
+                    QString displayName = line.trimmed();
+                    if (!conflictingProcesses.contains(displayName)) {
+                        conflictingProcesses.append(displayName);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+#endif
+    
+    return conflictingProcesses;
 }
 
 
