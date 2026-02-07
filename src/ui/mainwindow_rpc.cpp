@@ -651,6 +651,31 @@ bool MainWindow::set_system_dns(bool set, bool save_set) {
 
 void MainWindow::profile_start(int _id) {
     if (Configs::dataManager->settingsRepo->prepare_exit) return;
+    
+    // Проверяем конфликтующие процессы только если включен VPN режим
+    if (Configs::dataManager->settingsRepo->spmode_vpn) {
+        QStringList conflicting = CheckConflictingProcesses();
+        if (!conflicting.isEmpty()) {
+            QString message = tr("Обнаружены программы, которые могут помешать работе TUN режима:\n\n");
+            message += "• " + conflicting.join("\n• ");
+            message += tr("\n\nЭти программы могут конфликтовать с виртуальным сетевым адаптером TUN.\n");
+            message += tr("Рекомендуется закрыть эти программы перед запуском профиля в VPN режиме.\n\n");
+            message += tr("Продолжить запуск?");
+            
+            QMessageBox msgBox(GetMessageBoxParent());
+            msgBox.setWindowTitle(tr("Предупреждение о конфликтах"));
+            msgBox.setText(message);
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.addButton(tr("Продолжить"), QMessageBox::AcceptRole);
+            QPushButton* cancelBtn = msgBox.addButton(tr("Отмена"), QMessageBox::RejectRole);
+            msgBox.setDefaultButton(cancelBtn);
+            
+            if (msgBox.exec() != QMessageBox::AcceptRole) {
+                return;
+            }
+        }
+    }
+    
 #ifdef Q_OS_LINUX
     if (Configs::dataManager->settingsRepo->enable_dns_server && Configs::dataManager->settingsRepo->dns_server_listen_port <= 1024) {
         if (!get_elevated_permissions()) {

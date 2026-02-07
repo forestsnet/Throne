@@ -1350,29 +1350,6 @@ void MainWindow::set_spmode_vpn(bool enable, bool save) {
     if (enable == Configs::dataManager->settingsRepo->spmode_vpn) return;
 
     if (enable) {
-        // Проверяем конфликтующие процессы перед включением VPN
-        QStringList conflicting = CheckConflictingProcesses();
-        if (!conflicting.isEmpty()) {
-            QString message = tr("Обнаружены программы, которые могут помешать работе TUN режима:\n\n");
-            message += conflicting.join("\n");
-            message += tr("\n\nЭти программы могут конфликтовать с виртуальным сетевым адаптером TUN.\n");
-            message += tr("Рекомендуется закрыть эти программы перед включением VPN режима.\n\n");
-            message += tr("Продолжить включение VPN режима?");
-            
-            QMessageBox msgBox(this);
-            msgBox.setWindowTitle(tr("Предупреждение"));
-            msgBox.setText(message);
-            msgBox.setIcon(QMessageBox::Warning);
-            msgBox.addButton(tr("Продолжить"), QMessageBox::AcceptRole);
-            QPushButton* cancelBtn = msgBox.addButton(tr("Отмена"), QMessageBox::RejectRole);
-            msgBox.setDefaultButton(cancelBtn);
-            
-            if (msgBox.exec() == QMessageBox::RejectRole) {
-                refresh_status();
-                return;
-            }
-        }
-        
         bool requestPermission = !Configs::IsAdmin();
         if (requestPermission) {
 #ifdef Q_OS_WIN
