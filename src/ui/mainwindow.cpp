@@ -63,6 +63,7 @@
 #include <QFileDialog>
 #include <QToolTip>
 #include <QMimeData>
+#include <QResizeEvent>
 #include <random>
 #include <3rdparty/QHotkey/qhotkey.h>
 #include <3rdparty/qv2ray/v2/proxy/QvProxyConfigurator.hpp>
@@ -221,13 +222,21 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     //
     RegisterHotkey(false);
     //
+    // Устанавливаем минимальный размер окна
+    setMinimumSize(1000, 600);
+    
     auto last_size = Configs::dataManager->settingsRepo->mw_size.split("x");
     if (last_size.length() == 2) {
         auto w = last_size[0].toInt();
         auto h = last_size[1].toInt();
+        // Применяем сохраненный размер, но не меньше минимального
         if (w > 0 && h > 0) {
-            resize(w, h);
+            resize(qMax(w, 1000), qMax(h, 600));
+        } else {
+            resize(1200, 750); // размер по умолчанию
         }
+    } else {
+        resize(1200, 750); // размер по умолчанию если не сохранен
     }
 
     // software_name
@@ -397,16 +406,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             });
         });
     });
-    connect(ui->profilesTableView->horizontalHeader(), &QHeaderView::sectionResized, this, [=, this](int logicalIndex, int oldSize, int newSize) {
-        auto group = Configs::dataManager->groupsRepo->CurrentGroup();
-        if (Configs::dataManager->settingsRepo->refreshing_group || group == nullptr) return;
-        group->column_width.clear();
-        for (int i = 0; i < ui->profilesTableView->horizontalHeader()->count(); i++) {
-            group->column_width.push_back(ui->profilesTableView->horizontalHeader()->sectionSize(i));
-        }
-        group->column_width[logicalIndex] = newSize;
-        Configs::dataManager->groupsRepo->Save(Configs::dataManager->groupsRepo->CurrentGroup());
-    });
+    // Колонки в режиме ResizeToContents не нуждаются в ручном сохранении размеров
     ui->profilesTableView->horizontalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->profilesTableView->horizontalHeader(), &QWidget::customContextMenuRequested, this, [this](const QPoint& pos) {
         auto* header = ui->profilesTableView->horizontalHeader();
@@ -825,6 +825,14 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     }
 }
 
+void MainWindow::resizeEvent(QResizeEvent *event) {
+    QMainWindow::resizeEvent(event);
+    
+    // ResizeToContents колонки обновляются автоматически
+    // Stretch колонка (Name) адаптируется автоматически
+    // Дополнительных действий не требуется
+}
+
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
     if (event->mimeData()->hasUrls() || event->mimeData()->hasText()) {
@@ -901,14 +909,6 @@ void MainWindow::on_tabWidget_currentChanged(int index) {
     show_group(gid);
 }
 
-void MainWindow::refreshColumnWidths() {
-    auto ent = Configs::dataManager->groupsRepo->CurrentGroup();
-    if (!ent) return;
-    ent->column_width.clear();
-    Configs::dataManager->groupsRepo->Save(ent);
-    show_group(ent->id);
-}
-
 void MainWindow::show_group(int gid) {
     if (Configs::dataManager->settingsRepo->refreshing_group) return;
     Configs::dataManager->settingsRepo->refreshing_group = true;
@@ -934,26 +934,25 @@ void MainWindow::show_group(int gid) {
     auto *hHeader = ui->profilesTableView->horizontalHeader();
     if (group->column_width.isEmpty() || group->column_width[0] <= 0) {
         group->column_width.clear();
-        for (int i=0;i<=4;i++) group->column_width.push_back(0);
-        hHeader->setSectionResizeMode(0, QHeaderView::ResizeToContents);
-        hHeader->setSectionResizeMode(1, QHeaderView::Stretch);
-        hHeader->setSectionResizeMode(2, QHeaderView::Stretch);
-        hHeader->setSectionResizeMode(3, QHeaderView::ResizeToContents);
-        hHeader->setSectionResizeMode(4, QHeaderView::ResizeToContents);
+        for (int i=0;i<=5;i++) group->column_width.push_back(0);
     }
 
     // show proxies
     refresh_proxy_list_impl(-1);
 
-    for (int i = 0; i <= 4; i++) {
-        hHeader->setSectionResizeMode(i, QHeaderView::Interactive);
-        auto size = group->column_width.value(i);
-        if (size <= 0) {
-            size = hHeader->sectionSize(i);
+    // Устанавливаем режимы колонок: все ResizeToContents кроме Name (Stretch)
+    for (int i = 0; i <= 5; i++) {
+        if (i == 1) {
+            // Колонка "Имя" - растягивается, забирает оставшееся пространство
+            hHeader->setSectionResizeMode(i, QHeaderView::Stretch);
+        } else {
+            // Все остальные колонки - автоматически по содержимому
+            hHeader->setSectionResizeMode(i, QHeaderView::ResizeToContents);
         }
-        group->column_width[i] = size;
-        hHeader->resizeSection(i, size);
     }
+    
+    // Минимальная ширина секций
+    hHeader->setMinimumSectionSize(80);
     Configs::dataManager->groupsRepo->Save(group);
 
     if (group->scroll_last_profile >= 0) {
@@ -972,13 +971,6 @@ void MainWindow::show_group(int gid) {
     }
 
     Configs::dataManager->settingsRepo->refreshing_group = false;
-    
-    // Принудительно обновляем ширину колонок при первом показе
-    if (group->column_width.isEmpty() || group->column_width[0] <= 0) {
-        QTimer::singleShot(100, this, [this]() {
-            refreshColumnWidths();
-        });
-    }
 }
 
 // callback
@@ -1095,12 +1087,8 @@ void MainWindow::dialog_message_impl(const QString &sender, const QString &info)
             if (!info.contains("dingyue")) {
                 show_log_impl(tr("Imported %1 profile(s)").arg(Configs::dataManager->settingsRepo->imported_count));
             }
-            // Обновляем ширину колонок после обновления подписки
-            refreshColumnWidths();
         } else if (info == "NewGroup") {
             refresh_groups();
-            // Обновляем ширину колонок при создании новой группы
-            refreshColumnWidths();
         }
     } else if (sender == "ExternalProcess") {
         if (info == "Crashed") {
@@ -1226,10 +1214,19 @@ void MainWindow::prepare_exit()
     Configs::dataManager->settingsRepo->noSave = true; // don't change Configs::dataManager->settingsRepo after this line
     profile_stop(false, true);
 
+    // Принудительно завершаем core процесс и ждём
+    qDebug() << "Killing core process...";
     runOnThread([=, this]()
     {
         core_process->Kill();
     }, DS_cores, true);
+    
+    // Даём время на завершение процессов
+    QThread::msleep(500);
+    
+    // Убеждаемся что VPN процесс тоже завершён
+    StopVPNProcess();
+    QThread::msleep(300);
 
     mu_exit.unlock();
     qDebug() << "prepare exit done!";
@@ -1270,7 +1267,12 @@ void MainWindow::on_menu_exit_triggered() {
             QProcess::startDetached(program, arguments);
         }
     }
-    QCoreApplication::quit();
+    
+    // Даём дополнительное время на завершение всех процессов перед quit
+    QTimer::singleShot(100, []() {
+        qDebug() << "Calling QCoreApplication::quit()...";
+        QCoreApplication::quit();
+    });
 }
 
 void MainWindow::toggle_system_proxy() {
@@ -2676,53 +2678,84 @@ bool MainWindow::StopVPNProcess() {
 QStringList MainWindow::CheckConflictingProcesses() {
     QStringList conflictingProcesses;
     
+    // Белый список системных процессов (не проверять их)
+    QStringList systemWhitelist = {
+        "cfprefsd",  // macOS Core Foundation Preferences Daemon
+        "systemd",   // Linux init system
+        "launchd",   // macOS init system
+        "kernel_task", // macOS kernel
+        "com.apple", // Apple system services
+    };
+    
     // Список конфликтующих процессов (имена в нижнем регистре)
     QStringList conflictingNames = {
         // VPN клиенты
-        "radmin-vpn", "rserver3", "r_server", "rvpn",
-        "hamachi", "logmein-hamachi", "hamachi-2", "logmein",
-        "nordvpn", "nordvpnd", "nordvpnservice",
-        "expressvpn", "expressvpnservice",
-        "protonvpn", "protonvpn-service",
-        "windscribe", "windscribeservice",
-        "surfshark", "surfsharkservice",
-        "cyberghost", "cyberghostservice",
-        "privatevpn", "privatevpnservice",
-        "tunnelbear", "tunnelbearservice",
+        "radmin", "rserver", "r_server", "rvpn",
+        "hamachi", "logmein",
+        "nordvpn",
+        "expressvpn",
+        "protonvpn",
+        "windscribe",
+        "surfshark",
+        "cyberghost",
+        "privatevpn",
+        "tunnelbear",
         "hotspotshield", "hsscp", "hsssrv",
-        "vyprvpn", "vyprvpnservice",
-        "ipvanish", "ipvanishservice",
-        "purevpn", "purevpnservice",
+        "vyprvpn",
+        "ipvanish",
+        "purevpn",
         "hidemyass", "hmavpn",
-        "zenmate", "zenmateservice",
-        "betternet", "betternetservice",
-        "hola", "holavpn",
-        "opera_vpn", "operavpn",
+        "zenmate",
+        "betternet",
+        "hola",
+        "operavpn",
         // Антивирусы с встроенным VPN/Firewall
-        "eset", "ekrn", "egui", "eguiproxy", "ekrnepfw",
-        "avast", "avastui", "avastsvc", "avastservice",
-        "avg", "avgui", "avgsvc", "avgservice",
-        "kaspersky", "avp", "kavfs", "kavfsslp",
-        "bitdefender", "bdagent", "bdservicehost",
-        "mcafee", "mcuicnt", "mcshield", "mcapexe",
-        "norton", "nortonlifelock", "nortonservice",
-        "comodo", "cfp", "cis",
+        "eset", "ekrn", "egui", "eguiproxy",
+        "avast",
+        "avg",
+        "kaspersky", "avp", "kavfs",
+        "bitdefender", "bdagent",
+        "mcafee", "mcuicnt", "mcshield",
+        "norton",
+        "comodo firewall", "comodo", // только полное имя Comodo
         // Другие VPN решения
-        "openvpn", "openvpnserv", "openvpn-gui",
-        "wireguard", "wireguard-service",
+        "openvpn",
+        "wireguard",
         "softether", "vpnserver", "vpnbridge", "vpnclient",
-        "zerotier", "zerotier-one",
-        "tailscale", "tailscaled",
-        "pritunl", "pritunl-client",
+        "zerotier",
+        "tailscale",
+        "pritunl",
         "viscosity",
         "tunnelblick",
         // Virtual network adapters managers
         "vmware", "vmnat", "vmnetdhcp",
         "virtualbox", "vboxheadless", "vboxsvc",
+        // DPI обход и proxy утилиты
+        "goodbyedpi", "goodbye-dpi",
+        "zapret", "winws", "nfqws", "tpws", "mdig", "ip2net",
+        "dpitunnel", "dpi-tunnel",
+        "greentunnel", "green-tunnel",
+        "powertunnel",
+        "spoofdpi", "spoofing",
+        "byedpi", "ciadpi",
+        "geph", // китайский обход блокировок
+        "psiphon",
+        "lantern",
+        "v2ray", "v2rayn", "v2rayng",
+        "xray", "xray-core",
+        "clash", "clashmeta", "clash-verge",
+        "sing-box",
+        "shadowsocks", "ss-local", "ss-server",
+        "kcptun",
+        "gost",
+        "brook",
+        "trojan", "trojan-go",
+        "naiveproxy",
+        "hysteria",
     };
 
 #ifdef Q_OS_WIN
-    // Windows: используем WMI или tasklist
+    // Windows: используем tasklist
     QProcess process;
     process.start("tasklist", QStringList() << "/FO" << "CSV" << "/NH");
     
@@ -2730,20 +2763,39 @@ QStringList MainWindow::CheckConflictingProcesses() {
         QString output = QString::fromLocal8Bit(process.readAllStandardOutput());
         QStringList lines = output.split('\n', Qt::SkipEmptyParts);
         
+        MW_show_log(QString("[CheckConflict] Scanning %1 processes...").arg(lines.size()));
+        
         for (const QString& line : lines) {
             // Формат: "processname.exe","PID","Session Name","Session#","Mem Usage"
             QString processName = line.split(',').first().replace("\"", "").toLower();
+            // Убираем .exe из имени
+            if (processName.endsWith(".exe")) {
+                processName = processName.left(processName.length() - 4);
+            }
+            
+            // Проверяем белый список
+            bool isWhitelisted = false;
+            for (const QString& whitelisted : systemWhitelist) {
+                if (processName.contains(whitelisted.toLower())) {
+                    isWhitelisted = true;
+                    break;
+                }
+            }
+            if (isWhitelisted) continue;
             
             for (const QString& conflicting : conflictingNames) {
                 if (processName.contains(conflicting)) {
                     QString displayName = line.split(',').first().replace("\"", "");
                     if (!conflictingProcesses.contains(displayName)) {
                         conflictingProcesses.append(displayName);
+                        MW_show_log(QString("[CheckConflict] Found: %1").arg(displayName));
                     }
                     break;
                 }
             }
         }
+    } else {
+        MW_show_log("[CheckConflict] Failed to run tasklist");
     }
 #elif defined(Q_OS_MAC)
     // macOS: используем ps
@@ -2754,12 +2806,24 @@ QStringList MainWindow::CheckConflictingProcesses() {
         QString output = QString::fromUtf8(process.readAllStandardOutput());
         QStringList lines = output.split('\n', Qt::SkipEmptyParts);
         
+        MW_show_log(QString("[CheckConflict] Scanning %1 processes...").arg(lines.size()));
+        
         for (const QString& line : lines) {
             QString processName = line.trimmed().toLower();
             // Убираем путь, оставляем только имя процесса
             if (processName.contains('/')) {
                 processName = processName.split('/').last();
             }
+            
+            // Проверяем белый список
+            bool isWhitelisted = false;
+            for (const QString& whitelisted : systemWhitelist) {
+                if (processName.contains(whitelisted.toLower())) {
+                    isWhitelisted = true;
+                    break;
+                }
+            }
+            if (isWhitelisted) continue;
             
             for (const QString& conflicting : conflictingNames) {
                 if (processName.contains(conflicting)) {
@@ -2769,11 +2833,14 @@ QStringList MainWindow::CheckConflictingProcesses() {
                     }
                     if (!conflictingProcesses.contains(displayName)) {
                         conflictingProcesses.append(displayName);
+                        MW_show_log(QString("[CheckConflict] Found: %1").arg(displayName));
                     }
                     break;
                 }
             }
         }
+    } else {
+        MW_show_log("[CheckConflict] Failed to run ps");
     }
 #elif defined(Q_OS_LINUX)
     // Linux: используем ps
@@ -2784,21 +2851,42 @@ QStringList MainWindow::CheckConflictingProcesses() {
         QString output = QString::fromUtf8(process.readAllStandardOutput());
         QStringList lines = output.split('\n', Qt::SkipEmptyParts);
         
+        MW_show_log(QString("[CheckConflict] Scanning %1 processes...").arg(lines.size()));
+        
         for (const QString& line : lines) {
             QString processName = line.trimmed().toLower();
+            
+            // Проверяем белый список
+            bool isWhitelisted = false;
+            for (const QString& whitelisted : systemWhitelist) {
+                if (processName.contains(whitelisted.toLower())) {
+                    isWhitelisted = true;
+                    break;
+                }
+            }
+            if (isWhitelisted) continue;
             
             for (const QString& conflicting : conflictingNames) {
                 if (processName.contains(conflicting)) {
                     QString displayName = line.trimmed();
                     if (!conflictingProcesses.contains(displayName)) {
                         conflictingProcesses.append(displayName);
+                        MW_show_log(QString("[CheckConflict] Found: %1").arg(displayName));
                     }
                     break;
                 }
             }
         }
+    } else {
+        MW_show_log("[CheckConflict] Failed to run ps");
     }
 #endif
+    
+    if (conflictingProcesses.isEmpty()) {
+        MW_show_log("[CheckConflict] No conflicting processes found");
+    } else {
+        MW_show_log(QString("[CheckConflict] Total found: %1").arg(conflictingProcesses.size()));
+    }
     
     return conflictingProcesses;
 }

@@ -55,8 +55,6 @@ public:
     void refresh_proxy_list(const int &id = -1);
 
     void show_group(int gid);
-    
-    void refreshColumnWidths();
 
     void refresh_groups();
 
@@ -242,6 +240,8 @@ private:
     void keyPressEvent(QKeyEvent *event) override;
 
     void closeEvent(QCloseEvent *event) override;
+    
+    void resizeEvent(QResizeEvent *event) override;
 
     void dragEnterEvent(QDragEnterEvent *event) override;
 

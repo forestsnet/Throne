@@ -414,10 +414,8 @@ void MainWindow::iptest_current_group(const QList<int>& profileIDs) {
         }
         speedtestRunning.unlock();
         MW_show_log(tr("IP test finished!"));        
-        // Обновляем ширину колонок после завершения теста
         runOnUiThread([this]() {
             refresh_proxy_list();
-            refreshColumnWidths();
         });    });
 }
 
@@ -467,8 +465,6 @@ void MainWindow::speedtest_current_group(const QList<int>& profileIDs, bool test
         runOnUiThread([=,this]{
             refresh_proxy_list();
             MW_show_log(tr("Speedtest finished!"));
-            // Обновляем ширину колонок после завершения теста
-            refreshColumnWidths();
         });
     });
 }
@@ -666,13 +662,18 @@ void MainWindow::profile_start(int _id) {
             msgBox.setWindowTitle(tr("Предупреждение о конфликтах"));
             msgBox.setText(message);
             msgBox.setIcon(QMessageBox::Warning);
-            msgBox.addButton(tr("Продолжить"), QMessageBox::AcceptRole);
+            QPushButton* continueBtn = msgBox.addButton(tr("Продолжить"), QMessageBox::AcceptRole);
             QPushButton* cancelBtn = msgBox.addButton(tr("Отмена"), QMessageBox::RejectRole);
             msgBox.setDefaultButton(cancelBtn);
             
-            if (msgBox.exec() != QMessageBox::AcceptRole) {
+            msgBox.exec();
+            
+            // Если пользователь нажал не "Продолжить", отменяем запуск
+            if (msgBox.clickedButton() != continueBtn) {
+                MW_show_log("[CheckConflict] User cancelled profile start");
                 return;
             }
+            MW_show_log("[CheckConflict] User chose to continue despite conflicts");
         }
     }
     

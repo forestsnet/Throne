@@ -325,10 +325,12 @@ namespace Configs {
     }
 
     void buildDNSSection(std::shared_ptr<BuildSingBoxConfigContext> &ctx, bool useDnsObj) {
-        if (getOS() == Darwin && Configs::dataManager->settingsRepo->core_box_underlying_dns.isEmpty() && Configs::dataManager->settingsRepo->spmode_vpn)
+        // Автоматически устанавливаем DNS если TUN включен и DNS не указан
+        if (Configs::dataManager->settingsRepo->core_box_underlying_dns.isEmpty() && Configs::dataManager->settingsRepo->spmode_vpn)
         {
-            ctx->error = QObject::tr("Local DNS and Tun mode do not work together, please set an IP to be used as the Local DNS server in the Routing Settings -> Local override");
-            return;
+            MW_show_log("TUN mode enabled but no Local DNS set, auto-setting to 1.1.1.1");
+            Configs::dataManager->settingsRepo->core_box_underlying_dns = "1.1.1.1";
+            Configs::dataManager->settingsRepo->Save();
         }
 
         if (Configs::dataManager->settingsRepo->use_dns_object && useDnsObj) {
