@@ -1218,6 +1218,7 @@ void MainWindow::prepare_exit()
     RegisterHotkey(true);
     if (Configs::dataManager->settingsRepo->system_dns_set) set_system_dns(false, false);
     set_spmode_system_proxy(false, false);
+    set_spmode_vpn(false, false);
     //
     on_commitDataRequest();
     //
