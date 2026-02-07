@@ -2718,6 +2718,17 @@ QStringList MainWindow::CheckConflictingProcesses() {
         "mcafee", "mcuicnt", "mcshield",
         "norton",
         "comodo firewall", "comodo", // только полное имя Comodo
+        "drweb", "drwebupw", "spidergate", "spiderml", "drwebcom",
+        "avira", "avscan", "avguard",
+        "trendmicro", "pcclient", "tmproxy",
+        "panda", "psksvc", "pavfnsvr",
+        "f-secure", "fsma", "fsgk",
+        "sophos", "sophoshealth", "sav32cli",
+        "malwarebytes", "mbam",
+        "gdata", "avgnt",
+        "webroot", "wrsa",
+        "vipre",
+        "360safe", "360tray", // 360 Total Security
         // Другие VPN решения
         "openvpn",
         "wireguard",
