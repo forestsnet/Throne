@@ -883,6 +883,7 @@ void MainWindow::profile_stop(bool crash, bool block, bool manual) {
             restartMsgboxTimer->cancel();
             restartMsgboxTimer->deleteLater();
             restartMsgbox->deleteLater();
+
             refresh_status();
             refresh_proxy_list_impl_refresh_data(id, true);
 

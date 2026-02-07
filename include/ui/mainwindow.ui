@@ -745,9 +745,6 @@
    <property name="text">
     <string>Routing Settings</string>
    </property>
-   <property name="shortcut">
-    <string notr="true">Ctrl+Shift+O</string>
-   </property>
   </action>
   <action name="menu_add_from_clipboard">
    <property name="text">
@@ -919,9 +916,6 @@
   <action name="menu_hotkey_settings">
    <property name="text">
     <string>Hotkey Settings</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+K</string>
    </property>
   </action>
   <action name="menu_select_all">

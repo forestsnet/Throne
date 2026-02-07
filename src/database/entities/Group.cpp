@@ -118,6 +118,22 @@ namespace Configs
         return true;
     }
 
+    bool Group::RemoveProfileBatch(QList<int> IDs) {
+        QSet<int> toDel;
+        for (auto ID : IDs) {
+            toDel.insert(ID);
+        }
+        QList<int> newIDs;
+        QMutexLocker locker(&mutex);
+        for (auto inID : profiles) {
+            if (!toDel.contains(inID)) {
+                newIDs.append(inID);
+            }
+        }
+        profiles = newIDs;
+        return true;
+    }
+
     bool Group::SwapProfiles(int idx1, int idx2)
     {
         QMutexLocker locker(&mutex);
