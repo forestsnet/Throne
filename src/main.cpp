@@ -136,8 +136,6 @@ protected:
             QFileOpenEvent *openEvent = static_cast<QFileOpenEvent *>(event);
             QString url = openEvent->url().toString();
             
-            qDebug() << "FileOpen event received:" << url;
-            
             if (url.startsWith("throne://")) {
                 // Обрабатываем URL с небольшой задержкой, чтобы UI успел инициализироваться
                 QTimer::singleShot(100, this, [this, url]() {
@@ -157,8 +155,6 @@ private:
             url = url.mid(1, url.length() - 2);
         }
         
-        qDebug() << "handleThroneUrl called with (cleaned):" << url;
-        
         // Извлекаем реальный URL из throne:// схемы
         QString actualUrl = url;
         if (url.startsWith("throne://subscribe?")) {
@@ -167,31 +163,21 @@ private:
             actualUrl = query.queryItemValue("url", QUrl::FullyDecoded);
             
             if (actualUrl.isEmpty()) {
-                qDebug() << "Error: throne:// URL does not contain 'url' parameter";
-                qDebug() << "Full query string:" << throneUrl.query();
-                qDebug() << "All query items:";
-                for (auto item : query.queryItems()) {
-                    qDebug() << "  " << item.first << "=" << item.second;
-                }
                 return;
             }
-            qDebug() << "Extracted actual URL:" << actualUrl;
         }
         
         auto mainWindow = GetMainWindow();
         if (mainWindow) {
-            qDebug() << "Main window found, showing and processing URL";
             mainWindow->show();
             mainWindow->raise();
             mainWindow->activateWindow();
             
             // Даем еще немного времени для UI
             QTimer::singleShot(200, [actualUrl]() {
-                qDebug() << "Calling AsyncUpdate for:" << actualUrl;
                 Subscription::groupUpdater->AsyncUpdate(actualUrl, -1, nullptr);
             });
         } else {
-            qDebug() << "Main window not ready, storing URL for later";
             pendingThroneUrl = url;
         }
     }

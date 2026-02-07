@@ -380,22 +380,17 @@ namespace Subscription {
     void GroupUpdater::AsyncUpdate(const QString &str, int _sub_gid, const std::function<void()> &finish) {
         auto content = str.trimmed();
 
-        MW_show_log(QString("DEBUG AsyncUpdate: input='%1', _sub_gid=%2").arg(content.left(100)).arg(_sub_gid));
-
-        // Обрабатываем throne:// URL схему
-        if (content.startsWith("throne://subscribe?")) {
+        // Обрабатываем throne:// URL схему (поддерживаем throne://subscribe?url= и throne://subscribe/?url=)
+        if (content.startsWith("throne://subscribe")) {
             QUrl throneUrl(content);
             QUrlQuery query(throneUrl);
             QString actualUrl = query.queryItemValue("url", QUrl::FullyDecoded);
             
             if (actualUrl.isEmpty()) {
                 MW_show_log("ERROR: throne:// URL does not contain 'url' parameter");
-                MW_show_log(QString("DEBUG: Query items: %1").arg(query.toString()));
                 if (finish != nullptr) finish();
                 return;
             }
-            
-            MW_show_log(QString("DEBUG: Extracted URL from throne:// : %1").arg(actualUrl));
             
             // Рекурсивно вызываем с извлеченным URL
             AsyncUpdate(actualUrl, _sub_gid, finish);
@@ -405,10 +400,6 @@ namespace Subscription {
         runOnNewThread([=,this] {
             auto gid = _sub_gid;
             bool asURL = false;
-            
-            MW_show_log(QString("DEBUG: In thread - checking URL logic, _sub_gid=%1, isHTTP=%2")
-                .arg(_sub_gid)
-                .arg(content.startsWith("http://") || content.startsWith("https://")));
             
             // Если это URL и группа не задана (_sub_gid < 0)
             if (_sub_gid < 0 && (content.startsWith("http://") || content.startsWith("https://"))) {
@@ -421,31 +412,21 @@ namespace Subscription {
                 std::shared_ptr<Configs::Group> existingGroup = nullptr;
                 std::shared_ptr<Configs::Group> defaultGroup = nullptr;
                 
-                MW_show_log(QString("DEBUG: Checking %1 groups for domain '%2'").arg(allGroups.size()).arg(domain));
-                
                 for (int groupId : allGroups) {
                     auto group = Configs::dataManager->groupsRepo->GetGroup(groupId);
                     if (!group) continue;
-                    
-                    MW_show_log(QString("DEBUG: Group %1 - name='%2', url='%3', profiles=%4")
-                        .arg(groupId)
-                        .arg(group->name)
-                        .arg(group->url)
-                        .arg(group->Profiles().size()));
                     
                     // Ищем группу с таким же доменом
                     if (!group->url.isEmpty()) {
                         QUrl groupUrl(group->url);
                         if (groupUrl.host() == domain) {
                             existingGroup = group;
-                            MW_show_log(QString("DEBUG: Found existing group with same domain: %1").arg(groupId));
                         }
                     }
                     
                     // Ищем пустую группу Default
                     if (group->name == "Default" && group->Profiles().isEmpty()) {
                         defaultGroup = group;
-                        MW_show_log(QString("DEBUG: Found empty Default group: %1").arg(groupId));
                     }
                 }
                 
@@ -464,15 +445,10 @@ namespace Subscription {
                     Configs::dataManager->groupsRepo->AddGroup(newGroup);
                     gid = newGroup->id;
                     
-                    MW_show_log(QString("DEBUG: New group created with id: %1").arg(gid));
-                    
                     // Удаляем пустую группу Default ПОСЛЕ создания новой
                     if (defaultGroup) {
-                        MW_show_log(QString("DEBUG: Attempting to delete Default group (id: %1)").arg(defaultGroup->id));
-                        
                         // Проверяем количество групп ПОСЛЕ создания новой
                         auto updatedGroups = Configs::dataManager->groupsRepo->GetAllGroupIds();
-                        MW_show_log(QString("DEBUG: Total groups after creating new: %1").arg(updatedGroups.size()));
                         
                         if (updatedGroups.size() > 1) {
                             MW_show_log(QObject::tr("Removing empty Default group (id: %1)").arg(defaultGroup->id));
@@ -482,11 +458,7 @@ namespace Subscription {
                             runOnUiThread([=] {
                                 MW_dialog_message("", "RefreshProxyList");
                             });
-                        } else {
-                            MW_show_log("DEBUG: Not deleting Default - it's the only group");
                         }
-                    } else {
-                        MW_show_log("DEBUG: No Default group found to delete");
                     }
                     
                     MW_dialog_message("SubUpdater", "NewGroup");
@@ -552,11 +524,8 @@ namespace Subscription {
         }
 
         MW_show_log(">>>>>>>> " + QObject::tr("Processing subscription data..."));
-        MW_show_log(QString("DEBUG: Content to parse (first 200 chars): %1").arg(content.left(200)));
-        MW_show_log(QString("DEBUG: Content length: %1 bytes").arg(content.length()));
         rawUpdater->update(content);
         content.clear();
-        MW_show_log(QString("DEBUG: rawUpdater->updated_order size: %1").arg(rawUpdater->updated_order.size()));
         Configs::dataManager->profilesRepo->AddProfileBatch(rawUpdater->updated_order, rawUpdater->gid_add_to);
         MW_show_log(">>>>>>>> " + QObject::tr("Process complete, applying..."));
 
