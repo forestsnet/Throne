@@ -98,7 +98,7 @@ namespace Configs {
 
         // Subscription
         QString user_agent = ""; // set at main.cpp
-        int sub_auto_update = -30;
+        int sub_auto_update = 30; // in minutes, 0 means no auto update
         bool sub_clear = true;
         bool sub_send_hwid = true;
         QString sub_custom_hwid_params = "";
@@ -112,8 +112,8 @@ namespace Configs {
         // Remember
         QStringList remember_spmode = {};
         int remember_id = -1919;
-        bool remember_enable = false;
-        bool windows_set_admin = false;
+        bool remember_enable = true;
+        bool windows_set_admin = true;
         QMap<QString, QKeySequence> shortcuts;
 
         // Routing

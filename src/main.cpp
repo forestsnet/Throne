@@ -288,9 +288,21 @@ int main(int argc, char* argv[]) {
     }
 
 #ifdef Q_OS_WIN
+    // На Windows при первом запуске автоматически запрашиваем права администратора
+    bool isFirstRun = !Configs::dataManager->settingsRepo->windows_set_admin && !Configs::IsAdmin() && !Configs::dataManager->settingsRepo->disable_run_admin;
+    
     if (Configs::dataManager->settingsRepo->windows_set_admin && !Configs::IsAdmin() && !Configs::dataManager->settingsRepo->disable_run_admin)
     {
         Configs::dataManager->settingsRepo->windows_set_admin = false; // so that if permission denied, we will run as user on the next run
+        Configs::dataManager->settingsRepo->Save();
+        WinCommander::runProcessElevated(QApplication::applicationFilePath(), {}, "", WinCommander::SW_NORMAL, false);
+        QApplication::quit();
+        return 0;
+    }
+    
+    // Первый запуск - сразу запускаем с правами администратора
+    if (isFirstRun) {
+        Configs::dataManager->settingsRepo->windows_set_admin = true;
         Configs::dataManager->settingsRepo->Save();
         WinCommander::runProcessElevated(QApplication::applicationFilePath(), {}, "", WinCommander::SW_NORMAL, false);
         QApplication::quit();

@@ -1055,6 +1055,24 @@ void MainWindow::dialog_message_impl(const QString &sender, const QString &info)
     {
         loadShortcuts();
     }
+    // Обработка команд после обновления подписки
+    if (info.startsWith("restart-")) {
+        bool ok;
+        int profileId = info.mid(8).toInt(&ok);
+        if (ok && profileId >= 0) {
+            profile_start(profileId);
+        }
+    }
+    if (info.startsWith("start-")) {
+        bool ok;
+        int profileId = info.mid(6).toInt(&ok);
+        if (ok && profileId >= 0) {
+            profile_start(profileId);
+        }
+    }
+    if (info == "stop") {
+        profile_stop();
+    }
     // sender
     if (sender == Dialog_DialogEditProfile) {
         auto msg = info.split(",");
@@ -1297,7 +1315,8 @@ bool MainWindow::get_elevated_permissions(int reason) {
 #ifdef Q_OS_WIN
     auto n = QMessageBox::warning(GetMessageBoxParent(), software_name, tr("Please run Throne as admin"), QMessageBox::Yes | QMessageBox::No);
     if (n == QMessageBox::Yes) {
-        this->exit_reason = reason;
+        // Используем exit_reason = 3 для автоматического включения VPN после перезапуска
+        this->exit_reason = (reason == 0) ? 3 : reason;
         on_menu_exit_triggered();
     }
 #endif
@@ -1331,10 +1350,23 @@ void MainWindow::set_spmode_vpn(bool enable, bool save) {
     if (enable) {
         bool requestPermission = !Configs::IsAdmin();
         if (requestPermission) {
+#ifdef Q_OS_WIN
+            // На Windows автоматически перезапускаем с правами администратора
+            if (save) {
+                Configs::dataManager->settingsRepo->remember_spmode.removeAll("vpn");
+                Configs::dataManager->settingsRepo->remember_spmode.append("vpn");
+                Configs::dataManager->settingsRepo->Save();
+            }
+            this->exit_reason = 3; // Автоматическое включение VPN после перезапуска
+            on_menu_exit_triggered();
+            return;
+#else
+            // На других ОС показываем диалог
             if (!get_elevated_permissions()) {
                 refresh_status();
                 return;
             }
+#endif
         }
     }
 

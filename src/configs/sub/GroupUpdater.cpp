@@ -501,6 +501,19 @@ namespace Subscription {
             MW_show_log("<<<<<<<< " + QObject::tr("Subscription request fininshed: %1").arg(groupName));
         }
 
+        // Сохраняем информацию о запущенном профиле перед обновлением
+        int startedProfileId = Configs::dataManager->settingsRepo->started_id;
+        std::shared_ptr<Configs::Profile> startedProfile = nullptr;
+        QString startedProfileLink;
+        
+        if (startedProfileId >= 0 && group != nullptr) {
+            startedProfile = Configs::dataManager->profilesRepo->GetProfile(startedProfileId);
+            if (startedProfile && group->HasProfile(startedProfileId)) {
+                // Сохраняем ссылку профиля для поиска после обновления
+                startedProfileLink = startedProfile->outbound->ExportToLink();
+            }
+        }
+        
         QList<std::shared_ptr<Configs::Profile>> in;
         QList<std::shared_ptr<Configs::Profile>> out_all;
         QList<std::shared_ptr<Configs::Profile>> out;
@@ -609,6 +622,41 @@ namespace Subscription {
             }
 
             MW_show_log("<<<<<<<< " + QObject::tr("Change of %1:").arg(group->name) + "\n" + change_text);
+            
+            // Восстанавливаем запущенный профиль после обновления
+            if (!startedProfileLink.isEmpty() && startedProfile != nullptr) {
+                // Ищем профиль с той же ссылкой в обновленном списке
+                out_all = Configs::dataManager->profilesRepo->GetProfileBatch(group->Profiles());
+                std::shared_ptr<Configs::Profile> matchedProfile = nullptr;
+                
+                for (const auto& profile : out_all) {
+                    if (profile->outbound->ExportToLink() == startedProfileLink) {
+                        matchedProfile = profile;
+                        break;
+                    }
+                }
+                
+                if (matchedProfile) {
+                    // Найден идентичный профиль - перезапускаем на нём
+                    MW_show_log(QObject::tr("Restarting on updated profile: %1").arg(matchedProfile->outbound->DisplayName()));
+                    runOnUiThread([matchedProfile]() {
+                        MW_dialog_message("", QString("restart-%1").arg(matchedProfile->id));
+                    });
+                } else if (!out_all.isEmpty()) {
+                    // Профиль не найден, берем первый из группы
+                    MW_show_log(QObject::tr("Previous profile not found, starting first profile: %1").arg(out_all.first()->outbound->DisplayName()));
+                    runOnUiThread([out_all]() {
+                        MW_dialog_message("", QString("start-%1").arg(out_all.first()->id));
+                    });
+                } else {
+                    // Группа пустая после обновления - останавливаем
+                    MW_show_log(QObject::tr("No profiles in group after update, stopping"));
+                    runOnUiThread([]() {
+                        MW_dialog_message("", "stop");
+                    });
+                }
+            }
+            
             MW_dialog_message("SubUpdater", "finish-dingyue");
         } else {
             Configs::dataManager->settingsRepo->imported_count = rawUpdater->updated_order.count();
