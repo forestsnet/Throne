@@ -1382,6 +1382,11 @@ void MainWindow::set_spmode_vpn(bool enable, bool save) {
     Configs::dataManager->settingsRepo->spmode_vpn = enable;
     refresh_status();
 
+    // При отключении VPN - явно останавливаем VPN процесс
+    if (!enable) {
+        StopVPNProcess();
+    }
+    
     if (Configs::dataManager->settingsRepo->started_id >= 0) profile_start(Configs::dataManager->settingsRepo->started_id);
 }
 
