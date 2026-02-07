@@ -700,6 +700,7 @@
   <action name="menu_exit">
    <property name="text">
     <string>Exit</string>
+   </property>
   </action>
   <action name="actionShow_window">
    <property name="text">
@@ -722,6 +723,7 @@
   <action name="menu_manage_groups">
    <property name="text">
     <string>Groups</string>
+    </property>
   </action>
   <action name="menu_start">
    <property name="text">
