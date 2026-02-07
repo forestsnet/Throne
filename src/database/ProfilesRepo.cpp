@@ -371,9 +371,11 @@ namespace Configs {
         }
         db.execBatchInsertProfiles(rows);
 
+        QList<int> profileIDs;
         for (const auto& profile : toAdd) {
             profileIDs << profile->id;
         }
+        group->AddProfileBatch(profileIDs);
         dataManager->groupsRepo->Save(group);
 
         return true;
