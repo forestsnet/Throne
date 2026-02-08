@@ -1240,7 +1240,7 @@ void MainWindow::prepare_exit()
     qDebug() << "All processes terminated, cleaning up...";
 
     mu_exit.unlock();
-    qDebug() << "prepare exit done!"
+    qDebug() << "prepare exit done!";
 }
 
 void MainWindow::on_menu_exit_triggered() {

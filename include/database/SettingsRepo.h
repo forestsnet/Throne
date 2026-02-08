@@ -196,7 +196,7 @@ namespace Configs {
         QString xray_log_level = "info";
         int xray_mux_concurrency = 8;
         bool xray_mux_default_on = false;
-        Xray::XrayVlessPreference xray_vless_preference = Xray::XhttpOnly;
+        Xray::XrayVlessPreference xray_vless_preference = Xray::XhttpAndReality;
 
         // Extra Core Paths
         QStringList extraCorePaths = {};
