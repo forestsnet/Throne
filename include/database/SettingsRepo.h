@@ -98,7 +98,7 @@ namespace Configs {
 
         // Subscription
         QString user_agent = ""; // set at main.cpp
-        int sub_auto_update = 30; // in minutes, 0 means no auto update
+        int sub_auto_update = 120; // in minutes, 0 means no auto update
         bool sub_clear = true;
         bool sub_send_hwid = true;
         QString sub_custom_hwid_params = "";
