@@ -157,7 +157,6 @@ namespace Configs {
 #endif
         int vpn_mtu = 1420;
         bool vpn_ipv6 = false;
-        bool vpn_strict_route = true;
         bool disable_privilege_req = false;
 
         // NTP

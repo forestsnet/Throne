@@ -879,8 +879,6 @@ void MainWindow::profile_stop(bool crash, bool block, bool manual) {
     if (!mu_stopping.tryLock()) {
         return;
     }
-    QMutex blocker;
-    if (block) blocker.lock();
 
     // timeout message
     

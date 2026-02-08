@@ -2,6 +2,141 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="fa_IR" sourcelanguage="en">
 <context>
+    <name></name>
+    <message>
+        <source>Request with proxy but no profile started.</source>
+        <translation type="unfinished">درخواست با پروکسی اما هیچ نمایه‌ای شروع نشده است.</translation>
+    </message>
+    <message>
+        <source>Could not open file.</source>
+        <translation type="unfinished">نمی‌توان پرونده را باز کرد.</translation>
+    </message>
+    <message>
+        <source>Proxy: %1
+Direct: %2</source>
+        <translation type="unfinished">پروکسی: %1 مستقیم: %2</translation>
+    </message>
+    <message>
+        <source>Add profiles to this group</source>
+        <translation type="unfinished">افزودن نمایه‌ها به این گروه</translation>
+    </message>
+    <message>
+        <source>Create new subscription group</source>
+        <translation type="unfinished">ایجاد گروه اشتراک جدید</translation>
+    </message>
+    <message>
+        <source>url detected</source>
+        <translation type="unfinished">آدرس شناسایی شد</translation>
+    </message>
+    <message>
+        <source>%1
+How to update?</source>
+        <translation type="unfinished">چگونه بروزرسانی کنم ؟</translation>
+    </message>
+    <message>
+        <source>Requesting subscription: %1</source>
+        <translation type="unfinished">درخواست اشتراک: %1</translation>
+    </message>
+    <message>
+        <source>Requesting subscription %1 error: %2</source>
+        <translation type="unfinished">خطای درخواست اشتراک %1: %2</translation>
+    </message>
+    <message>
+        <source>Subscription request fininshed: %1</source>
+        <translation type="unfinished">درخواست اشتراک به پایان رسید: %1</translation>
+    </message>
+    <message>
+        <source>Clearing servers...</source>
+        <translation type="unfinished">در حال پاک کردن سرورها...</translation>
+    </message>
+    <message>
+        <source>Processing subscription data...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Process complete, applying...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Added %1 profiles:
+%2
+Deleted %3 Profiles:
+%4</source>
+        <translation type="unfinished">%1 نمایه افزوده شده:
+%2
+%3 نمایه پاک شده:
+%4</translation>
+    </message>
+    <message>
+        <source>Nothing</source>
+        <translation type="unfinished">خالی</translation>
+    </message>
+    <message>
+        <source>Change of %1:</source>
+        <translation type="unfinished">تغییر %1:</translation>
+    </message>
+    <message>
+        <source>Core exited, cleaning up...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Core exits too frequently, stop automatic restart this profile.</source>
+        <translation type="unfinished">هسته بیش از حد متوقف می‌شود، راه‌اندازی خودکار این نمایه متوقف شود.</translation>
+    </message>
+    <message>
+        <source>Restarting the core ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Download Profiles</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Requesting profile error: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Update</source>
+        <translation type="unfinished">بروزرسانی</translation>
+    </message>
+    <message>
+        <source>Not official support platform</source>
+        <translation type="unfinished">پلتفرم پشتیبانی رسمی نیست</translation>
+    </message>
+    <message>
+        <source>Requesting update error: %1</source>
+        <translation type="unfinished">خطای درخواست به‌روزرسانی: %1</translation>
+    </message>
+    <message>
+        <source>No update</source>
+        <translation type="unfinished">بدون بروزرسانی جدید</translation>
+    </message>
+    <message>
+        <source>Update found: %1
+Release note:
+%2</source>
+        <translation type="unfinished">به‌روزرسانی یافت شد: %1
+یادداشت انتشار:
+%2</translation>
+    </message>
+    <message>
+        <source>Open in browser</source>
+        <translation type="unfinished">در مرور گر باز شود</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished">بستن</translation>
+    </message>
+    <message>
+        <source>Update is ready, restart to install?</source>
+        <translation type="unfinished">به روز رسانی آماده است، برای نصب مجدد راه اندازی شود؟</translation>
+    </message>
+    <message>
+        <source>Select</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DialogBasicSettings</name>
     <message>
         <source>Basic Settings</source>
@@ -117,6 +252,18 @@
         <translation>فاصله (به دقیقا ، اگر کمتر از ۳۰ باشد نادرست است)</translation>
     </message>
     <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Format: hwid=value,os=value,osVersion=value,model=value&lt;/p&gt;&lt;p&gt;Leave empty to use default values. Only specify the parameters you want to override.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Custom System Parameters (optional)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>hwid=custom_value,os=custom_os,osVersion=custom_version,model=custom_model</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Disable Traffic Stats</source>
         <translation>غیرفعال کردن آمار ترافیک</translation>
     </message>
@@ -217,6 +364,30 @@
         <translation>فقط بارگذاری</translation>
     </message>
     <message>
+        <source>Xray Core</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Loglevel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mux Concurrency</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Default Mux On</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When to choose Xray when importing vless profiles&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Xray VLESS Preference</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Disable Privilege request</source>
         <translation>غیرفعال کردن درخواست دسترسی</translation>
     </message>
@@ -289,11 +460,31 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Skip confirmation When Deleting Profiles</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Custom Icons</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HWID=%1&lt;/p&gt;&lt;p&gt;OS=%2&lt;/p&gt;&lt;p&gt;OS Version=%3&lt;/p&gt;&lt;p&gt;Model=%4&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Enable sending HWID, device model, and OS version when updating subscription</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select png icons</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Image Files (*.png)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -320,10 +511,6 @@
         <translation>اشتراک</translation>
     </message>
     <message>
-        <source>Archive</source>
-        <translation>بایگانی</translation>
-    </message>
-    <message>
         <source>URL</source>
         <translation>URL</translation>
     </message>
@@ -344,12 +531,12 @@
         <translation>کپی شده است</translation>
     </message>
     <message>
-        <source>Manually column width</source>
-        <translation>عرض ستون به صورت دستی</translation>
-    </message>
-    <message>
         <source>Front Proxy</source>
         <translation>پروکسی front</translation>
+    </message>
+    <message>
+        <source>Auto Clear Unavailable Profiles</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Skip automatic update</source>
@@ -403,8 +590,108 @@
         <translation>تنظیمات</translation>
     </message>
     <message>
+        <source>Enabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>The underlying transport method. It must be consistent with the server, otherwise, the connection cannot be established.</source>
         <translation>روش انتقال باید با سرور سازگار باشد، در غیر این صورت، اتصال نمی تواند برقرار شود.</translation>
+    </message>
+    <message>
+        <source>Brutal Download Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Security Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SNI</source>
+        <translation type="unfinished">شناسه نام سرور</translation>
+    </message>
+    <message>
+        <source>Fingerprint</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ALPN</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reality Pbk</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reality SpiderX</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Network Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Headers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Concurrency</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Post Bytes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Reusable Secs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Request Times</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Host</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>X Padding Bytes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Min Post Interval</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No GRPC Headers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Reuse times</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Keep Alive Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Download Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Connections</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Path</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Network</source>
@@ -417,14 +704,6 @@
     <message>
         <source>Security</source>
         <translation>امنیت</translation>
-    </message>
-    <message>
-        <source>UDP FullCone Packet encoding for implementing features such as UDP FullCone. Server support is required, if the wrong selection is made, the connection cannot be made. Please leave it blank.</source>
-        <translation>رمزنگاری بسته‌های UDP FullCone برای پیاده‌سازی ویژگی‌هایی مانند UDP FullCone. پشتیبانی سرور لازم است، در صورت انتخاب نادرست، اتصال برقرار نمی‌شود. لطفاً خالی بگذارید.</translation>
-    </message>
-    <message>
-        <source>Packet Encoding</source>
-        <translation>رمزنگاری بسته ها</translation>
     </message>
     <message>
         <source>Network Settings (%1)</source>
@@ -479,18 +758,6 @@
         <translation>سفارشی (%1 پیکربندی)</translation>
     </message>
     <message>
-        <source>Custom Outbound Settings</source>
-        <translation>تنظیمات خروجی سفارشی</translation>
-    </message>
-    <message>
-        <source>Custom Config Settings</source>
-        <translation>تنظیمات پیکربندی سفارشی</translation>
-    </message>
-    <message>
-        <source>Apply settings to this group</source>
-        <translation>تنظیمات به این گروه اعمال شود</translation>
-    </message>
-    <message>
         <source>Multiplex</source>
         <translation>چندگانه‌سازی</translation>
     </message>
@@ -505,10 +772,6 @@
     <message>
         <source>Off</source>
         <translation>خاموش</translation>
-    </message>
-    <message>
-        <source>Confirm</source>
-        <translation>تایید</translation>
     </message>
     <message>
         <source>Server support is required</source>
@@ -527,12 +790,16 @@
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;سرعت TCP Brutal از سرور به کلاینت&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <source>TCP Brutal Speed</source>
-        <translation>سرعت TCP Brutal</translation>
-    </message>
-    <message>
         <source>Mb/s</source>
         <translation>مگابیت بر ثانیه</translation>
+    </message>
+    <message>
+        <source>Brutal Upload Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Advanced Settings</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -547,12 +814,12 @@
         <translation>روش</translation>
     </message>
     <message>
-        <source>Reality SID</source>
-        <translation>شناسه Reality</translation>
+        <source>Service Name</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>header type</source>
-        <translation>نوع سربرگ</translation>
+        <source>Reality SID</source>
+        <translation>شناسه Reality</translation>
     </message>
     <message>
         <source>Extra Core</source>
@@ -931,6 +1198,81 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
 </context>
 <context>
+    <name>EditAdvanced</name>
+    <message>
+        <source>Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dial Fields</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connect Timeout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TCP Fast Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TCP MultiPath</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reuse Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>UDP Fragment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TLS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable ECH</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ECH Config</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not Set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Certificate SHA256</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Client Certificate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Client Key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disable SNI</source>
+        <translation type="unfinished">غیرفعال کردن SNI</translation>
+    </message>
+    <message>
+        <source>TLS Min Version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TLS Max Version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Certificate sha256</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>EditAnyTLS</name>
     <message>
         <source>Password</source>
@@ -1043,86 +1385,73 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
 </context>
 <context>
-    <name>EditQUIC</name>
+    <name>EditHttp</name>
     <message>
-        <source>Certificate</source>
-        <translation>گواهی</translation>
+        <source>Form</source>
+        <translation type="unfinished">فرم</translation>
     </message>
     <message>
-        <source>Auth Type</source>
-        <translation>نوع احراز هویت</translation>
-    </message>
-    <message>
-        <source>Download (Mbps)</source>
-        <translation>دانلود (مگابیت بر ثانیه)</translation>
-    </message>
-    <message>
-        <source>Disable MTU Discovery</source>
-        <translation>غیرفعال کردن کشف MTU</translation>
-    </message>
-    <message>
-        <source>Allow Insecure</source>
-        <translation>اجازه ارتباطات ناامن داده شود</translation>
-    </message>
-    <message>
-        <source>Upload (Mbps)</source>
-        <translation>آپلود (مگابیت بر ثانیه)</translation>
-    </message>
-    <message>
-        <source>Obfs Password</source>
-        <translation>گذرواژه مبهم‌سازی</translation>
-    </message>
-    <message>
-        <source>SNI</source>
-        <translation>شناسه نام سرور</translation>
-    </message>
-    <message>
-        <source>Auth Payload</source>
-        <translation>محموله احراز هویت</translation>
-    </message>
-    <message>
-        <source>Disable SNI</source>
-        <translation>غیرفعال کردن SNI</translation>
+        <source>Username</source>
+        <translation type="unfinished">نام کاربری</translation>
     </message>
     <message>
         <source>Password</source>
-        <translation>کلمه عبور</translation>
+        <translation type="unfinished">کلمه عبور</translation>
+    </message>
+</context>
+<context>
+    <name>EditHysteria</name>
+    <message>
+        <source>Form</source>
+        <translation type="unfinished">فرم</translation>
     </message>
     <message>
-        <source>Generate UUID</source>
-        <translation>تولید UUID</translation>
+        <source>Protocol Version</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Heartbeat</source>
-        <translation>ضربان قلب</translation>
+        <source>Down Mbps</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Zero Rtt Handshake</source>
-        <translation>دست‌دهی صفر RTT</translation>
-    </message>
-    <message>
-        <source>Congestion Control</source>
-        <translation>کنترل ازدحام</translation>
-    </message>
-    <message>
-        <source>UDP Relay Mode</source>
-        <translation>حالت رله UDP</translation>
-    </message>
-    <message>
-        <source>Port range</source>
-        <translation>محدوده پورت</translation>
+        <source>Recv window conn</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Hop Interval</source>
-        <translation>فاصله پرش</translation>
+        <translation type="unfinished">فاصله پرش</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;100ms&lt;br/&gt;1s&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;100 میلی‌ثانیه&lt;br/&gt;1 ثانیه&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>Server Ports</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Comma seperated ranges: 100:200,500:600&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;محدوده‌های جدا شده با کاما: 100:200,500:600&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>Authentication Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Up Mbps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Authentication Payload</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Obfuscation Password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Recv window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disable Mtu Discovery</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Password</source>
+        <translation type="unfinished">کلمه عبور</translation>
     </message>
 </context>
 <context>
@@ -1179,6 +1508,10 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>کلمه عبور</translation>
     </message>
     <message>
+        <source>UDP over TCP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Encryption</source>
         <translation>رمزگذاری</translation>
     </message>
@@ -1186,28 +1519,32 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <source>Plugin</source>
         <translation>پلاگین</translation>
     </message>
-    <message>
-        <source>Version of UDP over TCP protocol, server support is required.</source>
-        <translation>نسخه پروتکل UDP روی TCP، پشتیبانی سرور لازم است.</translation>
-    </message>
-    <message>
-        <source>Off</source>
-        <translation>خاموش</translation>
-    </message>
 </context>
 <context>
-    <name>EditSocksHttp</name>
+    <name>EditSocks</name>
     <message>
-        <source>Version</source>
-        <translation>نسخه</translation>
-    </message>
-    <message>
-        <source>Username</source>
-        <translation>نام کاربری</translation>
+        <source>Form</source>
+        <translation type="unfinished">فرم</translation>
     </message>
     <message>
         <source>Password</source>
-        <translation>کلمه عبور</translation>
+        <translation type="unfinished">کلمه عبور</translation>
+    </message>
+    <message>
+        <source>Version</source>
+        <translation type="unfinished">نسخه</translation>
+    </message>
+    <message>
+        <source>Username</source>
+        <translation type="unfinished">نام کاربری</translation>
+    </message>
+    <message>
+        <source>5</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>4</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1270,10 +1607,69 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
 </context>
 <context>
-    <name>EditTrojanVLESS</name>
+    <name>EditTrojan</name>
+    <message>
+        <source>Form</source>
+        <translation type="unfinished">فرم</translation>
+    </message>
     <message>
         <source>Password</source>
-        <translation>کلمه عبور</translation>
+        <translation type="unfinished">کلمه عبور</translation>
+    </message>
+</context>
+<context>
+    <name>EditTuic</name>
+    <message>
+        <source>Form</source>
+        <translation type="unfinished">فرم</translation>
+    </message>
+    <message>
+        <source>Heartbeat</source>
+        <translation type="unfinished">ضربان قلب</translation>
+    </message>
+    <message>
+        <source>UDP Relay Mode</source>
+        <translation type="unfinished">حالت رله UDP</translation>
+    </message>
+    <message>
+        <source>Password</source>
+        <translation type="unfinished">کلمه عبور</translation>
+    </message>
+    <message>
+        <source>Zero RTT Handshake</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>UUID</source>
+        <translation type="unfinished">شناسه یکتا</translation>
+    </message>
+    <message>
+        <source>bbr</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>cubic</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>new_reno</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Congestion Control</source>
+        <translation type="unfinished">کنترل ازدحام</translation>
+    </message>
+    <message>
+        <source>native</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>quic</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>UDP over Stream</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1291,8 +1687,23 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>شناسه یکتا</translation>
     </message>
     <message>
+        <source>Packet Encoding</source>
+        <translation type="unfinished">رمزنگاری بسته ها</translation>
+    </message>
+    <message>
         <source>Generate UUID</source>
         <translation>تولید شناسه یکتا</translation>
+    </message>
+</context>
+<context>
+    <name>EditVless</name>
+    <message>
+        <source>UUID</source>
+        <translation type="unfinished">شناسه یکتا</translation>
+    </message>
+    <message>
+        <source>Packet Encoding</source>
+        <translation type="unfinished">رمزنگاری بسته ها</translation>
     </message>
 </context>
 <context>
@@ -1395,6 +1806,29 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
     <message>
         <source>Amnezia Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>EditXrayVless</name>
+    <message>
+        <source>Form</source>
+        <translation type="unfinished">فرم</translation>
+    </message>
+    <message>
+        <source>UUID</source>
+        <translation type="unfinished">شناسه یکتا</translation>
+    </message>
+    <message>
+        <source>Encryption</source>
+        <translation type="unfinished">رمزگذاری</translation>
+    </message>
+    <message>
+        <source>none</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Flow</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1511,18 +1945,6 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>پروکسی سیستمی</translation>
     </message>
     <message>
-        <source>Type</source>
-        <translation>نوع</translation>
-    </message>
-    <message>
-        <source>Address</source>
-        <translation>آدرس</translation>
-    </message>
-    <message>
-        <source>Name</source>
-        <translation>اسم</translation>
-    </message>
-    <message>
         <source>Test Result</source>
         <translation>نتیجه تست</translation>
     </message>
@@ -1555,6 +1977,10 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>آغازکردن</translation>
     </message>
     <message>
+        <source>Return</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Stop</source>
         <translation>متوقف کردن</translation>
     </message>
@@ -1569,6 +1995,10 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     <message>
         <source>Delete</source>
         <translation>از بین بردن</translation>
+    </message>
+    <message>
+        <source>Del</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Debug Info</source>
@@ -1647,6 +2077,10 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>انتخاب همه</translation>
     </message>
     <message>
+        <source>Copy links of selected (Json Links)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Copy links of selected</source>
         <translation>لینک های انتخاب شده را کپی کنید</translation>
     </message>
@@ -1677,6 +2111,18 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     <message>
         <source>Open Config Folder</source>
         <translation>پوشه Config باز شود</translation>
+    </message>
+    <message>
+        <source>Resolve Out IP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Resolve Selected Out IP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh Column Widths</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Error</source>
@@ -1761,10 +2207,6 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     <message>
         <source>Settings changed</source>
         <translation>تنظیمات تغییر کرد</translation>
-    </message>
-    <message>
-        <source>Restart Proxy</source>
-        <translation>راه اندازی مجدد پروکسی</translation>
     </message>
     <message>
         <source>If there is no response for a long time, it is recommended to restart the software.</source>
@@ -1855,20 +2297,44 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>اگر در راه‌اندازی VPN مشکل دارید، می‌توانید فرآیند هسته را اینجا بازنشانی کنید و سپس دوباره نمایه را راه‌اندازی کنید. خطا: %1</translation>
     </message>
     <message>
-        <source> Confirmation </source>
-        <translation>تأیید</translation>
-    </message>
-    <message>
-        <source> Remove %1 item(s) ? </source>
-        <translation></translation>
-    </message>
-    <message>
         <source>Remove %1 Unavailable item(s) ?</source>
         <translation>حذف %1 مورد غیرقابل دسترس؟</translation>
     </message>
     <message>
         <source>Remove %1 Invalid item(s) ?</source>
         <translation>حذف %1 مورد نادرست؟</translation>
+    </message>
+    <message>
+        <source>Include:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Out IP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort By:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Latency</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Download Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Upload Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>IP Out</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Replace domain server addresses with their resolved IPs?</source>
@@ -1939,6 +2405,10 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>منوی مسیریابی</translation>
     </message>
     <message>
+        <source>Restart Core</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Open Manager</source>
         <translation>باز کردن مدیر</translation>
     </message>
@@ -1955,20 +2425,36 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>داده‌های مدیر نمایه خراب شده‌اند، دوباره امتحان کنید.</translation>
     </message>
     <message>
-        <source>The last speed test did not exit completely, please wait. If it persists, please restart the program.</source>
-        <translation>آخرین تست سرعت به‌طور کامل پایان نیافته است، لطفاً صبر کنید. اگر ادامه یافت، برنامه را دوباره راه‌اندازی کنید.</translation>
-    </message>
-    <message>
-        <source>Failed to build test config: </source>
-        <translation>ساخت پیکربندی تست ناموفق بود: </translation>
-    </message>
-    <message>
         <source>Speedtest finished!</source>
         <translation>تست سرعت به پایان رسید!</translation>
     </message>
     <message>
         <source>Failed to stop tests</source>
         <translation>توقف تست‌ها ناموفق بود</translation>
+    </message>
+    <message>
+        <source>[%1] IP test error: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to build test config for batch: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The last test did not exit completely, please wait. If it persists, please restart the program.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>IP test finished!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The last test did not finish completely, please wait. If it persists, please restart the program.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to build batch test config: </source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>You need to enable hijack DNS server first</source>
@@ -2067,10 +2553,6 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>برای تغییر مرتب‌سازی بر اساس ترافیک کلیک کنید</translation>
     </message>
     <message>
-        <source>Copy links of selected (Custom Links)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Invalid JSON Array</source>
         <translation type="unfinished">آرایه JSON نادرست</translation>
     </message>
@@ -2102,6 +2584,29 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
 </context>
 <context>
+    <name>ProfilesTableModel</name>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished">نوع</translation>
+    </message>
+    <message>
+        <source>Address</source>
+        <translation type="unfinished">آدرس</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Test Result</source>
+        <translation type="unfinished">نتیجه تست</translation>
+    </message>
+    <message>
+        <source>Traffic</source>
+        <translation type="unfinished">ترافیک</translation>
+    </message>
+</context>
+<context>
     <name>ProxyItem</name>
     <message>
         <source>Confirmation</source>
@@ -2126,151 +2631,15 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>استفاده‌شده: %1 باقی‌مانده: %2 انقضا: %3</translation>
     </message>
     <message>
-        <source>Select</source>
-        <translation>انتخاب کردن</translation>
-    </message>
-    <message>
-        <source>Update</source>
-        <translation>بروزرسانی</translation>
-    </message>
-    <message>
-        <source>No update</source>
-        <translation>بدون بروزرسانی جدید</translation>
-    </message>
-    <message>
-        <source>Update found: %1
-Release note:
-%2</source>
-        <translation>به‌روزرسانی یافت شد: %1
-یادداشت انتشار:
-%2</translation>
-    </message>
-    <message>
-        <source>Open in browser</source>
-        <translation>در مرور گر باز شود</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation>بستن</translation>
-    </message>
-    <message>
-        <source>Update is ready, restart to install?</source>
-        <translation>به روز رسانی آماده است، برای نصب مجدد راه اندازی شود؟</translation>
-    </message>
-    <message>
-        <source>url detected</source>
-        <translation>آدرس شناسایی شد</translation>
-    </message>
-    <message>
-        <source>%1
-How to update?</source>
-        <translation>چگونه بروزرسانی کنم ؟</translation>
-    </message>
-    <message>
-        <source>Requesting subscription: %1</source>
-        <translation>درخواست اشتراک: %1</translation>
-    </message>
-    <message>
-        <source>Requesting subscription %1 error: %2</source>
-        <translation>خطای درخواست اشتراک %1: %2</translation>
-    </message>
-    <message>
-        <source>Clearing servers...</source>
-        <translation>در حال پاک کردن سرورها...</translation>
-    </message>
-    <message>
-        <source>Added %1 profiles:
-%2
-Deleted %3 Profiles:
-%4</source>
-        <translation>%1 نمایه افزوده شده:
-%2
-%3 نمایه پاک شده:
-%4</translation>
-    </message>
-    <message>
-        <source>Nothing</source>
-        <translation>خالی</translation>
-    </message>
-    <message>
-        <source>Change of %1:</source>
-        <translation>تغییر %1:</translation>
-    </message>
-    <message>
         <source>Chain Proxy</source>
         <translation>پروکسی زنجیره ای</translation>
-    </message>
-    <message>
-        <source>Proxy: %1
-Direct: %2</source>
-        <translation>پروکسی: %1 مستقیم: %2</translation>
-    </message>
-    <message>
-        <source>Request with proxy but no profile started.</source>
-        <translation>درخواست با پروکسی اما هیچ نمایه‌ای شروع نشده است.</translation>
-    </message>
-    <message>
-        <source>Subscription request fininshed: %1</source>
-        <translation>درخواست اشتراک به پایان رسید: %1</translation>
-    </message>
-    <message>
-        <source>Core exits too frequently, stop automatic restart this profile.</source>
-        <translation>هسته بیش از حد متوقف می‌شود، راه‌اندازی خودکار این نمایه متوقف شود.</translation>
     </message>
     <message>
         <source>Default</source>
         <translation>پیش فرض</translation>
     </message>
     <message>
-        <source>Add profiles to this group</source>
-        <translation>افزودن نمایه‌ها به این گروه</translation>
-    </message>
-    <message>
-        <source>Create new subscription group</source>
-        <translation>ایجاد گروه اشتراک جدید</translation>
-    </message>
-    <message>
-        <source>Could not open file.</source>
-        <translation>نمی‌توان پرونده را باز کرد.</translation>
-    </message>
-    <message>
-        <source>Not official support platform</source>
-        <translation>پلتفرم پشتیبانی رسمی نیست</translation>
-    </message>
-    <message>
-        <source>Requesting update error: %1</source>
-        <translation>خطای درخواست به‌روزرسانی: %1</translation>
-    </message>
-    <message>
-        <source>Tun mode cannot be used with Custom configs</source>
-        <translation>حالت Tun با پیکربندی‌های سفارشی قابل استفاده نیست</translation>
-    </message>
-    <message>
-        <source>Processing subscription data...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Process complete, applying...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Download Profiles</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Requesting profile error: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Local DNS and Tun mode do not work together, please set an IP to be used as the Local DNS server in the Routing Settings -&gt; Local override</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Core exited, cleaning up...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Restarting the core ...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

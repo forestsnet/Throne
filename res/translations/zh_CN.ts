@@ -2,6 +2,143 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="zh_CN">
 <context>
+    <name></name>
+    <message>
+        <source>Request with proxy but no profile started.</source>
+        <translation type="unfinished">使用代理请求，但未启动代理配置档。</translation>
+    </message>
+    <message>
+        <source>Could not open file.</source>
+        <translation type="unfinished">无法打开文件。</translation>
+    </message>
+    <message>
+        <source>Proxy: %1
+Direct: %2</source>
+        <translation type="unfinished">代理: %1
+直连: %2</translation>
+    </message>
+    <message>
+        <source>Add profiles to this group</source>
+        <translation type="unfinished">添加配置档到这个分组</translation>
+    </message>
+    <message>
+        <source>Create new subscription group</source>
+        <translation type="unfinished">创建新的订阅分组</translation>
+    </message>
+    <message>
+        <source>url detected</source>
+        <translation type="unfinished">检测到 URL</translation>
+    </message>
+    <message>
+        <source>%1
+How to update?</source>
+        <translation type="unfinished">%1
+如何更新？</translation>
+    </message>
+    <message>
+        <source>Requesting subscription: %1</source>
+        <translation type="unfinished">正在请求订阅: %1</translation>
+    </message>
+    <message>
+        <source>Requesting subscription %1 error: %2</source>
+        <translation type="unfinished">请求订阅 %1 时出错: %2</translation>
+    </message>
+    <message>
+        <source>Subscription request fininshed: %1</source>
+        <translation type="unfinished">订阅请求完成: %1</translation>
+    </message>
+    <message>
+        <source>Clearing servers...</source>
+        <translation type="unfinished">正在清理服务器...</translation>
+    </message>
+    <message>
+        <source>Processing subscription data...</source>
+        <translation type="unfinished">正在处理订阅数据...</translation>
+    </message>
+    <message>
+        <source>Process complete, applying...</source>
+        <translation type="unfinished">处理完成，正在应用...</translation>
+    </message>
+    <message>
+        <source>Added %1 profiles:
+%2
+Deleted %3 Profiles:
+%4</source>
+        <translation type="unfinished">添加了 %1 个配置档：
+%2
+删除了 %3 个配置档：
+%4</translation>
+    </message>
+    <message>
+        <source>Nothing</source>
+        <translation type="unfinished">无</translation>
+    </message>
+    <message>
+        <source>Change of %1:</source>
+        <translation type="unfinished">%1 的变化:</translation>
+    </message>
+    <message>
+        <source>Core exited, cleaning up...</source>
+        <translation type="unfinished">核心已退出，正在清理...</translation>
+    </message>
+    <message>
+        <source>Core exits too frequently, stop automatic restart this profile.</source>
+        <translation type="unfinished">Core 退出太频繁，停止自动重启这个配置档。</translation>
+    </message>
+    <message>
+        <source>Restarting the core ...</source>
+        <translation type="unfinished">正在重新启动核心...</translation>
+    </message>
+    <message>
+        <source>Download Profiles</source>
+        <translation type="unfinished">下载配置档</translation>
+    </message>
+    <message>
+        <source>Requesting profile error: %1</source>
+        <translation type="unfinished">请求配置档时出错: %1</translation>
+    </message>
+    <message>
+        <source>Update</source>
+        <translation type="unfinished">更新</translation>
+    </message>
+    <message>
+        <source>Not official support platform</source>
+        <translation type="unfinished">非官方支持平台</translation>
+    </message>
+    <message>
+        <source>Requesting update error: %1</source>
+        <translation type="unfinished">请求更新时出错：%1</translation>
+    </message>
+    <message>
+        <source>No update</source>
+        <translation type="unfinished">无更新</translation>
+    </message>
+    <message>
+        <source>Update found: %1
+Release note:
+%2</source>
+        <translation type="unfinished">发现更新: %1
+更新日志:
+%2</translation>
+    </message>
+    <message>
+        <source>Open in browser</source>
+        <translation type="unfinished">在浏览器打开</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished">关闭</translation>
+    </message>
+    <message>
+        <source>Update is ready, restart to install?</source>
+        <translation type="unfinished">更新已准备好，重启进行安装吗？</translation>
+    </message>
+    <message>
+        <source>Select</source>
+        <translation type="unfinished">选择</translation>
+    </message>
+</context>
+<context>
     <name>DialogBasicSettings</name>
     <message>
         <source>Basic Settings</source>
@@ -116,6 +253,30 @@
         <translation>时间间隔 (分钟，少于 30 则无效)</translation>
     </message>
     <message>
+        <source>Skip confirmation When Deleting Profiles</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select</source>
+        <translation type="unfinished">选择</translation>
+    </message>
+    <message>
+        <source>Enable Custom Icons</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Format: hwid=value,os=value,osVersion=value,model=value&lt;/p&gt;&lt;p&gt;Leave empty to use default values. Only specify the parameters you want to override.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Custom System Parameters (optional)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>hwid=custom_value,os=custom_os,osVersion=custom_version,model=custom_model</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Disable Traffic Stats</source>
         <translation>禁用流量统计</translation>
     </message>
@@ -210,6 +371,30 @@
         <translation>仅上传</translation>
     </message>
     <message>
+        <source>Xray Core</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Loglevel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mux Concurrency</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Default Mux On</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When to choose Xray when importing vless profiles&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Xray VLESS Preference</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Disable Privilege request</source>
         <translation>禁止权限请求</translation>
     </message>
@@ -289,6 +474,14 @@
         <source>Only Country</source>
         <translation>仅国别</translation>
     </message>
+    <message>
+        <source>Select png icons</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Image Files (*.png)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DialogEditGroup</name>
@@ -313,12 +506,12 @@
         <translation>订阅</translation>
     </message>
     <message>
-        <source>URL</source>
-        <translation></translation>
+        <source>Auto Clear Unavailable Profiles</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Archive</source>
-        <translation>存档</translation>
+        <source>URL</source>
+        <translation></translation>
     </message>
     <message>
         <source>Warning</source>
@@ -335,10 +528,6 @@
     <message>
         <source>Copied</source>
         <translation>已复制</translation>
-    </message>
-    <message>
-        <source>Manually column width</source>
-        <translation>手动调节列宽</translation>
     </message>
     <message>
         <source>Front Proxy</source>
@@ -400,8 +589,116 @@
         <translation>安全性</translation>
     </message>
     <message>
+        <source>Enabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Brutal Download Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Brutal Upload Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Advanced Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Network Settings (%1)</source>
         <translation>传输设置 (%1)</translation>
+    </message>
+    <message>
+        <source>Security Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SNI</source>
+        <translation type="unfinished">SNI</translation>
+    </message>
+    <message>
+        <source>Fingerprint</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ALPN</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reality Pbk</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reality SpiderX</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Network Settings</source>
+        <translation type="unfinished">网络设置</translation>
+    </message>
+    <message>
+        <source>Headers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Concurrency</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Post Bytes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Reusable Secs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Request Times</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Host</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>X Padding Bytes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Min Post Interval</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No GRPC Headers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Reuse times</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Keep Alive Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Download Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Connections</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Path</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>The underlying transport method. It must be consistent with the server, otherwise, the connection cannot be established.</source>
@@ -410,10 +707,6 @@
     <message>
         <source>Transport Layer Security. It must be consistent with the server, otherwise, the connection cannot be established.</source>
         <translation>传输层安全性。它必须与服务器一致，否则无法建立连接。</translation>
-    </message>
-    <message>
-        <source>UDP FullCone Packet encoding for implementing features such as UDP FullCone. Server support is required, if the wrong selection is made, the connection cannot be made. Please leave it blank.</source>
-        <translation>用于实现 UDP FullCone 等特性的 UDF FullCone 数据包编码。需要服务器支持，若选错则无法连接。不懂请留空。</translation>
     </message>
     <message>
         <source>When enabled, V2Ray will not check the validity of the TLS certificate provided by the remote host (the security is equivalent to plaintext)</source>
@@ -444,10 +737,6 @@
         <translation>已设置</translation>
     </message>
     <message>
-        <source>Packet Encoding</source>
-        <translation>数据包编码</translation>
-    </message>
-    <message>
         <source>Settings</source>
         <translation>设置</translation>
     </message>
@@ -472,18 +761,6 @@
         <translation>自定义 (%1 配置)</translation>
     </message>
     <message>
-        <source>Custom Outbound Settings</source>
-        <translation>自定义出站设置 (JSON)</translation>
-    </message>
-    <message>
-        <source>Custom Config Settings</source>
-        <translation>自定义配置设置 (JSON)</translation>
-    </message>
-    <message>
-        <source>Apply settings to this group</source>
-        <translation>应用设置到这个分组</translation>
-    </message>
-    <message>
         <source>Multiplex</source>
         <translation>多路复用</translation>
     </message>
@@ -498,10 +775,6 @@
     <message>
         <source>Off</source>
         <translation>关闭</translation>
-    </message>
-    <message>
-        <source>Confirm</source>
-        <translation>确认</translation>
     </message>
     <message>
         <source>Server support is required</source>
@@ -520,10 +793,6 @@
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;服务器到客户端的 TCP 极致速度&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <source>TCP Brutal Speed</source>
-        <translation>TCP Brutal 速度</translation>
-    </message>
-    <message>
         <source>Mb/s</source>
         <translation>Mb/s</translation>
     </message>
@@ -540,12 +809,12 @@
         <translation>方法</translation>
     </message>
     <message>
-        <source>Reality SID</source>
-        <translation>Reality SID</translation>
+        <source>Service Name</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>header type</source>
-        <translation>标头类型</translation>
+        <source>Reality SID</source>
+        <translation>Reality SID</translation>
     </message>
     <message>
         <source>Extra Core</source>
@@ -923,6 +1192,81 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
 </context>
 <context>
+    <name>EditAdvanced</name>
+    <message>
+        <source>Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dial Fields</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connect Timeout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TCP Fast Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TCP MultiPath</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reuse Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>UDP Fragment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TLS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable ECH</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ECH Config</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not Set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Certificate SHA256</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Client Certificate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Client Key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disable SNI</source>
+        <translation type="unfinished">禁用 SNI (不发送服务器名称指示)</translation>
+    </message>
+    <message>
+        <source>TLS Min Version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TLS Max Version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Certificate sha256</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>EditAnyTLS</name>
     <message>
         <source>Password</source>
@@ -1035,86 +1379,73 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
 </context>
 <context>
-    <name>EditQUIC</name>
+    <name>EditHttp</name>
     <message>
-        <source>Certificate</source>
-        <translation>证书</translation>
+        <source>Form</source>
+        <translation type="unfinished">表单</translation>
     </message>
     <message>
-        <source>Auth Type</source>
-        <translation>认证类型</translation>
-    </message>
-    <message>
-        <source>Download (Mbps)</source>
-        <translation>下载 (Mbps)</translation>
-    </message>
-    <message>
-        <source>Disable MTU Discovery</source>
-        <translation>禁用 MTU 探测</translation>
-    </message>
-    <message>
-        <source>Allow Insecure</source>
-        <translation>允许不安全</translation>
-    </message>
-    <message>
-        <source>Upload (Mbps)</source>
-        <translation>上传 (Mbps)</translation>
-    </message>
-    <message>
-        <source>Obfs Password</source>
-        <translation>混淆密码</translation>
-    </message>
-    <message>
-        <source>SNI</source>
-        <translation>SNI</translation>
-    </message>
-    <message>
-        <source>Auth Payload</source>
-        <translation>认证负载</translation>
-    </message>
-    <message>
-        <source>Generate UUID</source>
-        <translation>生成 UUID</translation>
+        <source>Username</source>
+        <translation type="unfinished">用户名</translation>
     </message>
     <message>
         <source>Password</source>
-        <translation>密码</translation>
+        <translation type="unfinished">密码</translation>
+    </message>
+</context>
+<context>
+    <name>EditHysteria</name>
+    <message>
+        <source>Form</source>
+        <translation type="unfinished">表单</translation>
     </message>
     <message>
-        <source>Zero Rtt Handshake</source>
-        <translation>零 Rtt 握手</translation>
+        <source>Protocol Version</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>UDP Relay Mode</source>
-        <translation>UDP 中继模式</translation>
+        <source>Down Mbps</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Congestion Control</source>
-        <translation>拥塞控制</translation>
-    </message>
-    <message>
-        <source>Heartbeat</source>
-        <translation>心跳包</translation>
-    </message>
-    <message>
-        <source>Disable SNI</source>
-        <translation>禁用 SNI (不发送服务器名称指示)</translation>
-    </message>
-    <message>
-        <source>Port range</source>
-        <translation>端口范围</translation>
+        <source>Recv window conn</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Hop Interval</source>
-        <translation>跃点间隔</translation>
+        <translation type="unfinished">跃点间隔</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;100ms&lt;br/&gt;1s&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;100ms&lt;br/&gt;1s&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>Server Ports</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Comma seperated ranges: 100:200,500:600&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;逗号分隔的范围：100:200,500:600&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>Authentication Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Up Mbps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Authentication Payload</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Obfuscation Password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Recv window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disable Mtu Discovery</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Password</source>
+        <translation type="unfinished">密码</translation>
     </message>
 </context>
 <context>
@@ -1171,6 +1502,10 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>密码</translation>
     </message>
     <message>
+        <source>UDP over TCP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Encryption</source>
         <translation>加密</translation>
     </message>
@@ -1178,28 +1513,32 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <source>Plugin</source>
         <translation>插件</translation>
     </message>
-    <message>
-        <source>Version of UDP over TCP protocol, server support is required.</source>
-        <translation>UDP over TCP 协议的版本，需要服务器支持。</translation>
-    </message>
-    <message>
-        <source>Off</source>
-        <translation>关闭</translation>
-    </message>
 </context>
 <context>
-    <name>EditSocksHttp</name>
+    <name>EditSocks</name>
     <message>
-        <source>Version</source>
-        <translation>版本</translation>
-    </message>
-    <message>
-        <source>Username</source>
-        <translation>用户名</translation>
+        <source>Form</source>
+        <translation type="unfinished">表单</translation>
     </message>
     <message>
         <source>Password</source>
-        <translation>密码</translation>
+        <translation type="unfinished">密码</translation>
+    </message>
+    <message>
+        <source>Version</source>
+        <translation type="unfinished">版本</translation>
+    </message>
+    <message>
+        <source>Username</source>
+        <translation type="unfinished">用户名</translation>
+    </message>
+    <message>
+        <source>5</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>4</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1262,10 +1601,69 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
 </context>
 <context>
-    <name>EditTrojanVLESS</name>
+    <name>EditTrojan</name>
+    <message>
+        <source>Form</source>
+        <translation type="unfinished">表单</translation>
+    </message>
     <message>
         <source>Password</source>
-        <translation>密码</translation>
+        <translation type="unfinished">密码</translation>
+    </message>
+</context>
+<context>
+    <name>EditTuic</name>
+    <message>
+        <source>Form</source>
+        <translation type="unfinished">表单</translation>
+    </message>
+    <message>
+        <source>Heartbeat</source>
+        <translation type="unfinished">心跳包</translation>
+    </message>
+    <message>
+        <source>UDP Relay Mode</source>
+        <translation type="unfinished">UDP 中继模式</translation>
+    </message>
+    <message>
+        <source>Password</source>
+        <translation type="unfinished">密码</translation>
+    </message>
+    <message>
+        <source>Zero RTT Handshake</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>UUID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>bbr</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>cubic</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>new_reno</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Congestion Control</source>
+        <translation type="unfinished">拥塞控制</translation>
+    </message>
+    <message>
+        <source>native</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>quic</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>UDP over Stream</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1283,8 +1681,23 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation></translation>
     </message>
     <message>
+        <source>Packet Encoding</source>
+        <translation type="unfinished">数据包编码</translation>
+    </message>
+    <message>
         <source>Generate UUID</source>
         <translation>生成 UUID</translation>
+    </message>
+</context>
+<context>
+    <name>EditVless</name>
+    <message>
+        <source>UUID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Packet Encoding</source>
+        <translation type="unfinished">数据包编码</translation>
     </message>
 </context>
 <context>
@@ -1388,6 +1801,29 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     <message>
         <source>Amnezia Settings</source>
         <translation>Amnezia 设置</translation>
+    </message>
+</context>
+<context>
+    <name>EditXrayVless</name>
+    <message>
+        <source>Form</source>
+        <translation type="unfinished">表单</translation>
+    </message>
+    <message>
+        <source>UUID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Encryption</source>
+        <translation type="unfinished">加密</translation>
+    </message>
+    <message>
+        <source>none</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Flow</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1499,18 +1935,6 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>服务器</translation>
     </message>
     <message>
-        <source>Type</source>
-        <translation>类型</translation>
-    </message>
-    <message>
-        <source>Address</source>
-        <translation>地址</translation>
-    </message>
-    <message>
-        <source>Name</source>
-        <translation>名称</translation>
-    </message>
-    <message>
         <source>Test Result</source>
         <translation>测试结果</translation>
     </message>
@@ -1539,12 +1963,20 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>分组</translation>
     </message>
     <message>
+        <source>Return</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Stop</source>
         <translation>停止</translation>
     </message>
     <message>
         <source>Add profile from clipboard</source>
         <translation>添加来自剪贴板的配置档</translation>
+    </message>
+    <message>
+        <source>Del</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Debug Info</source>
@@ -1565,6 +1997,18 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     <message>
         <source>Disable</source>
         <translation>禁用</translation>
+    </message>
+    <message>
+        <source>Resolve Out IP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Resolve Selected Out IP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh Column Widths</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Error</source>
@@ -1767,10 +2211,6 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>重启程序以生效。</translation>
     </message>
     <message>
-        <source>Restart Proxy</source>
-        <translation>重启代理</translation>
-    </message>
-    <message>
         <source>Failed to start profile %1</source>
         <translation>启动配置档 %1 失败</translation>
     </message>
@@ -1855,20 +2295,44 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>如果启动 VPN 时有问题，您可以在这里强制重置 Core 进程，然后再次尝试启动配置档。错误是 %1</translation>
     </message>
     <message>
-        <source> Confirmation </source>
-        <translation> 确认 </translation>
-    </message>
-    <message>
-        <source> Remove %1 item(s) ? </source>
-        <translation> 移除 %1 项吗？ </translation>
-    </message>
-    <message>
         <source>Remove %1 Unavailable item(s) ?</source>
         <translation>移除 %1 个不可用项吗？</translation>
     </message>
     <message>
         <source>Remove %1 Invalid item(s) ?</source>
         <translation>移除 %1 个无效项吗？</translation>
+    </message>
+    <message>
+        <source>Include:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Out IP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort By:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Latency</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Download Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Upload Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>IP Out</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Replace domain server addresses with their resolved IPs?</source>
@@ -1939,6 +2403,14 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>路由菜单</translation>
     </message>
     <message>
+        <source>Copy links of selected (Json Links)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restart Core</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Open Manager</source>
         <translation>打开管理器</translation>
     </message>
@@ -1955,20 +2427,36 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>配置档管理器数据损坏，请重试。</translation>
     </message>
     <message>
-        <source>The last speed test did not exit completely, please wait. If it persists, please restart the program.</source>
-        <translation>上次的测速未完全退出，请稍候。如果持续存在，请重启程序。</translation>
-    </message>
-    <message>
-        <source>Failed to build test config: </source>
-        <translation>构建测试配置失败： </translation>
-    </message>
-    <message>
         <source>Speedtest finished!</source>
         <translation>测速完成！</translation>
     </message>
     <message>
         <source>Failed to stop tests</source>
         <translation>停止测试失败</translation>
+    </message>
+    <message>
+        <source>[%1] IP test error: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to build test config for batch: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The last test did not exit completely, please wait. If it persists, please restart the program.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>IP test finished!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The last test did not finish completely, please wait. If it persists, please restart the program.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to build batch test config: </source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>You need to enable hijack DNS server first</source>
@@ -2067,10 +2555,6 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>点击以切换“按流量排序”</translation>
     </message>
     <message>
-        <source>Copy links of selected (Custom Links)</source>
-        <translation>复制选定项的链接(自定义链接)</translation>
-    </message>
-    <message>
         <source>Invalid JSON Array</source>
         <translation>无效 JSON 数组</translation>
     </message>
@@ -2094,6 +2578,29 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
 </context>
 <context>
+    <name>ProfilesTableModel</name>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished">类型</translation>
+    </message>
+    <message>
+        <source>Address</source>
+        <translation type="unfinished">地址</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished">名称</translation>
+    </message>
+    <message>
+        <source>Test Result</source>
+        <translation type="unfinished">测试结果</translation>
+    </message>
+    <message>
+        <source>Traffic</source>
+        <translation type="unfinished">流量</translation>
+    </message>
+</context>
+<context>
     <name>ProxyItem</name>
     <message>
         <source>Confirmation</source>
@@ -2114,158 +2621,20 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
 <context>
     <name>QObject</name>
     <message>
-        <source>url detected</source>
-        <translation>检测到 URL</translation>
-    </message>
-    <message>
-        <source>%1
-How to update?</source>
-        <translation>%1
-如何更新？</translation>
-    </message>
-    <message>
-        <source>Added %1 profiles:
-%2
-Deleted %3 Profiles:
-%4</source>
-        <translation>添加了 %1 个配置档：
-%2
-删除了 %3 个配置档：
-%4</translation>
-    </message>
-    <message>
-        <source>Proxy: %1
-Direct: %2</source>
-        <translation>代理: %1
-直连: %2</translation>
-    </message>
-    <message>
         <source>Used: %1 Remain: %2 Expire: %3</source>
         <translation>已用 %1 剩余 %2 过期 %3</translation>
-    </message>
-    <message>
-        <source>Update</source>
-        <translation>更新</translation>
-    </message>
-    <message>
-        <source>No update</source>
-        <translation>无更新</translation>
-    </message>
-    <message>
-        <source>Open in browser</source>
-        <translation>在浏览器打开</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation>关闭</translation>
-    </message>
-    <message>
-        <source>Update is ready, restart to install?</source>
-        <translation>更新已准备好，重启进行安装吗？</translation>
-    </message>
-    <message>
-        <source>Update found: %1
-Release note:
-%2</source>
-        <translation>发现更新: %1
-更新日志:
-%2</translation>
-    </message>
-    <message>
-        <source>Request with proxy but no profile started.</source>
-        <translation>使用代理请求，但未启动代理配置档。</translation>
     </message>
     <message>
         <source>Chain Proxy</source>
         <translation>链式代理</translation>
     </message>
     <message>
-        <source>Requesting subscription: %1</source>
-        <translation>正在请求订阅: %1</translation>
-    </message>
-    <message>
-        <source>Requesting subscription %1 error: %2</source>
-        <translation>请求订阅 %1 时出错: %2</translation>
-    </message>
-    <message>
-        <source>Nothing</source>
-        <translation>无</translation>
-    </message>
-    <message>
-        <source>Change of %1:</source>
-        <translation>%1 的变化:</translation>
-    </message>
-    <message>
-        <source>Select</source>
-        <translation>选择</translation>
-    </message>
-    <message>
-        <source>Clearing servers...</source>
-        <translation>正在清理服务器...</translation>
-    </message>
-    <message>
-        <source>Subscription request fininshed: %1</source>
-        <translation>订阅请求完成: %1</translation>
-    </message>
-    <message>
-        <source>Core exits too frequently, stop automatic restart this profile.</source>
-        <translation>Core 退出太频繁，停止自动重启这个配置档。</translation>
-    </message>
-    <message>
         <source>Default</source>
         <translation>默认</translation>
     </message>
     <message>
-        <source>Add profiles to this group</source>
-        <translation>添加配置档到这个分组</translation>
-    </message>
-    <message>
-        <source>Create new subscription group</source>
-        <translation>创建新的订阅分组</translation>
-    </message>
-    <message>
-        <source>Could not open file.</source>
-        <translation>无法打开文件。</translation>
-    </message>
-    <message>
-        <source>Not official support platform</source>
-        <translation>非官方支持平台</translation>
-    </message>
-    <message>
-        <source>Requesting update error: %1</source>
-        <translation>请求更新时出错：%1</translation>
-    </message>
-    <message>
-        <source>Tun mode cannot be used with Custom configs</source>
-        <translation>Tun 模式不能与自定义配置一起使用</translation>
-    </message>
-    <message>
-        <source>Processing subscription data...</source>
-        <translation>正在处理订阅数据...</translation>
-    </message>
-    <message>
-        <source>Process complete, applying...</source>
-        <translation>处理完成，正在应用...</translation>
-    </message>
-    <message>
-        <source>Download Profiles</source>
-        <translation>下载配置档</translation>
-    </message>
-    <message>
-        <source>Requesting profile error: %1</source>
-        <translation>请求配置档时出错: %1</translation>
-    </message>
-    <message>
         <source>Local DNS and Tun mode do not work together, please set an IP to be used as the Local DNS server in the Routing Settings -&gt; Local override</source>
         <translation>本地 NDS 和 Tun 模式不能同时使用，请在「路由设置 → 本地覆盖」中设置一个 IP 用作本地 DNS 服务器</translation>
-    </message>
-    <message>
-        <source>Core exited, cleaning up...</source>
-        <translation>核心已退出，正在清理...</translation>
-    </message>
-    <message>
-        <source>Restarting the core ...</source>
-        <translation>正在重新启动核心...</translation>
     </message>
 </context>
 <context>

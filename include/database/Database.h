@@ -36,7 +36,6 @@ namespace Configs {
     public:
         Database(const std::string& path)
             : db(path, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) {
-            // Enable foreign key support
             db.exec("PRAGMA foreign_keys = ON");
             db.exec("PRAGMA journal_mode = WAL");
             db.exec("PRAGMA synchronous = NORMAL");

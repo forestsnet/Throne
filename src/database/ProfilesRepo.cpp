@@ -36,7 +36,6 @@ namespace Configs {
             )
         )");
 
-        // Create indexes for faster lookups
         db.exec("CREATE INDEX IF NOT EXISTS idx_profiles_name ON profiles(name)");
     }
 
@@ -549,10 +548,6 @@ namespace Configs {
     bool ProfilesRepo::Save(const std::shared_ptr<Profile>& profile) {
         if (!profile || profile->id < 0) {
             return false;
-        }
-        
-        if (profile->id < 0) {
-            return false; // Profile doesn't have an ID, use AddProfile instead
         }
         
         runOnNewThread([=, this] {
