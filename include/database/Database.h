@@ -38,6 +38,9 @@ namespace Configs {
             : db(path, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) {
             // Enable foreign key support
             db.exec("PRAGMA foreign_keys = ON");
+            db.exec("PRAGMA journal_mode = WAL");
+            db.exec("PRAGMA synchronous = NORMAL");
+            db.exec("PRAGMA mmap_size = 67108864"); // 64MB
         }
 
         // 1. Bind one argument; explicit overloads avoid ambiguity on Linux (int32_t/int64_t/uint32_t)

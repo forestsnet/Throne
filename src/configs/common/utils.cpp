@@ -1,5 +1,7 @@
 #include "include/configs/common/utils.h"
 
+#include "include/global/Configs.hpp"
+
 namespace Configs
 {
     void mergeUrlQuery(QUrlQuery& baseQuery, const QString& strQuery)
@@ -51,7 +53,7 @@ namespace Configs
         auto query = QUrlQuery(url.query(QUrl::ComponentFormattingOption::FullyDecoded));
 
         if (query.queryItemValue("type") == "xhttp"
-            || query.queryItemValue("security") == "reality"
+            || (query.queryItemValue("security") == "reality" && dataManager->settingsRepo->xray_vless_preference == Xray::XhttpAndReality)
             || (query.queryItemValue("encryption") != "none" && query.queryItemValue("encryption") != "")
             || query.queryItemValue("extra") != "") return true;
         return false;

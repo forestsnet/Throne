@@ -147,11 +147,13 @@ namespace Configs {
         bool enable_tun_routing = true;
 #ifdef Q_OS_MACOS
         QString vpn_implementation = "gvisor";
+        bool vpn_strict_route = true;
 #elif defined(Q_OS_WIN)
-        // QString vpn_implementation = WinVersion::IsBuildNumGreaterOrEqual(BuildNumber::Windows_10_1507) ? "system" : "gvisor";
-        QString vpn_implementation = "gvisor";
+        QString vpn_implementation = WinVersion::IsBuildNumGreaterOrEqual(BuildNumber::Windows_10_1507) ? "system" : "gvisor";
+        bool vpn_strict_route = WinVersion::IsBuildNumGreaterOrEqual(BuildNumber::Windows_10_1507);
 #else
         QString vpn_implementation = "system";
+        bool vpn_strict_route = true;
 #endif
         int vpn_mtu = 1420;
         bool vpn_ipv6 = false;
@@ -195,6 +197,7 @@ namespace Configs {
         QString xray_log_level = "info";
         int xray_mux_concurrency = 8;
         bool xray_mux_default_on = false;
+        Xray::XrayVlessPreference xray_vless_preference = Xray::XhttpOnly;
 
         // Extra Core Paths
         QStringList extraCorePaths = {};

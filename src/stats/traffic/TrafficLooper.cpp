@@ -115,7 +115,7 @@ namespace Stats {
                 }
                 for (const auto &profile: profiles) {
                     m->refresh_proxy_list(profile->id);
-                    Configs::dataManager->profilesRepo->Save(profile);
+                    Configs::dataManager->profilesRepo->SaveTraffic(profile);
                 }
             });
         }

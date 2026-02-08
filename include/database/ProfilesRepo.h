@@ -79,5 +79,8 @@ namespace Configs {
         // Save profile to database (manual save, like old Save() method)
         // Only saves if profile has a valid ID (id >= 0)
         bool Save(const std::shared_ptr<Profile>& profile);
+
+        // Update only the traffic field of the profile in the database (no existence check, just UPDATE).
+        bool SaveTraffic(const std::shared_ptr<Profile>& profile);
     };
 }

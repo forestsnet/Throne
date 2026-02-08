@@ -63,9 +63,6 @@ namespace Configs {
                 FOREIGN KEY(route_profile_id) REFERENCES route_profiles(id) ON DELETE CASCADE
             )
         )");
-        
-        // Create index for faster lookups
-        db.exec("CREATE INDEX IF NOT EXISTS idx_route_rules_profile_id ON route_rules(route_profile_id)");
     }
 
     QJsonObject RoutesRepo::routeRuleToJson(const RouteRule* rule) const {

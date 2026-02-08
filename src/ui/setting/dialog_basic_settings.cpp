@@ -178,6 +178,8 @@ DialogBasicSettings::DialogBasicSettings(QWidget *parent)
     ui->xray_loglevel->setCurrentText(Configs::dataManager->settingsRepo->xray_log_level);
     ui->xray_mux_concurrency->setText(Int2String(Configs::dataManager->settingsRepo->xray_mux_concurrency));
     ui->xray_default_mux->setChecked(Configs::dataManager->settingsRepo->xray_mux_default_on);
+    ui->vless_xray_pref->addItems(Configs::Xray::XrayVlessPreferenceString);
+    ui->vless_xray_pref->setCurrentIndex(Configs::dataManager->settingsRepo->xray_vless_preference);
 
     // NTP
     ui->ntp_enable->setChecked(Configs::dataManager->settingsRepo->enable_ntp);
@@ -270,6 +272,7 @@ void DialogBasicSettings::accept() {
     Configs::dataManager->settingsRepo->xray_log_level = ui->xray_loglevel->currentText();
     Configs::dataManager->settingsRepo->xray_mux_concurrency = ui->xray_mux_concurrency->text().toInt();
     Configs::dataManager->settingsRepo->xray_mux_default_on = ui->xray_default_mux->isChecked();
+    Configs::dataManager->settingsRepo->xray_vless_preference = static_cast<Configs::Xray::XrayVlessPreference>(ui->vless_xray_pref->currentIndex());
 
     // Mux
     D_SAVE_INT(mux_concurrency)

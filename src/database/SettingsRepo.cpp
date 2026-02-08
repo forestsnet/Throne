@@ -66,7 +66,8 @@ namespace Configs {
             "xray_mux_concurrency",
             "current_route_id",
             "sniffing_mode",
-            "ruleset_mirror"
+            "ruleset_mirror",
+            "xray_vless_preference"
         };
 
         const QSet<QString> stringListKeys = {
@@ -322,6 +323,7 @@ namespace Configs {
                 else if (key == "xray_mux_default_on") xray_mux_default_on = varValue.toBool();
                 else if (key == "extra_core_paths") extraCorePaths = varValue.toStringList();
                 else if (key == "skip_delete_confirmation") skip_delete_confirmation = varValue.toBool();
+                else if (key == "xray_vless_preference") xray_vless_preference = static_cast<Xray::XrayVlessPreference>(varValue.toInt());
             }
         }
     }
@@ -434,6 +436,7 @@ namespace Configs {
             {"xray_mux_default_on", xray_mux_default_on},
             {"extra_core_paths", extraCorePaths},
             {"skip_delete_confirmation", skip_delete_confirmation},
+            {"xray_vless_preference", xray_vless_preference},
         };
 
         std::vector<std::pair<std::string, std::string>> keyValues;

@@ -37,7 +37,6 @@ namespace Configs {
         )");
 
         // Create indexes for faster lookups
-        db.exec("CREATE INDEX IF NOT EXISTS idx_profiles_gid ON profiles(gid)");
         db.exec("CREATE INDEX IF NOT EXISTS idx_profiles_name ON profiles(name)");
     }
 
@@ -548,7 +547,7 @@ namespace Configs {
     }
 
     bool ProfilesRepo::Save(const std::shared_ptr<Profile>& profile) {
-        if (!profile) {
+        if (!profile || profile->id < 0) {
             return false;
         }
         
@@ -562,6 +561,22 @@ namespace Configs {
             identityMap[profile->id] = std::weak_ptr<Profile>(profile);
         });
         
+        return true;
+    }
+
+    bool ProfilesRepo::SaveTraffic(const std::shared_ptr<Profile>& profile) {
+        if (!profile || profile->id < 0) {
+            return false;
+        }
+        QString trafficJson;
+        if (profile->traffic_data) {
+            trafficJson = QString::fromUtf8(QJsonDocument(profile->traffic_data->ExportToJson()).toJson(QJsonDocument::Compact));
+        }
+        const int id = profile->id;
+        runOnNewThread([=, this] {
+            db.exec("UPDATE profiles SET traffic_json = ? WHERE id = ?",
+                    trafficJson.toStdString(), id);
+        });
         return true;
     }
 }
