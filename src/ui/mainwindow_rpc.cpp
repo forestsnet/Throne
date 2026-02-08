@@ -806,9 +806,18 @@ void MainWindow::profile_start(int _id) {
     runOnNewThread([=, this] {
         // stop current running
         if (running != nullptr) {
+            MW_show_log("Stopping currently running profile before starting new one...");
             profile_stop(false, false, true);
             mu_stopping.lock();
             mu_stopping.unlock();
+            
+            // КРИТИЧНО: Даём дополнительное время на освобождение ресурсов (sing-box файлов)
+            qDebug() << "Waiting for sing-box process cleanup...";
+            for (int i = 0; i < 15; i++) {
+                QThread::msleep(100);
+                QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
+            }
+            qDebug() << "Previous profile cleanup complete";
         }
         // do start
         MW_show_log(">>>>>>>> " + tr("Starting profile %1").arg(ent->outbound->DisplayTypeAndName()));

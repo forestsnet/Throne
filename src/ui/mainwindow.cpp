@@ -1221,21 +1221,38 @@ void MainWindow::prepare_exit()
         core_process->Kill();
     }, DS_cores, true);
     
-    // Даём время на завершение процессов
-    QThread::msleep(500);
+    // УСИЛЕННОЕ ОЖИДАНИЕ: Многократная проверка с обработкой событий Qt
+    qDebug() << "Waiting for core process to fully terminate...";
+    for (int i = 0; i < 20; i++) {
+        QThread::msleep(150);
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+    }
     
     // Убеждаемся что VPN процесс тоже завершён
+    qDebug() << "Force stopping VPN process...";
     StopVPNProcess();
-    QThread::msleep(300);
+    
+    // Ещё одна проверка после остановки VPN
+    for (int i = 0; i < 10; i++) {
+        QThread::msleep(100);
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
+    }
+    
+    qDebug() << "All processes terminated, cleaning up...";
 
     mu_exit.unlock();
-    qDebug() << "prepare exit done!";
+    qDebug() << "prepare exit done!"
 }
 
 void MainWindow::on_menu_exit_triggered() {
     prepare_exit();
     //
     if (exit_reason == 1) {
+        // Дополнительная задержка для освобождения файлов перед запуском updater
+        qDebug() << "Preparing to start updater...";
+        QThread::msleep(1000);
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 500);
+        
         QDir::setCurrent(QApplication::applicationDirPath());
 #ifdef Q_OS_WIN
         QFile::copy("./updater.exe", "./updater.old");
@@ -1243,6 +1260,7 @@ void MainWindow::on_menu_exit_triggered() {
 #else
         QProcess::startDetached("./updater", QStringList{});
 #endif
+        qDebug() << "Updater started, waiting before quit...";
     } else if (exit_reason == 2 || exit_reason == 3 || exit_reason == 4) {
         QDir::setCurrent(QApplication::applicationDirPath());
 
@@ -1268,9 +1286,9 @@ void MainWindow::on_menu_exit_triggered() {
         }
     }
     
-    // Даём дополнительное время на завершение всех процессов перед quit
-    QTimer::singleShot(100, []() {
-        qDebug() << "Calling QCoreApplication::quit()...";
+    // Увеличенная задержка перед quit для надёжного завершения
+    QTimer::singleShot(800, []() {
+        qDebug() << "Final cleanup complete, calling QCoreApplication::quit()...";
         QCoreApplication::quit();
     });
 }
