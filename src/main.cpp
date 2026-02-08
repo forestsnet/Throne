@@ -323,7 +323,83 @@ int main(int argc, char* argv[]) {
     QDir::setCurrent(wd.absoluteFilePath("config"));
     QDir("temp").removeRecursively();
 
-    // Load database
+    // ============================================================
+    // ВАЖНО: Проверка другого экземпляра ДО инициализации БД
+    // Это позволяет избежать блокировки БД при передаче throne:// URL
+    // ============================================================
+    QByteArray hashBytes = QCryptographicHash::hash(wd.absolutePath().toUtf8(), QCryptographicHash::Md5).toBase64(QByteArray::OmitTrailingEquals);
+    hashBytes.replace('+', '0').replace('/', '1');
+    auto serverName = LOCAL_SERVER_PREFIX + QString::fromUtf8(hashBytes);
+    qDebug() << "server name: " << serverName;
+
+    // Проверяем throne:// URL ПЕРЕД инициализацией БД
+    qDebug() << "[THRONE_URL] Total arguments:" << arguments.size();
+    qDebug() << "[THRONE_URL] All arguments:" << arguments;
+    
+    QString throneUrl;
+    for (int i = 1; i < arguments.size(); ++i) {
+        QString arg = arguments[i].trimmed();
+        qDebug() << "[THRONE_URL] Processing argument" << i << ":" << arg;
+        
+        // Убираем кавычки если есть (Windows может передавать в кавычках)
+        if (arg.startsWith('"') && arg.endsWith('"')) {
+            arg = arg.mid(1, arg.length() - 2);
+            qDebug() << "[THRONE_URL] After removing quotes:" << arg;
+        }
+        
+        if (arg.startsWith("throne://")) {
+            throneUrl = arg;
+            qDebug() << "[THRONE_URL] ✓ Found throne URL in arguments:" << throneUrl;
+            break;
+        }
+    }
+
+    // Если есть throne:// URL - пытаемся отправить в запущенный экземпляр
+    if (!throneUrl.isEmpty()) {
+        qDebug() << "[THRONE_URL] Processing throne URL:" << throneUrl;
+        
+        QLocalSocket socket;
+        socket.connectToServer(serverName);
+        if (socket.waitForConnected(250))
+        {
+            qDebug() << "[THRONE_URL] Another instance is running, sending URL and quitting";
+            // Передаем URL в запущенный экземпляр
+            QByteArray data = throneUrl.toUtf8();
+            qDebug() << "[THRONE_URL] Sending" << data.size() << "bytes:" << data;
+            socket.write(data);
+            socket.waitForBytesWritten(1000);
+            socket.disconnectFromServer();
+            qDebug() << "[THRONE_URL] URL sent successfully, exiting";
+            
+            if (logFile) {
+                logFile->close();
+                delete logFile;
+                logFile = nullptr;
+            }
+            
+            return 0;
+        }
+        qDebug() << "[THRONE_URL] No other instance running, will process URL in this instance";
+    } else {
+        // Нет throne:// URL - просто проверяем другой экземпляр
+        QLocalSocket socket;
+        socket.connectToServer(serverName);
+        if (socket.waitForConnected(250))
+        {
+            qDebug() << "Another instance is running, quitting";
+            
+            if (logFile) {
+                logFile->close();
+                delete logFile;
+                logFile = nullptr;
+            }
+            
+            return 0;
+        }
+    }
+    // ============================================================
+    
+    // Load database ПОСЛЕ проверки экземпляров
     Configs::initDB(QString(QDir::currentPath() + QDir::separator() + "throne.db").toStdString());
 
     // Store Flags
@@ -411,63 +487,7 @@ int main(int argc, char* argv[]) {
     QGuiApplication::tr("QT_LAYOUT_DIRECTION");
     loadTranslate(locale);
 
-    // Check if another instance is running
-    QByteArray hashBytes = QCryptographicHash::hash(wd.absolutePath().toUtf8(), QCryptographicHash::Md5).toBase64(QByteArray::OmitTrailingEquals);
-    hashBytes.replace('+', '0').replace('/', '1');
-    auto serverName = LOCAL_SERVER_PREFIX + QString::fromUtf8(hashBytes);
-    qDebug() << "server name: " << serverName;
-
-    // Проверяем throne:// URL перед проверкой другого экземпляра
-    qDebug() << "[THRONE_URL] Total arguments:" << arguments.size();
-    qDebug() << "[THRONE_URL] All arguments:" << arguments;
-    
-    QString throneUrl;
-    for (int i = 1; i < arguments.size(); ++i) {
-        QString arg = arguments[i].trimmed();
-        qDebug() << "[THRONE_URL] Processing argument" << i << ":" << arg;
-        
-        // Убираем кавычки если есть (Windows может передавать в кавычках)
-        if (arg.startsWith('"') && arg.endsWith('"')) {
-            arg = arg.mid(1, arg.length() - 2);
-            qDebug() << "[THRONE_URL] After removing quotes:" << arg;
-        }
-        
-        if (arg.startsWith("throne://")) {
-            throneUrl = arg;
-            qDebug() << "[THRONE_URL] ✓ Found throne URL in arguments:" << throneUrl;
-            break;
-        }
-    }
-
-    if (!throneUrl.isEmpty()) {
-        qDebug() << "[THRONE_URL] Processing throne URL:" << throneUrl;
-        
-        QLocalSocket socket;
-        socket.connectToServer(serverName);
-        if (socket.waitForConnected(250))
-        {
-            qDebug() << "[THRONE_URL] Another instance is running, sending URL and quitting";
-            // Передаем URL в запущенный экземпляр
-            QByteArray data = throneUrl.toUtf8();
-            qDebug() << "[THRONE_URL] Sending" << data.size() << "bytes:" << data;
-            socket.write(data);
-            socket.waitForBytesWritten(1000);
-            socket.disconnectFromServer();
-            qDebug() << "[THRONE_URL] URL sent successfully, exiting";
-            return 0;
-        }
-        qDebug() << "[THRONE_URL] No other instance running, will process URL in this instance";
-    } else {
-        QLocalSocket socket;
-        socket.connectToServer(serverName);
-        if (socket.waitForConnected(250))
-        {
-            qDebug() << "Another instance is running, quitting";
-            return 0;
-        }
-    }
-
-    // QLocalServer
+    // QLocalServer (serverName уже вычислен выше)
     qDebug() << "[THRONE_URL] Creating QLocalServer with name:" << serverName;
     QLocalServer server(qApp);
     server.setSocketOptions(QLocalServer::WorldAccessOption);
@@ -589,6 +609,17 @@ int main(int argc, char* argv[]) {
     #endif
 
     UI_InitMainWindow();
+    
+    // Подключаем сигнал для закрытия QLocalServer перед запуском updater
+    auto mainWindow = GetMainWindow();
+    if (mainWindow) {
+        QObject::connect(mainWindow, &MainWindow::aboutToStartUpdater, [&]() {
+            qDebug() << "[Updater] Received signal to close QLocalServer";
+            server.close();
+            QLocalServer::removeServer(serverName);
+            qDebug() << "[Updater] QLocalServer closed successfully";
+        });
+    }
 
     // После инициализации UI - обработка отложенных URL для всех платформ
     if (!a.pendingThroneUrl.isEmpty()) {

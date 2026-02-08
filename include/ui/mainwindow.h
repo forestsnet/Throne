@@ -95,6 +95,8 @@ public:
 signals:
 
     void profile_selected(int id);
+    
+    void aboutToStartUpdater();  // Сигнал для закрытия QLocalServer перед запуском updater
 
 public slots:
 

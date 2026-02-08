@@ -1253,8 +1253,14 @@ void MainWindow::on_menu_exit_triggered() {
     if (exit_reason == 1) {
         // Дополнительная задержка для освобождения файлов перед запуском updater
         qDebug() << "Preparing to start updater...";
-        QThread::msleep(1000);
-        QCoreApplication::processEvents(QEventLoop::AllEvents, 500);
+        
+        // КРИТИЧНО: Закрываем QLocalServer перед запуском updater
+        // Иначе updater думает что приложение еще работает
+        qDebug() << "Closing QLocalServer to allow updater to start...";
+        emit aboutToStartUpdater(); // Сигнал для закрытия сервера
+        
+        QThread::msleep(500);
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 200);
         
         QDir::setCurrent(QApplication::applicationDirPath());
 #ifdef Q_OS_WIN
