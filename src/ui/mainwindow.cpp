@@ -225,18 +225,22 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // Устанавливаем минимальный размер окна
     setMinimumSize(1000, 600);
     
-    auto last_size = Configs::dataManager->settingsRepo->mw_size.split("x");
-    if (last_size.length() == 2) {
-        auto w = last_size[0].toInt();
-        auto h = last_size[1].toInt();
-        // Применяем сохраненный размер, но не меньше минимального
-        if (w > 0 && h > 0) {
-            resize(qMax(w, 1000), qMax(h, 600));
+    // Применяем размер и позицию окна только если геометрия не была восстановлена
+    if (Configs::dataManager->settingsRepo->mainWindowGeometry.isEmpty()) {
+        // Геометрия не сохранена, используем размер из mw_size или значения по умолчанию
+        auto last_size = Configs::dataManager->settingsRepo->mw_size.split("x");
+        if (last_size.length() == 2) {
+            auto w = last_size[0].toInt();
+            auto h = last_size[1].toInt();
+            // Применяем сохраненный размер, но не меньше минимального
+            if (w > 0 && h > 0) {
+                resize(qMax(w, 1000), qMax(h, 600));
+            } else {
+                resize(1200, 750); // размер по умолчанию
+            }
         } else {
-            resize(1200, 750); // размер по умолчанию
+            resize(1200, 750); // размер по умолчанию если не сохранен
         }
-    } else {
-        resize(1200, 750); // размер по умолчанию если не сохранен
     }
 
     // software_name
@@ -291,7 +295,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             MessageBoxWarning(tr("Ping Test"), tr("No profiles in current group."));
             return;
         }
-        iptest_current_group(currentGroup->Profiles());
+        urltest_current_group(Configs::dataManager->groupsRepo->CurrentGroup()->Profiles());
     });
     
     connect(ui->toolButton_update, &QToolButton::clicked, this, [=,this] { 
@@ -1407,7 +1411,24 @@ void MainWindow::set_spmode_vpn(bool enable, bool save) {
         StopVPNProcess();
     }
     
-    if (Configs::dataManager->settingsRepo->started_id >= 0) profile_start(Configs::dataManager->settingsRepo->started_id);
+    // Перезапускаем профиль если он был запущен (для применения изменения режима VPN)
+    if (Configs::dataManager->settingsRepo->started_id >= 0) {
+        // Если профиль работает, нужно его перезапустить для применения изменений
+        if (running != nullptr) {
+            qDebug() << "[TUN Toggle] Stopping current profile to apply TUN mode change";
+            int restartId = running->id;
+            profile_stop(false, false, true);
+            
+            // Даём время на полную остановку процесса
+            QTimer::singleShot(500, this, [=,this]() {
+                qDebug() << "[TUN Toggle] Restarting profile" << restartId << "with TUN mode:" << enable;
+                profile_start(restartId);
+            });
+        } else {
+            // Профиль сохранен как запущенный, но не активен - просто запускаем
+            profile_start(Configs::dataManager->settingsRepo->started_id);
+        }
+    }
 }
 
 void MainWindow::UpdateDataView(bool force)
