@@ -2343,6 +2343,23 @@ void MainWindow::on_menu_collect_debug_info_triggered() {
             userFile.close();
         }
         
+        // 5a. Список запущенных процессов
+        QString processListPath = tempDir + "/05a_running_processes.txt";
+        QProcess processList;
+#ifdef Q_OS_WIN
+        processList.start("cmd", QStringList() << "/c" << "tasklist /v");
+#elif defined(Q_OS_MAC)
+        processList.start("sh", QStringList() << "-c" << "ps aux | head -100");
+#else
+        processList.start("sh", QStringList() << "-c" << "ps aux | head -100");
+#endif
+        processList.waitForFinished(5000);
+        QFile processFile(processListPath);
+        if (processFile.open(QIODevice::WriteOnly)) {
+            processFile.write(processList.readAllStandardOutput());
+            processFile.close();
+        }
+        
         // 6. Логи ядра (последние 1500 строк)
         QString coreLogsPath = tempDir + "/06_core_logs.txt";
         QString logFilePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/sing-box.log";
