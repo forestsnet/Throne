@@ -127,17 +127,18 @@ public:
         QString appBundle = dir.absolutePath();
         
         // Ищем обновленный .app в распакованной папке
-        QDir updateRoot(updateDir);
+        QString actualUpdateDir = updateDir;
+        QDir updateRoot(actualUpdateDir);
         QStringList appBundles = updateRoot.entryList(QStringList() << "*.app", QDir::Dirs);
         
         if (appBundles.isEmpty()) {
             // Возможно файлы в подпапке Throne
-            QDir throneSubdir(updateDir + "/Throne");
+            QDir throneSubdir(actualUpdateDir + "/Throne");
             if (throneSubdir.exists()) {
                 appBundles = throneSubdir.entryList(QStringList() << "*.app", QDir::Dirs);
                 if (!appBundles.isEmpty()) {
-                    updateDir = updateDir + "/Throne";
-                    updateRoot = QDir(updateDir);
+                    actualUpdateDir = actualUpdateDir + "/Throne";
+                    updateRoot = QDir(actualUpdateDir);
                 }
             }
         }
@@ -147,7 +148,7 @@ public:
             return false;
         }
         
-        QString newAppBundle = updateDir + "/" + appBundles.first();
+        QString newAppBundle = actualUpdateDir + "/" + appBundles.first();
         Log(QString("Found new app bundle: %1").arg(newAppBundle));
         
         // Удаляем старый bundle
