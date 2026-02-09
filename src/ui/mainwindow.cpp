@@ -2290,7 +2290,9 @@ void MainWindow::on_menu_collect_debug_info_triggered() {
         QFile appFile(appInfoPath);
         if (appFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
             QTextStream stream(&appFile);
-            stream << "Throne version: " << NKR_VERSION << "\n";
+            QString version = SubStrBefore(NKR_VERSION, "-");
+            if (!version.contains(".")) version = "1.0.0";
+            stream << "Throne version: " << version << "\n";
             stream << "Build date: " << __DATE__ << " " << __TIME__ << "\n";
             stream << "Qt version: " << QT_VERSION_STR << "\n";
 #ifdef Q_OS_WIN
