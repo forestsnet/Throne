@@ -6,6 +6,7 @@
 #include <QNetworkRequest>
 #include <QTimer>
 #include <QFile>
+#include <QDir>
 #include <QApplication>
 #include <QMap>
 #include <QStringList>
