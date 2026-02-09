@@ -2558,6 +2558,22 @@ void MainWindow::on_menu_collect_debug_info_triggered() {
             groupsFile.close();
         }
         
+        // 10. Логи из UI (текущая сессия)
+        QString uiLogsPath = tempDir + "/10_ui_session_logs.txt";
+        runOnUiThread([=, this] {
+            QFile uiLogsFile(uiLogsPath);
+            if (uiLogsFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                QString logContent = qvLogDocument->toPlainText();
+                QTextStream stream(&uiLogsFile);
+                stream << "=== UI Session Logs (from current session) ===\n\n";
+                stream << logContent;
+                uiLogsFile.close();
+            }
+        });
+        
+        // Даем время UI потоку записать файл
+        QThread::msleep(200);
+        
         // Создаем ZIP архив
         QProcess zipProcess;
 #ifdef Q_OS_WIN

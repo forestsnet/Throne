@@ -639,8 +639,6 @@
     <addaction name="menu_vpn_settings"/>
     <addaction name="menu_hotkey_settings"/>
     <addaction name="menu_open_config_folder"/>
-    <addaction name="separator"/>
-    <addaction name="menu_collect_debug_info"/>
    </widget>
    <widget class="QMenu" name="menu_server">
     <property name="title">
@@ -688,6 +686,7 @@
     <addaction name="actionSpeedtest_Group"/>
     <addaction name="actionResolve_Out_IP"/>
     <addaction name="actionRefresh_Column_Widths"/>
+    <addaction name="menu_collect_debug_info"/>
    </widget>
    <widget class="QMenu" name="menuRouting_Menu">
     <property name="title">
@@ -1073,6 +1072,7 @@
     <bool>true</bool>
    </property>
   </action>
+  
   <action name="menu_remove_invalid">
    <property name="text">
     <string>Remove Invalid</string>
