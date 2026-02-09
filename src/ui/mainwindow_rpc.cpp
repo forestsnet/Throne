@@ -733,6 +733,7 @@ void MainWindow::profile_start(int _id) {
         }
         if (!error.isEmpty()) {
             if (error.contains("configure tun interface")) {
+                int profileId = ent->id;
                 runOnUiThread([=, this] {
 
                     QMessageBox msg(
@@ -742,7 +743,7 @@ void MainWindow::profile_start(int _id) {
                         QMessageBox::NoButton,
                         this
                     );
-                    msg.addButton(tr("Reset"), QMessageBox::ActionRole);
+                    msg.addButton(tr("Reset and Restart"), QMessageBox::ActionRole);
                     auto cancel = msg.addButton(tr("Cancel"), QMessageBox::ActionRole);
 
                     msg.setDefaultButton(cancel);
@@ -751,6 +752,10 @@ void MainWindow::profile_start(int _id) {
                     int r = msg.exec() - 2;
                     if (r == 0) {
                         StopVPNProcess();
+                        // Перезапускаем профиль через 500мс после остановки
+                        setTimeout([=, this] {
+                            profile_start(profileId);
+                        }, this, 500);
                     }
                 });
                 return false;

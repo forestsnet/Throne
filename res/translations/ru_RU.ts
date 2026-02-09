@@ -2269,6 +2269,10 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>Некорректное поведение устройства TUN</translation>
     </message>
     <message>
+        <source>Reset and Restart</source>
+        <translation>Сброс и перезапуск</translation>
+    </message>
+    <message>
         <source>Reset</source>
         <translation>Сброс</translation>
     </message>
