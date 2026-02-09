@@ -1733,7 +1733,7 @@ void MainWindow::refresh_status(const QString &traffic_update) {
         if (!Configs::dataManager->settingsRepo->spmode_vpn && Configs::dataManager->settingsRepo->spmode_system_proxy) tt << "[" + tr("System Proxy") + "]";
         if (Configs::dataManager->settingsRepo->spmode_vpn && Configs::dataManager->settingsRepo->spmode_system_proxy) tt << "[Tun+" + tr("System Proxy") + "]";
         tt << software_name;
-        if (!isTray) tt << QString(NKR_VERSION);
+        // if (!isTray) tt << QString(NKR_VERSION);
         if (!Configs::dataManager->settingsRepo->active_routing.isEmpty() && Configs::dataManager->settingsRepo->active_routing != "Default") {
             tt << "[" + Configs::dataManager->settingsRepo->active_routing + "]";
         }
