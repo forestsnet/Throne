@@ -626,6 +626,7 @@
     <addaction name="separator"/>
     <addaction name="actionRestart_Proxy"/>
     <addaction name="actionRestart_Program"/>
+    <addaction name="separator"/>
     <addaction name="menu_exit"/>
    </widget>
    <widget class="QMenu" name="menu_preferences">
@@ -638,6 +639,8 @@
     <addaction name="menu_vpn_settings"/>
     <addaction name="menu_hotkey_settings"/>
     <addaction name="menu_open_config_folder"/>
+    <addaction name="separator"/>
+    <addaction name="menu_collect_debug_info"/>
    </widget>
    <widget class="QMenu" name="menu_server">
     <property name="title">
@@ -1139,6 +1142,17 @@
   <action name="actionRefresh_Column_Widths">
    <property name="text">
     <string>Refresh Column Widths</string>
+   </property>
+  </action>
+  <action name="menu_collect_debug_info">
+   <property name="text">
+    <string>Collect Debug Info</string>
+   </property>
+   <property name="toolTip">
+    <string>Collect system and application debug information to a ZIP archive on Desktop</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true">Ctrl+Shift+D</string>
    </property>
   </action>
  </widget>

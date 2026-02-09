@@ -400,7 +400,21 @@ int main(int argc, char* argv[]) {
     // ============================================================
     
     // Load database ПОСЛЕ проверки экземпляров
-    Configs::initDB(QString(QDir::currentPath() + QDir::separator() + "throne.db").toStdString());
+    qDebug() << "[DB] Initializing database at:" << QDir::currentPath() + QDir::separator() + "throne.db";
+    try {
+        Configs::initDB(QString(QDir::currentPath() + QDir::separator() + "throne.db").toStdString());
+        qDebug() << "[DB] Database initialized successfully";
+    } catch (const std::exception& e) {
+        qCritical() << "[DB] FATAL: Database initialization failed:" << e.what();
+        QMessageBox::critical(nullptr, "Database Error", 
+            QString("Failed to initialize database:\n%1\n\nThe application will now exit.").arg(e.what()));
+        return 1;
+    } catch (...) {
+        qCritical() << "[DB] FATAL: Unknown error during database initialization";
+        QMessageBox::critical(nullptr, "Database Error", 
+            "Unknown error occurred during database initialization.\n\nThe application will now exit.");
+        return 1;
+    }
 
     // Store Flags
     Configs::dataManager->settingsRepo->argv = arguments;

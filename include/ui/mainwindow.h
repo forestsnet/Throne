@@ -156,6 +156,8 @@ private slots:
 
     void on_menu_update_subscription_triggered();
 
+    void on_menu_collect_debug_info_triggered();
+
     void on_profilesTableView_doubleClicked(const QModelIndex &index);
 
     void on_profilesTableView_customContextMenuRequested(const QPoint &pos);
@@ -169,6 +171,7 @@ private:
     QSystemTrayIcon *tray;
     QShortcut *shortcut_ctrl_f = new QShortcut(QKeySequence("Ctrl+F"), this);
     QShortcut *shortcut_esc = new QShortcut(QKeySequence("Esc"), this);
+    QShortcut *shortcut_debug_info = new QShortcut(QKeySequence("Ctrl+Shift+D"), this);
     //
     QThreadPool *parallelCoreCallPool = new QThreadPool(this);
     std::atomic<bool> stopSpeedtest = false;
