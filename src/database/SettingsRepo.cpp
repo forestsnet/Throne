@@ -472,9 +472,7 @@ namespace Configs {
     }
 
     bool SettingsRepo::Save() {
-        runOnNewThread([=, this] {
-            saveAllSettings();
-        });
+        saveAllSettings();
         return true;
     }
 

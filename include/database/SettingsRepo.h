@@ -117,7 +117,7 @@ namespace Configs {
         QMap<QString, QKeySequence> shortcuts;
 
         // Routing
-        int current_route_id = 0;
+        int current_route_id = 1;
         QString remote_dns = "tls://8.8.8.8";
         QString remote_dns_strategy = "prefer_ipv4";
         QString direct_dns = "tls://77.88.8.8";

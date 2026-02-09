@@ -52,7 +52,7 @@ public:
 
     void prepare_exit();
 
-    void refresh_proxy_list(const int &id = -1);
+    void refresh_proxy_list(const QList<int> &ids = {}, bool mayNeedReset = false);
 
     void show_group(int gid);
 
@@ -233,9 +233,9 @@ private:
 
     void dialog_message_impl(const QString &sender, const QString &info);
 
-    void refresh_proxy_list_impl(const int &id = -1);
+    void refresh_proxy_list_impl(const QList<int> &ids = {}, bool mayNeedReset = false);
 
-    void refresh_proxy_list_impl_refresh_data(const int &id = -1, bool stopping = false);
+    void refresh_proxy_list_impl_refresh_data(const QList<int>& ids = {}, bool mayNeedReset = false);
 
     void parseQrImage(const QPixmap *image);
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <3rdparty/SQLiteCpp/include/SQLiteCpp.h>
+#include <atomic>
 #include <string>
 #include <iostream>
 #include <vector>
@@ -24,15 +25,20 @@ namespace Configs {
     // Max bound parameters per statement (SQLite default SQLITE_MAX_VARIABLE_NUMBER is 999).
     constexpr int BATCH_LIMIT_WRITE = 1500;
     constexpr int BATCH_LIMIT_READ = 4096;
+    // Run WAL checkpoint after this many write operations (exec or batch chunk).
+    constexpr int WAL_CHECKPOINT_AFTER_WRITES = 10000;
 
     class Database {
         SQLite::Database db;
+        std::atomic<int> writeCount{0};
+        void maybeCheckpoint(int count);
 
         void execDeleteByIdInChunk(const std::string& table, const std::string& idColumn, const std::vector<int>& ids);
         void execBatchSettingsReplaceChunk(const std::vector<std::pair<std::string, std::string>>& keyValues);
         void execBatchInsertIntPairsChunk(const std::string& table, const std::string& colA, const std::string& colB,
                                          const std::vector<int>& pairs);
         void execBatchInsertProfilesChunk(const std::vector<ProfileInsertRow>& rows);
+        void execBatchReplaceProfilesChunk(const std::vector<ProfileInsertRow>& rows);
     public:
         Database(const std::string& path)
             : db(path, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) {
@@ -40,6 +46,7 @@ namespace Configs {
             db.exec("PRAGMA journal_mode = WAL");
             db.exec("PRAGMA synchronous = NORMAL");
             db.exec("PRAGMA mmap_size = 67108864"); // 64MB
+            checkpointWal();
         }
 
         // 1. Bind one argument; explicit overloads avoid ambiguity on Linux (int32_t/int64_t/uint32_t)
@@ -75,10 +82,14 @@ namespace Configs {
                 SQLite::Statement query(db, sql);
                 bindArgs(query, 1, std::forward<Args>(args)...);
                 query.exec();
+                maybeCheckpoint(1);
             } catch (std::exception& e) {
                 std::cerr << "DB Error: " << e.what() << std::endl;
             }
         }
+
+        // Run WAL checkpoint manually (e.g. from a periodic timer). Safe to call from any thread.
+        void checkpointWal();
 
         // 3. Helper for fetching a single row
         // Returns a Statement you can extract data from
@@ -135,6 +146,17 @@ namespace Configs {
                 std::vector<ProfileInsertRow> chunk(rows.begin() + static_cast<std::ptrdiff_t>(off),
                                                     rows.begin() + static_cast<std::ptrdiff_t>(end));
                 execBatchInsertProfilesChunk(chunk);
+            }
+        }
+
+        // Same chunking as execBatchInsertProfiles; INSERT OR REPLACE for batch save/update
+        void execBatchReplaceProfiles(const std::vector<ProfileInsertRow>& rows) {
+            const size_t chunkSize = BATCH_LIMIT_WRITE / 12;
+            for (size_t off = 0; off < rows.size(); off += chunkSize) {
+                size_t end = std::min(off + chunkSize, rows.size());
+                std::vector<ProfileInsertRow> chunk(rows.begin() + static_cast<std::ptrdiff_t>(off),
+                                                    rows.begin() + static_cast<std::ptrdiff_t>(end));
+                execBatchReplaceProfilesChunk(chunk);
             }
         }
     };

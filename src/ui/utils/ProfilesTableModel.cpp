@@ -148,6 +148,29 @@ void ProfilesTableModel::setProfileIds(const QList<int> &ids) {
     endResetModel();
 }
 
+void ProfilesTableModel::refreshTable(const QList<int> &ids, bool mayNeedReset) {
+    if (m_profileIds.isEmpty() && ids.isEmpty()) return;
+
+    bool needFullReset = (ids.length() != m_profileIds.length()) && mayNeedReset;
+    if (!needFullReset && !ids.isEmpty() && mayNeedReset) {
+        for (int i=0; i < ids.length(); i++) {
+            if (ids[i] != m_profileIds[i]) {
+                needFullReset = true;
+                break;
+            }
+        }
+    }
+
+    if (needFullReset) {
+        setProfileIds(ids);
+    } else {
+        QModelIndex topLeft = index(0, 0);
+        QModelIndex bottomRight = index(m_profileIds.count() - 1, columnCount() - 1);
+
+        emit dataChanged(topLeft, bottomRight);
+    }
+}
+
 int ProfilesTableModel::profileIdAt(int row) const {
     if (row < 0 || row >= m_profileIds.size()) return -1;
     return m_profileIds[row];
@@ -156,8 +179,6 @@ int ProfilesTableModel::profileIdAt(int row) const {
 void ProfilesTableModel::refreshProfileId(int profileId) {
     if (!id2row.contains(profileId)) return;
     auto r = id2row.value(profileId);
-    m_cache.remove(profileId);
-    m_lruOrder.removeAll(profileId);
     QModelIndex top = index(r, 0);
     QModelIndex bottom = index(r, columnCount() - 1);
     emit dataChanged(top, bottom);
@@ -170,14 +191,6 @@ void ProfilesTableModel::emplaceProfiles(int row1, int row2) {
     else m_profileIds.remove(row1+1);
     for (int i = std::max(std::min(row1, row2), 0); i <= std::max(row1, row2); ++i) {
         refreshProfileId(m_profileIds[i]);
-    }
-}
-
-void ProfilesTableModel::setCacheSize(int size) {
-    if (size <= 0) return;
-    m_cacheSize = size;
-    while (m_cache.size() > m_cacheSize && !m_lruOrder.isEmpty()) {
-        evictOne();
     }
 }
 

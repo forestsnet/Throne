@@ -29,7 +29,7 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
     // Set the list of profile IDs (filtered, display order). Emits layoutChanged.
-    void setProfileIds(const QList<int> &ids);
+    void refreshTable(const QList<int> &ids = {}, bool mayNeedReset = false);
     QList<int> profileIds() const { return m_profileIds; }
 
     // Profile ID for a given row (for selection / double-click).
@@ -40,16 +40,13 @@ public:
 
     void emplaceProfiles(int row1, int row2);
 
-    // Cache: max number of profiles to keep. Default 100. Eviction is LRU.
-    void setCacheSize(int size);
-    int cacheSize() const { return m_cacheSize; }
-
     // Row label for vertical header: "✓" for running row, else "row+1  ".
     QString rowLabel(int row) const;
 
 private:
     void ensureCached(int profileId) const;
     void evictOne() const;
+    void setProfileIds(const QList<int> &ids);
 
     QList<int> m_profileIds;
     mutable QHash<int, int> id2row;

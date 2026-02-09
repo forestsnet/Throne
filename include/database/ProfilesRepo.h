@@ -82,5 +82,8 @@ namespace Configs {
 
         // Update only the traffic field of the profile in the database (no existence check, just UPDATE).
         bool SaveTraffic(const std::shared_ptr<Profile>& profile);
+
+        // Batch save: runs on a new thread, filters to non-null and id >= 0, then batch replace (same chunking as AddProfileBatch).
+        void SaveBatch(const QList<std::shared_ptr<Profile>>& profiles);
     };
 }

@@ -297,18 +297,16 @@ namespace Configs {
     }
 
     void GroupsRepo::SetGroupsTabOrder(const QList<int>& order) {
-        runOnNewThread([=, this] {
-            db.exec("DELETE FROM groups_order");
-            if (!order.isEmpty()) {
-                std::vector<int> pairs;
-                pairs.reserve(order.size() * 2);
-                for (int i = 0; i < order.size(); ++i) {
-                    pairs.push_back(order[i]);
-                    pairs.push_back(i);
-                }
-                db.execBatchInsertIntPairs("groups_order", "group_id", "display_order", pairs);
+        db.exec("DELETE FROM groups_order");
+        if (!order.isEmpty()) {
+            std::vector<int> pairs;
+            pairs.reserve(order.size() * 2);
+            for (int i = 0; i < order.size(); ++i) {
+                pairs.push_back(order[i]);
+                pairs.push_back(i);
             }
-        });
+            db.execBatchInsertIntPairs("groups_order", "group_id", "display_order", pairs);
+        }
     }
 
     bool GroupsRepo::Save(const std::shared_ptr<Group>& group) {
@@ -320,11 +318,9 @@ namespace Configs {
             return false; // Group doesn't have an ID, use AddGroup instead
         }
         
-        runOnNewThread([=, this] {
-            QMutexLocker locker(&mutex);
-            saveToDatabase(group.get(), group->id);
-            identityMap[group->id] = std::weak_ptr<Group>(group);
-        });
+        QMutexLocker locker(&mutex);
+        saveToDatabase(group.get(), group->id);
+        identityMap[group->id] = std::weak_ptr<Group>(group);
         
         return true;
     }

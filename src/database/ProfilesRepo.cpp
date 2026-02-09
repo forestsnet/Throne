@@ -550,11 +550,9 @@ namespace Configs {
             return false;
         }
         
-        runOnNewThread([=, this] {
-            QMutexLocker locker(&mutex);
-            saveToDatabase(profile.get(), profile->id);
-            identityMap[profile->id] = std::weak_ptr<Profile>(profile);
-        });
+        QMutexLocker locker(&mutex);
+        saveToDatabase(profile.get(), profile->id);
+        identityMap[profile->id] = std::weak_ptr<Profile>(profile);
         
         return true;
     }
@@ -573,5 +571,45 @@ namespace Configs {
                     trafficJson.toStdString(), id);
         });
         return true;
+    }
+    
+    void ProfilesRepo::SaveBatch(const QList<std::shared_ptr<Profile>>& profiles) {
+        runOnNewThread([=, this] {
+            QList<std::shared_ptr<Profile>> valid;
+            for (const auto& p : profiles) {
+                if (p && p->id >= 0) valid.append(p);
+            }
+            if (valid.isEmpty()) return;
+            std::vector<ProfileInsertRow> rows;
+            rows.reserve(valid.size());
+            for (const auto& p : valid) {
+                rows.push_back(profileToInsertRow(p.get(), p->id, p->gid));
+            }
+            QMutexLocker locker(&mutex);
+            db.execBatchReplaceProfiles(rows);
+            for (const auto& p : valid) {
+                identityMap[p->id] = std::weak_ptr<Profile>(p);
+            }
+        });
+    }
+
+    void ProfilesRepo::SaveBatch(const QList<std::shared_ptr<Profile>>& profiles) {
+        runOnNewThread([=, this] {
+            QList<std::shared_ptr<Profile>> valid;
+            for (const auto& p : profiles) {
+                if (p && p->id >= 0) valid.append(p);
+            }
+            if (valid.isEmpty()) return;
+            std::vector<ProfileInsertRow> rows;
+            rows.reserve(valid.size());
+            for (const auto& p : valid) {
+                rows.push_back(profileToInsertRow(p.get(), p->id, p->gid));
+            }
+            QMutexLocker locker(&mutex);
+            db.execBatchReplaceProfiles(rows);
+            for (const auto& p : valid) {
+                identityMap[p->id] = std::weak_ptr<Profile>(p);
+            }
+        });
     }
 }

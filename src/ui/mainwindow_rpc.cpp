@@ -67,6 +67,7 @@ void MainWindow::runURLTest(const QString& config, const QString& xrayConfig, bo
             }
 
             bool needRefresh = false;
+            QList<int> profileIDs;
             for (const auto& res : resp.results)
             {
                 int entid = -1;
@@ -76,6 +77,7 @@ void MainWindow::runURLTest(const QString& config, const QString& xrayConfig, bo
                 if (entid == -1) {
                     continue;
                 }
+                profileIDs << entID;
                 auto ent = Configs::dataManager->profilesRepo->GetProfile(entid);
                 if (ent == nullptr) {
                     continue;
@@ -96,7 +98,7 @@ void MainWindow::runURLTest(const QString& config, const QString& xrayConfig, bo
             if (needRefresh)
             {
                 runOnUiThread([=,this]{
-                    refresh_proxy_list();
+                    refresh_proxy_list(profileIDs);
                 });
             }
         }
@@ -171,6 +173,7 @@ void MainWindow::runIPTest(const QString& config, const QString& xrayConfig, boo
             }
 
             bool needRefresh = false;
+            QList<int> profileIDs;
             for (const auto& res : resp.results)
             {
                 int entid = -1;
@@ -180,6 +183,7 @@ void MainWindow::runIPTest(const QString& config, const QString& xrayConfig, boo
                 if (entid == -1) {
                     continue;
                 }
+                profileIDs << entid;
                 auto ent = Configs::dataManager->profilesRepo->GetProfile(entid);
                 if (ent == nullptr) {
                     continue;
@@ -201,7 +205,7 @@ void MainWindow::runIPTest(const QString& config, const QString& xrayConfig, boo
             if (needRefresh)
             {
                 runOnUiThread([=,this]{
-                    refresh_proxy_list();
+                    refresh_proxy_list(profileIDs);
                 });
             }
         }
@@ -255,7 +259,7 @@ void MainWindow::urltest_current_group(const QList<int>& profileIDs) {
 
     runOnNewThread([this, profileIDs]() {
         stopSpeedtest.store(false);
-        auto speedTestFunc = [=, this](const QList<std::shared_ptr<Configs::Profile>>& profileSlice) {
+        auto speedTestFunc = [=, this](const QList<std::shared_ptr<Configs::Profile>>& profileSlice, const QList<int>& ids) {
             auto buildObject = Configs::BuildTestConfig(profileSlice);
             if (!buildObject->error.isEmpty()) {
                 MW_show_log(tr("Failed to build test config for batch: ") + buildObject->error);
@@ -292,7 +296,7 @@ void MainWindow::urltest_current_group(const QList<int>& profileIDs) {
             speedtestRunning.lock();
             MW_show_log("URL test for batch done.");
             runOnUiThread([=,this]{
-                refresh_proxy_list();
+                refresh_proxy_list(ids);
             });
         };
         std::shared_ptr<Configs::Group> currentGroup;
@@ -303,7 +307,7 @@ void MainWindow::urltest_current_group(const QList<int>& profileIDs) {
             if (!currentGroup && !profiles.isEmpty()) {
                 currentGroup = Configs::dataManager->groupsRepo->GetGroup(profiles[0]->gid);
             }
-            speedTestFunc(profiles);
+            speedTestFunc(profiles, profileIDsSlice);
         }
         speedtestRunning.unlock();
         if (currentGroup->auto_clear_unavailable) {
@@ -366,7 +370,7 @@ void MainWindow::iptest_current_group(const QList<int>& profileIDs) {
 
     runOnNewThread([this, profileIDs]() {
         stopSpeedtest.store(false);
-        auto ipTestFunc = [=, this](const QList<std::shared_ptr<Configs::Profile>>& profileSlice) {
+        auto ipTestFunc = [=, this](const QList<std::shared_ptr<Configs::Profile>>& profileSlice, const QList<int>& ids) {
             auto buildObject = Configs::BuildTestConfig(profileSlice);
             if (!buildObject->error.isEmpty()) {
                 MW_show_log(tr("Failed to build test config for batch: ") + buildObject->error);
@@ -403,14 +407,14 @@ void MainWindow::iptest_current_group(const QList<int>& profileIDs) {
             speedtestRunning.lock();
             MW_show_log("IP test for batch done.");
             runOnUiThread([=,this]{
-                refresh_proxy_list();
+                refresh_proxy_list(ids);
             });
         };
         for (int i = 0; i < profileIDs.length(); i += 100) {
             if (stopSpeedtest.load()) break;
             auto profileIDsSlice = profileIDs.mid(i, 100);
             auto profiles = Configs::dataManager->profilesRepo->GetProfileBatch(profileIDsSlice);
-            ipTestFunc(profiles);
+            ipTestFunc(profiles, profileIDsSlice);
         }
         speedtestRunning.unlock();
         MW_show_log(tr("IP test finished!"));        
@@ -463,7 +467,7 @@ void MainWindow::speedtest_current_group(const QList<int>& profileIDs, bool test
 
         speedtestRunning.unlock();
         runOnUiThread([=,this]{
-            refresh_proxy_list();
+            refresh_proxy_list(profileIDs);
             MW_show_log(tr("Speedtest finished!"));
         });
     });
@@ -495,7 +499,7 @@ void MainWindow::querySpeedtest(QDateTime lastProxyListUpdate, const QMap<QStrin
             if (!res.result.value().ul_speed.value().empty()) profile->ul_speed = QString::fromStdString(res.result.value().ul_speed.value());
             if (profile->latency <= 0 && res.result.value().latency.value() > 0) profile->latency = res.result.value().latency.value();
             if (!res.result->server_country.value().empty()) profile->test_country = CountryNameToCode(QString::fromStdString(res.result.value().server_country.value()));
-            refresh_proxy_list(profile->id);
+            refresh_proxy_list({profile->id});
             lastProxyListUpdate = QDateTime::currentDateTime();
         }
     });
@@ -522,7 +526,7 @@ void MainWindow::queryCountryTest(const QMap<QString, int>& tag2entID, bool test
             {
                 if (profile->latency <= 0 && result.latency.value() > 0) profile->latency = result.latency.value();
                 if (!result.server_country.value().empty()) profile->test_country = CountryNameToCode(QString::fromStdString(result.server_country.value()));
-                refresh_proxy_list(profile->id);
+                refresh_proxy_list({profile->id});
             }
         });
     }
@@ -767,7 +771,7 @@ void MainWindow::profile_start(int _id) {
 
         runOnUiThread([=, this] {
             refresh_status();
-            refresh_proxy_list(ent->id);
+            refresh_proxy_list({ent->id});
         });
 
         return true;
@@ -916,7 +920,7 @@ void MainWindow::profile_stop(bool crash, bool block, bool manual) {
             restartMsgbox->deleteLater();
 
             refresh_status();
-            refresh_proxy_list_impl_refresh_data(id, true);
+            refresh_proxy_list({id});
 
             mu_stopping.unlock();
         }, true);

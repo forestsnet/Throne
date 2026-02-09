@@ -544,11 +544,9 @@ namespace Configs {
             return false; // Route profile doesn't have an ID, use AddRouteProfile instead
         }
         
-        runOnNewThread([=, this] {
-            QMutexLocker locker(&mutex);
-            saveToDatabase(routeProfile.get(), routeProfile->id);
-            identityMap[routeProfile->id] = std::weak_ptr<RouteProfile>(routeProfile);
-        });
+        QMutexLocker locker(&mutex);
+        saveToDatabase(routeProfile.get(), routeProfile->id);
+        identityMap[routeProfile->id] = std::weak_ptr<RouteProfile>(routeProfile);
         
         return true;
     }

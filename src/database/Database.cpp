@@ -1,6 +1,21 @@
 #include "include/database/Database.h"
 
 namespace Configs {
+    void Database::maybeCheckpoint(int count) {
+        if (writeCount.fetch_add(count) >= WAL_CHECKPOINT_AFTER_WRITES) {
+            writeCount = 0;
+            checkpointWal();
+        }
+    }
+
+    void Database::checkpointWal() {
+        try {
+            db.exec("PRAGMA wal_checkpoint(TRUNCATE)");
+        } catch (std::exception& e) {
+            std::cerr << "DB WAL checkpoint error: " << e.what() << std::endl;
+        }
+    }
+
     void Database::execDeleteByIdInChunk(const std::string& table, const std::string& idColumn, const std::vector<int>& ids) {
         if (ids.empty()) return;
         std::string sql = "DELETE FROM " + table + " WHERE " + idColumn + " IN (";
@@ -11,6 +26,7 @@ namespace Configs {
         sql += ")";
         try {
             db.exec(sql);
+            maybeCheckpoint(ids.size());
         } catch (std::exception& e) {
             std::cerr << "DB Error: " << e.what() << std::endl;
         }
@@ -30,6 +46,7 @@ namespace Configs {
                 stmt.bind(static_cast<int>(2 * i + 2), keyValues[i].second);
             }
             stmt.exec();
+            maybeCheckpoint(1);
         } catch (std::exception& e) {
             std::cerr << "DB Error: " << e.what() << std::endl;
         }
@@ -50,6 +67,7 @@ namespace Configs {
                 stmt.bind(static_cast<int>(i + 1), pairs[i]);
             }
             stmt.exec();
+            maybeCheckpoint(pairs.size() / 2);
         } catch (std::exception& e) {
             std::cerr << "DB Error: " << e.what() << std::endl;
         }
@@ -80,6 +98,38 @@ namespace Configs {
                 stmt.bind(idx++, r.traffic_json);
             }
             stmt.exec();
+            maybeCheckpoint(rows.size());
+        } catch (std::exception& e) {
+            std::cerr << "DB Error: " << e.what() << std::endl;
+        }
+    }
+
+    void Database::execBatchReplaceProfilesChunk(const std::vector<ProfileInsertRow>& rows) {
+        if (rows.empty()) return;
+        const size_t n = rows.size();
+        std::string sql = "INSERT OR REPLACE INTO profiles (id, type, name, gid, latency, dl_speed, ul_speed, test_country, ip_out, outbound_json, traffic_json) VALUES ";
+        for (size_t i = 0; i < n; ++i) {
+            if (i > 0) sql += ",";
+            sql += "(?,?,?,?,?,?,?,?,?,?,?)";
+        }
+        try {
+            SQLite::Statement stmt(db, sql);
+            int idx = 1;
+            for (const auto& r : rows) {
+                stmt.bind(idx++, r.id);
+                stmt.bind(idx++, r.type);
+                stmt.bind(idx++, r.name);
+                stmt.bind(idx++, r.gid);
+                stmt.bind(idx++, r.latency);
+                stmt.bind(idx++, r.dl_speed);
+                stmt.bind(idx++, r.ul_speed);
+                stmt.bind(idx++, r.test_country);
+                stmt.bind(idx++, r.ip_out);
+                stmt.bind(idx++, r.outbound_json);
+                stmt.bind(idx++, r.traffic_json);
+            }
+            stmt.exec();
+            maybeCheckpoint(rows.size());
         } catch (std::exception& e) {
             std::cerr << "DB Error: " << e.what() << std::endl;
         }
