@@ -49,6 +49,7 @@ if [[ "$GOOS" == "linux" ]]; then
   fi
   chmod +x $DEST/updater
 fi
+# macOS: updater will be built with Qt/C++ (see CMakeLists.txt)
 
 export CGO_ENABLED=0
 

@@ -393,3 +393,8 @@ target_link_libraries(Throne PRIVATE
 )
 
 qt_finalize_executable(Throne)
+
+#### Throne Updater (macOS only - Windows/Linux use official Odin updater) ####
+if (APPLE)
+    add_subdirectory(src/updater)
+endif()

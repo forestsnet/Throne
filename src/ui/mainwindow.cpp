@@ -3455,6 +3455,79 @@ bool isNewer(QString assetName) {
     return false;
 }
 
+QString MainWindow::GetUpdateDirectory() {
+#ifdef Q_OS_WIN
+    // Windows: используем %appdata%/Throne/Throne_update или локальную папку
+    if (Configs::dataManager->settingsRepo->flag_use_appdata) {
+        return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/Throne_update";
+    } else {
+        return QApplication::applicationDirPath() + "/Throne_update";
+    }
+#elif defined(Q_OS_MAC)
+    // macOS: используем ~/Library/Application Support/Throne/Throne_update
+    return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/Throne_update";
+#else
+    // Linux: используем ~/.local/share/Throne/Throne_update
+    return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/Throne_update";
+#endif
+}
+
+bool MainWindow::PrepareUpdateEnvironment() {
+    QString updateDir = GetUpdateDirectory();
+    
+    MW_show_log(QString("[Update] Preparing update environment: %1").arg(updateDir));
+    
+    // Создаем папку для обновлений
+    QDir dir;
+    if (!dir.exists(updateDir)) {
+        if (!dir.mkpath(updateDir)) {
+            MW_show_log("[Update] ERROR: Failed to create update directory!");
+            return false;
+        }
+    }
+    
+    // Очищаем старые файлы обновления если есть
+    QDir updateFolder(updateDir);
+    updateFolder.setNameFilters(QStringList() << "Throne.zip" << "extracted" << "*.log");
+    updateFolder.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+    
+    for (const QString &entry : updateFolder.entryList()) {
+        QString path = updateDir + "/" + entry;
+        QFileInfo info(path);
+        if (info.isDir()) {
+            QDir(path).removeRecursively();
+        } else {
+            QFile::remove(path);
+        }
+    }
+    
+    MW_show_log("[Update] Update environment prepared");
+    return true;
+}
+
+void MainWindow::InstallUpdateAndRestart() {
+    MW_show_log("[Update] Starting update installation...");
+    
+    // Проверяем наличие updater
+    QString updaterPath;
+#ifdef Q_OS_WIN
+    updaterPath = QApplication::applicationDirPath() + "/updater.exe";
+#else
+    updaterPath = QApplication::applicationDirPath() + "/updater";
+#endif
+    
+    if (!QFile::exists(updaterPath)) {
+        MW_show_log("[Update] ERROR: Updater not found!");
+        MessageBoxWarning(tr("Update"), tr("Updater not found! Please download update manually."));
+        return;
+    }
+    
+    // Устанавливаем exit_reason = 1 для запуска updater при выходе
+    this->exit_reason = 1;
+    MW_show_log("[Update] Closing application to start updater...");
+    on_menu_exit_triggered();
+}
+
 void MainWindow::CheckUpdate() {
     QString search;
 #ifdef Q_OS_WIN
@@ -3534,14 +3607,14 @@ void MainWindow::CheckUpdate() {
                         QObject::tr("Update found: %1\nRelease note:\n%2").arg(assets_name, release_note));
         //
         QAbstractButton *btn1 = nullptr;
-        if (allow_updater) {
-            btn1 = box.addButton(QObject::tr("Update"), QMessageBox::AcceptRole);
-        }
+        // Автообновление доступно на всех платформах
+        btn1 = box.addButton(QObject::tr("Download and Install"), QMessageBox::AcceptRole);
+        
         QAbstractButton *btn2 = box.addButton(QObject::tr("Open in browser"), QMessageBox::AcceptRole);
         box.addButton(QObject::tr("Close"), QMessageBox::RejectRole);
         box.exec();
         //
-        if (btn1 == box.clickedButton() && allow_updater) {
+        if (btn1 == box.clickedButton()) {
             // Download Update
             runOnNewThread([=,this] {
                 if (!mu_download_update.tryLock()) {
@@ -3550,24 +3623,46 @@ void MainWindow::CheckUpdate() {
                     });
                     return;
                 }
+                
+                MW_show_log("[Update] Starting update download...");
+                
+                // Подготавливаем окружение для обновления
+                if (!PrepareUpdateEnvironment()) {
+                    mu_download_update.unlock();
+                    runOnUiThread([=,this](){
+                        MessageBoxWarning(tr("Update"), tr("Failed to prepare update environment!"));
+                    });
+                    return;
+                }
+                
+                QString updateDir = GetUpdateDirectory();
                 QString errors;
+                
                 if (!release_download_url.isEmpty()) {
-                    auto res = NetworkRequestHelper::DownloadAsset(release_download_url, "Throne.zip");
+                    MW_show_log(QString("[Update] Downloading from: %1").arg(release_download_url));
+                    auto res = NetworkRequestHelper::DownloadUpdate(release_download_url, "Throne.zip", updateDir);
                     if (!res.isEmpty()) {
                         errors += res;
+                        MW_show_log(QString("[Update] Download error: %1").arg(res));
+                    } else {
+                        MW_show_log("[Update] Download completed successfully");
                     }
                 }
+                
                 mu_download_update.unlock();
                 runOnUiThread([=,this] {
                     if (errors.isEmpty()) {
+                        MW_show_log("[Update] Update is ready to install");
                         auto q = QMessageBox::question(nullptr, QObject::tr("Update"),
-                                                       QObject::tr("Update is ready, restart to install?"));
+                                                       QObject::tr("Update downloaded successfully!\nRestart application to install the update?"));
                         if (q == QMessageBox::StandardButton::Yes) {
-                            this->exit_reason = 1;
-                            on_menu_exit_triggered();
+                            InstallUpdateAndRestart();
+                        } else {
+                            MW_show_log("[Update] Installation postponed. You can install it later by restarting the application.");
+                            MessageBoxInfo(tr("Update"), tr("Update is ready. The update will be installed on next application restart."));
                         }
                     } else {
-                        MessageBoxWarning(tr("Failed to download update assets"), errors);
+                        MessageBoxWarning(tr("Failed to download update"), errors);
                     }
                 });
             });

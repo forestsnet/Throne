@@ -17,6 +17,12 @@ mkdir -p $DEST
 #### copy binary ####
 cp $BUILD/Throne $DEST
 
+#### updater already downloaded by build_go.sh, just verify ####
+if [ -f "$DEST/updater" ]; then
+  chmod +x $DEST/updater
+  echo "Updater ready"
+fi
+
 #### copy Throne.png ####
 cp ./res/public/Throne.png $DEST
 

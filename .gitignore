@@ -87,3 +87,5 @@ CMakeLists.txt.user*
 out
 /libs
 srslist.h
+docs/BUILD_INSTALLER.md
+src/updater/README.md

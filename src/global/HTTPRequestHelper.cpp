@@ -170,4 +170,71 @@ namespace Configs_network {
         return "";
     }
 
+    QString NetworkRequestHelper::DownloadUpdate(const QString &url, const QString &fileName, const QString &destinationDir) {
+        QNetworkRequest request;
+        QNetworkAccessManager accessManager;
+        request.setUrl(url);
+        if (Configs::dataManager->settingsRepo->net_use_proxy || Configs::dataManager->settingsRepo->spmode_system_proxy) {
+            if (Configs::dataManager->settingsRepo->started_id < 0) {
+                return QObject::tr("Request with proxy but no profile started.");
+            }
+            QNetworkProxy p;
+            p.setType(QNetworkProxy::HttpProxy);
+            p.setHostName(Configs::dataManager->settingsRepo->inbound_address == "::" ? "127.0.0.1" : Configs::dataManager->settingsRepo->inbound_address);
+            p.setPort(Configs::dataManager->settingsRepo->inbound_socks_port);
+            accessManager.setProxy(p);
+        }
+        if (Configs::dataManager->settingsRepo->net_insecure) {
+            QSslConfiguration c;
+            c.setPeerVerifyMode(QSslSocket::PeerVerifyMode::VerifyNone);
+            request.setSslConfiguration(c);
+        }
+
+        auto _reply = accessManager.get(request);
+        connect(_reply, &QNetworkReply::sslErrors, _reply, [](const QList<QSslError> &errors) {
+            QStringList error_str;
+            for (const auto &err: errors) {
+                error_str << err.errorString();
+            }
+            MW_show_log(QString("SSL Errors: %1 %2").arg(error_str.join(","), Configs::dataManager->settingsRepo->net_insecure ? "(Ignored)" : ""));
+        });
+        connect(_reply, &QNetworkReply::downloadProgress, _reply, [&](qint64 bytesReceived, qint64 bytesTotal)
+        {
+            runOnUiThread([=]{
+                GetMainWindow()->setDownloadReport(DownloadProgressReport{fileName, bytesReceived, bytesTotal}, true);
+                GetMainWindow()->UpdateDataView();
+            });
+        });
+        QEventLoop loop;
+        connect(_reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
+        loop.exec();
+        runOnUiThread([=]
+        {
+            GetMainWindow()->setDownloadReport({}, false);
+            GetMainWindow()->UpdateDataView(true);
+        });
+        _reply->deleteLater();
+        if(_reply->error() != QNetworkReply::NetworkError::NoError) {
+            return _reply->errorString();
+        }
+
+        // Создаем папку для обновления
+        QDir dir;
+        if (!dir.exists(destinationDir)) {
+            dir.mkpath(destinationDir);
+        }
+
+        auto filePath = destinationDir + "/" + fileName;
+        auto file = QFile(filePath);
+        if (file.exists()) {
+            file.remove();
+        }
+        if (!file.open(QIODevice::WriteOnly)) {
+            return QObject::tr("Could not open file.");
+        }
+        file.write(_reply->readAll());
+        file.close();
+        return "";
+    }
+
 } // namespace Configs_network

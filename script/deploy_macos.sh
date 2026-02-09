@@ -22,12 +22,22 @@ cd *darwin-$ARCH
 tar xvzf artifacts.tgz -C ../../
 cd ../..
 
-mv deployment/macos-$ARCH/* $BUILD/Throne.app/Contents/MacOS
+mv $DEPLOYMENT/macos-$ARCH/* $BUILD/Throne.app/Contents/MacOS
 
 #### deploy qt & Dylib runtime => .app ####
 pushd $BUILD
 macdeployqt Throne.app -verbose=3
 popd
+
+#### copy Qt/C++ updater to .app (macOS uses our updater, not Odin one) ####
+if [ -f "$BUILD/updater" ]; then
+  echo "Copying Qt updater to .app bundle..."
+  cp $BUILD/updater $BUILD/Throne.app/Contents/MacOS/updater
+  chmod +x $BUILD/Throne.app/Contents/MacOS/updater
+  echo "Qt updater ready in .app bundle"
+else
+  echo "Warning: Qt updater not found at $BUILD/updater"
+fi
 
 codesign --force --deep --sign - $BUILD/Throne.app
 

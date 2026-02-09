@@ -166,6 +166,11 @@ private slots:
 
     void on_tabWidget_customContextMenuRequested(const QPoint& p);
 
+    // Updater functions
+    QString GetUpdateDirectory();
+    bool PrepareUpdateEnvironment();
+    void InstallUpdateAndRestart();
+
 private:
     Ui::MainWindow *ui;
     QSystemTrayIcon *tray;
