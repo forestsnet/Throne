@@ -6334,6 +6334,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>FSNT Client · development build</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Check for updates</source>
         <translation type="unfinished"></translation>
     </message>

@@ -260,7 +260,12 @@ void FsntWindow::showMainMenu(QWidget *anchor) {
     QMenu menu(this);
     menu.setStyleSheet(Fsnt::BuildStyleSheet());
 
-    auto *version = menu.addAction(QString("FSNT Client %1").arg(NKR_VERSION));
+    // NKR_VERSION подставляется из тега при сборке; локально он пуст, и
+    // «FSNT Client » с висячим пробелом выглядело бы недоделкой.
+    const QString build = QStringLiteral(NKR_VERSION);
+    auto *version = menu.addAction(build.isEmpty()
+                                       ? tr("FSNT Client · development build")
+                                       : QStringLiteral("FSNT Client %1").arg(build));
     version->setEnabled(false);
     menu.addSeparator();
 

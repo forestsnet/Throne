@@ -721,4 +721,15 @@ endif()
 #### Throne Updater (macOS only - Windows/Linux use official Odin updater) ####
 if (APPLE)
     add_subdirectory(src/updater)
+
+    # Кладём updater внутрь бандла и при локальной сборке. Приложение ищет его
+    # рядом с собой, то есть в Contents/MacOS, а собирается он в корень build.
+    # Раньше это делал только script/deploy_macos.sh, и в обычной сборке
+    # проверка обновлений была недоступна без всякой на то причины.
+    add_dependencies(Throne updater)
+    add_custom_command(TARGET Throne POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:updater>
+            $<TARGET_BUNDLE_CONTENT_DIR:Throne>/MacOS/updater
+            COMMENT "Copying updater into Throne.app")
 endif()

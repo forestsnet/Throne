@@ -6340,6 +6340,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Ещё</translation>
     </message>
     <message>
+        <source>FSNT Client · development build</source>
+        <translation>FSNT Client · сборка для разработки</translation>
+    </message>
+    <message>
         <source>Check for updates</source>
         <translation>Проверить обновления</translation>
     </message>
