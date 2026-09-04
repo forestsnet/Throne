@@ -31,7 +31,9 @@ namespace Configs_network {
 
         static QString GetHeader(const QList<QPair<QByteArray, QByteArray>> &header, const QString &name);
 
-        static QString DownloadAsset(const QString &url, const QString &fileName, bool useProxy = false);
+        // destinationDir пуст -> файл кладётся в Configs::GetBasePath() (прежнее поведение).
+        static QString DownloadAsset(const QString &url, const QString &fileName, bool useProxy = false,
+                                     const QString &destinationDir = {});
     };
 } // namespace Configs_network
 

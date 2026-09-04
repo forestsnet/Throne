@@ -6,6 +6,7 @@
 #include <QNetworkRequest>
 #include <QTimer>
 #include <QFile>
+#include <QDir>
 #include <QApplication>
 #include <QMap>
 #include <QStringList>
@@ -126,7 +127,8 @@ namespace Configs_network {
         return {};
     }
 
-    QString NetworkRequestHelper::DownloadAsset(const QString &url, const QString &fileName, bool useProxy) {
+    QString NetworkRequestHelper::DownloadAsset(const QString &url, const QString &fileName, bool useProxy,
+                                                const QString &destinationDir) {
         QNetworkRequest request;
         QNetworkAccessManager accessManager;
         request.setUrl(url);
@@ -191,7 +193,11 @@ namespace Configs_network {
             return QObject::tr("Download failed: the server returned an empty response.");
         }
 
-        const auto filePath = Configs::GetBasePath() + "/" + fileName;
+        QString baseDir = destinationDir.isEmpty() ? Configs::GetBasePath() : destinationDir;
+        if (!destinationDir.isEmpty() && !QDir().mkpath(destinationDir)) {
+            return QObject::tr("Could not create destination directory.");
+        }
+        const auto filePath = baseDir + "/" + fileName;
         const auto tmpPath = filePath + ".tmp";
         QFile tmp(tmpPath);
         if (!tmp.open(QIODevice::WriteOnly | QIODevice::Truncate)) {

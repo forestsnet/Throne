@@ -2,6 +2,7 @@
 #include "include/global/Configs.hpp"
 #include "include/global/Logger.hpp"
 
+#include <QThread>
 #include <QTimer>
 #include <QDir>
 #include <QApplication>
@@ -15,8 +16,28 @@ namespace Configs_sys {
     }
 
     void CoreProcess::Kill() {
+        if (state() == QProcess::NotRunning) {
+            qDebug() << "CoreProcess already not running";
+            return;
+        }
+
+        qDebug() << "Sending kill signal to core process...";
         kill();
-        waitForFinished();
+
+        // Ждём с таймаутом
+        if (!waitForFinished(2000)) {
+            qDebug() << "Core process did not stop gracefully, forcing terminate...";
+            terminate();
+
+            // Ещё одна попытка
+            if (!waitForFinished(1000)) {
+                qDebug() << "[Warning] Core process may still be running";
+            } else {
+                qDebug() << "Core process terminated successfully";
+            }
+        } else {
+            qDebug() << "Core process stopped gracefully";
+        }
     }
 
     CoreProcess::CoreProcess(const QString &core_path, const QString &socketName, bool debugMode)
@@ -100,11 +121,22 @@ namespace Configs_sys {
 
     void CoreProcess::Restart() {
         restarting = true;
+        qDebug() << "Restarting core process...";
+
         kill();
-        waitForFinished(500);
+        if (!waitForFinished(2000)) {
+            qDebug() << "Core did not stop during restart, forcing terminate...";
+            terminate();
+            waitForFinished(1000);
+        }
+
+        // Дополнительная задержка для освобождения портов и файлов
+        QThread::msleep(500);
+
         started = false;
         Start();
         restarting = false;
+        qDebug() << "Core restart sequence complete";
     }
 
 } // namespace Configs_sys

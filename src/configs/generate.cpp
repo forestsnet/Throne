@@ -798,10 +798,12 @@ namespace Configs {
 
         void buildDNSSection(BuildContext &ctx, bool useDnsObj = true) {
             const auto &settings = *dataManager->settingsRepo;
-            if (getOS() == Darwin && settings.core_box_underlying_dns.isEmpty() && settings.spmode_vpn)
+            // Форк: вместо блокирующей ошибки подставляем DNS автоматически.
+            if (settings.core_box_underlying_dns.isEmpty() && settings.spmode_vpn)
             {
-                ctx.error = QObject::tr("Local DNS and Tun mode do not work together, please set an IP to be used as the Local DNS server in the Routing Settings -> Local override");
-                return;
+                MW_show_log("TUN mode enabled but no Local DNS set, auto-setting to 1.1.1.1");
+                dataManager->settingsRepo->core_box_underlying_dns = "1.1.1.1";
+                dataManager->settingsRepo->Save();
             }
 
             if (settings.use_dns_object && useDnsObj) {
