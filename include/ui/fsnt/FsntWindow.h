@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QMainWindow>
+#include <QPixmap>
 
 #include "include/global/Utils.hpp"
 
@@ -28,6 +29,7 @@ private:
     void onCoreMessage(MwMessage cmd, const QStringList &args);
     void refreshConnectionState();
     void refreshServerList();
+    QPixmap renderLogo(int size);
     void buildHeader(QVBoxLayout *root);
     void buildPanels(QVBoxLayout *root);
     void applyTheme();
