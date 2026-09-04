@@ -335,6 +335,10 @@ set(PROJECT_SOURCES
         src/ui/fsnt/FsntTheme.cpp
 
         include/ui/fsnt/FsntTheme.hpp
+
+        src/ui/fsnt/FsntWindow.cpp
+
+        include/ui/fsnt/FsntWindow.h
         include/ui/setting/dialog_per_app_proxy.h
         include/ui/setting/dialog_basic_settings.h
         include/ui/setting/dialog_basic_settings.ui

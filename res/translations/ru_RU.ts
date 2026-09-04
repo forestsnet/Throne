@@ -5616,4 +5616,27 @@ processName rules in the current routing profile.</source>
         <translation>Маршрутизация по приложениям обновлена: %1 через прокси, %2 напрямую</translation>
     </message>
 </context>
+<context>
+    <name>FsntWindow</name>
+    <message>
+        <source>Advanced mode</source>
+        <translation>Расширенный режим</translation>
+    </message>
+    <message>
+        <source>Switch to the advanced interface</source>
+        <translation>Переключиться на расширенный интерфейс</translation>
+    </message>
+    <message>
+        <source>The application will restart in the advanced interface. Continue?</source>
+        <translation>Приложение перезапустится в расширенном интерфейсе. Продолжить?</translation>
+    </message>
+    <message>
+        <source>Server list appears here</source>
+        <translation>Здесь появится список серверов</translation>
+    </message>
+    <message>
+        <source>Connection and subscription appear here</source>
+        <translation>Здесь появятся подключение и подписка</translation>
+    </message>
+</context>
 </TS>
