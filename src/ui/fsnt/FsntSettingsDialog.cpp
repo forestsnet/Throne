@@ -14,6 +14,7 @@
 #include "NkrVersion.h"
 
 #include "include/configs/sub/GroupUpdater.hpp"
+#include "include/configs/sub/ProviderPolicy.hpp"
 #include "include/database/GroupsRepo.h"
 #include "include/database/RoutesRepo.h"
 #include "include/database/SettingsRepo.h"
@@ -113,25 +114,38 @@ void FsntSettingsDialog::buildConnection(QVBoxLayout *column, QWidget *host) {
     m_transport->setCurrentIndex(qBound(0, settings->simple_transport, 1));
     card.addControl(tr("Connection mode"), m_transport);
 
-    m_route = makeSelect(host);
-    for (const auto &profile : Configs::dataManager->routesRepo->GetAllRouteProfiles()) {
-        if (!profile) continue;
-        m_route->addItem(profile->name, profile->id);
-        if (profile->id == settings->current_route_id) {
-            m_route->setCurrentIndex(m_route->count() - 1);
+    // Провайдер может закрыть настройки, которыми управляет сам. Прячем ровно
+    // маршрутизацию: и профиль маршрутов, и выбор приложений — это она же.
+    // Режим подключения и автозапуск остаются: пользователь должен видеть,
+    // что происходит. Ограничение снимается остановкой профиля.
+    const bool providerManagesRouting = Subscription::PolicyHidesSettings();
+
+    if (!providerManagesRouting) {
+        m_route = makeSelect(host);
+        for (const auto &profile : Configs::dataManager->routesRepo->GetAllRouteProfiles()) {
+            if (!profile) continue;
+            m_route->addItem(profile->name, profile->id);
+            if (profile->id == settings->current_route_id) {
+                m_route->setCurrentIndex(m_route->count() - 1);
+            }
         }
+        card.addControl(tr("Routing"), m_route);
     }
-    card.addControl(tr("Routing"), m_route);
 
     m_autoConnect = card.addToggle(tr("Reconnect on start"), settings->remember_enable);
     m_allowLan = card.addToggle(tr("Allow local network access"),
                                 QStringList{"::", "0.0.0.0"}.contains(settings->inbound_address));
 
-    connect(card.addAction(tr("Choose apps to route")), &QPushButton::clicked, this, [this] {
-        auto *dialog = new DialogPerAppProxy(this);
-        dialog->setAttribute(Qt::WA_DeleteOnClose);
-        dialog->exec();
-    });
+    if (!providerManagesRouting) {
+        connect(card.addAction(tr("Choose apps to route")), &QPushButton::clicked, this, [this] {
+            auto *dialog = new DialogPerAppProxy(this);
+            dialog->setAttribute(Qt::WA_DeleteOnClose);
+            dialog->exec();
+        });
+    } else {
+        card.addNote(tr("Routing is managed by your provider while this subscription is "
+                        "connected. Disconnect to change it."));
+    }
 }
 
 void FsntSettingsDialog::buildSubscriptions(QVBoxLayout *column, QWidget *host) {
@@ -159,10 +173,17 @@ void FsntSettingsDialog::buildSubscriptions(QVBoxLayout *column, QWidget *host) 
     connect(card.addAction(tr("Update all now")), &QPushButton::clicked, this,
             [] { Subscription::updater()->RefreshAll(); });
 
-    // Действие расширенного режима уже умеет всё: не даёт удалить последнюю
-    // группу, уважает pin провайдера и останавливает работающий профиль.
-    connect(card.addAction(tr("Remove the current subscription")), &QPushButton::clicked, this,
-            [this] { triggerMainWindowAction("actionDelete_Group"); });
+    // Закреплённую подписку удалить нельзя — не показываем и кнопку, иначе
+    // пользователь жмёт её и получает отказ без объяснений.
+    if (Subscription::PolicyBlocksDeletion(settings->current_group)) {
+        card.addNote(tr("This subscription is pinned by your provider and cannot be removed "
+                        "while it is connected."));
+    } else {
+        // Действие расширенного режима уже умеет всё: не даёт удалить последнюю
+        // группу, уважает pin провайдера и останавливает работающий профиль.
+        connect(card.addAction(tr("Remove the current subscription")), &QPushButton::clicked, this,
+                [this] { triggerMainWindowAction("actionDelete_Group"); });
+    }
 }
 
 void FsntSettingsDialog::buildApplication(QVBoxLayout *column, QWidget *host) {
@@ -230,7 +251,8 @@ void FsntSettingsDialog::save() {
     settings->remember_enable = m_autoConnect->isChecked();
     settings->inbound_address = m_allowLan->isChecked() ? "::" : "127.0.0.1";
 
-    if (m_route->currentIndex() >= 0) {
+    // m_route отсутствует, когда маршрутизацией управляет провайдер.
+    if (m_route != nullptr && m_route->currentIndex() >= 0) {
         settings->current_route_id = m_route->currentData().toInt();
     }
 

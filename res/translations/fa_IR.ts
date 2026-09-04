@@ -6185,6 +6185,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Routing is managed by your provider while this subscription is connected. Disconnect to change it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Subscriptions</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6222,6 +6226,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
     </message>
     <message>
         <source>Update all now</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This subscription is pinned by your provider and cannot be removed while it is connected.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6301,6 +6309,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
     </message>
     <message>
         <source>The application will restart in the advanced interface. Continue?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restart</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -8610,6 +8622,10 @@ Release note:
     <message>
         <source>%1 route prefer</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished">لغو کردن</translation>
     </message>
 </context>
 <context>

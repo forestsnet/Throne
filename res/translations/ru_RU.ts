@@ -6182,6 +6182,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Маршрутизация</translation>
     </message>
     <message>
+        <source>Routing is managed by your provider while this subscription is connected. Disconnect to change it.</source>
+        <translation>Пока эта подписка подключена, маршрутизацией управляет ваш провайдер. Отключитесь, чтобы изменить её.</translation>
+    </message>
+    <message>
         <source>Subscriptions</source>
         <translation>Подписки</translation>
     </message>
@@ -6220,6 +6224,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
     <message>
         <source>Update all now</source>
         <translation>Обновить все сейчас</translation>
+    </message>
+    <message>
+        <source>This subscription is pinned by your provider and cannot be removed while it is connected.</source>
+        <translation>Эта подписка закреплена провайдером и не может быть удалена, пока подключена.</translation>
     </message>
     <message>
         <source>Remove the current subscription</source>
@@ -6311,6 +6319,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
     <message>
         <source>The application will restart in the advanced interface. Continue?</source>
         <translation>Приложение перезапустится в расширенном интерфейсе. Продолжить?</translation>
+    </message>
+    <message>
+        <source>Restart</source>
+        <translation>Перезапустить</translation>
     </message>
 </context>
 <context>
@@ -8648,6 +8660,10 @@ Release note:
     <message>
         <source>%1 route prefer</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished">Отмена</translation>
     </message>
 </context>
 <context>
