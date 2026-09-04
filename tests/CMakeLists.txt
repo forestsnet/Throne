@@ -20,3 +20,12 @@ target_include_directories(UiModeTest PRIVATE ${CMAKE_SOURCE_DIR})
 target_link_libraries(UiModeTest PRIVATE Qt6::Test)
 
 add_test(NAME UiModeTest COMMAND UiModeTest)
+
+qt_add_executable(SubscriptionUsageTest
+        SubscriptionUsageTest.cpp
+        ../src/configs/sub/SubscriptionUsage.cpp
+)
+target_include_directories(SubscriptionUsageTest PRIVATE ${CMAKE_SOURCE_DIR})
+target_link_libraries(SubscriptionUsageTest PRIVATE Qt6::Test)
+
+add_test(NAME SubscriptionUsageTest COMMAND SubscriptionUsageTest)

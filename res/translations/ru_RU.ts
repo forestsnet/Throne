@@ -5672,5 +5672,48 @@ processName rules in the current routing profile.</source>
         <source>Search</source>
         <translation>Поиск</translation>
     </message>
+    <message>
+        <source>All</source>
+        <translation>Все</translation>
+    </message>
+    <message>
+        <source>Favorites</source>
+        <translation>Избранное</translation>
+    </message>
+</context>
+<context>
+    <name>SubscriptionCard</name>
+    <message>
+        <source>until %1</source>
+        <translation>до %1</translation>
+    </message>
+    <message>
+        <source>No traffic data yet</source>
+        <translation>Нет данных о трафике</translation>
+    </message>
+    <message>
+        <source>%1 used, unlimited</source>
+        <translation>израсходовано %1, безлимитно</translation>
+    </message>
+    <message>
+        <source>%1 of %2</source>
+        <translation>%1 из %2</translation>
+    </message>
+    <message>
+        <source>Traffic resets on %1, in %2 day(s)</source>
+        <translation>Сброс трафика: %1, через %2 дн.</translation>
+    </message>
+    <message>
+        <source>Traffic resets on %1</source>
+        <translation>Сброс трафика: %1</translation>
+    </message>
+    <message>
+        <source>Support</source>
+        <translation>Поддержка</translation>
+    </message>
+    <message>
+        <source>Subscription page</source>
+        <translation>Страница подписки</translation>
+    </message>
 </context>
 </TS>

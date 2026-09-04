@@ -9,6 +9,8 @@
 namespace {
     // Порог, за которым пинг перестаёт быть хорошим. Ниже — успех, выше — предупреждение.
     constexpr int kGoodLatencyMs = 120;
+    // Ширина зоны сердечка справа: по ней же панель ловит клик.
+    constexpr int kHeartZone = 28;
 }
 
 ServerItemDelegate::ServerItemDelegate(QObject *parent) : QStyledItemDelegate(parent) {}
@@ -28,16 +30,25 @@ void ServerItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     painter->setRenderHint(QPainter::Antialiasing, true);
 
     QRect row = option.rect.adjusted(0, 1, 0, -1);
+    const QRect fullRow = row;
 
     if (option.state & QStyle::State_Selected) {
         painter->setBrush(t.selectedFill);
         painter->setPen(Qt::NoPen);
-        painter->drawRoundedRect(row, Fsnt::kRowRadius, Fsnt::kRowRadius);
+        painter->drawRoundedRect(fullRow, Fsnt::kRowRadius, Fsnt::kRowRadius);
     } else if (option.state & QStyle::State_MouseOver) {
         painter->setBrush(t.hoverFill);
         painter->setPen(Qt::NoPen);
-        painter->drawRoundedRect(row, Fsnt::kRowRadius, Fsnt::kRowRadius);
+        painter->drawRoundedRect(fullRow, Fsnt::kRowRadius, Fsnt::kRowRadius);
     }
+
+    const bool favorite = index.data(ServerListPanel::FavoriteRole).toBool();
+    QRect heartRect(row.right() - kHeartZone, row.top(), kHeartZone, row.height());
+    painter->setPen(favorite ? t.danger : t.muted);
+    painter->setFont(option.font);
+    painter->drawText(heartRect, Qt::AlignCenter, favorite ? QString("♥") : QString("♡"));
+
+    row = row.adjusted(0, 0, -kHeartZone, 0);
 
     const int latency = index.data(ServerListPanel::LatencyRole).toInt();
     const QString pingText = latency > 0 ? QString("%1 мс").arg(latency) : QString();

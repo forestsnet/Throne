@@ -134,6 +134,7 @@ set(PROJECT_SOURCES
         include/configs/sub/GroupUpdater.hpp
         src/configs/sub/GroupUpdater.cpp
         src/configs/sub/ProviderPolicy.cpp
+        src/configs/sub/SubscriptionUsage.cpp
         include/configs/sub/SubscriptionScan.hpp
         include/configs/sub/SubscriptionParser.hpp
         src/configs/sub/SubscriptionParser.cpp
@@ -351,6 +352,10 @@ set(PROJECT_SOURCES
         src/ui/fsnt/ServerItemDelegate.cpp
 
         src/ui/fsnt/ServerItemDelegate.h
+
+        src/ui/fsnt/SubscriptionCard.cpp
+
+        include/ui/fsnt/SubscriptionCard.h
         include/ui/setting/dialog_per_app_proxy.h
         include/ui/setting/dialog_basic_settings.h
         include/ui/setting/dialog_basic_settings.ui

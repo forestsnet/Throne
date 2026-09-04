@@ -45,10 +45,37 @@ namespace Fsnt {
             QComboBox#fsntGroupSwitch::drop-down { border: none; width: 18px; }
             QLineEdit#fsntSearch { background: %10; }
 
+            QPushButton#fsntTab {
+                background: transparent;
+                border: none;
+                border-radius: %6px;
+                padding: 5px 10px;
+                color: %8;
+                font-size: 12px;
+            }
+            QPushButton#fsntTab:checked { background: %10; color: %2; }
+            QPushButton#fsntTab:hover { color: %2; }
+
             QListWidget#fsntServerList {
                 background: transparent;
                 border: none;
                 outline: none;
+            }
+
+            QWidget#fsntSubscriptionCard {
+                background: %10;
+                border-radius: %11px;
+            }
+            QLabel#fsntSubName { color: %2; font-size: 13px; }
+            QLabel#fsntSubMeta { color: %8; font-size: 11px; }
+            QProgressBar#fsntTrafficBar {
+                background: %1;
+                border: none;
+                border-radius: 3px;
+            }
+            QProgressBar#fsntTrafficBar::chunk {
+                background: %4;
+                border-radius: 3px;
             }
 
             QLabel#fsntElapsed { color: %2; font-size: 26px; }
@@ -77,6 +104,7 @@ namespace Fsnt {
                  c(t.hoverFill),                  // 7
                  c(t.muted),                      // 8
                  c(t.success),                    // 9
-                 c(t.hoverFill));                 // 10
+                 c(t.hoverFill),                  // 10
+                 QString::number(kCardRadius));    // 11
     }
 }

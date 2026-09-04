@@ -15,6 +15,7 @@
 #include "include/ui/mainwindow.h"
 #include "include/ui/fsnt/FsntTheme.hpp"
 #include "include/ui/fsnt/ServerListPanel.h"
+#include "include/ui/fsnt/SubscriptionCard.h"
 #include "include/ui/fsnt/UiMode.hpp"
 #include "include/global/Logger.hpp"
 #include "include/global/Utils.hpp"
@@ -136,7 +137,10 @@ void FsntWindow::buildPanels(QVBoxLayout *root) {
                                      Fsnt::kPanelPadding, Fsnt::kPanelPadding);
 
     m_connectPanel = new ConnectPanel(sidePanel);
-    m_sideLayout->addWidget(m_connectPanel);
+    m_sideLayout->addWidget(m_connectPanel, 1);
+
+    m_subscriptionCard = new SubscriptionCard(sidePanel);
+    m_sideLayout->addWidget(m_subscriptionCard);
 
     columns->addWidget(serverPanel, 105);
     columns->addWidget(sidePanel, 100);
@@ -150,6 +154,7 @@ void FsntWindow::refreshConnectionState() {
 
 void FsntWindow::refreshServerList() {
     if (m_serverList != nullptr) m_serverList->reloadGroups();
+    if (m_subscriptionCard != nullptr) m_subscriptionCard->refresh();
 }
 
 void FsntWindow::applyTheme() {
