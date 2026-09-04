@@ -173,6 +173,35 @@ bool MainWindow::handleXrayGeoAssetError(const QString& error, const QString& co
 
 void MainWindow::profile_start(int _id) {
     if (Configs::dataManager->settingsRepo->prepare_exit) return;
+
+    // Проверяем конфликтующие процессы только если включен VPN режим
+    if (Configs::dataManager->settingsRepo->spmode_vpn) {
+        QStringList conflicting = CheckConflictingProcesses();
+        if (!conflicting.isEmpty()) {
+            QString message = tr("Обнаружены программы, которые могут помешать работе TUN режима:\n\n");
+            message += "\u2022 " + conflicting.join("\n\u2022 ");
+            message += tr("\n\nЭти программы могут конфликтовать с виртуальным сетевым адаптером TUN.\n");
+            message += tr("Рекомендуется закрыть эти программы перед запуском профиля в VPN режиме.\n\n");
+            message += tr("Продолжить запуск?");
+
+            QMessageBox msgBox(GetMessageBoxParent());
+            msgBox.setWindowTitle(tr("Предупреждение о конфликтах"));
+            msgBox.setText(message);
+            msgBox.setIcon(QMessageBox::Warning);
+            QPushButton* continueBtn = msgBox.addButton(tr("Продолжить"), QMessageBox::AcceptRole);
+            QPushButton* cancelBtn = msgBox.addButton(tr("Отмена"), QMessageBox::RejectRole);
+            msgBox.setDefaultButton(cancelBtn);
+
+            msgBox.exec();
+
+            // Если пользователь нажал не "Продолжить", отменяем запуск
+            if (msgBox.clickedButton() != continueBtn) {
+                MW_show_log("[CheckConflict] User cancelled profile start");
+                return;
+            }
+            MW_show_log("[CheckConflict] User chose to continue despite conflicts");
+        }
+    }
 #ifdef Q_OS_LINUX
     if (Configs::dataManager->settingsRepo->enable_dns_server && Configs::dataManager->settingsRepo->dns_server_listen_port <= 1024) {
         if (!get_elevated_permissions()) {

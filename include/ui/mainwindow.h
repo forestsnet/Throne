@@ -140,6 +140,8 @@ public:
 
     bool StopVPNProcess();
 
+    QStringList CheckConflictingProcesses();
+
     void RestartCore();
 
     // Takes a whole poll snapshot in the lister's order; row N is always its Nth entry. UI thread only.
