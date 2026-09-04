@@ -520,6 +520,8 @@ private:
 
     void applyConnectionFilters();
 
+    void syncConnectionSourceColumn();
+
     // Rows are rewritten on every poll, so ids are read at click time, never captured.
     void closeConnections(const QStringList &ids);
 

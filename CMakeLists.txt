@@ -94,6 +94,8 @@ set(PROJECT_SOURCES
         src/global/HTTPRequestHelper.cpp
         src/global/DeviceDetailsHelper.cpp
         src/global/CountryHelper.cpp
+        include/global/LocalNetwork.hpp
+        src/global/LocalNetwork.cpp
         include/global/OTP.hpp
         src/global/OTP.cpp
         include/global/OtpPlaceholder.hpp

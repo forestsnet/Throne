@@ -494,6 +494,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
             switch (index)
             {
+            case ConnectionsTableModel::ColSource:   sortType = Stats::BySource; break;
             case ConnectionsTableModel::ColProcess:  sortType = Stats::ByProcess; break;
             case ConnectionsTableModel::ColProtocol: sortType = Stats::ByProtocol; break;
             case ConnectionsTableModel::ColOutbound: sortType = Stats::ByOutbound; break;
