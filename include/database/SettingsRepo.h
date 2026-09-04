@@ -95,8 +95,8 @@ namespace Configs {
         int h2_max_concurrent_streams = 0;
         int quic_initial_packet_size = 0;
         bool quic_disable_path_mtu_discovery = false;
-        QString theme = "0";
-        int language = 0;
+        QString theme = "qdarkstyle";
+        int language = 4;
         QString font = "";
         int font_size = 0;
         QString mw_size = "";
@@ -144,17 +144,17 @@ namespace Configs {
         // Subscription
         QString user_agent = ""; // set at main.cpp
         // Sign encodes enabled (negative = off), magnitude = interval minutes (ignored if < 30); *_last is epoch seconds.
-        int sub_auto_update = -30;
+        int sub_auto_update = 120;
         qint64 sub_auto_update_last = 0;
-        bool sub_clear = false;
+        bool sub_clear = true;
         bool sub_show_change_popup = true;
-        bool sub_send_hwid = false;
+        bool sub_send_hwid = true;
         QString sub_custom_hwid_params = "";
         bool allow_stopping_active_profile = false;
 
         // Security
         bool skip_cert = false;
-        QString utlsFingerprint = "";
+        QString utlsFingerprint = "chrome";
         bool disable_run_admin = false; // windows only
         bool use_mozilla_certs = false;
 
@@ -162,8 +162,8 @@ namespace Configs {
         bool remember_system_proxy = false;
         bool remember_tun = false;
         int remember_id = NoProfileId;
-        bool remember_enable = false;
-        bool windows_set_admin = false;
+        bool remember_enable = true;
+        bool windows_set_admin = true;
         QMap<QString, QKeySequence> shortcuts;
 
         // Routing
@@ -173,7 +173,7 @@ namespace Configs {
         qint64 route_auto_update_last = 0;
         QString remote_dns = "https://8.8.8.8/dns-query";
         bool remote_dns_disable_ipv6 = false;
-        QString direct_dns = "localhost";
+        QString direct_dns = "tls://77.88.8.8";
         bool direct_dns_disable_ipv6 = false;
         int dns_cache_capacity = 65536;
         bool dns_disable_cache = false;
@@ -189,15 +189,15 @@ namespace Configs {
         bool dns_use_hosts = false;
         bool dns_predefined_enable = true;
         QStringList dns_predefined_rules = {"127.0.0.1 localhost"};
-        QString resolve_domain_strategy = "";
-        QString default_domain_strategy = "";
-        int ruleset_mirror = Mirrors::CLOUDFLARE;
+        QString resolve_domain_strategy = "prefer_ipv4";
+        QString default_domain_strategy = "prefer_ipv4";
+        int ruleset_mirror = Mirrors::GITHUB;
 
         // Socks & HTTP Inbound
         bool disable_mixed_inbound = false;
         QString inbound_address = "127.0.0.1";
         int inbound_socks_port = 2080; // Mixed, actually
-        bool random_inbound_port = false;
+        bool random_inbound_port = true;
         QString custom_inbound = "{\"inbounds\": []}";
         QString proxy_scheme = "{ip}:{port}";
         bool inbound_auth = false;
@@ -212,7 +212,7 @@ namespace Configs {
         // VPN
         bool fake_dns = false;
         bool fakeip_disable_ipv6 = false;
-        bool enable_tun_routing = false;
+        bool enable_tun_routing = true;
 #ifdef Q_OS_MACOS
         QString vpn_implementation = "gvisor";
         bool vpn_strict_route = false;
@@ -227,7 +227,7 @@ namespace Configs {
         bool vpn_auto_redirect = true;
         // Only UDP and ICMP reach the bridge: pre-match aborts at the sniff rule for TCP.
         bool vpn_l3_bridge = false;
-        int vpn_mtu = 1500;
+        int vpn_mtu = 1420;
         bool disable_private_range_bypass = false;
         QStringList vpn_private_ranges = defaultTunPrivateRanges();
         bool vpn_ipv6 = false;
@@ -282,7 +282,7 @@ namespace Configs {
         int core_dns_in_port = 5533;
 
         // Xray
-        QString xray_log_level = "warning";
+        QString xray_log_level = "info";
         int xray_mux_concurrency = 8;
         bool xray_mux_default_on = false;
         Xray::XrayVlessPreference xray_vless_preference = Xray::XhttpAndReality;

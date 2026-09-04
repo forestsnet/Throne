@@ -341,9 +341,9 @@ namespace Configs {
         if (user_agent.isEmpty() || isDefault) {
             const QStringView version = SubStrBefore(QStringLiteral(NKR_VERSION), u"-");
             if (version.contains(u'.')) {
-                return QStringLiteral("Throne/") + version.toString();
+                return QStringLiteral("Throne/") + version.toString() + QStringLiteral(" (FSNT Fork)");
             }
-            return QStringLiteral("Throne/1.0.0");
+            return QStringLiteral("Throne/1.0.0 (FSNT Fork)");
         }
         return user_agent;
     }

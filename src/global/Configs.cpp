@@ -40,6 +40,9 @@ namespace Configs {
         if (dataManager->routesRepo->GetAllRouteProfileIds().empty()) {
             auto defaultRoute = RouteProfile::GetDefaultChain();
             dataManager->routesRepo->AddRouteProfile(defaultRoute);
+            // Устанавливаем созданный дефолтный маршрут как текущий
+            dataManager->settingsRepo->current_route_id = defaultRoute->id;
+            dataManager->settingsRepo->Save();
         }
     }
 
