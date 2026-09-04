@@ -84,7 +84,12 @@ private:
     // каждые две секунды во время замера, а разбор конфига стоит дорого.
     QString subtitleFor(const std::shared_ptr<Configs::Profile> &profile);
     bool allMeasured() const;
+    int answeredCount() const;
     void finishMeasurement();
+    // Сколько опросов подряд не принесли ни одного ответа. Пока ядро ждёт
+    // ответа в модальном окне (например требует гео-файлы), замер не идёт
+    // вовсе, и крутить точки минуту бессмысленно.
+    int m_measureIdlePolls = 0;
     void updateSubscription();
 
     bool m_favouritesOnly = false;

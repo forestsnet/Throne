@@ -214,6 +214,9 @@ void MainWindow::applyProviderPolicy(int gid) {
 void MainWindow::profile_start(int _id) {
     if (Configs::dataManager->settingsRepo->prepare_exit) return;
 
+    // Ядро могли удалить в любой момент, а не только до запуска приложения.
+    if (!EnsureCorePresent()) return;
+
     // Проверяем конфликтующие процессы только если включен VPN режим.
     // Сам диалог живёт в mainwindow_conflicts.cpp: он модальный и держит запуск,
     // поэтому спрашивает не чаще одного раза за сеанс.

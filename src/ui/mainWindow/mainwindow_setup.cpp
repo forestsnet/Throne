@@ -228,6 +228,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     auto core_path = QApplication::applicationDirPath() + "/";
     core_path += "ThroneCore";
 
+    // Проверяем при запуске без окна: показывать модальное окно поверх ещё не
+    // построенного интерфейса рано, пользователь увидит объяснение при первой
+    // же попытке подключиться.
+    EnsureCorePresent(false);
+
     bool coreDebugMode = (Configs::dataManager->settingsRepo->log_level == "debug");
 
     Configs::dataManager->settingsRepo->core_socket_name =

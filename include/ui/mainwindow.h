@@ -150,6 +150,11 @@ public:
     // чтобы действие не выглядело сломанным.
     bool ConfigHiddenForSelection();
 
+    // Файл ядра на месте? Антивирусы регулярно принимают его за угрозу и
+    // удаляют молча, после чего подключение падает без внятной причины.
+    // Возвращает true, если ядро есть; иначе объясняет пользователю.
+    bool EnsureCorePresent(bool interactive = true);
+
     void applyProviderPolicy(int gid);
 
     void RestartCore();

@@ -7346,6 +7346,21 @@ Please try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>The core file is missing:
+%1
+
+Antivirus software often deletes it as a false positive. Add the application folder to the exclusions and install %2 again — settings and subscriptions will be kept.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Core not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open the downloads page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Обнаружены программы, которые могут помешать работе TUN режима:
 
 </source>
@@ -9080,6 +9095,10 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>No subscription yet.
 Paste the link your provider gave you and the servers will appear here.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Latency check did not start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

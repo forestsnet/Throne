@@ -7101,6 +7101,24 @@ Download them now?</source>
         <translation>Загрузка Гео-файлов</translation>
     </message>
     <message>
+        <source>The core file is missing:
+%1
+
+Antivirus software often deletes it as a false positive. Add the application folder to the exclusions and install %2 again — settings and subscriptions will be kept.</source>
+        <translation>Файл ядра отсутствует:
+%1
+
+Антивирусы часто удаляют его по ложному срабатыванию. Добавьте папку приложения в исключения и установите %2 заново — настройки и подписки сохранятся.</translation>
+    </message>
+    <message>
+        <source>Core not found</source>
+        <translation>Ядро не найдено</translation>
+    </message>
+    <message>
+        <source>Open the downloads page</source>
+        <translation>Открыть страницу загрузок</translation>
+    </message>
+    <message>
         <source>Обнаружены программы, которые могут помешать работе TUN режима:
 
 </source>
@@ -9119,6 +9137,10 @@ Remove that endpoint from this routing profile as well?</source>
 Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Подписки пока нет.
 Вставьте ссылку от провайдера — серверы появятся здесь.</translation>
+    </message>
+    <message>
+        <source>Latency check did not start</source>
+        <translation>Замер не запустился</translation>
     </message>
     <message>
         <source>All servers responded</source>

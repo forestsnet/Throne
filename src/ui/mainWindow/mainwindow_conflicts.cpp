@@ -1,6 +1,10 @@
 #include "include/ui/mainwindow.h"
 
+#include <QApplication>
 #include <QCheckBox>
+#include <QDesktopServices>
+#include <QFile>
+#include <QUrl>
 #include <QMessageBox>
 #include <QProcess>
 #include <QPushButton>
@@ -247,6 +251,37 @@ QStringList MainWindow::CheckConflictingProcesses() {
     }
     
     return conflictingProcesses;
+}
+
+// Ядро — отдельный исполняемый файл рядом с приложением, и антивирусы
+// (чаще всего Касперский) регулярно принимают его за угрозу и удаляют молча.
+// Без этой проверки подключение падало с невнятной ошибкой запуска процесса,
+// и понять, что файла просто нет, было неоткуда.
+bool MainWindow::EnsureCorePresent(const bool interactive) {
+#ifdef Q_OS_WIN
+    const QString core = QApplication::applicationDirPath() + "/ThroneCore.exe";
+#else
+    const QString core = QApplication::applicationDirPath() + "/ThroneCore";
+#endif
+    if (QFile::exists(core)) return true;
+
+    MW_show_log("[Core] ERROR: core binary is missing: " + core);
+    if (!interactive) return false;
+
+    const auto text = tr("The core file is missing:\n%1\n\n"
+                         "Antivirus software often deletes it as a false positive. "
+                         "Add the application folder to the exclusions and install "
+                         "%2 again — settings and subscriptions will be kept.")
+                          .arg(core, QStringLiteral("FSNT Client"));
+
+    QMessageBox box(QMessageBox::Critical, tr("Core not found"), text, QMessageBox::Ok,
+                    GetMessageBoxParent());
+    auto *openPage = box.addButton(tr("Open the downloads page"), QMessageBox::ActionRole);
+    box.exec();
+    if (box.clickedButton() == openPage) {
+        QDesktopServices::openUrl(QUrl("https://github.com/forestsnet/Throne/releases/latest"));
+    }
+    return false;
 }
 
 // Просмотр и выгрузка конфигурации закрыты провайдером.

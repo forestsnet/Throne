@@ -29,6 +29,12 @@
 #include "include/ui/mainwindow.h"
 #include "src/ui/fsnt/ServerItemDelegate.h"
 
+namespace {
+    // Опросов подряд без единого ответа, после которых замер считается
+    // несостоявшимся. Опрос идёт раз в две секунды.
+    constexpr int kIdlePollsBeforeGivingUp = 6;
+}
+
 ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
     auto *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -143,6 +149,16 @@ ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
     m_latencyPoll->setInterval(2000);
     connect(m_latencyPoll, &QTimer::timeout, this, [this] {
         reloadServers();
+
+        // Если не ответил вообще никто, замер, скорее всего, и не начался:
+        // ядро могло упереться в отсутствующие гео-файлы и ждать ответа в
+        // модальном окне. Ждём несколько опросов и сдаёмся, а не крутим минуту.
+        m_measureIdlePolls = answeredCount() == 0 ? m_measureIdlePolls + 1 : 0;
+        if (m_measureIdlePolls >= kIdlePollsBeforeGivingUp) {
+            finishMeasurement();
+            return;
+        }
+
         // Счётчик остаётся верхней границей: до части серверов может не быть
         // связи вовсе, и сами по себе они никогда не «ответят».
         if (allMeasured() || --m_latencyPollsLeft <= 0) finishMeasurement();
@@ -253,6 +269,7 @@ void ServerListPanel::measureLatency() {
         // Результаты приходят порциями и signals у TestRunner нет: обновляем список
         // несколько раз, пока идёт замер, и останавливаемся сами.
         m_latencyPollsLeft = 30;
+        m_measureIdlePolls = 0;
         m_ping->setBusy(true);
         m_latencyPoll->start();
         m_measureRepaint->start();
@@ -450,24 +467,38 @@ bool ServerListPanel::allMeasured() const {
     return m_list->count() > 0;
 }
 
+int ServerListPanel::answeredCount() const {
+    int answered = 0;
+    for (int row = 0; row < m_list->count(); ++row) {
+        if (!m_list->item(row)->data(MeasuringRole).toBool()) ++answered;
+    }
+    return answered;
+}
+
 void ServerListPanel::finishMeasurement() {
+    const bool neverStarted = answeredCount() == 0;
+
     m_latencyPoll->stop();
     m_measureRepaint->stop();
     m_ping->setBusy(false);
     m_measureStartedAt = 0;
 
-    int answered = 0;
-    int silent = 0;
-    for (int row = 0; row < m_list->count(); ++row) {
-        if (m_list->item(row)->data(LatencyRole).toInt() > 0) ++answered;
-        else ++silent;
+    int withLatency = 0;
+    const int total = m_list->count();
+    for (int row = 0; row < total; ++row) {
+        if (m_list->item(row)->data(LatencyRole).toInt() > 0) ++withLatency;
     }
     // Обновляем строки ещё раз: MeasuringRole надо снять со всех, кто так и
     // не ответил, иначе точки продолжали бы «думать» на замершем списке.
     reloadServers();
 
-    if (silent == 0) emit notice(tr("All servers responded"));
-    else emit notice(tr("%1 of %2 servers responded").arg(answered).arg(answered + silent));
+    if (neverStarted) {
+        emit notice(tr("Latency check did not start"));
+    } else if (withLatency == total) {
+        emit notice(tr("All servers responded"));
+    } else {
+        emit notice(tr("%1 of %2 servers responded").arg(withLatency).arg(total));
+    }
 }
 
 void ServerListPanel::updateSubscription() {
