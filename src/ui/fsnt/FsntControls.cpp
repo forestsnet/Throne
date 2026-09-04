@@ -109,6 +109,13 @@ namespace {
                                   QPointF(c.x() + r * 0.66, c.y() + r * 0.66));
                 break;
 
+            case Fsnt::Glyph::Close:
+                painter->drawLine(QPointF(c.x() - r * 0.52, c.y() - r * 0.52),
+                                  QPointF(c.x() + r * 0.52, c.y() + r * 0.52));
+                painter->drawLine(QPointF(c.x() + r * 0.52, c.y() - r * 0.52),
+                                  QPointF(c.x() - r * 0.52, c.y() + r * 0.52));
+                break;
+
             case Fsnt::Glyph::Heart: {
                 painter->setBrush(incoming);
                 QPainterPath heart;

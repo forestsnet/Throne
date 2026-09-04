@@ -60,6 +60,10 @@ ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
     m_search->setClearButtonEnabled(true);
     m_search->addAction(Fsnt::GlyphIcon(Fsnt::Glyph::Search, 15, Fsnt::CurrentPalette().textMuted),
                         QLineEdit::LeadingPosition);
+    // Крестик очистки Qt берёт из стиля платформы; подменяем на свой значок.
+    if (auto *clear = m_search->findChild<QAction *>(QStringLiteral("_q_qlineeditclearaction"))) {
+        clear->setIcon(Fsnt::GlyphIcon(Fsnt::Glyph::Close, 13, Fsnt::CurrentPalette().textMuted));
+    }
     searchRow->addWidget(m_search, 1);
 
     m_ping = new BusyButton(Fsnt::Glyph::Bolt, this);
@@ -259,8 +263,32 @@ void ServerListPanel::reloadGroups() {
         }
     }
 
-    int currentIndex = 0;
+    // Пустышки в список не берём: группа без серверов и без ссылки — это
+    // остаток вроде «Default», выбирать в нём нечего, а в переключателе он
+    // выглядит как ещё одна подписка. Управление группами живёт в расширенном
+    // режиме, так что спрятать её здесь ничего не ломает.
+    QList<int> visible;
     for (int gid : Configs::dataManager->groupsRepo->GetGroupsTabOrder()) {
+        const auto group = Configs::dataManager->groupsRepo->GetGroup(gid);
+        if (!group) continue;
+        if (group->Profiles().isEmpty() && group->url.isEmpty()) continue;
+        visible << gid;
+    }
+    // Если пусто вообще всё, показываем как есть: пустой переключатель
+    // непонятнее, чем группа без серверов.
+    if (visible.isEmpty()) visible = Configs::dataManager->groupsRepo->GetGroupsTabOrder();
+
+    // Текущая группа могла попасть под фильтр — например подписка ещё
+    // скачивается, а current_group указывает на пустой «Default». Тогда
+    // переключатель показывал бы одну группу, а список грузился из другой.
+    if (!visible.isEmpty() && !visible.contains(current)) {
+        current = visible.first();
+        Configs::dataManager->settingsRepo->current_group = current;
+        Configs::dataManager->settingsRepo->Save();
+    }
+
+    int currentIndex = 0;
+    for (int gid : visible) {
         const auto group = Configs::dataManager->groupsRepo->GetGroup(gid);
         if (!group) continue;
         m_groups->addItem(group->name, gid);

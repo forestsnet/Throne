@@ -19,6 +19,7 @@ namespace Fsnt {
         Bolt,
         Search,
         Heart,
+        Close,
     };
 
     // Значок в виде QIcon — для мест, где виджет принимает только её
