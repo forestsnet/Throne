@@ -345,6 +345,10 @@ set(PROJECT_SOURCES
 
         include/ui/fsnt/PowerButton.h
 
+        src/ui/fsnt/BusyButton.cpp
+
+        include/ui/fsnt/BusyButton.h
+
         src/ui/fsnt/FsntWindow.cpp
 
         include/ui/fsnt/FsntWindow.h
@@ -364,6 +368,14 @@ set(PROJECT_SOURCES
         src/ui/fsnt/SubscriptionCard.cpp
 
         include/ui/fsnt/SubscriptionCard.h
+
+        src/ui/fsnt/AddSubscriptionDialog.cpp
+
+        include/ui/fsnt/AddSubscriptionDialog.h
+
+        src/ui/fsnt/OnboardingDialog.cpp
+
+        include/ui/fsnt/OnboardingDialog.h
 
         src/ui/fsnt/FsntSettingsDialog.cpp
 

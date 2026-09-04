@@ -58,6 +58,15 @@ namespace Fsnt {
             }
             QToolButton#fsntIconButton:hover { background: @cardHover; color: @text; }
 
+            QToolButton#fsntGearButton {
+                border: 1px solid @border;
+                border-radius: @rowRadiuspx;
+                background: @card;
+                color: @text;
+                font-size: 19px;
+            }
+            QToolButton#fsntGearButton:hover { border-color: @accent; color: @accent; }
+
             QPushButton#fsntPrimary {
                 background: @accent;
                 border: none;

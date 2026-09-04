@@ -7,12 +7,16 @@
 #include <QMessageBox>
 #include <QPainter>
 #include <QProcess>
+#include <QTimer>
 #include <QToolButton>
 #include <QVBoxLayout>
 #include <QWidget>
 
+#include "include/database/GroupsRepo.h"
 #include "include/database/SettingsRepo.h"
 #include "include/global/Configs.hpp"
+#include "include/ui/fsnt/AddSubscriptionDialog.h"
+#include "include/ui/fsnt/OnboardingDialog.h"
 #include "include/ui/fsnt/ConnectPanel.h"
 #include "include/ui/mainwindow.h"
 #include "include/ui/fsnt/FsntSettingsDialog.h"
@@ -48,6 +52,18 @@ FsntWindow::FsntWindow(QWidget *parent) : QMainWindow(parent) {
 
     // Как и MainWindow: при запуске в трей окно не показываем.
     if (!Configs::dataManager->settingsRepo->flag_tray) show();
+
+    // Мастер поднимаем после первого прохода цикла событий: до show() модальный
+    // диалог встал бы поверх ещё не отрисованного окна.
+    if (!Configs::dataManager->settingsRepo->flag_tray && OnboardingDialog::ShouldRun()) {
+        QTimer::singleShot(0, this, [this] {
+            auto dialog = OnboardingDialog(this);
+            dialog.exec();
+            // Мастер мог добавить подписку и сменить транспорт — перечитываем всё.
+            refreshServerList();
+            refreshConnectionState();
+        });
+    }
 }
 
 
@@ -123,8 +139,10 @@ void FsntWindow::buildHeader(QVBoxLayout *root) {
     row->addStretch();
 
     auto *settings = new QToolButton(header);
-    settings->setObjectName("fsntIconButton");
+    settings->setObjectName("fsntGearButton");
     settings->setText("⚙");
+    settings->setFixedSize(38, 38);
+    settings->setCursor(Qt::PointingHandCursor);
     settings->setToolTip(tr("Settings"));
     connect(settings, &QToolButton::clicked, this, [this] {
         auto *dialog = new FsntSettingsDialog(this);
@@ -137,6 +155,7 @@ void FsntWindow::buildHeader(QVBoxLayout *root) {
 
     auto *advanced = new QToolButton(header);
     advanced->setObjectName("fsntIconButton");
+    advanced->setCursor(Qt::PointingHandCursor);
     advanced->setText(tr("Advanced mode"));
     advanced->setToolTip(tr("Switch to the advanced interface"));
     connect(advanced, &QToolButton::clicked, this, &FsntWindow::switchToAdvancedMode);
@@ -179,9 +198,14 @@ void FsntWindow::buildPanels(QVBoxLayout *root) {
 
     m_connectPanel = new ConnectPanel(sidePanel);
     m_sideLayout->addWidget(m_connectPanel, 1);
+    connect(m_connectPanel, &ConnectPanel::subscriptionNeeded,
+            this, &FsntWindow::openAddSubscription);
 
     m_subscriptionCard = new SubscriptionCard(sidePanel);
     m_sideLayout->addWidget(m_subscriptionCard);
+
+    connect(m_serverList, &ServerListPanel::addSubscriptionRequested,
+            this, &FsntWindow::openAddSubscription);
 
     columns->addWidget(serverPanel, 105);
     columns->addWidget(sidePanel, 100);
@@ -215,4 +239,13 @@ void FsntWindow::switchToAdvancedMode() {
     // Механизм ExitReason живёт в MainWindow и отсюда недоступен, поэтому перезапускаемся сами.
     QProcess::startDetached(QApplication::applicationFilePath(), {});
     QApplication::quit();
+}
+
+void FsntWindow::openAddSubscription() {
+    auto *dialog = new AddSubscriptionDialog(this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    // Список обновит и колбэк ядра (SubscriptionNewGroup), но он приходит не всегда:
+    // импорт текста без сети группу не создаёт и сигнала не шлёт.
+    connect(dialog, &QDialog::accepted, this, [this] { refreshServerList(); });
+    dialog->exec();
 }

@@ -47,6 +47,7 @@ namespace Configs {
             {"net_insecure",                  &net_insecure},
             {"sub_send_hwid",                 &sub_send_hwid},
             {"start_minimal",                 &start_minimal},
+            {"onboarding_done",               &onboarding_done},
             {"enable_ntp",                    &enable_ntp},
             {"enable_dns_server",             &enable_dns_server},
             {"dns_server_listen_lan",         &dns_server_listen_lan},

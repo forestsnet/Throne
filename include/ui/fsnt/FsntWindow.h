@@ -34,6 +34,9 @@ private:
     void buildPanels(QVBoxLayout *root);
     void applyTheme();
     void switchToAdvancedMode();
+    // Диалог живёт здесь, а не в панелях: его открывают и список серверов,
+    // и панель подключения, когда запускать нечего.
+    void openAddSubscription();
 
     ConnectPanel *m_connectPanel = nullptr;
     ServerListPanel *m_serverList = nullptr;

@@ -30,6 +30,7 @@ SubscriptionCard::SubscriptionCard(QWidget *parent) : QWidget(parent) {
     m_expiry = new QLabel(this);
     m_expiry->setObjectName("fsntSubMeta");
     header->addWidget(m_expiry);
+
     layout->addLayout(header);
 
     m_bar = new QProgressBar(this);

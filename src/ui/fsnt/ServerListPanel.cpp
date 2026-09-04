@@ -9,13 +9,16 @@
 #include <QJsonDocument>
 #include <QPushButton>
 #include <QLineEdit>
+#include <QLabel>
 #include <QListWidget>
 #include <QScrollBar>
 #include <QVBoxLayout>
 
+#include "include/configs/sub/GroupUpdater.hpp"
 #include "include/database/GroupsRepo.h"
 #include "include/database/ProfilesRepo.h"
 #include "include/global/Configs.hpp"
+#include "include/ui/fsnt/BusyButton.h"
 #include "include/ui/fsnt/FsntTheme.hpp"
 #include "include/configs/sub/ProviderPolicy.hpp"
 #include "include/ui/mainwindow.h"
@@ -26,9 +29,30 @@ ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(8);
 
+    auto *groupRow = new QHBoxLayout;
+    groupRow->setSpacing(6);
+
     m_groups = new QComboBox(this);
     m_groups->setObjectName("fsntGroupSwitch");
-    layout->addWidget(m_groups);
+    groupRow->addWidget(m_groups, 1);
+
+    m_addSub = new QPushButton("+", this);
+    m_addSub->setObjectName("fsntIconSquare");
+    m_addSub->setFixedSize(36, 36);
+    m_addSub->setCursor(Qt::PointingHandCursor);
+    m_addSub->setToolTip(tr("Add subscription"));
+    connect(m_addSub, &QPushButton::clicked, this, &ServerListPanel::addSubscriptionRequested);
+    groupRow->addWidget(m_addSub);
+
+    m_updateSub = new BusyButton("⟳", this);
+    m_updateSub->setObjectName("fsntIconSquare");
+    m_updateSub->setFixedSize(36, 36);
+    m_updateSub->setCursor(Qt::PointingHandCursor);
+    m_updateSub->setToolTip(tr("Update subscription"));
+    connect(m_updateSub, &QPushButton::clicked, this, &ServerListPanel::updateSubscription);
+    groupRow->addWidget(m_updateSub);
+
+    layout->addLayout(groupRow);
 
     auto *searchRow = new QHBoxLayout;
     searchRow->setSpacing(6);
@@ -39,12 +63,12 @@ ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
     m_search->setClearButtonEnabled(true);
     searchRow->addWidget(m_search, 1);
 
-    m_refresh = new QPushButton("⟳", this);
-    m_refresh->setObjectName("fsntIconSquare");
-    m_refresh->setFixedSize(36, 36);
-    m_refresh->setCursor(Qt::PointingHandCursor);
-    m_refresh->setToolTip(tr("Measure latency"));
-    searchRow->addWidget(m_refresh);
+    m_ping = new BusyButton("⚡", this);
+    m_ping->setObjectName("fsntIconSquare");
+    m_ping->setFixedSize(36, 36);
+    m_ping->setCursor(Qt::PointingHandCursor);
+    m_ping->setToolTip(tr("Measure latency"));
+    searchRow->addWidget(m_ping);
 
     layout->addLayout(searchRow);
 
@@ -73,6 +97,33 @@ ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
     m_list->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     layout->addWidget(m_list, 1);
 
+    m_empty = new QWidget(this);
+    auto *emptyLayout = new QVBoxLayout(m_empty);
+    emptyLayout->setContentsMargins(24, 24, 24, 24);
+    emptyLayout->setSpacing(12);
+    emptyLayout->addStretch();
+
+    m_emptyText = new QLabel(m_empty);
+    m_emptyText->setObjectName("fsntPlaceholder");
+    m_emptyText->setAlignment(Qt::AlignCenter);
+    m_emptyText->setWordWrap(true);
+    emptyLayout->addWidget(m_emptyText);
+
+    auto *emptyAdd = new QPushButton(tr("Add subscription"), m_empty);
+    emptyAdd->setObjectName("fsntPrimary");
+    emptyAdd->setCursor(Qt::PointingHandCursor);
+    connect(emptyAdd, &QPushButton::clicked, this, &ServerListPanel::addSubscriptionRequested);
+
+    auto *emptyRow = new QHBoxLayout;
+    emptyRow->addStretch();
+    emptyRow->addWidget(emptyAdd);
+    emptyRow->addStretch();
+    emptyLayout->addLayout(emptyRow);
+    emptyLayout->addStretch();
+
+    m_empty->hide();
+    layout->addWidget(m_empty, 1);
+
     connect(m_search, &QLineEdit::textChanged, this, &ServerListPanel::applyFilter);
     connect(m_groups, &QComboBox::currentIndexChanged, this, [this](int index) {
         if (index < 0) return;
@@ -88,10 +139,15 @@ ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
     m_latencyPoll->setInterval(2000);
     connect(m_latencyPoll, &QTimer::timeout, this, [this] {
         reloadServers();
-        if (--m_latencyPollsLeft <= 0) m_latencyPoll->stop();
+        // Счётчик остаётся верхней границей: если часть серверов недоступна,
+        // их latency так и не станет ненулевым, и по факту мы не остановимся.
+        if (allMeasured() || --m_latencyPollsLeft <= 0) {
+            m_latencyPoll->stop();
+            m_ping->setBusy(false);
+        }
     });
 
-    connect(m_refresh, &QPushButton::clicked, this, &ServerListPanel::measureLatency);
+    connect(m_ping, &QPushButton::clicked, this, &ServerListPanel::measureLatency);
     connect(m_tabAll, &QPushButton::clicked, this, [this] { setShowFavouritesOnly(false); });
     connect(m_tabFav, &QPushButton::clicked, this, [this] { setShowFavouritesOnly(true); });
     connect(m_list, &QListWidget::itemActivated, this, [this](QListWidgetItem *item) {
@@ -170,6 +226,7 @@ void ServerListPanel::measureLatency() {
         // Результаты приходят порциями и signals у TestRunner нет: обновляем список
         // несколько раз, пока идёт замер, и останавливаемся сами.
         m_latencyPollsLeft = 30;
+        m_ping->setBusy(true);
         m_latencyPoll->start();
     }
 }
@@ -216,7 +273,10 @@ void ServerListPanel::reloadServers() {
     m_list->clear();
 
     const auto group = Configs::dataManager->groupsRepo->CurrentGroup();
-    if (!group) return;
+    if (!group) {
+        updateEmptyState();
+        return;
+    }
 
     const auto favs = favorites();
     for (const auto &profile : Configs::dataManager->profilesRepo->GetProfileBatch(group->Profiles())) {
@@ -228,6 +288,7 @@ void ServerListPanel::reloadServers() {
     }
 
     applyFilter(m_search->text());
+    updateEmptyState();
 
     if (keepId >= 0) {
         for (int row = 0; row < m_list->count(); ++row) {
@@ -247,4 +308,38 @@ void ServerListPanel::applyFilter(const QString &text) {
         const bool matchesTab = !m_favouritesOnly || item->data(FavoriteRole).toBool();
         item->setHidden(!(matchesText && matchesTab));
     }
+}
+
+void ServerListPanel::updateEmptyState() {
+    const bool hasServers = m_list->count() > 0;
+    m_list->setVisible(hasServers);
+    m_empty->setVisible(!hasServers);
+    if (hasServers) return;
+
+    // Различаем два разных «пусто»: подписки вообще нет и подписка есть, но пустая.
+    const bool hasGroups = m_groups->count() > 0;
+    m_emptyText->setText(hasGroups
+        ? tr("This subscription has no servers yet. Refresh it or add another one.")
+        : tr("No subscription yet.\nPaste the link your provider gave you and the servers will appear here."));
+}
+
+bool ServerListPanel::allMeasured() const {
+    for (int row = 0; row < m_list->count(); ++row) {
+        if (m_list->item(row)->data(LatencyRole).toInt() == 0) return false;
+    }
+    return m_list->count() > 0;
+}
+
+void ServerListPanel::updateSubscription() {
+    const auto group = Configs::dataManager->groupsRepo->CurrentGroup();
+    if (!group || group->url.isEmpty()) return;
+
+    m_updateSub->setBusy(true);
+    // Колбэк приходит из рабочего потока обновлятора — возвращаемся в UI.
+    Subscription::updater()->RefreshGroup(group->id, [this] {
+        QMetaObject::invokeMethod(this, [this] {
+            m_updateSub->setBusy(false);
+            reloadServers();
+        }, Qt::QueuedConnection);
+    }, true);
 }
