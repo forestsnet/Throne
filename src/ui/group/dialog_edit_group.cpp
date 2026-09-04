@@ -6,11 +6,13 @@
 #include <QHash>
 #include <QStringListModel>
 #include <QCompleter>
+#include <QDateTime>
 #include <QTimer>
 #include <QAbstractItemView>
 
 #include "include/database/GroupsRepo.h"
 #include "include/database/ProfilesRepo.h"
+#include "include/configs/sub/ProviderPolicy.hpp"
 
 
 #define ADJUST_SIZE runOnThread([=,this] { adjustSize(); adjustPosition(mainwindow); }, this);
@@ -28,6 +30,19 @@ DialogEditGroup::DialogEditGroup(const std::shared_ptr<Configs::Group> &ent, QWi
     ui->auto_clear_unavailable->setChecked(ent->auto_clear_unavailable);
     ui->skip_auto_update->setChecked(ent->skip_auto_update);
     ui->url->setText(ent->url);
+
+    // Сведения, присланные панелью в заголовках подписки.
+    const auto policy = Subscription::DeserializeProviderPolicy(ent->provider_policy_json);
+    if (!policy.isEmpty()) {
+        QStringList lines;
+        if (!policy.announce.isEmpty())   lines << policy.announce;
+        if (!policy.supportUrl.isEmpty()) lines << tr("Support: %1").arg(policy.supportUrl);
+        if (policy.refillDate > 0) {
+            lines << tr("Refill date: %1")
+                        .arg(QDateTime::fromSecsSinceEpoch(policy.refillDate).toString(Qt::ISODate));
+        }
+        if (!lines.isEmpty()) ui->url->setToolTip(lines.join("\n"));
+    }
     ui->type->setCurrentIndex(ent->url.isEmpty() ? 0 : 1);
     ui->type->currentIndexChanged(ui->type->currentIndex());
     ui->cat_share->setVisible(false);

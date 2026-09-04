@@ -344,6 +344,11 @@ void MainWindow::on_menu_profile_debug_info_triggered() {
                     stream << "Last update timestamp: " << group->sub_last_update << "\n";
                     stream << "Skip auto update: " << (group->skip_auto_update ? "Yes" : "No") << "\n";
                     stream << "Auto clear unavailable: " << (group->auto_clear_unavailable ? "Yes" : "No") << "\n";
+                    // Политика содержит только настройки, учётных данных в ней нет.
+                    stream << "Provider policy: "
+                           << (group->provider_policy_json.isEmpty() ? QString("[none]")
+                                                                     : group->provider_policy_json)
+                           << "\n";
                 }
                 
                 if (group->front_proxy_id >= 0) {
