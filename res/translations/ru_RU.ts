@@ -6225,6 +6225,22 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Пока эта подписка подключена, маршрутизацией управляет ваш провайдер. Отключитесь, чтобы изменить её.</translation>
     </message>
     <message>
+        <source>DNS</source>
+        <translation>DNS</translation>
+    </message>
+    <message>
+        <source>Through the VPN</source>
+        <translation>Через VPN</translation>
+    </message>
+    <message>
+        <source>Direct traffic</source>
+        <translation>Прямой трафик</translation>
+    </message>
+    <message>
+        <source>The first resolves names for tunnelled traffic, the second for everything that goes direct.</source>
+        <translation>Первый разрешает имена для трафика в туннеле, второй — для всего, что идёт напрямую.</translation>
+    </message>
+    <message>
         <source>Subscriptions</source>
         <translation>Подписки</translation>
     </message>
@@ -6947,6 +6963,10 @@ URL: %2</translation>
     <message>
         <source>Not Running</source>
         <translation>Не запущен</translation>
+    </message>
+    <message>
+        <source>Listening on all interfaces (%1)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Select</source>
@@ -8711,6 +8731,14 @@ Release note:
     <message>
         <source>Cancel</source>
         <translation type="unfinished">Отмена</translation>
+    </message>
+    <message>
+        <source>Custom: %1</source>
+        <translation>Свой: %1</translation>
+    </message>
+    <message>
+        <source>Local</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

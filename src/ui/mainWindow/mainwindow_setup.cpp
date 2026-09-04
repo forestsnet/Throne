@@ -78,15 +78,7 @@
 void UI_InitMainWindow() {
     auto &settings = Configs::dataManager->settingsRepo;
 
-    // Установка считается существующей, если в базе уже есть группа с профилями:
-    // свежая база содержит только пустую группу по умолчанию.
-    bool hasContent = false;
-    for (int gid : Configs::dataManager->groupsRepo->GetAllGroupIds()) {
-        const auto group = Configs::dataManager->groupsRepo->GetGroup(gid);
-        if (group && !group->Profiles().isEmpty()) { hasContent = true; break; }
-    }
-
-    const auto mode = Fsnt::ResolveInitialUiMode(settings->ui_mode, hasContent);
+    const auto mode = Fsnt::ResolveInitialUiMode(settings->ui_mode);
     if (settings->ui_mode != static_cast<int>(mode)) {
         settings->ui_mode = static_cast<int>(mode);
         settings->Save();

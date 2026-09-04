@@ -66,6 +66,7 @@ FsntSettingsDialog::FsntSettingsDialog(QWidget *parent) : QDialog(parent) {
     column->setSpacing(18);
 
     buildConnection(column, host);
+    buildDns(column, host);
     buildSubscriptions(column, host);
     buildApplication(column, host);
     column->addStretch();
@@ -144,6 +145,52 @@ void FsntSettingsDialog::buildConnection(QVBoxLayout *column, QWidget *host) {
         card.addNote(tr("Routing is managed by your provider while this subscription is "
                         "connected. Disconnect to change it."));
     }
+}
+
+namespace {
+    // Готовые серверы. Все по DoH или DoT: обычный DNS по 53 порту виден
+    // провайдеру целиком, и прятать трафик в туннель, оставляя запросы
+    // открытыми, бессмысленно.
+    struct DnsPreset { const char *label; const char *value; };
+    constexpr DnsPreset kDnsPresets[] = {
+        {"Cloudflare (1.1.1.1)", "https://1.1.1.1/dns-query"},
+        {"Quad9 (9.9.9.9)",      "https://9.9.9.9/dns-query"},
+        {"Google (8.8.8.8)",     "https://8.8.8.8/dns-query"},
+        {"AdGuard",              "https://dns.adguard-dns.com/dns-query"},
+        {"Yandex",               "tls://77.88.8.8"},
+    };
+
+    // Заполняет список и выбирает текущее значение. Своё значение из
+    // расширенного режима не теряем: добавляем его отдельным пунктом.
+    void fillDns(FsntSelect *box, const QString &current) {
+        for (const auto &[label, value] : kDnsPresets) {
+            box->addItem(QString::fromUtf8(label), QString::fromUtf8(value));
+        }
+        for (int i = 0; i < box->count(); ++i) {
+            if (box->itemData(i).toString() == current) {
+                box->setCurrentIndex(i);
+                return;
+            }
+        }
+        box->addItem(QObject::tr("Custom: %1").arg(current), current);
+        box->setCurrentIndex(box->count() - 1);
+    }
+}
+
+void FsntSettingsDialog::buildDns(QVBoxLayout *column, QWidget *host) {
+    Fsnt::SettingsCard card(column, host, tr("DNS"));
+    const auto &settings = Configs::dataManager->settingsRepo;
+
+    m_remoteDns = makeSelect(host);
+    fillDns(m_remoteDns, settings->remote_dns);
+    card.addControl(tr("Through the VPN"), m_remoteDns);
+
+    m_directDns = makeSelect(host);
+    fillDns(m_directDns, settings->direct_dns);
+    card.addControl(tr("Direct traffic"), m_directDns);
+
+    card.addNote(tr("The first resolves names for tunnelled traffic, the second for "
+                    "everything that goes direct."));
 }
 
 void FsntSettingsDialog::buildSubscriptions(QVBoxLayout *column, QWidget *host) {
@@ -225,6 +272,8 @@ void FsntSettingsDialog::save() {
     settings->start_minimal = m_startMinimal->isChecked();
     settings->remember_enable = m_autoConnect->isChecked();
     settings->inbound_address = m_allowLan->isChecked() ? "::" : "127.0.0.1";
+    settings->remote_dns = m_remoteDns->currentData().toString();
+    settings->direct_dns = m_directDns->currentData().toString();
 
     // m_route отсутствует, когда маршрутизацией управляет провайдер.
     if (m_route != nullptr && m_route->currentIndex() >= 0) {

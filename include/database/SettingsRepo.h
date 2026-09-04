@@ -184,9 +184,11 @@ namespace Configs {
         // Same sign-encoded interval scheme as sub_auto_update.
         int route_auto_update = -1440;
         qint64 route_auto_update_last = 0;
-        QString remote_dns = "https://8.8.8.8/dns-query";
+        // DNS для трафика через VPN и для прямого. Cloudflare основным,
+        // Quad9 запасным: оба по DoH, запрос не виден провайдеру.
+        QString remote_dns = "https://1.1.1.1/dns-query";
         bool remote_dns_disable_ipv6 = false;
-        QString direct_dns = "tls://77.88.8.8";
+        QString direct_dns = "https://9.9.9.9/dns-query";
         bool direct_dns_disable_ipv6 = false;
         int dns_cache_capacity = 65536;
         bool dns_disable_cache = false;

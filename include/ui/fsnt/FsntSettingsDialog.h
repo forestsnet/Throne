@@ -23,6 +23,7 @@ private:
 
     void buildConnection(QVBoxLayout *column, QWidget *host);
     void buildSubscriptions(QVBoxLayout *column, QWidget *host);
+    void buildDns(QVBoxLayout *column, QWidget *host);
     void buildApplication(QVBoxLayout *column, QWidget *host);
 
     // Дёргает действие расширенного режима по имени. Так переиспользуются его
@@ -38,4 +39,6 @@ private:
     FsntSwitch *m_allowLan = nullptr;
     FsntSwitch *m_autoRun = nullptr;
     FsntSelect *m_theme = nullptr;
+    FsntSelect *m_remoteDns = nullptr;
+    FsntSelect *m_directDns = nullptr;
 };

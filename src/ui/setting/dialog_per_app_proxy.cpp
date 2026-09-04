@@ -2,6 +2,7 @@
 
 #include "include/ui/setting/dialog_per_app_proxy.h"
 
+#include <QDir>
 #include <QFileIconProvider>
 #include <QFileInfo>
 #include <QHBoxLayout>
@@ -51,7 +52,10 @@ namespace {
     // Отличаем приложение пользователя от системной службы. Без этого список —
     // сотни строк вроде cfprefsd, и найти в нём свой браузер невозможно.
     bool looksLikeUserApp(const QString &path) {
-        if (path.isEmpty() || !path.contains('/')) return false;
+        // Разделитель проверяем оба: в Windows путь идёт с обратным слэшем, и
+        // проверка только на '/' помечала системным вообще всё, из-за чего
+        // список приложений оказывался пустым.
+        if (path.isEmpty() || (!path.contains('/') && !path.contains('\\'))) return false;
 
 #ifdef Q_OS_MACOS
         // .appex — виджет или расширение внутри приложения, а не приложение.
@@ -76,10 +80,16 @@ QList<DialogPerAppProxy::AppEntry> DialogPerAppProxy::runningApplications() {
     QProcess process;
 #ifdef Q_OS_WIN
     // tasklist не отдаёт путь, а без пути нет ни иконки, ни отсева системных.
+    //
+    // OutputEncoding задаём явно: по умолчанию PowerShell пишет в кодировке
+    // консоли, а не в UTF-8, и путь с кириллицей приезжал мусором.
+    // SilentlyContinue — у процессов другого пользователя чтение Path кидает
+    // отказ в доступе, и без этого поток ошибок забивал вывод.
     process.start("powershell", QStringList()
         << "-NoProfile" << "-NonInteractive" << "-Command"
-        << "Get-Process | Where-Object { $_.Path } | "
-           "Select-Object -ExpandProperty Path -Unique");
+        << "[Console]::OutputEncoding=[Text.Encoding]::UTF8; "
+           "Get-Process -ErrorAction SilentlyContinue | "
+           "ForEach-Object { $_.Path } | Where-Object { $_ } | Sort-Object -Unique");
 #else
     process.start("ps", QStringList() << "ax" << "-o" << "comm=");
 #endif
@@ -90,7 +100,7 @@ QList<DialogPerAppProxy::AppEntry> DialogPerAppProxy::runningApplications() {
     QMap<QString, AppEntry> groups;
     for (const QString &raw : QString::fromUtf8(process.readAllStandardOutput())
                                   .split('\n', Qt::SkipEmptyParts)) {
-        const QString path = raw.trimmed();
+        const QString path = QDir::fromNativeSeparators(raw.trimmed());
         // Ядерные потоки ps печатает в скобках, исполняемого файла у них нет.
         if (path.isEmpty() || path.startsWith('[')) continue;
 

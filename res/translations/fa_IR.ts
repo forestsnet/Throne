@@ -6228,6 +6228,22 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>DNS</source>
+        <translation type="unfinished">دی‌ان‌اس</translation>
+    </message>
+    <message>
+        <source>Through the VPN</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Direct traffic</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The first resolves names for tunnelled traffic, the second for everything that goes direct.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Subscriptions</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6822,6 +6838,10 @@ URL: %2</source>
     <message>
         <source>Not Running</source>
         <translation>در حال اجرا نیست</translation>
+    </message>
+    <message>
+        <source>Listening on all interfaces (%1)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Select</source>
@@ -8673,6 +8693,14 @@ Release note:
     <message>
         <source>Cancel</source>
         <translation type="unfinished">لغو کردن</translation>
+    </message>
+    <message>
+        <source>Custom: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Local</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

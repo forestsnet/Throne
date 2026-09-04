@@ -7,9 +7,8 @@ namespace Fsnt {
     };
 
     // storedValue: значение settingsRepo->ui_mode; -1 означает "никогда не задавалось".
-    // databaseHasContent: в базе уже есть группы с профилями, то есть установка не новая.
     //
-    // Новая установка получает простой режим. Существующая остаётся в расширенном:
-    // интерфейс не должен смениться под ногами после обновления.
-    UiMode ResolveInitialUiMode(int storedValue, bool databaseHasContent);
+    // Пока выбор не сделан — простой режим. Явно выбранный режим сохраняется и
+    // переживает обновления: переключение живёт в меню окна.
+    UiMode ResolveInitialUiMode(int storedValue);
 }

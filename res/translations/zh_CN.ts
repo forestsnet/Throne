@@ -6235,6 +6235,22 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>DNS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Through the VPN</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Direct traffic</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The first resolves names for tunnelled traffic, the second for everything that goes direct.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Subscriptions</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6845,6 +6861,10 @@ URL: %2</translation>
     <message>
         <source>Not Running</source>
         <translation>未在运行</translation>
+    </message>
+    <message>
+        <source>Listening on all interfaces (%1)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Select</source>
@@ -8698,6 +8718,14 @@ Release note:
     <message>
         <source>Cancel</source>
         <translation type="unfinished">取消</translation>
+    </message>
+    <message>
+        <source>Custom: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Local</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
