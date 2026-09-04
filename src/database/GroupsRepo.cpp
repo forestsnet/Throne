@@ -36,6 +36,7 @@ namespace Configs {
                 traffic_sort_by INTEGER NOT NULL DEFAULT 0,
                 test_items_to_show INTEGER NOT NULL DEFAULT 0,
                 type_sort_by INTEGER NOT NULL DEFAULT 0,
+                provider_policy_json TEXT NOT NULL DEFAULT '',
                 created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
                 updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
             )
@@ -43,6 +44,9 @@ namespace Configs {
         // Migrate existing databases created before type_sort_by was added.
         if (!groupsColumnExists("type_sort_by"))
             db.exec("ALTER TABLE groups ADD COLUMN type_sort_by INTEGER NOT NULL DEFAULT 0");
+        // Migrate existing databases created before provider_policy_json was added.
+        if (!groupsColumnExists("provider_policy_json"))
+            db.exec("ALTER TABLE groups ADD COLUMN provider_policy_json TEXT NOT NULL DEFAULT ''");
 
         db.exec(R"(
             CREATE TABLE IF NOT EXISTS groups_order (
@@ -105,6 +109,7 @@ namespace Configs {
         group->traffic_sort_by = static_cast<trafficBy>(json["traffic_sort_by"].toInt(0));
         group->type_sort_by = static_cast<typeBy>(json["type_sort_by"].toInt(0));
         group->test_items_to_show = static_cast<testShowItems>(json["test_items_to_show"].toInt(0));
+        group->provider_policy_json = json["provider_policy_json"].toString();
         
         return group;
     }
@@ -124,8 +129,8 @@ namespace Configs {
             (id, archive, skip_auto_update, auto_clear_unavailable, name, url, info, sub_last_update,
              front_proxy_id, landing_proxy_id,
              column_width_json, profiles_json, scroll_last_profile, test_sort_by, traffic_sort_by, test_items_to_show,
-             type_sort_by)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             type_sort_by, provider_policy_json)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
                 archive = excluded.archive, skip_auto_update = excluded.skip_auto_update,
                 auto_clear_unavailable = excluded.auto_clear_unavailable, name = excluded.name,
@@ -135,6 +140,7 @@ namespace Configs {
                 scroll_last_profile = excluded.scroll_last_profile, test_sort_by = excluded.test_sort_by,
                 traffic_sort_by = excluded.traffic_sort_by, test_items_to_show = excluded.test_items_to_show,
                 type_sort_by = excluded.type_sort_by,
+                provider_policy_json = excluded.provider_policy_json,
                 updated_at = strftime('%s', 'now')
         )",
             id,
@@ -153,7 +159,8 @@ namespace Configs {
             static_cast<int>(group->test_sort_by),
             static_cast<int>(group->traffic_sort_by),
             static_cast<int>(group->test_items_to_show),
-            static_cast<int>(group->type_sort_by)
+            static_cast<int>(group->type_sort_by),
+            group->provider_policy_json.toStdString()
         );
     }
 
@@ -162,7 +169,7 @@ namespace Configs {
             SELECT id, archive, skip_auto_update, auto_clear_unavailable, name, url, info, sub_last_update,
                    front_proxy_id, landing_proxy_id,
                    column_width_json, profiles_json, scroll_last_profile, test_sort_by, traffic_sort_by, test_items_to_show,
-                   type_sort_by
+                   type_sort_by, provider_policy_json
             FROM groups WHERE id = ?
         )", id);
         if (!query || !query->executeStep()) {
@@ -202,6 +209,7 @@ namespace Configs {
         json["traffic_sort_by"] = query->getColumn(14).getInt();
         json["test_items_to_show"] = query->getColumn(15).getInt();
         json["type_sort_by"] = query->getColumn(16).getInt();
+        json["provider_policy_json"] = QString::fromStdString(query->getColumn(17).getText());
 
         auto group = groupFromJson(json);
         // Refreshes could map several identical servers onto one id, leaving it in the persisted list once per server (#1775).

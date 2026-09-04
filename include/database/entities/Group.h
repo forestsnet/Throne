@@ -42,6 +42,7 @@ namespace Configs
         QString name = "";
         QString url = "";
         QString info = "";
+        QString provider_policy_json = "";   // ProviderPolicy, сериализованная; пусто = политики нет
         qint64 sub_last_update = 0;
         int front_proxy_id = -1;
         int landing_proxy_id = -1;
