@@ -305,6 +305,7 @@ void MainWindow::profile_start(int _id) {
                 return false;
             }
             if (error.contains("configure tun interface")) {
+                const int profileId = ent->id;
                 runOnUiThread([=, this] {
 
                     QMessageBox msg(
@@ -314,7 +315,7 @@ void MainWindow::profile_start(int _id) {
                         QMessageBox::NoButton,
                         this
                     );
-                    auto reset = msg.addButton(tr("Reset"), QMessageBox::ActionRole);
+                    auto reset = msg.addButton(tr("Reset and Restart"), QMessageBox::ActionRole);
                     auto cancel = msg.addButton(tr("Cancel"), QMessageBox::ActionRole);
 
                     msg.setDefaultButton(cancel);
@@ -323,6 +324,11 @@ void MainWindow::profile_start(int _id) {
                     msg.exec();
                     if (msg.clickedButton() == reset) {
                         RestartCore();
+                        // Диалог обещает "then try starting the profile again" — делаем это сами,
+                        // дав ядру время полностью подняться после перезапуска.
+                        setTimeout([=, this] {
+                            profile_start(profileId);
+                        }, this, 1000);
                     }
                 });
                 return false;

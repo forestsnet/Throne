@@ -3623,6 +3623,66 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
 <context>
     <name>MainWindow</name>
     <message>
+        <source>Speedtest</source>
+        <translation>Тест скорости</translation>
+    </message>
+    <message>
+        <source>Ping</source>
+        <translation>Пинг</translation>
+    </message>
+    <message>
+        <source>Ping Test</source>
+        <translation>Проверка пинга</translation>
+    </message>
+    <message>
+        <source>No profiles in current group.</source>
+        <translation>В текущей группе нет профилей.</translation>
+    </message>
+    <message>
+        <source>Service Menu</source>
+        <translation>Служебное меню</translation>
+    </message>
+    <message>
+        <source>Update / Github</source>
+        <translation>Обновление / Github</translation>
+    </message>
+    <message>
+        <source>Check for updates</source>
+        <translation>Проверить обновления</translation>
+    </message>
+    <message>
+        <source>Updater not found. Please update manually from GitHub.</source>
+        <translation>Обновлятор не найден. Обновите вручную с GitHub.</translation>
+    </message>
+    <message>
+        <source>Open GitHub Releases</source>
+        <translation>Открыть релизы на GitHub</translation>
+    </message>
+    <message>
+        <source>Open Repository</source>
+        <translation>Открыть репозиторий</translation>
+    </message>
+    <message>
+        <source>Updater not found! Please download update manually.</source>
+        <translation>Обновлятор не найден! Загрузите обновление вручную.</translation>
+    </message>
+    <message>
+        <source>Failed to prepare update environment!</source>
+        <translation>Не удалось подготовить окружение для обновления!</translation>
+    </message>
+    <message>
+        <source>Update is ready. The update will be installed on next application restart.</source>
+        <translation>Обновление готово и будет установлено при следующем запуске приложения.</translation>
+    </message>
+    <message>
+        <source>Reset and Restart</source>
+        <translation>Сброс и перезапуск</translation>
+    </message>
+    <message>
+        <source>Updating existing subscription for domain: %1</source>
+        <translation>Обновляется существующая подписка для домена: %1</translation>
+    </message>
+    <message>
         <source>Program</source>
         <translation>Программа</translation>
     </message>

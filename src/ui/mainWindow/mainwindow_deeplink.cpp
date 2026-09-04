@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QStringConverter>
 #include <QUrl>
+#include <QUrlQuery>
 
 #include "3rdparty/QrDecoder.h"
 #include "include/configs/sub/GroupUpdater.hpp"
@@ -130,6 +131,18 @@ void MainWindow::handle_deeplink_impl(const QString &url) {
         return;
     }
 
+    // Форма форка: throne://subscribe?url=<percent-encoded>. Ссылки такого вида
+    // уже разошлись у пользователей, поэтому поддерживаем наравне с addsub.
+    if (cmd.compare("subscribe", Qt::CaseInsensitive) == 0) {
+        const QString subUrl = QUrlQuery(u).queryItemValue("url", QUrl::FullyDecoded);
+        if (subUrl.isEmpty()) {
+            MessageBoxWarning(tr("Add subscription"), tr("The link did not contain a subscription URL."));
+            return;
+        }
+        handle_addsub(subUrl, {});
+        return;
+    }
+
     QString base64 = u.path();
     if (base64.startsWith('/')) {
         base64 = base64.mid(1);
@@ -233,6 +246,24 @@ void MainWindow::handle_addsub(const QString &url, const QString &name) {
     bool autoUpdate = true;
     if (MessageBoxCheck(tr("Add subscription"), prompt, tr("Auto update"), autoUpdate) != QMessageBox::Ok) {
         return;
+    }
+
+    // Если подписка на этот домен уже заведена, обновляем её, а не плодим дубль.
+    const QString host = QUrl(url).host();
+    if (!host.isEmpty()) {
+        for (int gid : Configs::dataManager->groupsRepo->GetAllGroupIds()) {
+            auto existing = Configs::dataManager->groupsRepo->GetGroup(gid);
+            if (!existing || existing->url.isEmpty()) continue;
+            if (QUrl(existing->url).host() != host) continue;
+
+            MW_show_log(tr("Updating existing subscription for domain: %1").arg(host));
+            existing->url = url;
+            existing->skip_auto_update = !autoUpdate;
+            Configs::dataManager->groupsRepo->Save(existing);
+            refresh_groups();
+            Subscription::updater()->RefreshGroup(existing->id);
+            return;
+        }
     }
 
     auto group = Configs::GroupsRepo::NewGroup();
