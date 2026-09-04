@@ -97,6 +97,7 @@ namespace Configs {
             {"test_concurrent",        &test_concurrent},
             {"remember_id",            &remember_id},
             {"language",               &language},
+            {"ui_mode",                &ui_mode},
             {"font_size",              &font_size},
             {"max_log_line",           &max_log_line},
             {"stats_tab",              &stats_tab},
