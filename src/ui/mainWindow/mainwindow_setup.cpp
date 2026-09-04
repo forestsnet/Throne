@@ -90,10 +90,15 @@ void UI_InitMainWindow() {
         settings->Save();
     }
 
+    // MainWindow создаётся всегда: он регистрирует колбэки ядра, применяет тему,
+    // держит трей и горячие клавиши. В простом режиме он служит движком и не
+    // показывается — лицом работает FsntWindow. Так в код, который правит upstream,
+    // не вносится ни одной правки ради нового интерфейса.
+    mainwindow = new MainWindow;
+
     if (mode == Fsnt::UiMode::Simple) {
+        mainwindow->hide();
         new FsntWindow;
-    } else {
-        mainwindow = new MainWindow;
     }
 }
 

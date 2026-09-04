@@ -5647,4 +5647,23 @@ processName rules in the current routing profile.</source>
         <translation>Здесь появятся подключение и подписка</translation>
     </message>
 </context>
+<context>
+    <name>ConnectPanel</name>
+    <message>
+        <source>Connected</source>
+        <translation>Подключено</translation>
+    </message>
+    <message>
+        <source>Disconnected</source>
+        <translation>Отключено</translation>
+    </message>
+    <message>
+        <source>No server selected</source>
+        <translation>Сервер не выбран</translation>
+    </message>
+    <message>
+        <source>Add a subscription first</source>
+        <translation>Сначала добавьте подписку</translation>
+    </message>
+</context>
 </TS>

@@ -11,6 +11,7 @@
 
 #include "include/database/SettingsRepo.h"
 #include "include/global/Configs.hpp"
+#include "include/ui/fsnt/ConnectPanel.h"
 #include "include/ui/fsnt/FsntTheme.hpp"
 #include "include/ui/fsnt/UiMode.hpp"
 #include "include/global/Logger.hpp"
@@ -22,11 +23,8 @@ FsntWindow::FsntWindow(QWidget *parent) : QMainWindow(parent) {
     resize(880, 560);
     setMinimumSize(760, 500);
 
-    registerCoreCallbacks();
-
-    // Тема глобальная и применяется тем окном, которое стартует. MainWindow делает
-    // это в своём конструкторе; без этого вызова палитра остаётся пустой и всё чёрное.
-    themeManager()->ApplyTheme(Configs::dataManager->settingsRepo->theme);
+    // Тему и колбэки ядра уже поставил MainWindow: он создаётся раньше и служит движком.
+    chainCoreMessages();
 
     auto *central = new QWidget(this);
     central->setObjectName("fsntRoot");
@@ -47,31 +45,29 @@ FsntWindow::FsntWindow(QWidget *parent) : QMainWindow(parent) {
 }
 
 
-void FsntWindow::registerCoreCallbacks() {
-    // Ядро вызывает окно обратно через эти глобальные std::function. MainWindow
-    // регистрирует их в своём конструкторе; без регистрации первый же вызов из
-    // ядра падает с std::bad_function_call.
-    //
-    // В каркасе реализации минимальные: логи уходят в общий журнал, остальные
-    // сообщения пока не обрабатываются — их наполняют следующие приросты.
-    MW_show_log = [](const QString &message) {
-        Logging::WriteUserLog(message);
+void FsntWindow::chainCoreMessages() {
+    // Ядро шлёт состояние через единственный MW_dialog_message, и его владелец —
+    // MainWindow. Не перехватываем, а оборачиваем: прежний обработчик вызывается
+    // как обычно, мы лишь узнаём о событии дополнительно.
+    auto previous = MW_dialog_message;
+    MW_dialog_message = [this, previous](MwMessage cmd, QStringList args) {
+        if (previous) previous(cmd, args);
+        QMetaObject::invokeMethod(this, [this, cmd, args] { onCoreMessage(cmd, args); },
+                                  Qt::QueuedConnection);
     };
+}
 
-    MW_dialog_message = [](MwMessage cmd, QStringList args) {
-        Q_UNUSED(args)
-        LOG_DEBUG(QString("[FSNT] unhandled dialog message: %1").arg(static_cast<int>(cmd)));
-    };
-
-    MW_handle_deeplink = [](const QString &url) {
-        Q_UNUSED(url)
-        LOG_DEBUG("[FSNT] deeplink ignored: no handler in the shell yet");
-    };
-
-    MW_import_files = [](const QStringList &paths) {
-        Q_UNUSED(paths)
-        LOG_DEBUG("[FSNT] file import ignored: no handler in the shell yet");
-    };
+void FsntWindow::onCoreMessage(MwMessage cmd, const QStringList &args) {
+    Q_UNUSED(args)
+    switch (cmd) {
+        case MwMessage::CoreStarted:
+        case MwMessage::CoreCrashed:
+        case MwMessage::ProfileChanged:
+            refreshConnectionState();
+            break;
+        default:
+            break;
+    }
 }
 
 void FsntWindow::buildHeader(QVBoxLayout *root) {
@@ -125,15 +121,17 @@ void FsntWindow::buildPanels(QVBoxLayout *root) {
     m_sideLayout->setContentsMargins(Fsnt::kPanelPadding, Fsnt::kPanelPadding,
                                      Fsnt::kPanelPadding, Fsnt::kPanelPadding);
 
-    auto *sideStub = new QLabel(tr("Connection and subscription appear here"), sidePanel);
-    sideStub->setObjectName("fsntPlaceholder");
-    sideStub->setAlignment(Qt::AlignCenter);
-    m_sideLayout->addWidget(sideStub);
+    m_connectPanel = new ConnectPanel(sidePanel);
+    m_sideLayout->addWidget(m_connectPanel);
 
     columns->addWidget(serverPanel, 105);
     columns->addWidget(sidePanel, 100);
 
     root->addWidget(body, 1);
+}
+
+void FsntWindow::refreshConnectionState() {
+    if (m_connectPanel != nullptr) m_connectPanel->refresh();
 }
 
 void FsntWindow::applyTheme() {

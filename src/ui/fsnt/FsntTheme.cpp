@@ -33,6 +33,23 @@ namespace Fsnt {
             QToolButton#fsntIconButton:hover { background: %7; }
 
             QLabel#fsntPlaceholder { color: %8; font-size: 13px; }
+
+            QLabel#fsntElapsed { color: %2; font-size: 26px; }
+            QLabel#fsntStatus { color: %8; font-size: 13px; }
+            QLabel#fsntCurrentServer { color: %2; font-size: 14px; }
+
+            QPushButton#fsntPowerButton {
+                border: 2px solid %3;
+                border-radius: 60px;
+                background: transparent;
+                color: %8;
+                font-size: 34px;
+            }
+            QPushButton#fsntPowerButton:hover { border-color: %4; }
+            QPushButton#fsntPowerButton[connected="true"] {
+                border-color: %9;
+                color: %9;
+            }
         )")
             .arg(c(t.surface),                    // 1
                  c(t.onSurface),                  // 2
@@ -41,6 +58,7 @@ namespace Fsnt {
                  c(t.onAccent),                   // 5
                  QString::number(kRowRadius),     // 6
                  c(t.hoverFill),                  // 7
-                 c(t.muted));                     // 8
+                 c(t.muted),                      // 8
+                 c(t.success));                   // 9
     }
 }

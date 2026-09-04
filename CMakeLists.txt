@@ -339,6 +339,10 @@ set(PROJECT_SOURCES
         src/ui/fsnt/FsntWindow.cpp
 
         include/ui/fsnt/FsntWindow.h
+
+        src/ui/fsnt/ConnectPanel.cpp
+
+        include/ui/fsnt/ConnectPanel.h
         include/ui/setting/dialog_per_app_proxy.h
         include/ui/setting/dialog_basic_settings.h
         include/ui/setting/dialog_basic_settings.ui
