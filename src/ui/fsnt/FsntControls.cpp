@@ -1,6 +1,11 @@
 #include "include/ui/fsnt/FsntControls.h"
 
 #include <QAbstractItemView>
+#include <QDialog>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
 #include <QBrush>
 #include <QTransform>
 #include <QtMath>
@@ -409,3 +414,50 @@ void FsntIconButton::leaveEvent(QEvent *event) {
     m_hovered = false;
     update();
 }
+
+// ---------------------------------------------------------------- подтверждение
+
+namespace Fsnt {
+    bool Confirm(QWidget *parent, const QString &title, const QString &text,
+                 const QString &acceptText) {
+        QDialog dialog(parent);
+        dialog.setObjectName(QStringLiteral("fsntDialog"));
+        dialog.setWindowTitle(title);
+        dialog.setModal(true);
+        dialog.setStyleSheet(BuildStyleSheet());
+
+        auto *layout = new QVBoxLayout(&dialog);
+        layout->setContentsMargins(24, 22, 24, 20);
+        layout->setSpacing(12);
+
+        auto *heading = new QLabel(title, &dialog);
+        heading->setObjectName(QStringLiteral("fsntDialogTitle"));
+        layout->addWidget(heading);
+
+        auto *body = new QLabel(text, &dialog);
+        body->setObjectName(QStringLiteral("fsntDialogHint"));
+        body->setWordWrap(true);
+        body->setMinimumWidth(320);
+        layout->addWidget(body);
+        layout->addSpacing(6);
+
+        auto *cancel = new QPushButton(QObject::tr("Cancel"), &dialog);
+        cancel->setObjectName(QStringLiteral("fsntGhost"));
+        cancel->setCursor(Qt::PointingHandCursor);
+        QObject::connect(cancel, &QPushButton::clicked, &dialog, &QDialog::reject);
+
+        auto *accept = new QPushButton(acceptText, &dialog);
+        accept->setObjectName(QStringLiteral("fsntPrimary"));
+        accept->setCursor(Qt::PointingHandCursor);
+        accept->setDefault(true);
+        QObject::connect(accept, &QPushButton::clicked, &dialog, &QDialog::accept);
+
+        auto *buttons = new QHBoxLayout;
+        buttons->addStretch();
+        buttons->addWidget(cancel);
+        buttons->addWidget(accept);
+        layout->addLayout(buttons);
+
+        return dialog.exec() == QDialog::Accepted;
+    }
+} // namespace Fsnt

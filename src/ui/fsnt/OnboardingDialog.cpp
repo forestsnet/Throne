@@ -1,7 +1,6 @@
 #include "include/ui/fsnt/OnboardingDialog.h"
 
 #include <QApplication>
-#include <QCheckBox>
 #include <QClipboard>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -21,6 +20,7 @@
 #include "include/global/Utils.hpp"
 #include "include/sys/AutoRun.hpp"
 #include "include/ui/fsnt/FsntPalette.hpp"
+#include "include/ui/fsnt/FsntControls.h"
 #include "include/ui/fsnt/FsntTheme.hpp"
 
 namespace {
@@ -317,10 +317,14 @@ QWidget *OnboardingDialog::buildFinish() {
     layout->addWidget(caption(page, tr("Pick a server on the left and press the power button.")));
     layout->addSpacing(10);
 
-    m_autoRun = new QCheckBox(tr("Launch FSNT Client at login"), page);
+    m_autoRun = new FsntSwitch(page);
     m_autoRun->setChecked(AutoRun_IsEnabled());
+    auto *autoRunLabel = new QLabel(tr("Launch FSNT Client at login"), page);
+    autoRunLabel->setObjectName("fsntRowLabel");
     auto *checkRow = new QHBoxLayout;
+    checkRow->setSpacing(10);
     checkRow->addStretch();
+    checkRow->addWidget(autoRunLabel);
     checkRow->addWidget(m_autoRun);
     checkRow->addStretch();
     layout->addLayout(checkRow);

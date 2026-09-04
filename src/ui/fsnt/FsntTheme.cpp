@@ -89,18 +89,8 @@ namespace Fsnt {
             }
             QPushButton#fsntGhost:hover { border-color: @accent; color: @accent; }
 
-            QPushButton#fsntIconSquare {
-                background: @card;
-                border: 1px solid @border;
-                border-radius: @rowRadiuspx;
-                color: @muted;
-                font-size: 15px;
-            }
-            QPushButton#fsntIconSquare:hover { border-color: @accent; color: @accent; }
-
             /* ---- поля ---- */
-            QComboBox#fsntGroupSwitch, QLineEdit#fsntSearch, QLineEdit#fsntInput,
-            QComboBox#fsntSelect {
+            QLineEdit#fsntSearch, QLineEdit#fsntInput {
                 background: @card;
                 border: 1px solid @border;
                 border-radius: @rowRadiuspx;
@@ -109,33 +99,7 @@ namespace Fsnt {
                 font-size: 13px;
                 selection-background-color: @accent;
             }
-            QLineEdit#fsntSearch:focus, QLineEdit#fsntInput:focus,
-            QComboBox#fsntGroupSwitch:focus, QComboBox#fsntSelect:focus {
-                border-color: @accent;
-            }
-            QComboBox#fsntGroupSwitch::drop-down, QComboBox#fsntSelect::drop-down {
-                border: none;
-                width: 22px;
-            }
-            QComboBox QAbstractItemView {
-                background: @card;
-                border: 1px solid @border;
-                border-radius: @rowRadiuspx;
-                color: @text;
-                selection-background-color: @accentSoft;
-                outline: none;
-                padding: 4px;
-            }
-
-            QCheckBox { color: @text; font-size: 13px; spacing: 8px; }
-            QCheckBox::indicator {
-                width: 17px; height: 17px;
-                border: 1px solid @border;
-                border-radius: 5px;
-                background: @card;
-            }
-            QCheckBox::indicator:hover { border-color: @accent; }
-            QCheckBox::indicator:checked { background: @accent; border-color: @accent; }
+            QLineEdit#fsntSearch:focus, QLineEdit#fsntInput:focus { border-color: @accent; }
 
             /* ---- вкладки-пилюли ---- */
             QWidget#fsntTabStrip {

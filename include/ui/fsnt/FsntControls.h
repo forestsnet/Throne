@@ -5,6 +5,7 @@
 #include <QIcon>
 
 class QPainter;
+class QWidget;
 class QVariantAnimation;
 
 namespace Fsnt {
@@ -26,6 +27,11 @@ namespace Fsnt {
 
     // Нарисовать значок прямо в переданный прямоугольник.
     void PaintGlyph(QPainter *painter, Glyph glyph, const QRectF &box, const QColor &color);
+
+    // Вопрос «да/нет» в оформлении простого режима. QMessageBox рисуется
+    // стилем платформы и посреди клиентского окна выглядит чужим.
+    bool Confirm(QWidget *parent, const QString &title, const QString &text,
+                 const QString &acceptText);
 } // namespace Fsnt
 
 // Современные замены штатным виджетам.

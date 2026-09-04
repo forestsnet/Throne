@@ -2,7 +2,7 @@
 
 #include <QDialog>
 
-class QCheckBox;
+class FsntSwitch;
 class QLabel;
 class QLineEdit;
 class QPushButton;
@@ -51,5 +51,5 @@ private:
 
     QPushButton *m_tun = nullptr;
     QPushButton *m_proxy = nullptr;
-    QCheckBox *m_autoRun = nullptr;
+    FsntSwitch *m_autoRun = nullptr;
 };

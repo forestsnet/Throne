@@ -4,7 +4,6 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QSvgRenderer>
-#include <QMessageBox>
 #include <QPainter>
 #include <QProcess>
 #include <QTimer>
@@ -139,13 +138,10 @@ void FsntWindow::buildHeader(QVBoxLayout *root) {
 
     row->addStretch();
 
-    auto *settings = new QToolButton(header);
-    settings->setObjectName("fsntGearButton");
-    settings->setText("⚙");
+    auto *settings = new FsntIconButton(Fsnt::Glyph::Gear, header);
     settings->setFixedSize(38, 38);
-    settings->setCursor(Qt::PointingHandCursor);
     settings->setToolTip(tr("Settings"));
-    connect(settings, &QToolButton::clicked, this, [this] {
+    connect(settings, &FsntIconButton::clicked, this, [this] {
         auto *dialog = new FsntSettingsDialog(this);
         connect(dialog, &FsntSettingsDialog::advancedModeRequested,
                 this, &FsntWindow::switchToAdvancedMode);
@@ -233,10 +229,11 @@ void FsntWindow::applyTheme() {
 }
 
 void FsntWindow::switchToAdvancedMode() {
-    const auto answer = QMessageBox::question(
-        this, tr("Advanced mode"),
-        tr("The application will restart in the advanced interface. Continue?"));
-    if (answer != QMessageBox::StandardButton::Yes) return;
+    if (!Fsnt::Confirm(this, tr("Advanced mode"),
+                       tr("The application will restart in the advanced interface. Continue?"),
+                       tr("Restart"))) {
+        return;
+    }
 
     Configs::dataManager->settingsRepo->ui_mode = static_cast<int>(Fsnt::UiMode::Advanced);
     Configs::dataManager->settingsRepo->Save();
