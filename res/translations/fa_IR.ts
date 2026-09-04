@@ -153,6 +153,10 @@
         <source>System proxy</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>chosen automatically</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ConnectionsFilterHeader</name>
@@ -7280,6 +7284,10 @@ Please try again.</source>
     </message>
     <message>
         <source>Предупреждение о конфликтах</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Больше не показывать</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

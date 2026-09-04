@@ -1,9 +1,14 @@
 #include "include/ui/mainwindow.h"
 
+#include <QCheckBox>
+#include <QMessageBox>
 #include <QProcess>
+#include <QPushButton>
 #include <QString>
 #include <QStringList>
 
+#include "include/database/SettingsRepo.h"
+#include "include/global/Configs.hpp"
 #include "include/ui/mainWindow/MainWindowInternal.h"
 
 // Детект программ, мешающих работе TUN-режима (VPN-клиенты, антивирусы с фильтрацией трафика).
@@ -240,4 +245,53 @@ QStringList MainWindow::CheckConflictingProcesses() {
     }
     
     return conflictingProcesses;
+}
+
+// Спрашивать при каждом запуске нельзя: диалог модальный и держит profile_start,
+// а перезапуск бывает автоматическим — после обновления подписки или падения
+// ядра. Тогда туннель лежит до тех пор, пока кто-нибудь не нажмёт кнопку.
+// Поэтому предупреждаем один раз за сеанс, а флажок в диалоге глушит его совсем.
+bool MainWindow::ConfirmConflictingProcesses() {
+    static bool askedThisSession = false;
+
+    const QStringList conflicting = CheckConflictingProcesses();
+    if (conflicting.isEmpty()) return true;
+
+    if (askedThisSession || Configs::dataManager->settingsRepo->conflict_warning_disabled) {
+        MW_show_log("[CheckConflict] Warning suppressed, starting anyway");
+        return true;
+    }
+    askedThisSession = true;
+
+    QString message = tr("Обнаружены программы, которые могут помешать работе TUN режима:\n\n");
+    message += "• " + conflicting.join("\n• ");
+    message += tr("\n\nЭти программы могут конфликтовать с виртуальным сетевым адаптером TUN.\n");
+    message += tr("Рекомендуется закрыть эти программы перед запуском профиля в VPN режиме.\n\n");
+    message += tr("Продолжить запуск?");
+
+    QMessageBox msgBox(GetMessageBoxParent());
+    msgBox.setWindowTitle(tr("Предупреждение о конфликтах"));
+    msgBox.setText(message);
+    msgBox.setIcon(QMessageBox::Warning);
+
+    auto *never = new QCheckBox(tr("Больше не показывать"), &msgBox);
+    msgBox.setCheckBox(never);
+
+    QPushButton *continueBtn = msgBox.addButton(tr("Продолжить"), QMessageBox::AcceptRole);
+    QPushButton *cancelBtn = msgBox.addButton(tr("Отмена"), QMessageBox::RejectRole);
+    msgBox.setDefaultButton(cancelBtn);
+
+    msgBox.exec();
+
+    if (never->isChecked()) {
+        Configs::dataManager->settingsRepo->conflict_warning_disabled = true;
+        Configs::dataManager->settingsRepo->Save();
+    }
+
+    if (msgBox.clickedButton() != continueBtn) {
+        MW_show_log("[CheckConflict] User cancelled profile start");
+        return false;
+    }
+    MW_show_log("[CheckConflict] User chose to continue despite conflicts");
+    return true;
 }

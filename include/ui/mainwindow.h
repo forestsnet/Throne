@@ -142,6 +142,10 @@ public:
 
     QStringList CheckConflictingProcesses();
 
+    // Проверяет конфликтующие программы и спрашивает пользователя.
+    // Возвращает, можно ли продолжать запуск.
+    bool ConfirmConflictingProcesses();
+
     void applyProviderPolicy(int gid);
 
     void RestartCore();

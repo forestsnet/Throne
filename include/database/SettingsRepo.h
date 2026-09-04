@@ -100,6 +100,11 @@ namespace Configs {
         QString favorite_profiles = "[]";   // JSON-массив id избранных профилей
         int simple_transport = 0;   // 0 = TUN, 1 = системный прокси; только для простого режима
         bool onboarding_done = false;   // мастер первого запуска простого режима
+        bool conflict_warning_disabled = false;   // предупреждение о конфликтующих программах
+        // Сервер, выбранный пользователем в простом режиме. Отдельно от remember_id:
+        // тот означает «последний запущенный» и управляет автозапуском, а выбор
+        // строки в списке запускать ничего не должен.
+        int simple_selected_profile = NoProfileId;
         int language = 4;
         QString font = "";
         int font_size = 0;

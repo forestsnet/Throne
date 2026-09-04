@@ -21,10 +21,19 @@ public:
 signals:
     // Нечего запускать: окно предложит добавить подписку.
     void subscriptionNeeded();
+    // Какой сервер пойдёт в дело. Список подсвечивает его, чтобы подпись под
+    // кнопкой и выделенная строка всегда показывали одно и то же.
+    void profileResolved(int profileId);
 
 private:
+    // Какой сервер запускать и выбран ли он пользователем.
+    struct Choice {
+        int id = -1;
+        bool automatic = true;
+    };
+
     static bool isConnected();
-    static int profileToStart();
+    static Choice resolveProfile();
 
     void onButtonClicked();
     void updateElapsed();

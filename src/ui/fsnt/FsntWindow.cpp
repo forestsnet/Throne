@@ -200,6 +200,11 @@ void FsntWindow::buildPanels(QVBoxLayout *root) {
     m_sideLayout->addWidget(m_connectPanel, 1);
     connect(m_connectPanel, &ConnectPanel::subscriptionNeeded,
             this, &FsntWindow::openAddSubscription);
+    // Подпись под кнопкой и выделенная строка обязаны показывать один сервер.
+    connect(m_connectPanel, &ConnectPanel::profileResolved,
+            m_serverList, &ServerListPanel::selectProfile);
+    connect(m_serverList, &ServerListPanel::serverSelected,
+            this, [this](int) { refreshConnectionState(); });
 
     m_subscriptionCard = new SubscriptionCard(sidePanel);
     m_sideLayout->addWidget(m_subscriptionCard);

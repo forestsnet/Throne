@@ -80,16 +80,43 @@ bool ConnectPanel::isConnected() {
     return settings->core_running && settings->started_id >= 0;
 }
 
-int ConnectPanel::profileToStart() {
+ConnectPanel::Choice ConnectPanel::resolveProfile() {
     const auto &settings = Configs::dataManager->settingsRepo;
-    if (settings->started_id >= 0) return settings->started_id;
+    if (settings->started_id >= 0) return {settings->started_id, false};
 
-    // Ни один профиль не запущен: берём первый из текущей подписки.
-    if (const auto group = Configs::dataManager->groupsRepo->CurrentGroup()) {
-        const auto profiles = group->Profiles();
-        if (!profiles.isEmpty()) return profiles.first();
+    const auto group = Configs::dataManager->groupsRepo->CurrentGroup();
+    if (!group) return {};
+    const auto ids = group->Profiles();
+    if (ids.isEmpty()) return {};
+
+    // Явный выбор пользователя — но только пока он в этой подписке: после
+    // переключения подписки чужой id молча вёл бы не туда.
+    if (ids.contains(settings->simple_selected_profile)) {
+        return {settings->simple_selected_profile, false};
     }
-    return -1;
+
+    const auto profiles = Configs::dataManager->profilesRepo->GetProfileBatch(ids);
+
+    // Авто-селектор сам держит лучший сервер — это и есть верное умолчание.
+    for (const auto &profile : profiles) {
+        if (profile && profile->AutoSelector() != nullptr) return {profile->id, true};
+    }
+
+    // Иначе самый быстрый из измеренных. Раньше здесь брался просто первый в
+    // списке, и это мог оказаться сервер на другом конце света.
+    int best = -1;
+    int bestLatency = 0;
+    for (const auto &profile : profiles) {
+        if (!profile || profile->latency <= 0) continue;
+        if (best < 0 || profile->latency < bestLatency) {
+            best = profile->id;
+            bestLatency = profile->latency;
+        }
+    }
+    if (best >= 0) return {best, true};
+
+    // Пинги ещё не мерили — деваться некуда, но пометим выбор автоматическим.
+    return {ids.first(), true};
 }
 
 void ConnectPanel::setStatus(const QString &text, const char *tone) {
@@ -112,7 +139,7 @@ void ConnectPanel::onButtonClicked() {
         return;
     }
 
-    const int id = profileToStart();
+    const int id = resolveProfile().id;
     if (id < 0) {
         setStatus(tr("Add a subscription first"), "");
         emit subscriptionNeeded();
@@ -174,16 +201,22 @@ void ConnectPanel::refresh() {
         setStatus(connected ? tr("Connected") : tr("Disconnected"), connected ? "ok" : "");
     }
 
-    const int id = Configs::dataManager->settingsRepo->started_id >= 0
-                       ? Configs::dataManager->settingsRepo->started_id
-                       : profileToStart();
-    if (const auto profile = Configs::dataManager->profilesRepo->GetProfile(id)) {
+    const Choice choice = resolveProfile();
+    if (const auto profile = Configs::dataManager->profilesRepo->GetProfile(choice.id)) {
         m_server->setText(profile->outbound->DisplayName());
     } else {
         m_server->setText(tr("No server selected"));
     }
 
-    m_transport->setText(Configs::dataManager->settingsRepo->simple_transport == 0
-                             ? tr("Full tunnel (TUN)")
-                             : tr("System proxy"));
+    QString line = Configs::dataManager->settingsRepo->simple_transport == 0
+                       ? tr("Full tunnel (TUN)")
+                       : tr("System proxy");
+    // Без этой пометки непонятно, откуда взялся сервер, если его никто не выбирал.
+    if (choice.id >= 0 && choice.automatic) line += " · " + tr("chosen automatically");
+    m_transport->setText(line);
+
+    // Шлём на каждом обновлении, а не только при смене: конструктор панели
+    // вызывает refresh() раньше, чем окно успевает подключиться к сигналу.
+    // Зацикливания нет — selectProfile выходит сразу, если строка уже текущая.
+    if (choice.id >= 0) emit profileResolved(choice.id);
 }

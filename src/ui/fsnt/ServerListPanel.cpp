@@ -153,6 +153,16 @@ ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
     connect(m_list, &QListWidget::itemActivated, this, [this](QListWidgetItem *item) {
         if (item != nullptr) emit serverActivated(item->data(ProfileIdRole).toInt());
     });
+    connect(m_list, &QListWidget::currentItemChanged, this,
+            [this](QListWidgetItem *item, QListWidgetItem *) {
+        if (item == nullptr) return;
+        const int id = item->data(ProfileIdRole).toInt();
+        // Запоминаем именно выбор, а не запуск: remember_id управляет автостартом,
+        // и писать туда по клику значило бы подключаться при следующем старте.
+        Configs::dataManager->settingsRepo->simple_selected_profile = id;
+        Configs::dataManager->settingsRepo->Save();
+        emit serverSelected(id);
+    });
 
     reloadGroups();
 
@@ -291,6 +301,10 @@ void ServerListPanel::reloadServers() {
     updateEmptyState();
 
     if (keepId >= 0) {
+        // Блокируем сигнал: восстановление прежней строки после перезагрузки
+        // списка — не выбор пользователя. Без этого любой пересбор списка
+        // записывался бы в simple_selected_profile и глушил автоподбор.
+        const QSignalBlocker blocker(m_list);
         for (int row = 0; row < m_list->count(); ++row) {
             if (m_list->item(row)->data(ProfileIdRole).toInt() == keepId) {
                 m_list->setCurrentRow(row);
@@ -342,4 +356,16 @@ void ServerListPanel::updateSubscription() {
             reloadServers();
         }, Qt::QueuedConnection);
     }, true);
+}
+
+void ServerListPanel::selectProfile(const int profileId) {
+    for (int row = 0; row < m_list->count(); ++row) {
+        if (m_list->item(row)->data(ProfileIdRole).toInt() != profileId) continue;
+        if (m_list->currentRow() == row) return;
+        // Блокируем сигнал: это не выбор пользователя, и записывать его
+        // в simple_selected_profile нельзя — иначе автоподбор станет ручным.
+        const QSignalBlocker blocker(m_list);
+        m_list->setCurrentRow(row);
+        return;
+    }
 }

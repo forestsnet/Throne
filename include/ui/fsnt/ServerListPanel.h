@@ -35,12 +35,19 @@ public:
     void reloadGroups();
     void reloadServers();
 
+    // Подсветить сервер, который пойдёт в дело. Вызывает окно, когда панель
+    // подключения сообщила о своём выборе.
+    void selectProfile(int profileId);
+
     // Запускает замер пинга по текущей подписке и обновляет список,
     // пока результаты приходят.
     void measureLatency();
 
 signals:
     void serverActivated(int profileId);
+    // Пользователь выбрал строку. Одного клика достаточно: запуск остаётся
+    // за кнопкой включения и двойным щелчком.
+    void serverSelected(int profileId);
     // Окно владеет диалогом добавления: он нужен ещё и панели подключения.
     void addSubscriptionRequested();
 

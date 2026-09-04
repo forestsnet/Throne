@@ -153,6 +153,10 @@
         <source>System proxy</source>
         <translation>Системный прокси</translation>
     </message>
+    <message>
+        <source>chosen automatically</source>
+        <translation>выбран автоматически</translation>
+    </message>
 </context>
 <context>
     <name>ConnectionsFilterHeader</name>
@@ -7037,6 +7041,10 @@ Download them now?</source>
     <message>
         <source>Предупреждение о конфликтах</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Больше не показывать</source>
+        <translation>Больше не показывать</translation>
     </message>
     <message>
         <source>Продолжить</source>
