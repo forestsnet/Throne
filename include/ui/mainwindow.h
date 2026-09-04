@@ -386,7 +386,7 @@ private:
 
     void syncConnectionViewState();
 
-    void dragEnterEvent(QDragEnterEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event) override;
 
     void dropEvent(QDropEvent* event) override;
 
