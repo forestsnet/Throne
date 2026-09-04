@@ -388,6 +388,10 @@ set(PROJECT_SOURCES
         src/ui/fsnt/FsntControls.cpp
 
         include/ui/fsnt/FsntControls.h
+
+        src/ui/fsnt/FsntToast.cpp
+
+        include/ui/fsnt/FsntToast.h
         include/ui/setting/dialog_per_app_proxy.h
         include/ui/setting/dialog_basic_settings.h
         include/ui/setting/dialog_basic_settings.ui

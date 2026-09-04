@@ -89,13 +89,16 @@ ConnectPanel::Choice ConnectPanel::resolveProfile() {
     const auto ids = group->Profiles();
     if (ids.isEmpty()) return {};
 
-    // Явный выбор пользователя — но только пока он в этой подписке: после
-    // переключения подписки чужой id молча вёл бы не туда.
-    if (ids.contains(settings->simple_selected_profile)) {
-        return {settings->simple_selected_profile, false};
-    }
-
     const auto profiles = Configs::dataManager->profilesRepo->GetProfileBatch(ids);
+
+    // Явный выбор пользователя — по имени и только в пределах этой подписки.
+    // По имени, потому что при sub_clear обновление пересоздаёт все профили:
+    // сохранённый id переставал существовать после первого же обновления.
+    if (const QString chosen = settings->simple_selected_server; !chosen.isEmpty()) {
+        for (const auto &profile : profiles) {
+            if (profile && profile->outbound->DisplayName() == chosen) return {profile->id, false};
+        }
+    }
 
     // Авто-селектор сам держит лучший сервер — это и есть верное умолчание.
     for (const auto &profile : profiles) {

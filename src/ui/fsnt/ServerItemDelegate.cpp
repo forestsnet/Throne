@@ -1,6 +1,9 @@
 #include "src/ui/fsnt/ServerItemDelegate.h"
 
+#include <QDateTime>
 #include <QPainter>
+
+#include <cmath>
 #include <QPainterPath>
 
 #include "include/database/entities/Profile.h"
@@ -14,6 +17,9 @@ namespace {
     constexpr int kTextLeft = 14;
     // Толщина полоски-указателя у выбранной строки.
     constexpr int kMarkerWidth = 3;
+    // Место под три точки «идёт замер» и период их пульсации.
+    constexpr int kMeasuringZone = 40;
+    constexpr int kDotCycleMs = 900;
 
     QColor latencyColor(const Fsnt::Palette &p, const int ms) {
         if (ms <= ServerItemDelegate::kGoodLatencyMs) return p.success;
@@ -82,6 +88,37 @@ void ServerItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     // latency > 0, и недоступный сервер выглядел ровно как неизмеренный —
     // а это разные вещи: в России пинга нет вообще, и об этом надо сказать.
     const int latency = index.data(ServerListPanel::LatencyRole).toInt();
+
+    // Пока сервер не ответил, вместо значения — три пульсирующие точки.
+    // Замер идёт секундами, и без этого непонятно, работает ли кнопка вообще:
+    // строка просто показывает прежнее число.
+    if (index.data(ServerListPanel::MeasuringRole).toBool()) {
+        const QRect zone(row.right() - kMeasuringZone, row.top(), kMeasuringZone, row.height());
+        // Фазу берём из часов: делегат не хранит состояния, а панель лишь будит
+        // перерисовку, поэтому все строки дышат согласованно.
+        const qint64 now = QDateTime::currentMSecsSinceEpoch();
+        painter->setPen(Qt::NoPen);
+        for (int dot = 0; dot < 3; ++dot) {
+            const qreal phase = std::fmod(
+                static_cast<qreal>(now % kDotCycleMs) / kDotCycleMs + dot * 0.22, 1.0);
+            // Треугольная волна: точка разгорается и гаснет, а не мигает.
+            const qreal wave = phase < 0.5 ? phase * 2.0 : (1.0 - phase) * 2.0;
+            painter->setBrush(withAlpha(p.accent, 60 + static_cast<int>(150 * wave)));
+            const QPointF centre(zone.left() + 7 + dot * 11, zone.center().y() + 1);
+            painter->drawEllipse(centre, 2.6 + wave * 0.9, 2.6 + wave * 0.9);
+        }
+
+        const QRect nameZone = row.adjusted(kTextLeft, 0, -(kMeasuringZone + 8), 0);
+        painter->setFont(option.font);
+        painter->setPen(p.text);
+        painter->drawText(nameZone, Qt::AlignVCenter | Qt::AlignLeft,
+                          QFontMetrics(option.font).elidedText(
+                              index.data(Qt::DisplayRole).toString(),
+                              Qt::ElideRight, nameZone.width()));
+        painter->restore();
+        return;
+    }
+
     QString pingText;
     QColor tint;
     bool filled = true;

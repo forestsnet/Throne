@@ -9046,6 +9046,30 @@ Paste the link your provider gave you and the servers will appear here.</source>
 Вставьте ссылку от провайдера — серверы появятся здесь.</translation>
     </message>
     <message>
+        <source>All servers responded</source>
+        <translation>Все серверы ответили</translation>
+    </message>
+    <message>
+        <source>%1 of %2 servers responded</source>
+        <translation>Ответили %1 из %2 серверов</translation>
+    </message>
+    <message>
+        <source>Subscription updated, nothing changed</source>
+        <translation>Подписка обновлена, изменений нет</translation>
+    </message>
+    <message>
+        <source>Subscription updated: %1 new</source>
+        <translation>Подписка обновлена: %1 новых</translation>
+    </message>
+    <message>
+        <source>Subscription updated: %1 removed</source>
+        <translation>Подписка обновлена: %1 удалено</translation>
+    </message>
+    <message>
+        <source>Subscription updated: %1 new, %2 removed</source>
+        <translation>Подписка обновлена: %1 новых, %2 удалено</translation>
+    </message>
+    <message>
         <source>Measure latency</source>
         <translation>Замерить пинг</translation>
     </message>

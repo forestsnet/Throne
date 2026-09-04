@@ -1,6 +1,7 @@
 #include "include/ui/fsnt/ServerListPanel.h"
 
 #include <QComboBox>
+#include <QDateTime>
 #include <QAction>
 #include <QMouseEvent>
 #include <QTimer>
@@ -140,12 +141,17 @@ ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
     m_latencyPoll->setInterval(2000);
     connect(m_latencyPoll, &QTimer::timeout, this, [this] {
         reloadServers();
-        // Счётчик остаётся верхней границей: если часть серверов недоступна,
-        // их latency так и не станет ненулевым, и по факту мы не остановимся.
-        if (allMeasured() || --m_latencyPollsLeft <= 0) {
-            m_latencyPoll->stop();
-            m_ping->setBusy(false);
-        }
+        // Счётчик остаётся верхней границей: до части серверов может не быть
+        // связи вовсе, и сами по себе они никогда не «ответят».
+        if (allMeasured() || --m_latencyPollsLeft <= 0) finishMeasurement();
+    });
+
+    // Точки «идёт замер» анимируются от часов, поэтому достаточно будить
+    // перерисовку; хранить состояние в строках не нужно.
+    m_measureRepaint = new QTimer(this);
+    m_measureRepaint->setInterval(60);
+    connect(m_measureRepaint, &QTimer::timeout, this, [this] {
+        if (m_list != nullptr) m_list->viewport()->update();
     });
 
     connect(m_ping, &QPushButton::clicked, this, &ServerListPanel::measureLatency);
@@ -160,7 +166,7 @@ ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
         const int id = item->data(ProfileIdRole).toInt();
         // Запоминаем именно выбор, а не запуск: remember_id управляет автостартом,
         // и писать туда по клику значило бы подключаться при следующем старте.
-        Configs::dataManager->settingsRepo->simple_selected_profile = id;
+        Configs::dataManager->settingsRepo->simple_selected_server = item->text();
         Configs::dataManager->settingsRepo->Save();
         emit serverSelected(id);
     });
@@ -186,7 +192,7 @@ bool ServerListPanel::eventFilter(QObject *watched, QEvent *event) {
         if (auto *item = m_list->itemAt(mouse->pos())) {
             const QRect row = m_list->visualItemRect(item);
             if (mouse->pos().x() >= row.right() - ServerItemDelegate::kHeartZone) {
-                toggleFavorite(item->data(ProfileIdRole).toInt());
+                toggleFavorite(item->text());
                 item->setData(FavoriteRole, !item->data(FavoriteRole).toBool());
                 applyFilter(m_search->text());
                 m_list->viewport()->update();
@@ -197,22 +203,27 @@ bool ServerListPanel::eventFilter(QObject *watched, QEvent *event) {
     return QWidget::eventFilter(watched, event);
 }
 
-QSet<int> ServerListPanel::favorites() {
-    QSet<int> ids;
+QSet<QString> ServerListPanel::favorites() {
+    QSet<QString> names;
     const auto doc = QJsonDocument::fromJson(
         Configs::dataManager->settingsRepo->favorite_profiles.toUtf8());
-    if (!doc.isArray()) return ids;
-    for (const auto &value : doc.array()) ids.insert(value.toInt());
-    return ids;
+    if (!doc.isArray()) return names;
+    // Числа в массиве — наследие прежнего формата по id. Молча пропускаем:
+    // после обновления подписки те id всё равно ни на что не указывают.
+    for (const auto &value : doc.array()) {
+        if (value.isString() && !value.toString().isEmpty()) names.insert(value.toString());
+    }
+    return names;
 }
 
-void ServerListPanel::toggleFavorite(int profileId) {
-    auto ids = favorites();
-    if (ids.contains(profileId)) ids.remove(profileId);
-    else ids.insert(profileId);
+void ServerListPanel::toggleFavorite(const QString &serverName) {
+    if (serverName.isEmpty()) return;
+    auto names = favorites();
+    if (names.contains(serverName)) names.remove(serverName);
+    else names.insert(serverName);
 
     QJsonArray array;
-    for (int id : ids) array.append(id);
+    for (const QString &name : names) array.append(name);
     Configs::dataManager->settingsRepo->favorite_profiles =
         QString::fromUtf8(QJsonDocument(array).toJson(QJsonDocument::Compact));
     Configs::dataManager->settingsRepo->Save();
@@ -233,12 +244,17 @@ void ServerListPanel::measureLatency() {
     // testRunner приватный, но действие меню — именованный дочерний объект окна.
     // Дёргаем его, чтобы не править код, который правит upstream.
     if (auto *action = mw->findChild<QAction *>("actionUrl_Test_Group")) {
+        // Отметку ставим до запуска: строка считается ждущей, пока её latency_at
+        // старше этого момента. Так видно, кто уже ответил, а кто ещё нет.
+        m_measureStartedAt = QDateTime::currentSecsSinceEpoch();
         action->trigger();
         // Результаты приходят порциями и signals у TestRunner нет: обновляем список
         // несколько раз, пока идёт замер, и останавливаемся сами.
         m_latencyPollsLeft = 30;
         m_ping->setBusy(true);
         m_latencyPoll->start();
+        m_measureRepaint->start();
+        reloadServers();
     }
 }
 
@@ -319,7 +335,9 @@ void ServerListPanel::reloadServers() {
         auto *item = new QListWidgetItem(profile->outbound->DisplayName(), m_list);
         item->setData(ProfileIdRole, profile->id);
         item->setData(LatencyRole, profile->latency);
-        item->setData(FavoriteRole, favs.contains(profile->id));
+        item->setData(FavoriteRole, favs.contains(profile->outbound->DisplayName()));
+        item->setData(MeasuringRole,
+                      m_measureStartedAt > 0 && profile->latency_at < m_measureStartedAt);
     }
 
     applyFilter(m_search->text());
@@ -362,25 +380,84 @@ void ServerListPanel::updateEmptyState() {
         : tr("No subscription yet.\nPaste the link your provider gave you and the servers will appear here."));
 }
 
+QSet<QString> ServerListPanel::serverNames(const QList<int> &ids) {
+    QSet<QString> names;
+    for (const auto &profile : Configs::dataManager->profilesRepo->GetProfileBatch(ids)) {
+        if (profile && profile->outbound) names.insert(profile->outbound->DisplayName());
+    }
+    return names;
+}
+
 bool ServerListPanel::allMeasured() const {
+    // По latency, а не по нулю: повторный замер стартует с уже ненулевыми
+    // значениями прошлого прогона, и проверка «латентность != 0» была бы
+    // истинной сразу же.
     for (int row = 0; row < m_list->count(); ++row) {
-        if (m_list->item(row)->data(LatencyRole).toInt() == 0) return false;
+        if (m_list->item(row)->data(MeasuringRole).toBool()) return false;
     }
     return m_list->count() > 0;
+}
+
+void ServerListPanel::finishMeasurement() {
+    m_latencyPoll->stop();
+    m_measureRepaint->stop();
+    m_ping->setBusy(false);
+    m_measureStartedAt = 0;
+
+    int answered = 0;
+    int silent = 0;
+    for (int row = 0; row < m_list->count(); ++row) {
+        if (m_list->item(row)->data(LatencyRole).toInt() > 0) ++answered;
+        else ++silent;
+    }
+    // Обновляем строки ещё раз: MeasuringRole надо снять со всех, кто так и
+    // не ответил, иначе точки продолжали бы «думать» на замершем списке.
+    reloadServers();
+
+    if (silent == 0) emit notice(tr("All servers responded"));
+    else emit notice(tr("%1 of %2 servers responded").arg(answered).arg(answered + silent));
 }
 
 void ServerListPanel::updateSubscription() {
     const auto group = Configs::dataManager->groupsRepo->CurrentGroup();
     if (!group || group->url.isEmpty()) return;
 
+    const int gid = group->id;
+    // Снимок по именам, а не по id. При sub_clear (умолчание upstream)
+    // обновление удаляет все профили и создаёт заново, поэтому сравнение по id
+    // на неизменившейся подписке давало «22 новых, 22 удалено».
+    const QSet<QString> before = serverNames(group->Profiles());
+
     m_updateSub->setBusy(true);
-    // Колбэк приходит из рабочего потока обновлятора — возвращаемся в UI.
-    Subscription::updater()->RefreshGroup(group->id, [this] {
-        QMetaObject::invokeMethod(this, [this] {
+    // showDiff = false: встроенный отчёт — модальный список всех профилей,
+    // два десятка строк «[+] [VLESS (Xray)] …», которые надо закрывать руками.
+    // Считаем сводку сами и показываем уведомлением.
+    Subscription::updater()->RefreshGroup(gid, [this, gid, before] {
+        // Колбэк приходит из рабочего потока обновлятора — возвращаемся в UI.
+        QMetaObject::invokeMethod(this, [this, gid, before] {
             m_updateSub->setBusy(false);
             reloadServers();
+
+            const auto refreshed = Configs::dataManager->groupsRepo->GetGroup(gid);
+            if (!refreshed) return;
+
+            const QSet<QString> now = serverNames(refreshed->Profiles());
+            const int added = (now - before).size();
+            const int removed = (before - now).size();
+
+            // Переименование сервера видно как пара «добавлен и удалён», и это
+            // честно: для клиента это и есть изменение состава списка.
+            if (added == 0 && removed == 0) {
+                emit notice(tr("Subscription updated, nothing changed"));
+            } else if (removed == 0) {
+                emit notice(tr("Subscription updated: %1 new").arg(added));
+            } else if (added == 0) {
+                emit notice(tr("Subscription updated: %1 removed").arg(removed));
+            } else {
+                emit notice(tr("Subscription updated: %1 new, %2 removed").arg(added).arg(removed));
+            }
         }, Qt::QueuedConnection);
-    }, true);
+    }, false);
 }
 
 void ServerListPanel::selectProfile(const int profileId) {

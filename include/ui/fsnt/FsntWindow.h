@@ -6,6 +6,7 @@
 #include "include/global/Utils.hpp"
 
 class ConnectPanel;
+class FsntToast;
 class ServerListPanel;
 class SubscriptionCard;
 class QLabel;
@@ -21,6 +22,9 @@ public:
     explicit FsntWindow(QWidget *parent = nullptr);
 
 protected:
+    // Тост центрируем сами: он лежит поверх компоновки, и та его не двигает.
+    void resizeEvent(QResizeEvent *event) override;
+
     // Точки расширения для следующих приростов.
     QVBoxLayout *serverPanelLayout() const { return m_serverLayout; }
     QVBoxLayout *sidePanelLayout() const { return m_sideLayout; }
@@ -42,6 +46,7 @@ private:
     ConnectPanel *m_connectPanel = nullptr;
     ServerListPanel *m_serverList = nullptr;
     SubscriptionCard *m_subscriptionCard = nullptr;
+    FsntToast *m_toast = nullptr;
     QLabel *m_logo = nullptr;
     QVBoxLayout *m_serverLayout = nullptr;
     QVBoxLayout *m_sideLayout = nullptr;

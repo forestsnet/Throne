@@ -9035,6 +9035,30 @@ Remove that endpoint from this routing profile as well?</source>
 Paste the link your provider gave you and the servers will appear here.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>All servers responded</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 of %2 servers responded</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Subscription updated, nothing changed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Subscription updated: %1 new</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Subscription updated: %1 removed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Subscription updated: %1 new, %2 removed</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SpeedWidget</name>

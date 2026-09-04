@@ -21,6 +21,7 @@
 #include "include/ui/fsnt/FsntSettingsDialog.h"
 #include "include/ui/fsnt/FsntControls.h"
 #include "include/ui/fsnt/FsntTheme.hpp"
+#include "include/ui/fsnt/FsntToast.h"
 #include "include/ui/fsnt/ServerListPanel.h"
 #include "include/ui/fsnt/SubscriptionCard.h"
 #include "include/ui/fsnt/UiMode.hpp"
@@ -46,6 +47,10 @@ FsntWindow::FsntWindow(QWidget *parent) : QMainWindow(parent) {
 
     buildHeader(root);
     buildPanels(root);
+
+    // Поверх центрального виджета, а не в компоновке: иначе появление
+    // уведомления сдвигало бы всё окно вниз.
+    m_toast = new FsntToast(central);
 
     applyTheme();
     connect(themeManager(), &ThemeManager::themeChanged, this, [this] { applyTheme(); });
@@ -190,6 +195,9 @@ void FsntWindow::buildPanels(QVBoxLayout *root) {
             m_serverList, &ServerListPanel::selectProfile);
     connect(m_serverList, &ServerListPanel::serverSelected,
             this, [this](int) { refreshConnectionState(); });
+    connect(m_serverList, &ServerListPanel::notice, this, [this](const QString &text) {
+        if (m_toast != nullptr) m_toast->show(text);
+    });
 
     m_subscriptionCard = new SubscriptionCard(sidePanel);
     m_sideLayout->addWidget(m_subscriptionCard);
@@ -210,6 +218,11 @@ void FsntWindow::refreshConnectionState() {
 void FsntWindow::refreshServerList() {
     if (m_serverList != nullptr) m_serverList->reloadGroups();
     if (m_subscriptionCard != nullptr) m_subscriptionCard->refresh();
+}
+
+void FsntWindow::resizeEvent(QResizeEvent *event) {
+    QMainWindow::resizeEvent(event);
+    if (m_toast != nullptr) m_toast->relayout();
 }
 
 void FsntWindow::applyTheme() {
