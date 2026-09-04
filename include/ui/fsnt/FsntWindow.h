@@ -19,6 +19,7 @@ protected:
     QVBoxLayout *sidePanelLayout() const { return m_sideLayout; }
 
 private:
+    void registerCoreCallbacks();
     void buildHeader(QVBoxLayout *root);
     void buildPanels(QVBoxLayout *root);
     void applyTheme();

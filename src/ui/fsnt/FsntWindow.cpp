@@ -13,12 +13,20 @@
 #include "include/global/Configs.hpp"
 #include "include/ui/fsnt/FsntTheme.hpp"
 #include "include/ui/fsnt/UiMode.hpp"
+#include "include/global/Logger.hpp"
+#include "include/global/Utils.hpp"
 #include "include/ui/setting/ThemeManager.hpp"
 
 FsntWindow::FsntWindow(QWidget *parent) : QMainWindow(parent) {
     setWindowTitle("FSNT Client");
     resize(880, 560);
     setMinimumSize(760, 500);
+
+    registerCoreCallbacks();
+
+    // Тема глобальная и применяется тем окном, которое стартует. MainWindow делает
+    // это в своём конструкторе; без этого вызова палитра остаётся пустой и всё чёрное.
+    themeManager()->ApplyTheme(Configs::dataManager->settingsRepo->theme);
 
     auto *central = new QWidget(this);
     central->setObjectName("fsntRoot");
@@ -36,6 +44,34 @@ FsntWindow::FsntWindow(QWidget *parent) : QMainWindow(parent) {
 
     // Как и MainWindow: при запуске в трей окно не показываем.
     if (!Configs::dataManager->settingsRepo->flag_tray) show();
+}
+
+
+void FsntWindow::registerCoreCallbacks() {
+    // Ядро вызывает окно обратно через эти глобальные std::function. MainWindow
+    // регистрирует их в своём конструкторе; без регистрации первый же вызов из
+    // ядра падает с std::bad_function_call.
+    //
+    // В каркасе реализации минимальные: логи уходят в общий журнал, остальные
+    // сообщения пока не обрабатываются — их наполняют следующие приросты.
+    MW_show_log = [](const QString &message) {
+        Logging::WriteUserLog(message);
+    };
+
+    MW_dialog_message = [](MwMessage cmd, QStringList args) {
+        Q_UNUSED(args)
+        LOG_DEBUG(QString("[FSNT] unhandled dialog message: %1").arg(static_cast<int>(cmd)));
+    };
+
+    MW_handle_deeplink = [](const QString &url) {
+        Q_UNUSED(url)
+        LOG_DEBUG("[FSNT] deeplink ignored: no handler in the shell yet");
+    };
+
+    MW_import_files = [](const QStringList &paths) {
+        Q_UNUSED(paths)
+        LOG_DEBUG("[FSNT] file import ignored: no handler in the shell yet");
+    };
 }
 
 void FsntWindow::buildHeader(QVBoxLayout *root) {
