@@ -98,6 +98,7 @@ namespace Configs {
             {"remember_id",            &remember_id},
             {"language",               &language},
             {"ui_mode",                &ui_mode},
+            {"simple_transport",       &simple_transport},
             {"font_size",              &font_size},
             {"max_log_line",           &max_log_line},
             {"stats_tab",              &stats_tab},

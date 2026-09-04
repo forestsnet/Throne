@@ -13,6 +13,7 @@
 #include "include/global/Configs.hpp"
 #include "include/ui/fsnt/ConnectPanel.h"
 #include "include/ui/mainwindow.h"
+#include "include/ui/fsnt/FsntSettingsDialog.h"
 #include "include/ui/fsnt/FsntTheme.hpp"
 #include "include/ui/fsnt/ServerListPanel.h"
 #include "include/ui/fsnt/SubscriptionCard.h"
@@ -99,6 +100,19 @@ void FsntWindow::buildHeader(QVBoxLayout *root) {
 
     row->addStretch();
 
+    auto *settings = new QToolButton(header);
+    settings->setObjectName("fsntIconButton");
+    settings->setText("⚙");
+    settings->setToolTip(tr("Settings"));
+    connect(settings, &QToolButton::clicked, this, [this] {
+        auto *dialog = new FsntSettingsDialog(this);
+        connect(dialog, &FsntSettingsDialog::advancedModeRequested,
+                this, &FsntWindow::switchToAdvancedMode);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->exec();
+    });
+    row->addWidget(settings);
+
     auto *advanced = new QToolButton(header);
     advanced->setObjectName("fsntIconButton");
     advanced->setText(tr("Advanced mode"));
@@ -126,7 +140,10 @@ void FsntWindow::buildPanels(QVBoxLayout *root) {
 
     connect(m_serverList, &ServerListPanel::serverActivated, this, [](int profileId) {
         if (auto *mw = GetMainWindow()) {
-            if (!Configs::dataManager->settingsRepo->spmode_vpn) mw->set_spmode_vpn(true);
+            const bool wantTun = Configs::dataManager->settingsRepo->simple_transport == 0;
+            if (wantTun != Configs::dataManager->settingsRepo->spmode_vpn) {
+                mw->set_spmode_vpn(wantTun);
+            }
             mw->profile_start(profileId);
         }
     });

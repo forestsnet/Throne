@@ -356,6 +356,10 @@ set(PROJECT_SOURCES
         src/ui/fsnt/SubscriptionCard.cpp
 
         include/ui/fsnt/SubscriptionCard.h
+
+        src/ui/fsnt/FsntSettingsDialog.cpp
+
+        include/ui/fsnt/FsntSettingsDialog.h
         include/ui/setting/dialog_per_app_proxy.h
         include/ui/setting/dialog_basic_settings.h
         include/ui/setting/dialog_basic_settings.ui

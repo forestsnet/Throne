@@ -5631,6 +5631,10 @@ processName rules in the current routing profile.</source>
         <translation>Расширенный режим</translation>
     </message>
     <message>
+        <source>Settings</source>
+        <translation>Настройки</translation>
+    </message>
+    <message>
         <source>Switch to the advanced interface</source>
         <translation>Переключиться на расширенный интерфейс</translation>
     </message>
@@ -5680,6 +5684,10 @@ processName rules in the current routing profile.</source>
         <source>Favorites</source>
         <translation>Избранное</translation>
     </message>
+    <message>
+        <source>Measure latency</source>
+        <translation>Замерить пинг</translation>
+    </message>
 </context>
 <context>
     <name>SubscriptionCard</name>
@@ -5714,6 +5722,45 @@ processName rules in the current routing profile.</source>
     <message>
         <source>Subscription page</source>
         <translation>Страница подписки</translation>
+    </message>
+</context>
+<context>
+    <name>FsntSettingsDialog</name>
+    <message>
+        <source>Settings</source>
+        <translation>Настройки</translation>
+    </message>
+    <message>
+        <source>Full tunnel (TUN)</source>
+        <translation>Весь трафик (TUN)</translation>
+    </message>
+    <message>
+        <source>System proxy</source>
+        <translation>Системный прокси</translation>
+    </message>
+    <message>
+        <source>Connection mode</source>
+        <translation>Режим подключения</translation>
+    </message>
+    <message>
+        <source>Language</source>
+        <translation>Язык</translation>
+    </message>
+    <message>
+        <source>System</source>
+        <translation>Системный</translation>
+    </message>
+    <message>
+        <source>Start minimized to tray</source>
+        <translation>Запускать свёрнутым в трей</translation>
+    </message>
+    <message>
+        <source>Language changes apply after restarting the application.</source>
+        <translation>Смена языка применится после перезапуска приложения.</translation>
+    </message>
+    <message>
+        <source>Open advanced mode</source>
+        <translation>Открыть расширенный режим</translation>
     </message>
 </context>
 </TS>

@@ -98,6 +98,7 @@ namespace Configs {
         QString theme = "qdarkstyle";
         int ui_mode = -1;   // -1 = не задан; см. Fsnt::ResolveInitialUiMode
         QString favorite_profiles = "[]";   // JSON-массив id избранных профилей
+        int simple_transport = 0;   // 0 = TUN, 1 = системный прокси; только для простого режима
         int language = 4;
         QString font = "";
         int font_size = 0;

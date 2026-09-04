@@ -97,10 +97,14 @@ void ConnectPanel::onButtonClicked() {
         return;
     }
 
-    // Одна кнопка: клиент сам включает TUN, пользователя про режим не спрашиваем.
-    // Права запросит get_elevated_permissions() внутри set_spmode_vpn.
-    if (!Configs::dataManager->settingsRepo->spmode_vpn) {
+    // Одна кнопка: режим клиент выбирает сам. По умолчанию TUN, но пользователь
+    // может переключиться на системный прокси в настройках простого режима.
+    // Права для TUN запросит get_elevated_permissions() внутри set_spmode_vpn.
+    const bool wantTun = Configs::dataManager->settingsRepo->simple_transport == 0;
+    if (wantTun && !Configs::dataManager->settingsRepo->spmode_vpn) {
         mw->set_spmode_vpn(true);
+    } else if (!wantTun && Configs::dataManager->settingsRepo->spmode_vpn) {
+        mw->set_spmode_vpn(false);
     }
     mw->profile_start(id);
 }
