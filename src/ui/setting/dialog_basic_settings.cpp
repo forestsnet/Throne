@@ -36,12 +36,23 @@
 #include <QPushButton>
 
 #include "include/sys/UrlScheme.hpp"
+#include "include/configs/sub/ProviderPolicy.hpp"
 #include "include/ui/mainwindow.h"
 
 DialogBasicSettings::DialogBasicSettings(QWidget *parent)
     : QDialog(parent), ui(new Ui::DialogBasicSettings) {
     ui->setupUi(this);
     ADD_ASTERISK(this);
+
+    // Провайдер может закрыть настройки, которыми управляет сам. Оставляем Common
+    // (пользователь должен видеть базовое), Style (косметика) и Backup (право на
+    // резервную копию). Ограничение снимается остановкой профиля.
+    if (Subscription::PolicyHidesSettings()) {
+        for (QWidget *locked : {ui->tab_3, ui->tab_4, ui->tab_5, ui->tab_misc}) {
+            const int idx = ui->tabWidget->indexOf(locked);
+            if (idx >= 0) ui->tabWidget->removeTab(idx);
+        }
+    }
 
     ui->inbound_socks_port_l->setText(ui->inbound_socks_port_l->text().replace("Socks", "Mixed (SOCKS+HTTP)"));
     ui->log_level->addItems(QString("trace debug info warn error fatal panic").split(" "));

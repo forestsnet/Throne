@@ -3623,6 +3623,30 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
 <context>
     <name>MainWindow</name>
     <message>
+        <source>Delete group</source>
+        <translation>Удаление группы</translation>
+    </message>
+    <message>
+        <source>This subscription is pinned by the provider and cannot be removed while its profile is running.</source>
+        <translation>Эта подписка закреплена провайдером и не может быть удалена, пока запущен её профиль.</translation>
+    </message>
+    <message>
+        <source>Removing empty default group: %1</source>
+        <translation>Удаляется пустая группа по умолчанию: %1</translation>
+    </message>
+    <message>
+        <source>The provider hides the subscription URL.</source>
+        <translation>Провайдер скрывает ссылку на подписку.</translation>
+    </message>
+    <message>
+        <source>Support: %1</source>
+        <translation>Поддержка: %1</translation>
+    </message>
+    <message>
+        <source>Refill date: %1</source>
+        <translation>Дата пополнения: %1</translation>
+    </message>
+    <message>
         <source>Speedtest</source>
         <translation>Тест скорости</translation>
     </message>

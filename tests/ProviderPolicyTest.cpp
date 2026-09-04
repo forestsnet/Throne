@@ -72,6 +72,54 @@ private slots:
         QCOMPARE(p.unknown.value("x-brand-new-flag").toString(), QStringLiteral("yes"));
     }
 
+    void gatesAreOpenWithoutPolicy() {
+        ClearActiveProviderPolicy();
+        QVERIFY(!PolicyHidesSettings());
+        QVERIFY(!PolicyHidesUrl());
+        QVERIFY(!PolicyBlocksDeletion(7));
+        QCOMPARE(ActiveProviderPolicyGroup(), -1);
+    }
+
+    void restrictionsApplyOnlyWhenSentTrue() {
+        ProviderPolicy p;
+        p.hideSettings = false;      // прислано, но false
+        // p.hideUrl не прислано вовсе
+        SetActiveProviderPolicy(p, 7);
+        QVERIFY(!PolicyHidesSettings());
+        QVERIFY(!PolicyHidesUrl());
+
+        p.hideSettings = true;
+        p.hideUrl = true;
+        SetActiveProviderPolicy(p, 7);
+        QVERIFY(PolicyHidesSettings());
+        QVERIFY(PolicyHidesUrl());
+        ClearActiveProviderPolicy();
+    }
+
+    void pinBlocksOnlyItsOwnGroup() {
+        ProviderPolicy p;
+        p.pin = true;
+        SetActiveProviderPolicy(p, 7);
+        QVERIFY(PolicyBlocksDeletion(7));
+        QVERIFY(!PolicyBlocksDeletion(8));   // чужую подписку удалять можно
+        QVERIFY(!PolicyBlocksDeletion(-1));
+        ClearActiveProviderPolicy();
+    }
+
+    void stoppingProfileLiftsEveryRestriction() {
+        ProviderPolicy p;
+        p.hideSettings = true;
+        p.hideUrl = true;
+        p.pin = true;
+        SetActiveProviderPolicy(p, 7);
+        QVERIFY(PolicyHidesSettings() && PolicyHidesUrl() && PolicyBlocksDeletion(7));
+
+        ClearActiveProviderPolicy();   // так делает profile_stop
+        QVERIFY(!PolicyHidesSettings());
+        QVERIFY(!PolicyHidesUrl());
+        QVERIFY(!PolicyBlocksDeletion(7));
+    }
+
     void roundTripPreservesEverything() {
         const auto original = ParseProviderPolicy(H({
             {"profile-title", "base64:VmxleFZQTiB8IERFVg=="},

@@ -184,7 +184,7 @@ void MainWindow::applyProviderPolicy(int gid) {
     }
 
     const auto policy = Subscription::DeserializeProviderPolicy(group->provider_policy_json);
-    Subscription::SetActiveProviderPolicy(policy);
+    Subscription::SetActiveProviderPolicy(policy, gid);
     if (policy.isEmpty()) return;
 
     m_applyingProviderPolicy = true;

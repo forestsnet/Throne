@@ -16,6 +16,7 @@
 #include "include/sys/Process.hpp"
 #include "include/sys/AutoRun.hpp"
 #include "include/sys/UrlScheme.hpp"
+#include "include/configs/sub/ProviderPolicy.hpp"
 
 #include "include/ui/utils/ConnectionsFilterHeader.h"
 #include "include/ui/utils/ConnectionsTableModel.h"
@@ -914,6 +915,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->actionDelete_Group, &QAction::triggered, this, [=,this]{
         if (Configs::dataManager->groupsRepo->GetAllGroupIds().size() <= 1) return;
         auto id = Configs::dataManager->groupsRepo->CurrentGroup()->id;
+        if (Subscription::PolicyBlocksDeletion(id)) {
+            MessageBoxWarning(tr("Delete group"), tr("This subscription is pinned by the provider and cannot be removed while its profile is running."));
+            return;
+        }
         if (QMessageBox::question(this, tr("Confirmation"), tr("Remove %1?").arg(Configs::dataManager->groupsRepo->GetGroup(id)->name)) ==
             QMessageBox::StandardButton::Yes) {
             if (running != nullptr) {

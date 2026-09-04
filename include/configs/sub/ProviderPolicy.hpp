@@ -47,6 +47,14 @@ namespace Subscription {
     // Политика группы, которой принадлежит запущенный профиль.
     // Пустая, если профиль не запущен: остановка профиля снимает все ограничения.
     const ProviderPolicy &ActiveProviderPolicy();
-    void SetActiveProviderPolicy(const ProviderPolicy &policy);
+    // Группа, чья политика сейчас активна; -1 если активной политики нет.
+    int ActiveProviderPolicyGroup();
+    void SetActiveProviderPolicy(const ProviderPolicy &policy, int gid);
     void ClearActiveProviderPolicy();
+
+    // Запросы ограничений. Общее правило: отсутствие заголовка — ограничение снято,
+    // поэтому остановка профиля всегда возвращает пользователю полный интерфейс.
+    bool PolicyHidesSettings();
+    bool PolicyHidesUrl();
+    bool PolicyBlocksDeletion(int gid);
 }

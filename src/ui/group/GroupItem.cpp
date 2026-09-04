@@ -1,4 +1,5 @@
 #include "include/ui/group/GroupItem.h"
+#include "include/configs/sub/ProviderPolicy.hpp"
 
 #include "include/ui/group/dialog_edit_group.h"
 #include "include/global/GuiUtils.hpp"
@@ -125,6 +126,10 @@ void GroupItem::on_edit_clicked() {
 
 void GroupItem::on_remove_clicked() {
     if (Configs::dataManager->groupsRepo->GetAllGroupIds().size() <= 1) return;
+    if (Subscription::PolicyBlocksDeletion(ent->id)) {
+        MessageBoxWarning(tr("Delete group"), tr("This subscription is pinned by the provider and cannot be removed while its profile is running."));
+        return;
+    }
     if (QMessageBox::question(this, tr("Confirmation"), tr("Remove %1?").arg(ent->name)) ==
         QMessageBox::StandardButton::Yes) {
         GetMainWindow()->profile_stop(false, true, false);

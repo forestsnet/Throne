@@ -162,9 +162,30 @@ namespace Subscription {
 
     namespace {
         ProviderPolicy g_active;
+        int g_activeGid = -1;
+
+        // Ограничение действует, только если панель прислала его как true.
+        bool on(const std::optional<bool> &flag) { return flag.has_value() && flag.value(); }
     }
 
     const ProviderPolicy &ActiveProviderPolicy() { return g_active; }
-    void SetActiveProviderPolicy(const ProviderPolicy &policy) { g_active = policy; }
-    void ClearActiveProviderPolicy() { g_active = ProviderPolicy{}; }
+    int ActiveProviderPolicyGroup() { return g_activeGid; }
+
+    void SetActiveProviderPolicy(const ProviderPolicy &policy, int gid) {
+        g_active = policy;
+        g_activeGid = gid;
+    }
+
+    void ClearActiveProviderPolicy() {
+        g_active = ProviderPolicy{};
+        g_activeGid = -1;
+    }
+
+    bool PolicyHidesSettings()  { return on(g_active.hideSettings); }
+    bool PolicyHidesUrl()       { return on(g_active.hideUrl); }
+
+    // Закрепление относится только к своей группе: чужие подписки удалять можно.
+    bool PolicyBlocksDeletion(int gid) {
+        return gid >= 0 && gid == g_activeGid && on(g_active.pin);
+    }
 }

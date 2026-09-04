@@ -1,4 +1,5 @@
 #include "include/ui/mainwindow.h"
+#include "include/configs/sub/ProviderPolicy.hpp"
 
 #include <QAbstractItemView>
 #include <QMenu>
@@ -155,6 +156,10 @@ void MainWindow::show_group_tab_menu(const QPoint &p) {
     if (Configs::dataManager->groupsRepo->GetAllGroupIds().size() > 1) {
         connect(menu.addAction(tr("Delete selected Group")), &QAction::triggered, this, [=,this] {
             const auto id = Configs::dataManager->groupsRepo->GetGroupsTabOrder()[clickedIndex];
+            if (Subscription::PolicyBlocksDeletion(id)) {
+                MessageBoxWarning(tr("Delete group"), tr("This subscription is pinned by the provider and cannot be removed while its profile is running."));
+                return;
+            }
             if (QMessageBox::question(this, tr("Confirmation"), tr("Remove %1?").arg(Configs::dataManager->groupsRepo->GetGroup(id)->name)) ==
                 QMessageBox::StandardButton::Yes) {
                 if (running != nullptr) {
