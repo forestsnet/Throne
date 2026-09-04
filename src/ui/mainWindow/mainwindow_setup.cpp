@@ -17,6 +17,8 @@
 #include "include/sys/AutoRun.hpp"
 #include "include/sys/UrlScheme.hpp"
 #include "include/ui/setting/dialog_per_app_proxy.h"
+#include <QMenuBar>
+
 #include "include/ui/fsnt/FsntWindow.h"
 #include "include/ui/fsnt/UiMode.hpp"
 #include "include/configs/sub/ProviderPolicy.hpp"
@@ -97,6 +99,11 @@ void UI_InitMainWindow() {
     mainwindow = new MainWindow;
 
     if (mode == Fsnt::UiMode::Simple) {
+        // На macOS меню скрытого окна всё равно становится глобальным, и клиент
+        // видит в строке меню весь инженерный интерфейс. setNativeMenuBar(false)
+        // возвращает меню внутрь окна, то есть прячет его вместе с ним; системное
+        // меню приложения (О программе, Выход) macOS рисует сама.
+        if (auto *bar = GetMainWindow()->menuBar()) bar->setNativeMenuBar(false);
         mainwindow->hide();
         new FsntWindow;
     }
