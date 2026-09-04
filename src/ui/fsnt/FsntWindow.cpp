@@ -5,7 +5,7 @@
 #include <QLabel>
 #include <QSvgRenderer>
 #include <QPainter>
-#include <QProcess>
+#include <QPointer>
 #include <QTimer>
 #include <QToolButton>
 #include <QVBoxLayout>
@@ -78,11 +78,17 @@ void FsntWindow::chainCoreMessages() {
     // Ядро шлёт состояние через единственный MW_dialog_message, и его владелец —
     // MainWindow. Не перехватываем, а оборачиваем: прежний обработчик вызывается
     // как обычно, мы лишь узнаём о событии дополнительно.
+    // QPointer, а не this: колбэк переживает окно. При выходе MainWindow
+    // продолжает слать сообщения и писать лог, и вызов по указателю на уже
+    // разрушенное окно — обращение к освобождённой памяти.
     auto previous = MW_dialog_message;
-    MW_dialog_message = [this, previous](MwMessage cmd, QStringList args) {
+    QPointer<FsntWindow> self(this);
+    MW_dialog_message = [self, previous](MwMessage cmd, QStringList args) {
         if (previous) previous(cmd, args);
-        QMetaObject::invokeMethod(this, [this, cmd, args] { onCoreMessage(cmd, args); },
-                                  Qt::QueuedConnection);
+        if (self.isNull()) return;
+        QMetaObject::invokeMethod(self, [self, cmd, args] {
+            if (!self.isNull()) self->onCoreMessage(cmd, args);
+        }, Qt::QueuedConnection);
     };
 }
 
@@ -90,10 +96,13 @@ void FsntWindow::chainLogLines() {
     // Как и с сообщениями ядра: не перехватываем, а оборачиваем — прежний
     // обработчик MainWindow должен продолжать писать лог в файл и в окно.
     auto previous = MW_show_log;
-    MW_show_log = [this, previous](const QString &line) {
+    QPointer<FsntWindow> self(this);
+    MW_show_log = [self, previous](const QString &line) {
         if (previous) previous(line);
-        QMetaObject::invokeMethod(this, [this, line] { emit logLine(line); },
-                                  Qt::QueuedConnection);
+        if (self.isNull()) return;
+        QMetaObject::invokeMethod(self, [self, line] {
+            if (!self.isNull()) emit self->logLine(line);
+        }, Qt::QueuedConnection);
     };
 }
 
@@ -273,9 +282,13 @@ void FsntWindow::switchToAdvancedMode() {
     Configs::dataManager->settingsRepo->Save();
 
     // Перезапуск, а не подмена окна: два окна подписались бы на одни сигналы ядра дважды.
-    // Механизм ExitReason живёт в MainWindow и отсюда недоступен, поэтому перезапускаемся сами.
-    QProcess::startDetached(QApplication::applicationFilePath(), {});
-    QApplication::quit();
+    //
+    // Своими руками этого делать нельзя. QProcess::startDetached поднимал новый
+    // процесс до того, как старый отпускал блокировку единственного экземпляра:
+    // новый утыкался в неё, будил старого и завершался, а старый тем временем
+    // выходил. Не оставалось ни одного окна — со стороны выглядело как падение.
+    // MainWindow умеет это правильно: он перезапускается после полного выхода.
+    MW_dialog_message(MwMessage::RestartProgram, {});
 }
 
 void FsntWindow::openAddSubscription() {
