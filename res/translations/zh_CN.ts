@@ -6871,6 +6871,10 @@ URL: %2</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>The provider has hidden the configuration of this subscription.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Clone %1 item(s)</source>
         <translation>克隆 %1 项</translation>
     </message>

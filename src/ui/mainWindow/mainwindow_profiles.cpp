@@ -31,6 +31,7 @@
 #include "include/configs/generate.h"
 #include "include/configs/sub/GroupUpdater.hpp"
 #include "include/database/GroupsRepo.h"
+#include "include/configs/sub/ProviderPolicy.hpp"
 #include "include/database/ProfilesRepo.h"
 #include "include/ui/mainWindow/MainWindowInternal.h"
 #include "include/ui/profile/dialog_edit_profile.h"
@@ -47,6 +48,12 @@ void MainWindow::on_profilesTableView_doubleClicked(const QModelIndex &index) {
         emit profile_selected(id);
         select_mode = false;
         refresh_status();
+        return;
+    }
+    // Редактор показывает конфигурацию целиком, поэтому закрыт той же политикой.
+    if (const auto ent = Configs::dataManager->profilesRepo->GetProfile(id);
+        ent && Subscription::PolicyHidesConfig(ent->gid)) {
+        MW_show_log(tr("The provider has hidden the configuration of this subscription."));
         return;
     }
     auto dialog = new DialogEditProfile("", id, this);
@@ -157,6 +164,8 @@ void MainWindow::on_menu_copy_links_triggered() {
         ui->masterLogBrowser->copy();
         return;
     }
+    // Ссылка vless:// несёт те же учётные данные, что и скрытый URL подписки.
+    if (ConfigHiddenForSelection()) return;
     auto entIDs = get_now_selected_list();
     QStringList links;
     auto ents = Configs::dataManager->profilesRepo->GetProfileBatch(entIDs);
@@ -171,6 +180,7 @@ void MainWindow::on_menu_copy_links_triggered() {
 }
 
 void MainWindow::on_menu_copy_links_nkr_triggered() {
+    if (ConfigHiddenForSelection()) return;
     auto entIDs = get_now_selected_list();
     QStringList links;
     auto ents = Configs::dataManager->profilesRepo->GetProfileBatch(entIDs);
@@ -183,6 +193,7 @@ void MainWindow::on_menu_copy_links_nkr_triggered() {
 }
 
 void MainWindow::on_menu_export_config_triggered() {
+    if (ConfigHiddenForSelection()) return;
     auto ents = get_now_selected_list();
     if (ents.count() != 1) return;
     auto ent = Configs::dataManager->profilesRepo->GetProfile(ents.first());

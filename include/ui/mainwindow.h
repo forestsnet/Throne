@@ -146,6 +146,10 @@ public:
     // Возвращает, можно ли продолжать запуск.
     bool ConfirmConflictingProcesses();
 
+    // Провайдер закрыл конфигурацию выделенных профилей. Пишет причину в лог,
+    // чтобы действие не выглядело сломанным.
+    bool ConfigHiddenForSelection();
+
     void applyProviderPolicy(int gid);
 
     void RestartCore();

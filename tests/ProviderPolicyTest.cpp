@@ -106,6 +106,30 @@ private slots:
         ClearActiveProviderPolicy();
     }
 
+    void hiddenConfigFollowsSettingsOrUrl() {
+        // Ссылка vless:// несёт те же учётные данные, что и URL подписки,
+        // поэтому конфигурацию закрывает любой из двух заголовков.
+        ProviderPolicy onlySettings;
+        onlySettings.hideSettings = true;
+        SetActiveProviderPolicy(onlySettings, 7);
+        QVERIFY(PolicyHidesConfig(7));
+        QVERIFY(!PolicyHidesConfig(8));   // чужая подписка остаётся открытой
+        QVERIFY(!PolicyHidesConfig(-1));
+
+        ProviderPolicy onlyUrl;
+        onlyUrl.hideUrl = true;
+        SetActiveProviderPolicy(onlyUrl, 7);
+        QVERIFY(PolicyHidesConfig(7));
+
+        ProviderPolicy neither;
+        neither.pin = true;
+        SetActiveProviderPolicy(neither, 7);
+        QVERIFY(!PolicyHidesConfig(7));
+
+        ClearActiveProviderPolicy();
+        QVERIFY(!PolicyHidesConfig(7));
+    }
+
     void stoppingProfileLiftsEveryRestriction() {
         ProviderPolicy p;
         p.hideSettings = true;

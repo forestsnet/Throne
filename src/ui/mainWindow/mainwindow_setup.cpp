@@ -875,7 +875,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         set_spmode_system_proxy(false);
         set_spmode_vpn(false);
     });
-    connect(ui->menu_qr, &QAction::triggered, this, [=,this]() { display_qr_link(false); });
+    connect(ui->menu_qr, &QAction::triggered, this, [=,this]() {
+        // QR — та же ссылка, только картинкой.
+        if (ConfigHiddenForSelection()) return;
+        display_qr_link(false);
+    });
     connect(ui->system_dns, &QCheckBox::clicked, this, [=,this](bool checked) {
         if (const auto ok = set_system_dns(checked); !ok) {
             ui->system_dns->setChecked(!checked);
@@ -1123,10 +1127,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             ui->actionCopy_Test_Result->setVisible(true);
         }
 
+        // Скрываем сами пункты, а не только их действие: кнопка, которая
+        // отказывает по нажатию, хуже отсутствующей.
+        if (Subscription::PolicyHidesConfig(profile->gid)) return;
+
         ui->menu_export_config->setVisible(true);
         if (profile->outbound->IsXray() || profile->type == "chain") ui->actionExport_Xray_config->setVisible(true);
     });
     connect(ui->actionExport_Xray_config, &QAction::triggered, this, [=,this]() {
+        if (ConfigHiddenForSelection()) return;
         auto ents = get_now_selected_list();
         if (ents.count() != 1) return;
         auto ent = Configs::dataManager->profilesRepo->GetProfile(ents.first());

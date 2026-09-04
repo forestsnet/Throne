@@ -188,4 +188,9 @@ namespace Subscription {
     bool PolicyBlocksDeletion(int gid) {
         return gid >= 0 && gid == g_activeGid && on(g_active.pin);
     }
+
+    bool PolicyHidesConfig(int gid) {
+        if (gid < 0 || gid != g_activeGid) return false;
+        return on(g_active.hideSettings) || on(g_active.hideUrl);
+    }
 }

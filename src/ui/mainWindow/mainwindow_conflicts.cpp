@@ -7,6 +7,8 @@
 #include <QString>
 #include <QStringList>
 
+#include "include/configs/sub/ProviderPolicy.hpp"
+#include "include/database/ProfilesRepo.h"
 #include "include/database/SettingsRepo.h"
 #include "include/global/Configs.hpp"
 #include "include/ui/mainWindow/MainWindowInternal.h"
@@ -245,6 +247,21 @@ QStringList MainWindow::CheckConflictingProcesses() {
     }
     
     return conflictingProcesses;
+}
+
+// Просмотр и выгрузка конфигурации закрыты провайдером.
+//
+// Проверяем по выделению, а не по активной группе: чужие подписки и свои
+// профили остаются открыты, закрывается только то, чем провайдер управляет.
+bool MainWindow::ConfigHiddenForSelection() {
+    const auto selected = get_now_selected_list();
+    for (const auto &profile : Configs::dataManager->profilesRepo->GetProfileBatch(selected)) {
+        if (profile && Subscription::PolicyHidesConfig(profile->gid)) {
+            MW_show_log(tr("The provider has hidden the configuration of this subscription."));
+            return true;
+        }
+    }
+    return false;
 }
 
 // Спрашивать при каждом запуске нельзя: диалог модальный и держит profile_start,

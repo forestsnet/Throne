@@ -57,4 +57,11 @@ namespace Subscription {
     bool PolicyHidesSettings();
     bool PolicyHidesUrl();
     bool PolicyBlocksDeletion(int gid);
+
+    // Закрывает просмотр, выгрузку и копирование конфигурации серверов группы.
+    // Ссылка vless:// несёт ровно те же учётные данные, что и скрытый URL
+    // подписки, поэтому hide-url закрывает и её, а hide-settings — конфиг,
+    // которым провайдер управляет сам. Как и закрепление, действует только на
+    // свою группу: чужие подписки остаются открыты.
+    bool PolicyHidesConfig(int gid);
 }

@@ -6973,6 +6973,10 @@ URL: %2</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>The provider has hidden the configuration of this subscription.</source>
+        <translation>Провайдер закрыл конфигурацию этой подписки.</translation>
+    </message>
+    <message>
         <source>Clone %1 item(s)</source>
         <translation>Клонировать %1 записей</translation>
     </message>
