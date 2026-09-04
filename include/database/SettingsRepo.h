@@ -154,7 +154,7 @@ namespace Configs {
 
         // Security
         bool skip_cert = false;
-        QString utlsFingerprint = "chrome";
+        QString utlsFingerprint = "firefox";
         bool disable_run_admin = false; // windows only
         bool use_mozilla_certs = false;
 
