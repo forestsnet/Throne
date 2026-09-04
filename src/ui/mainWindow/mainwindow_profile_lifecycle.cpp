@@ -1,4 +1,5 @@
 #include "include/ui/mainwindow.h"
+#include "include/configs/sub/ProviderPolicy.hpp"
 
 #include "include/ui/mainWindow/TestRunner.h"
 
@@ -171,6 +172,45 @@ bool MainWindow::handleXrayGeoAssetError(const QString& error, const QString& co
     return true;
 }
 
+void MainWindow::applyProviderPolicy(int gid) {
+    // set_spmode_vpn заканчивается вызовом profile_start, поэтому без стража
+    // применение зациклится: политика включает TUN, TUN перезапускает профиль.
+    if (m_applyingProviderPolicy) return;
+
+    const auto group = Configs::dataManager->groupsRepo->GetGroup(gid);
+    if (!group) {
+        Subscription::ClearActiveProviderPolicy();
+        return;
+    }
+
+    const auto policy = Subscription::DeserializeProviderPolicy(group->provider_policy_json);
+    Subscription::SetActiveProviderPolicy(policy);
+    if (policy.isEmpty()) return;
+
+    m_applyingProviderPolicy = true;
+
+    if (policy.alwaysHwid.has_value()) {
+        Configs::dataManager->settingsRepo->sub_send_hwid = policy.alwaysHwid.value();
+    }
+    if (policy.autoUpdate.has_value()) {
+        group->skip_auto_update = !policy.autoUpdate.value();
+        Configs::dataManager->groupsRepo->Save(group);
+    }
+    if (policy.updateIntervalHours > 0) {
+        Configs::dataManager->settingsRepo->sub_auto_update = policy.updateIntervalHours * 60;
+    }
+    Configs::dataManager->settingsRepo->Save();
+
+    // Последним: перезапускает профиль, поэтому прочие настройки уже должны быть записаны.
+    if (policy.tunEnable.has_value()
+        && policy.tunEnable.value() != Configs::dataManager->settingsRepo->spmode_vpn) {
+        MW_show_log(QString("[Policy] Provider requests TUN=%1").arg(policy.tunEnable.value() ? "on" : "off"));
+        set_spmode_vpn(policy.tunEnable.value(), true);
+    }
+
+    m_applyingProviderPolicy = false;
+}
+
 void MainWindow::profile_start(int _id) {
     if (Configs::dataManager->settingsRepo->prepare_exit) return;
 
@@ -202,6 +242,11 @@ void MainWindow::profile_start(int _id) {
             MW_show_log("[CheckConflict] User chose to continue despite conflicts");
         }
     }
+
+    if (const auto policyEnt = Configs::dataManager->profilesRepo->GetProfile(_id)) {
+        applyProviderPolicy(policyEnt->gid);
+    }
+
 #ifdef Q_OS_LINUX
     if (Configs::dataManager->settingsRepo->enable_dns_server && Configs::dataManager->settingsRepo->dns_server_listen_port <= 1024) {
         if (!get_elevated_permissions()) {
@@ -450,6 +495,10 @@ void MainWindow::profile_start(int _id) {
 }
 
 void MainWindow::profile_stop(bool crash, bool block, bool manual) {
+    // Остановка профиля снимает ограничения провайдера: пользователь всегда
+    // может выйти из-под них, не оставаясь в невосстановимом состоянии.
+    Subscription::ClearActiveProviderPolicy();
+
     if (running == nullptr) {
         return;
     }

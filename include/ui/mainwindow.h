@@ -142,6 +142,8 @@ public:
 
     QStringList CheckConflictingProcesses();
 
+    void applyProviderPolicy(int gid);
+
     void RestartCore();
 
     // Takes a whole poll snapshot in the lister's order; row N is always its Nth entry. UI thread only.
@@ -405,6 +407,7 @@ private:
     bool usesTightLabels() const;
 
     QSize designMinimumSize;
+    bool m_applyingProviderPolicy = false;
 
     QTimer *m_proxyListRefreshDebounce = nullptr;
     void scheduleProxyListRefresh();

@@ -43,4 +43,10 @@ namespace Subscription {
     ProviderPolicy ParseProviderPolicy(const QList<QPair<QByteArray, QByteArray>> &headers);
     QString        SerializeProviderPolicy(const ProviderPolicy &policy);
     ProviderPolicy DeserializeProviderPolicy(const QString &json);
+
+    // Политика группы, которой принадлежит запущенный профиль.
+    // Пустая, если профиль не запущен: остановка профиля снимает все ограничения.
+    const ProviderPolicy &ActiveProviderPolicy();
+    void SetActiveProviderPolicy(const ProviderPolicy &policy);
+    void ClearActiveProviderPolicy();
 }

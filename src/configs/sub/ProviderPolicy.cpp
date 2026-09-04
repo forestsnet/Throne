@@ -159,4 +159,12 @@ namespace Subscription {
         p.unknown = o.value("unknown").toObject();
         return p;
     }
+
+    namespace {
+        ProviderPolicy g_active;
+    }
+
+    const ProviderPolicy &ActiveProviderPolicy() { return g_active; }
+    void SetActiveProviderPolicy(const ProviderPolicy &policy) { g_active = policy; }
+    void ClearActiveProviderPolicy() { g_active = ProviderPolicy{}; }
 }
