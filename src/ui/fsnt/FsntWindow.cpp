@@ -101,19 +101,7 @@ void FsntWindow::onCoreMessage(MwMessage cmd, const QStringList &args) {
 
 
 QPixmap FsntWindow::renderLogo(int size) {
-    // Вектор рисуем под плотность экрана: на Retina иначе получится мыло.
-    const qreal dpr = devicePixelRatioF();
-    QPixmap pixmap(QSize(size, size) * dpr);
-    pixmap.setDevicePixelRatio(dpr);
-    pixmap.fill(Qt::transparent);
-
-    QSvgRenderer renderer(QString(":/brand/fn-logo.svg"));
-    if (!renderer.isValid()) return pixmap;
-
-    QPainter painter(&pixmap);
-    painter.setRenderHint(QPainter::Antialiasing, true);
-    renderer.render(&painter, QRectF(0, 0, size, size));
-    return pixmap;
+    return Fsnt::BrandMark(size, devicePixelRatioF());
 }
 
 void FsntWindow::buildHeader(QVBoxLayout *root) {
@@ -125,12 +113,12 @@ void FsntWindow::buildHeader(QVBoxLayout *root) {
     row->setContentsMargins(Fsnt::kPanelPadding, 0, Fsnt::kPanelPadding, 0);
     row->setSpacing(8);
 
-    auto *logo = new QLabel(header);
-    logo->setObjectName("fsntLogo");
-    logo->setPixmap(renderLogo(26));
-    logo->setFixedSize(30, 30);
-    logo->setAlignment(Qt::AlignCenter);
-    row->addWidget(logo);
+    m_logo = new QLabel(header);
+    m_logo->setObjectName("fsntLogo");
+    m_logo->setPixmap(renderLogo(26));
+    m_logo->setFixedSize(30, 30);
+    m_logo->setAlignment(Qt::AlignCenter);
+    row->addWidget(m_logo);
 
     auto *title = new QLabel("FSNT Client", header);
     title->setObjectName("fsntTitle");
@@ -226,6 +214,8 @@ void FsntWindow::refreshServerList() {
 
 void FsntWindow::applyTheme() {
     setStyleSheet(Fsnt::BuildStyleSheet());
+    // Знак нарисован в растр под цвет текста, и сам за темой не следует.
+    if (m_logo != nullptr) m_logo->setPixmap(renderLogo(26));
 }
 
 void FsntWindow::switchToAdvancedMode() {

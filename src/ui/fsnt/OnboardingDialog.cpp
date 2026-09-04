@@ -92,18 +92,7 @@ void OnboardingDialog::MarkDone() {
 }
 
 QPixmap OnboardingDialog::renderLogo(const int size) const {
-    const qreal dpr = devicePixelRatioF();
-    QPixmap pixmap(QSize(size, size) * dpr);
-    pixmap.setDevicePixelRatio(dpr);
-    pixmap.fill(Qt::transparent);
-
-    QSvgRenderer renderer(QString(":/brand/fn-logo.svg"));
-    if (!renderer.isValid()) return pixmap;
-
-    QPainter painter(&pixmap);
-    painter.setRenderHint(QPainter::Antialiasing, true);
-    renderer.render(&painter, QRectF(0, 0, size, size));
-    return pixmap;
+    return Fsnt::BrandMark(size, devicePixelRatioF());
 }
 
 OnboardingDialog::OnboardingDialog(QWidget *parent) : QDialog(parent) {

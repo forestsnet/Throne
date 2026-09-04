@@ -3,6 +3,7 @@
 #include <QAbstractButton>
 #include <QComboBox>
 #include <QIcon>
+#include <QPixmap>
 
 class QPainter;
 class QWidget;
@@ -28,6 +29,11 @@ namespace Fsnt {
 
     // Нарисовать значок прямо в переданный прямоугольник.
     void PaintGlyph(QPainter *painter, Glyph glyph, const QRectF &box, const QColor &color);
+
+    // Фирменный знак FN под плотность экрана, перекрашенный в цвет текста.
+    // Исходный SVG одноцветный и почти белый (#FCF8F6): как есть он исчезает
+    // на светлой теме.
+    QPixmap BrandMark(int size, qreal devicePixelRatio);
 
     // Вопрос «да/нет» в оформлении простого режима. QMessageBox рисуется
     // стилем платформы и посреди клиентского окна выглядит чужим.

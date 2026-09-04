@@ -211,6 +211,10 @@ namespace Fsnt {
                 border: none;
                 border-radius: 0;
                 padding: 0 14px;
+                /* Высоту задаём здесь, а не через minimumHeight: тема приложения
+                   приносит свои отступы для QPushButton и делает строку ниже
+                   соседних. */
+                min-height: 44px;
                 color: @accent;
                 font-size: 13px;
                 text-align: left;
@@ -220,6 +224,14 @@ namespace Fsnt {
 
             /* ---- диалоги простого режима ---- */
             QDialog#fsntDialog { background: @bg; }
+            /* Область прокрутки и её холст красит тема приложения: в LightBlue
+               вокруг карточек проступал её голубой фон вместо нашего. */
+            QDialog#fsntDialog QScrollArea,
+            QDialog#fsntDialog QScrollArea > QWidget,
+            QDialog#fsntDialog QScrollArea > QWidget > QWidget {
+                background: transparent;
+                border: none;
+            }
             QDialog#fsntDialog QLabel { color: @text; font-size: 13px; }
             QLabel#fsntDialogTitle { color: @text; font-size: 19px; font-weight: 600; }
             QLabel#fsntDialogHint { color: @muted; font-size: 12px; }

@@ -1,6 +1,7 @@
 #include "include/ui/fsnt/FsntControls.h"
 
 #include <QAbstractItemView>
+#include <QSvgRenderer>
 #include <QDialog>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -50,50 +51,58 @@ namespace {
                 break;
 
             case Fsnt::Glyph::Refresh: {
-                const QRectF arc(c.x() - r * 0.62, c.y() - r * 0.62, r * 1.24, r * 1.24);
-                // Разрыв сверху справа — в него садится наконечник стрелки.
-                painter->drawArc(arc, 60 * 16, 300 * 16);
-                const QPointF tip(c.x() + r * 0.62 * qCos(qDegreesToRadians(60.0)),
-                                  c.y() - r * 0.62 * qSin(qDegreesToRadians(60.0)));
+                // Дуга на 300° от трёх часов против часовой; разрыв остаётся
+                // снизу справа, и в него смотрит наконечник.
+                const qreal radius = r * 0.66;
+                const QRectF arc(c.x() - radius, c.y() - radius, radius * 2, radius * 2);
+                painter->drawArc(arc, 0, 300 * 16);
+
+                // Треугольник на конце дуги, остриём вниз: так стрелка читается
+                // как ход по часовой. Раньше наконечник строился от точки на
+                // другом краю дуги и в рисунок просто не попадал.
                 QPainterPath head;
-                head.moveTo(tip.x() - r * 0.34, tip.y() - r * 0.08);
-                head.lineTo(tip.x() + r * 0.06, tip.y() - r * 0.16);
-                head.lineTo(tip.x() + r * 0.10, tip.y() + r * 0.30);
-                painter->setBrush(color);
+                head.moveTo(c.x() + radius - r * 0.26, c.y() - r * 0.04);
+                head.lineTo(c.x() + radius + r * 0.26, c.y() - r * 0.04);
+                head.lineTo(c.x() + radius, c.y() + r * 0.40);
+                head.closeSubpath();
                 painter->setPen(Qt::NoPen);
+                painter->setBrush(color);
                 painter->drawPath(head);
                 break;
             }
 
             case Fsnt::Glyph::Gear: {
-                QPainterPath teeth;
+                // Зубцы объединяем с телом в один силуэт и вычитаем отверстие.
+                // Восемь отдельных тонких лучей вокруг тонкого кольца читались
+                // не как шестерёнка, а как снежинка.
+                QPainterPath gear;
+                gear.addEllipse(c, r * 0.64, r * 0.64);
                 for (int i = 0; i < 8; ++i) {
                     QPainterPath tooth;
-                    tooth.addRoundedRect(QRectF(c.x() - r * 0.14, c.y() - r * 0.95,
-                                                r * 0.28, r * 0.34),
-                                         r * 0.08, r * 0.08);
+                    tooth.addRoundedRect(QRectF(c.x() - r * 0.19, c.y() - r * 0.97,
+                                                r * 0.38, r * 0.42),
+                                         r * 0.09, r * 0.09);
                     QTransform rotate;
                     rotate.translate(c.x(), c.y());
                     rotate.rotate(i * 45.0);
                     rotate.translate(-c.x(), -c.y());
-                    teeth.addPath(rotate.map(tooth));
+                    gear = gear.united(rotate.map(tooth));
                 }
+                QPainterPath hole;
+                hole.addEllipse(c, r * 0.29, r * 0.29);
+
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(color);
-                painter->drawPath(teeth);
-
-                painter->setBrush(Qt::NoBrush);
-                painter->setPen(QPen(color, r * 0.24));
-                painter->drawEllipse(c, r * 0.48, r * 0.48);
+                painter->drawPath(gear.subtracted(hole));
                 break;
             }
 
             case Fsnt::Glyph::Bolt: {
                 QPainterPath bolt;
-                bolt.moveTo(c.x() + r * 0.28, c.y() - r * 0.86);
+                bolt.moveTo(c.x() + r * 0.32, c.y() - r * 0.94);
                 bolt.lineTo(c.x() - r * 0.52, c.y() + r * 0.10);
                 bolt.lineTo(c.x() - r * 0.02, c.y() + r * 0.10);
-                bolt.lineTo(c.x() - r * 0.26, c.y() + r * 0.86);
+                bolt.lineTo(c.x() - r * 0.30, c.y() + r * 0.94);
                 bolt.lineTo(c.x() + r * 0.54, c.y() - r * 0.12);
                 bolt.lineTo(c.x() + r * 0.04, c.y() - r * 0.12);
                 bolt.closeSubpath();
@@ -425,6 +434,26 @@ void FsntIconButton::leaveEvent(QEvent *event) {
 // ---------------------------------------------------------------- подтверждение
 
 namespace Fsnt {
+    QPixmap BrandMark(const int size, const qreal devicePixelRatio) {
+        // Вектор рисуем под плотность экрана: на Retina иначе получится мыло.
+        QPixmap pixmap(QSize(size, size) * devicePixelRatio);
+        pixmap.setDevicePixelRatio(devicePixelRatio);
+        pixmap.fill(Qt::transparent);
+
+        QSvgRenderer renderer(QStringLiteral(":/brand/fn-logo.svg"));
+        if (!renderer.isValid()) return pixmap;
+
+        QPainter painter(&pixmap);
+        painter.setRenderHint(QPainter::Antialiasing, true);
+        renderer.render(&painter, QRectF(0, 0, size, size));
+
+        // Перекрашиваем в цвет текста, сохраняя альфу: знак одноцветный и почти
+        // белый, на светлой теме он сливался с фоном шапки до невидимости.
+        painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+        painter.fillRect(QRectF(0, 0, size, size), CurrentPalette().text);
+        return pixmap;
+    }
+
     bool Confirm(QWidget *parent, const QString &title, const QString &text,
                  const QString &acceptText) {
         QDialog dialog(parent);

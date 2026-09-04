@@ -8,6 +8,7 @@
 class ConnectPanel;
 class ServerListPanel;
 class SubscriptionCard;
+class QLabel;
 class QVBoxLayout;
 
 // Потребительское окно FSNT Client. В этом приросте панели пустые:
@@ -41,6 +42,7 @@ private:
     ConnectPanel *m_connectPanel = nullptr;
     ServerListPanel *m_serverList = nullptr;
     SubscriptionCard *m_subscriptionCard = nullptr;
+    QLabel *m_logo = nullptr;
     QVBoxLayout *m_serverLayout = nullptr;
     QVBoxLayout *m_sideLayout = nullptr;
 };

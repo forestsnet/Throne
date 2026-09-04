@@ -24,7 +24,7 @@ namespace Fsnt {
             p.surface = QColor("#FFFFFF");
             p.card = QColor("#FFFFFF");
             p.cardHover = QColor("#EEF1F6");
-            p.border = QColor("#DFE3EA");
+            p.border = QColor("#D6DBE4");
             p.text = QColor("#141821");
             p.textMuted = QColor("#69728A");
             p.accent = QColor("#3B63E8");
