@@ -133,6 +133,7 @@ set(PROJECT_SOURCES
 
         include/configs/sub/GroupUpdater.hpp
         src/configs/sub/GroupUpdater.cpp
+        src/configs/sub/ProviderPolicy.cpp
         include/configs/sub/SubscriptionScan.hpp
         include/configs/sub/SubscriptionParser.hpp
         src/configs/sub/SubscriptionParser.cpp
@@ -634,6 +635,12 @@ target_link_libraries(Throne PRIVATE
 )
 
 qt_finalize_executable(Throne)
+
+option(THRONE_BUILD_TESTS "Build unit tests" OFF)
+if (THRONE_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
 
 #### Throne Updater (macOS only - Windows/Linux use official Odin updater) ####
 if (APPLE)

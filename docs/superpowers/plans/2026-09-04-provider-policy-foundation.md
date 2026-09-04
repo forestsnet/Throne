@@ -203,6 +203,10 @@ QTEST_APPLESS_MAIN(ProviderPolicyTest)
 ```cmake
 find_package(Qt6 REQUIRED COMPONENTS Test)
 
+# Класс теста объявлен прямо в .cpp и включает свой .moc — нужен AUTOMOC.
+# В корневом CMakeLists он выставлен точечно на цели Throne, на подкаталог не распространяется.
+set(CMAKE_AUTOMOC ON)
+
 qt_add_executable(ProviderPolicyTest
         ProviderPolicyTest.cpp
         ../src/configs/sub/ProviderPolicy.cpp
@@ -252,7 +256,10 @@ namespace Subscription {
             if (!text.startsWith("base64:", Qt::CaseInsensitive)) return text;
 
             const QByteArray payload = text.mid(7).toUtf8();
-            const auto decoded = QByteArray::fromBase64Encoding(payload);
+            // Строгий режим обязателен: по умолчанию декодер молча пропускает
+            // недопустимые символы и возвращает мусор со статусом Ok.
+            const auto decoded = QByteArray::fromBase64Encoding(
+                payload, QByteArray::Base64Encoding | QByteArray::AbortOnBase64DecodingErrors);
             if (decoded.decodingStatus != QByteArray::Base64DecodingStatus::Ok) {
                 return text.mid(7);
             }
@@ -349,7 +356,7 @@ cmake --build build-test --target ProviderPolicyTest 2>&1 | tail -5
 ./build-test/tests/ProviderPolicyTest
 ```
 
-Ожидаемо: `Totals: 10 passed, 0 failed, 0 skipped`.
+Ожидаемо: `Totals: 12 passed, 0 failed, 0 skipped` — Qt Test считает ещё `initTestCase` и `cleanupTestCase`.
 
 - [ ] **Step 6: Убедиться, что обычная сборка не изменилась**
 
@@ -515,7 +522,7 @@ cmake --build build-test --target ProviderPolicyTest 2>&1 | tail -3
 ./build-test/tests/ProviderPolicyTest
 ```
 
-Ожидаемо: `Totals: 13 passed, 0 failed, 0 skipped`.
+Ожидаемо: `Totals: 15 passed, 0 failed, 0 skipped`.
 
 - [ ] **Step 5: Коммит**
 
@@ -939,7 +946,7 @@ cmake --build build-accept -j 2>&1 | tail -3
 cmake --build build-test --target ProviderPolicyTest 2>&1 | tail -2 && ./build-test/tests/ProviderPolicyTest
 ```
 
-Ожидаемо: чистая сборка без ошибок, 13 тестов пройдено.
+Ожидаемо: чистая сборка без ошибок, 15 тестов пройдено.
 
 Затем вручную, с заглушкой из Task 4:
 
