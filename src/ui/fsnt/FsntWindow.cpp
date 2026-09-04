@@ -20,6 +20,7 @@
 #include "include/ui/fsnt/ConnectPanel.h"
 #include "include/ui/mainwindow.h"
 #include "include/ui/fsnt/FsntSettingsDialog.h"
+#include "include/ui/fsnt/FsntControls.h"
 #include "include/ui/fsnt/FsntTheme.hpp"
 #include "include/ui/fsnt/ServerListPanel.h"
 #include "include/ui/fsnt/SubscriptionCard.h"

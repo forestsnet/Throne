@@ -1,6 +1,9 @@
 #include "include/ui/fsnt/FsntControls.h"
 
 #include <QAbstractItemView>
+#include <QBrush>
+#include <QTransform>
+#include <QtMath>
 #include <QListView>
 #include <QPainter>
 #include <QPainterPath>
@@ -19,6 +22,101 @@ namespace {
     constexpr int kSelectHeight = 38;
     constexpr int kSelectPadding = 12;
     constexpr int kPopupRowHeight = 34;
+
+
+    constexpr int kIconButtonSide = 36;
+
+    // --- значки путями ---
+
+    void paintGlyphImpl(QPainter *painter, const Fsnt::Glyph glyph, const QRectF &box,
+                        const QColor &color) {
+        const QPointF c = box.center();
+        const qreal r = qMin(box.width(), box.height()) / 2.0;
+        // Кисть вызывающего сохраняем: сердечко у избранного залито, у прочих — контур.
+        const QBrush incoming = painter->brush();
+        QPen pen(color, qMax(1.6, r * 0.17), Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+        painter->setPen(pen);
+        painter->setBrush(Qt::NoBrush);
+
+        switch (glyph) {
+            case Fsnt::Glyph::Plus:
+                painter->drawLine(QPointF(c.x() - r * 0.62, c.y()), QPointF(c.x() + r * 0.62, c.y()));
+                painter->drawLine(QPointF(c.x(), c.y() - r * 0.62), QPointF(c.x(), c.y() + r * 0.62));
+                break;
+
+            case Fsnt::Glyph::Refresh: {
+                const QRectF arc(c.x() - r * 0.62, c.y() - r * 0.62, r * 1.24, r * 1.24);
+                // Разрыв сверху справа — в него садится наконечник стрелки.
+                painter->drawArc(arc, 60 * 16, 300 * 16);
+                const QPointF tip(c.x() + r * 0.62 * qCos(qDegreesToRadians(60.0)),
+                                  c.y() - r * 0.62 * qSin(qDegreesToRadians(60.0)));
+                QPainterPath head;
+                head.moveTo(tip.x() - r * 0.34, tip.y() - r * 0.08);
+                head.lineTo(tip.x() + r * 0.06, tip.y() - r * 0.16);
+                head.lineTo(tip.x() + r * 0.10, tip.y() + r * 0.30);
+                painter->setBrush(color);
+                painter->setPen(Qt::NoPen);
+                painter->drawPath(head);
+                break;
+            }
+
+            case Fsnt::Glyph::Gear: {
+                QPainterPath teeth;
+                for (int i = 0; i < 8; ++i) {
+                    QPainterPath tooth;
+                    tooth.addRoundedRect(QRectF(c.x() - r * 0.14, c.y() - r * 0.95,
+                                                r * 0.28, r * 0.34),
+                                         r * 0.08, r * 0.08);
+                    QTransform rotate;
+                    rotate.translate(c.x(), c.y());
+                    rotate.rotate(i * 45.0);
+                    rotate.translate(-c.x(), -c.y());
+                    teeth.addPath(rotate.map(tooth));
+                }
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(color);
+                painter->drawPath(teeth);
+
+                painter->setBrush(Qt::NoBrush);
+                painter->setPen(QPen(color, r * 0.24));
+                painter->drawEllipse(c, r * 0.48, r * 0.48);
+                break;
+            }
+
+            case Fsnt::Glyph::Bolt: {
+                QPainterPath bolt;
+                bolt.moveTo(c.x() + r * 0.28, c.y() - r * 0.86);
+                bolt.lineTo(c.x() - r * 0.52, c.y() + r * 0.10);
+                bolt.lineTo(c.x() - r * 0.02, c.y() + r * 0.10);
+                bolt.lineTo(c.x() - r * 0.26, c.y() + r * 0.86);
+                bolt.lineTo(c.x() + r * 0.54, c.y() - r * 0.12);
+                bolt.lineTo(c.x() + r * 0.04, c.y() - r * 0.12);
+                bolt.closeSubpath();
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(color);
+                painter->drawPath(bolt);
+                break;
+            }
+
+            case Fsnt::Glyph::Search:
+                painter->drawEllipse(QPointF(c.x() - r * 0.16, c.y() - r * 0.16), r * 0.48, r * 0.48);
+                painter->drawLine(QPointF(c.x() + r * 0.22, c.y() + r * 0.22),
+                                  QPointF(c.x() + r * 0.66, c.y() + r * 0.66));
+                break;
+
+            case Fsnt::Glyph::Heart: {
+                painter->setBrush(incoming);
+                QPainterPath heart;
+                heart.moveTo(c.x(), c.y() + r * 0.68);
+                heart.cubicTo(c.x() - r * 1.30, c.y() - r * 0.16,
+                              c.x() - r * 0.44, c.y() - r * 1.06, c.x(), c.y() - r * 0.34);
+                heart.cubicTo(c.x() + r * 0.44, c.y() - r * 1.06,
+                              c.x() + r * 1.30, c.y() - r * 0.16, c.x(), c.y() + r * 0.68);
+                painter->drawPath(heart);
+                break;
+            }
+        }
+    }
 
     // Галочка рисуется путём, а не шрифтом: символ ✓ в разных системах разной
     // ширины и по-разному сидит по вертикали.
@@ -234,6 +332,79 @@ void FsntSelect::enterEvent(QEnterEvent *event) {
 }
 
 void FsntSelect::leaveEvent(QEvent *event) {
+    Q_UNUSED(event)
+    m_hovered = false;
+    update();
+}
+
+// ---------------------------------------------------------------- значки
+
+namespace Fsnt {
+    void PaintGlyph(QPainter *painter, const Glyph glyph, const QRectF &box, const QColor &color) {
+        paintGlyphImpl(painter, glyph, box, color);
+    }
+
+    QIcon GlyphIcon(const Glyph glyph, const int size, const QColor &color) {
+        QPixmap pixmap(QSize(size, size) * 2);   // с запасом под Retina
+        pixmap.setDevicePixelRatio(2.0);
+        pixmap.fill(Qt::transparent);
+
+        QPainter painter(&pixmap);
+        painter.setRenderHint(QPainter::Antialiasing, true);
+        paintGlyphImpl(&painter, glyph, QRectF(0, 0, size, size), color);
+        painter.end();
+        return QIcon(pixmap);
+    }
+} // namespace Fsnt
+
+// -------------------------------------------------------------- FsntIconButton
+
+FsntIconButton::FsntIconButton(const Fsnt::Glyph glyph, QWidget *parent)
+    : QAbstractButton(parent), m_glyph(glyph) {
+    setCursor(Qt::PointingHandCursor);
+    setAttribute(Qt::WA_Hover, true);
+    setFocusPolicy(Qt::NoFocus);
+}
+
+QSize FsntIconButton::sizeHint() const {
+    return {kIconButtonSide, kIconButtonSide};
+}
+
+void FsntIconButton::setFlat(const bool flat) {
+    m_flat = flat;
+    update();
+}
+
+void FsntIconButton::paintEvent(QPaintEvent *event) {
+    Q_UNUSED(event)
+    const Fsnt::Palette p = Fsnt::CurrentPalette();
+
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+
+    if (!m_flat) {
+        const QRectF frame = QRectF(rect()).adjusted(0.5, 0.5, -0.5, -0.5);
+        painter.setBrush(p.card);
+        painter.setPen(QPen(m_hovered ? p.accent : p.border, 1.0));
+        painter.drawRoundedRect(frame, Fsnt::kRowRadius, Fsnt::kRowRadius);
+    } else if (m_hovered) {
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(p.cardHover);
+        painter.drawRoundedRect(rect(), Fsnt::kRowRadius, Fsnt::kRowRadius);
+    }
+
+    const qreal inset = m_flat ? 9.0 : 10.0;
+    paintGlyphImpl(&painter, m_glyph, QRectF(rect()).adjusted(inset, inset, -inset, -inset),
+               m_hovered ? p.accent : p.textMuted);
+}
+
+void FsntIconButton::enterEvent(QEnterEvent *event) {
+    Q_UNUSED(event)
+    m_hovered = true;
+    update();
+}
+
+void FsntIconButton::leaveEvent(QEvent *event) {
     Q_UNUSED(event)
     m_hovered = false;
     update();

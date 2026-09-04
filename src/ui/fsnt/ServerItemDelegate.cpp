@@ -4,6 +4,7 @@
 #include <QPainterPath>
 
 #include "include/database/entities/Profile.h"
+#include "include/ui/fsnt/FsntControls.h"
 #include "include/ui/fsnt/FsntPalette.hpp"
 #include "include/ui/fsnt/FsntTheme.hpp"
 #include "include/ui/fsnt/ServerListPanel.h"
@@ -67,11 +68,12 @@ void ServerItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     // --- сердечко ---
     const bool favorite = index.data(ServerListPanel::FavoriteRole).toBool();
     const QRect heartRect(row.right() - kHeartZone, row.top(), kHeartZone, row.height());
-    QFont heartFont = option.font;
-    heartFont.setPointSizeF(heartFont.pointSizeF() + 1);
-    painter->setFont(heartFont);
-    painter->setPen(favorite ? p.danger : withAlpha(p.textMuted, hovered ? 200 : 110));
-    painter->drawText(heartRect, Qt::AlignCenter, favorite ? QString("♥") : QString("♡"));
+    const QColor heartColor = favorite ? p.danger : withAlpha(p.textMuted, hovered ? 200 : 110);
+    // Символы ♥ и ♡ в разных системах разной ширины и сидят на разной высоте,
+    // поэтому рисуем путём — и заодно получаем заливку у избранного.
+    painter->setBrush(favorite ? QBrush(heartColor) : QBrush(Qt::NoBrush));
+    Fsnt::PaintGlyph(painter, Fsnt::Glyph::Heart,
+                     QRectF(heartRect).adjusted(8, 13, -8, -13), heartColor);
     row = row.adjusted(0, 0, -kHeartZone, 0);
 
     // --- пинг таблеткой ---

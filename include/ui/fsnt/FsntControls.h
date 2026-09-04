@@ -2,8 +2,31 @@
 
 #include <QAbstractButton>
 #include <QComboBox>
+#include <QIcon>
 
+class QPainter;
 class QVariantAnimation;
+
+namespace Fsnt {
+    // Значки рисуются путями, а не буквами и не эмодзи. Глиф из шрифта в каждой
+    // системе своей ширины и сидит на своей высоте, а цветная эмодзи вроде ⚡
+    // вообще игнорирует палитру и выбивается из оформления.
+    enum class Glyph {
+        Plus,
+        Refresh,
+        Gear,
+        Bolt,
+        Search,
+        Heart,
+    };
+
+    // Значок в виде QIcon — для мест, где виджет принимает только её
+    // (действия внутри QLineEdit, кнопка очистки поиска).
+    QIcon GlyphIcon(Glyph glyph, int size, const QColor &color);
+
+    // Нарисовать значок прямо в переданный прямоугольник.
+    void PaintGlyph(QPainter *painter, Glyph glyph, const QRectF &box, const QColor &color);
+} // namespace Fsnt
 
 // Современные замены штатным виджетам.
 //
@@ -31,6 +54,28 @@ private:
     qreal m_position = 0.0;   // 0 выключен, 1 включён
     bool m_hovered = false;
     QVariantAnimation *m_slide = nullptr;
+};
+
+// Квадратная кнопка со значком: та же карточка, что у полей, и нарисованный знак.
+class FsntIconButton : public QAbstractButton {
+    Q_OBJECT
+
+public:
+    explicit FsntIconButton(Fsnt::Glyph glyph, QWidget *parent = nullptr);
+
+    QSize sizeHint() const override;
+    // Без рамки и подложки — для значков внутри шапки.
+    void setFlat(bool flat);
+
+protected:
+    void paintEvent(QPaintEvent *event) override;
+    void enterEvent(QEnterEvent *event) override;
+    void leaveEvent(QEvent *event) override;
+
+private:
+    Fsnt::Glyph m_glyph;
+    bool m_flat = false;
+    bool m_hovered = false;
 };
 
 // Выпадающий список с собственной отрисовкой поля и списка.

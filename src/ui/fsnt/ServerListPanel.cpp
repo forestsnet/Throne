@@ -20,6 +20,7 @@
 #include "include/global/Configs.hpp"
 #include "include/ui/fsnt/BusyButton.h"
 #include "include/ui/fsnt/FsntControls.h"
+#include "include/ui/fsnt/FsntPalette.hpp"
 #include "include/ui/fsnt/FsntTheme.hpp"
 #include "include/configs/sub/ProviderPolicy.hpp"
 #include "include/ui/mainwindow.h"
@@ -36,20 +37,16 @@ ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
     m_groups = new FsntSelect(this);
     groupRow->addWidget(m_groups, 1);
 
-    m_addSub = new QPushButton("+", this);
-    m_addSub->setObjectName("fsntIconSquare");
+    m_addSub = new FsntIconButton(Fsnt::Glyph::Plus, this);
     m_addSub->setFixedSize(36, 36);
-    m_addSub->setCursor(Qt::PointingHandCursor);
     m_addSub->setToolTip(tr("Add subscription"));
-    connect(m_addSub, &QPushButton::clicked, this, &ServerListPanel::addSubscriptionRequested);
+    connect(m_addSub, &FsntIconButton::clicked, this, &ServerListPanel::addSubscriptionRequested);
     groupRow->addWidget(m_addSub);
 
-    m_updateSub = new BusyButton("⟳", this);
-    m_updateSub->setObjectName("fsntIconSquare");
+    m_updateSub = new BusyButton(Fsnt::Glyph::Refresh, this);
     m_updateSub->setFixedSize(36, 36);
-    m_updateSub->setCursor(Qt::PointingHandCursor);
     m_updateSub->setToolTip(tr("Update subscription"));
-    connect(m_updateSub, &QPushButton::clicked, this, &ServerListPanel::updateSubscription);
+    connect(m_updateSub, &BusyButton::clicked, this, &ServerListPanel::updateSubscription);
     groupRow->addWidget(m_updateSub);
 
     layout->addLayout(groupRow);
@@ -61,12 +58,12 @@ ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
     m_search->setObjectName("fsntSearch");
     m_search->setPlaceholderText(tr("Search"));
     m_search->setClearButtonEnabled(true);
+    m_search->addAction(Fsnt::GlyphIcon(Fsnt::Glyph::Search, 15, Fsnt::CurrentPalette().textMuted),
+                        QLineEdit::LeadingPosition);
     searchRow->addWidget(m_search, 1);
 
-    m_ping = new BusyButton("⚡", this);
-    m_ping->setObjectName("fsntIconSquare");
+    m_ping = new BusyButton(Fsnt::Glyph::Bolt, this);
     m_ping->setFixedSize(36, 36);
-    m_ping->setCursor(Qt::PointingHandCursor);
     m_ping->setToolTip(tr("Measure latency"));
     searchRow->addWidget(m_ping);
 

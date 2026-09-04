@@ -8,6 +8,7 @@ class QLabel;
 class QLineEdit;
 class QListWidget;
 class BusyButton;
+class FsntIconButton;
 class QPushButton;
 class QTimer;
 class QWidget;
@@ -75,7 +76,7 @@ private:
     FsntSelect *m_groups = nullptr;
     QLineEdit *m_search = nullptr;
     QListWidget *m_list = nullptr;
-    QPushButton *m_addSub = nullptr;
+    FsntIconButton *m_addSub = nullptr;
     QWidget *m_empty = nullptr;
     QLabel *m_emptyText = nullptr;
 };

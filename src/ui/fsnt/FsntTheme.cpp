@@ -174,6 +174,29 @@ namespace Fsnt {
             QScrollBar::handle:vertical:hover { background: @muted; }
             QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
             QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: none; }
+            QScrollBar:horizontal {
+                background: transparent;
+                height: 9px;
+                margin: 0;
+            }
+            QScrollBar::handle:horizontal {
+                background: @border;
+                border-radius: 4px;
+                min-width: 32px;
+            }
+            QScrollBar::handle:horizontal:hover { background: @muted; }
+            QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal { width: 0; }
+            QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal { background: none; }
+            QScrollBar::corner { background: transparent; }
+
+            QToolTip {
+                background: @card;
+                color: @text;
+                border: 1px solid @border;
+                border-radius: 6px;
+                padding: 5px 8px;
+                font-size: 12px;
+            }
 
             /* ---- карточки ---- */
             QWidget#fsntCard, QWidget#fsntSubscriptionCard {
