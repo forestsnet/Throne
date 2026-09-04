@@ -21,6 +21,7 @@ namespace Fsnt {
         Search,
         Heart,
         Close,
+        Logs,
     };
 
     // Значок в виде QIcon — для мест, где виджет принимает только её

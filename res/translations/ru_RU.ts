@@ -138,6 +138,10 @@
         <translation>Не удалось подключиться</translation>
     </message>
     <message>
+        <source>Could not disconnect</source>
+        <translation>Не удалось отключиться</translation>
+    </message>
+    <message>
         <source>Disconnecting</source>
         <translation>Отключаемся</translation>
     </message>
@@ -6152,6 +6156,37 @@ Improves hole-punching reliability. Requires IPv4.</source>
     </message>
 </context>
 <context>
+    <name>FsntLogDialog</name>
+    <message>
+        <source>Logs</source>
+        <translation>Логи</translation>
+    </message>
+    <message>
+        <source>Filter lines</source>
+        <translation>Фильтр строк</translation>
+    </message>
+    <message>
+        <source>Problems only</source>
+        <translation>Только проблемы</translation>
+    </message>
+    <message>
+        <source>Follow new lines</source>
+        <translation>Следить за новыми</translation>
+    </message>
+    <message>
+        <source>Copy</source>
+        <translation>Копировать</translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation>Очистить</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>Закрыть</translation>
+    </message>
+</context>
+<context>
     <name>FsntSettingsDialog</name>
     <message>
         <source>Settings</source>
@@ -6315,6 +6350,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
     <message>
         <source>Settings</source>
         <translation>Настройки</translation>
+    </message>
+    <message>
+        <source>Logs</source>
+        <translation>Логи</translation>
     </message>
     <message>
         <source>Switch to the advanced interface</source>

@@ -134,6 +134,10 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Could not disconnect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Disconnecting</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6150,6 +6154,37 @@ Improves hole-punching reliability. Requires IPv4.</source>
     </message>
 </context>
 <context>
+    <name>FsntLogDialog</name>
+    <message>
+        <source>Logs</source>
+        <translation type="unfinished">日志</translation>
+    </message>
+    <message>
+        <source>Filter lines</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Problems only</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Follow new lines</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation type="unfinished">清除</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished">关闭</translation>
+    </message>
+</context>
+<context>
     <name>FsntSettingsDialog</name>
     <message>
         <source>Settings</source>
@@ -6309,6 +6344,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
     <message>
         <source>Settings</source>
         <translation type="unfinished">设置</translation>
+    </message>
+    <message>
+        <source>Logs</source>
+        <translation type="unfinished">日志</translation>
     </message>
     <message>
         <source>Advanced mode</source>

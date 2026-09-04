@@ -6,6 +6,7 @@
 #include "include/global/Utils.hpp"
 
 class ConnectPanel;
+class FsntLogDialog;
 class FsntToast;
 class ServerListPanel;
 class SubscriptionCard;
@@ -21,6 +22,12 @@ class FsntWindow : public QMainWindow {
 public:
     explicit FsntWindow(QWidget *parent = nullptr);
 
+signals:
+    // Строка журнала. Окно перехватывает MW_show_log один раз и раздаёт
+    // сигналом: снимать перехват при закрытии диалога было бы легко забыть,
+    // а ошибка здесь оставила бы вызов по указателю на удалённое окно.
+    void logLine(const QString &line);
+
 protected:
     // Тост центрируем сами: он лежит поверх компоновки, и та его не двигает.
     void resizeEvent(QResizeEvent *event) override;
@@ -31,6 +38,7 @@ protected:
 
 private:
     void chainCoreMessages();
+    void chainLogLines();
     void onCoreMessage(MwMessage cmd, const QStringList &args);
     void refreshConnectionState();
     void refreshServerList();

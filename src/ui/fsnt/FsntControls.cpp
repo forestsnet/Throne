@@ -118,6 +118,17 @@ namespace {
                                   QPointF(c.x() + r * 0.66, c.y() + r * 0.66));
                 break;
 
+            case Fsnt::Glyph::Logs:
+                // Три строки разной длины: узнаваемее листа с загнутым углом
+                // и не превращается в кашу на 16 px.
+                painter->drawLine(QPointF(c.x() - r * 0.62, c.y() - r * 0.46),
+                                  QPointF(c.x() + r * 0.62, c.y() - r * 0.46));
+                painter->drawLine(QPointF(c.x() - r * 0.62, c.y()),
+                                  QPointF(c.x() + r * 0.62, c.y()));
+                painter->drawLine(QPointF(c.x() - r * 0.62, c.y() + r * 0.46),
+                                  QPointF(c.x() + r * 0.16, c.y() + r * 0.46));
+                break;
+
             case Fsnt::Glyph::Close:
                 painter->drawLine(QPointF(c.x() - r * 0.52, c.y() - r * 0.52),
                                   QPointF(c.x() + r * 0.52, c.y() + r * 0.52));

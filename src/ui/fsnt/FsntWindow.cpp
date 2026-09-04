@@ -20,6 +20,7 @@
 #include "include/ui/mainwindow.h"
 #include "include/ui/fsnt/FsntSettingsDialog.h"
 #include "include/ui/fsnt/FsntControls.h"
+#include "include/ui/fsnt/FsntLogDialog.h"
 #include "include/ui/fsnt/FsntTheme.hpp"
 #include "include/ui/fsnt/FsntToast.h"
 #include "include/ui/fsnt/ServerListPanel.h"
@@ -36,6 +37,7 @@ FsntWindow::FsntWindow(QWidget *parent) : QMainWindow(parent) {
 
     // Тему и колбэки ядра уже поставил MainWindow: он создаётся раньше и служит движком.
     chainCoreMessages();
+    chainLogLines();
 
     auto *central = new QWidget(this);
     central->setObjectName("fsntRoot");
@@ -80,6 +82,17 @@ void FsntWindow::chainCoreMessages() {
     MW_dialog_message = [this, previous](MwMessage cmd, QStringList args) {
         if (previous) previous(cmd, args);
         QMetaObject::invokeMethod(this, [this, cmd, args] { onCoreMessage(cmd, args); },
+                                  Qt::QueuedConnection);
+    };
+}
+
+void FsntWindow::chainLogLines() {
+    // Как и с сообщениями ядра: не перехватываем, а оборачиваем — прежний
+    // обработчик MainWindow должен продолжать писать лог в файл и в окно.
+    auto previous = MW_show_log;
+    MW_show_log = [this, previous](const QString &line) {
+        if (previous) previous(line);
+        QMetaObject::invokeMethod(this, [this, line] { emit logLine(line); },
                                   Qt::QueuedConnection);
     };
 }
@@ -147,6 +160,19 @@ void FsntWindow::buildHeader(QVBoxLayout *root) {
         dialog->exec();
     });
     row->addWidget(settings);
+
+    auto *logs = new FsntIconButton(Fsnt::Glyph::Logs, header);
+    logs->setFixedSize(38, 38);
+    logs->setToolTip(tr("Logs"));
+    connect(logs, &FsntIconButton::clicked, this, [this] {
+        // Немодально: за логом смотрят как раз тогда, когда что-то нажимают
+        // в основном окне.
+        auto *dialog = new FsntLogDialog(this);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        connect(this, &FsntWindow::logLine, dialog, &FsntLogDialog::appendLine);
+        dialog->show();
+    });
+    row->addWidget(logs);
 
     auto *advanced = new QToolButton(header);
     advanced->setObjectName("fsntIconButton");

@@ -223,6 +223,15 @@ namespace Fsnt {
             QPushButton#fsntRowAction:hover { background: @cardHover; }
             QPushButton#fsntRowAction:pressed { background: @accentSoft; }
 
+            QPlainTextEdit#fsntLogView {
+                background: @card;
+                border: 1px solid @border;
+                border-radius: @rowRadiuspx;
+                color: @text;
+                padding: 8px;
+                selection-background-color: @accent;
+            }
+
             /* ---- диалоги простого режима ---- */
             QDialog#fsntDialog { background: @bg; }
             /* Область прокрутки и её холст красит тема приложения: в LightBlue

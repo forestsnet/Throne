@@ -68,12 +68,20 @@ ConnectPanel::ConnectPanel(QWidget *parent) : QWidget(parent) {
     m_pendingGuard->setSingleShot(true);
     m_pendingGuard->setInterval(kPendingTimeoutMs);
     connect(m_pendingGuard, &QTimer::timeout, this, [this] {
-        // Молчаливый возврат к «Отключено» выглядел бы так, будто кнопку и не
-        // нажимали. Говорим прямо, что попытка не удалась.
-        m_pending = false;
-        m_button->setState(PowerButton::State::Off);
-        setStatus(tr("Could not connect"), "bad");
+        const bool wasStopping = m_button->state() == PowerButton::State::Stopping;
+        endPending();
+        // Сначала приводим кнопку, часы и подпись к настоящему состоянию:
+        // без этого кнопка гасла, а часы продолжали идти.
+        refresh();
+        // Состояние не изменилось — значит операция и правда не удалась.
+        if (isConnected() == wasStopping) {
+            setStatus(wasStopping ? tr("Could not disconnect") : tr("Could not connect"), "bad");
+        }
     });
+
+    m_statePoll = new QTimer(this);
+    m_statePoll->setInterval(1000);
+    connect(m_statePoll, &QTimer::timeout, this, &ConnectPanel::refresh);
 
     refresh();
 }
@@ -137,10 +145,7 @@ void ConnectPanel::onButtonClicked() {
     if (mw == nullptr) return;
 
     if (isConnected()) {
-        m_pending = true;
-        m_button->setState(PowerButton::State::Stopping);
-        setStatus(tr("Disconnecting"), "busy");
-        m_pendingGuard->start();
+        beginPending(true, tr("Disconnecting"));
         mw->profile_stop(false, false, true);
         return;
     }
@@ -152,10 +157,7 @@ void ConnectPanel::onButtonClicked() {
         return;
     }
 
-    m_pending = true;
-    m_button->setState(PowerButton::State::Connecting);
-    setStatus(tr("Connecting"), "busy");
-    m_pendingGuard->start();
+    beginPending(false, tr("Connecting"));
 
     // Одна кнопка: режим клиент выбирает сам. По умолчанию TUN, но пользователь
     // может переключиться на системный прокси в настройках простого режима.
@@ -169,12 +171,28 @@ void ConnectPanel::onButtonClicked() {
     mw->profile_start(id);
 }
 
-void ConnectPanel::reportFailure() {
-    if (!m_pending) return;
+void ConnectPanel::beginPending(const bool stopping, const QString &status) {
+    m_pending = true;
+    m_button->setState(stopping ? PowerButton::State::Stopping : PowerButton::State::Connecting);
+    setStatus(status, "busy");
+    m_pendingGuard->start();
+    m_statePoll->start();
+}
+
+void ConnectPanel::endPending() {
     m_pending = false;
     m_pendingGuard->stop();
-    m_button->setState(PowerButton::State::Off);
-    setStatus(tr("Could not connect"), "bad");
+    m_statePoll->stop();
+}
+
+void ConnectPanel::reportFailure() {
+    if (!m_pending) return;
+    const bool wasStopping = m_button->state() == PowerButton::State::Stopping;
+    endPending();
+    refresh();
+    // Падение ядра во время остановки — это и есть успешная остановка,
+    // сообщать об ошибке незачем.
+    if (!wasStopping) setStatus(tr("Could not connect"), "bad");
 }
 
 void ConnectPanel::updateElapsed() {
@@ -192,13 +210,10 @@ void ConnectPanel::updateElapsed() {
 void ConnectPanel::refresh() {
     const bool connected = isConnected();
 
-    // Ядро ответило — ожидание закончилось, чем бы оно ни кончилось.
+    // Состояние стало тем, которого добивались — ожидание закончено.
     if (m_pending) {
         const bool stopping = m_button->state() == PowerButton::State::Stopping;
-        if (connected != stopping) {
-            m_pending = false;
-            m_pendingGuard->stop();
-        }
+        if (connected != stopping) endPending();
     }
 
     if (connected && !m_connectedAt.isValid()) {

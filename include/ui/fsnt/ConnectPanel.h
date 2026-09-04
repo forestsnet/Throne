@@ -42,6 +42,10 @@ private:
     void onButtonClicked();
     void updateElapsed();
     void setStatus(const QString &text, const char *tone);
+    // Начало и конец ожидания ответа ядра — в одном месте, чтобы сторожевой
+    // таймер и опрос состояния не забывались по отдельности.
+    void beginPending(bool stopping, const QString &status);
+    void endPending();
 
     QLabel *m_elapsed = nullptr;
     QLabel *m_status = nullptr;
@@ -51,6 +55,10 @@ private:
     QTimer *m_ticker = nullptr;
     // Сторожевой таймер: ядро может не ответить, и кольцо крутилось бы вечно.
     QTimer *m_pendingGuard = nullptr;
+    // Опрос настоящего состояния, пока идёт операция. Панель узнаёт о ядре
+    // только из MW_dialog_message, а на остановку сообщение приходит не всегда —
+    // без опроса «Отключаемся» висело до сторожевого таймера.
+    QTimer *m_statePoll = nullptr;
     QDateTime m_connectedAt;
     bool m_pending = false;
 };
