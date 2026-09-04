@@ -1,4 +1,5 @@
 #include "include/configs/sub/GroupUpdater.hpp"
+#include "include/configs/sub/ProviderPolicy.hpp"
 
 #include "include/configs/sub/SubscriptionParser.hpp"
 #include "include/configs/sub/SubscriptionReconcile.hpp"
@@ -184,7 +185,8 @@ namespace Subscription {
         enqueue({-1, false, [=, this] {
             QByteArray body;
             QString userInfo;
-            if (fetch(content, content, body, userInfo)) importDocuments(-1, {std::move(body)});
+            QString policyJson;   // импорт по ссылке без группы: сохранять политику некуда
+            if (fetch(content, content, body, userInfo, policyJson)) importDocuments(-1, {std::move(body)});
             emit asyncUpdateCallback(-1);
             if (finish != nullptr) finish();
         }});
@@ -246,7 +248,8 @@ namespace Subscription {
         }
     }
 
-    bool GroupUpdater::fetch(const QString &url, const QString &name, QByteArray &body, QString &userInfo) {
+    bool GroupUpdater::fetch(const QString &url, const QString &name, QByteArray &body, QString &userInfo,
+                             QString &policyJson) {
         MW_show_log(">>>>>>>> " + QObject::tr("Requesting subscription: %1").arg(name));
         auto resp = NetworkRequestHelper::HttpGet(url, Configs::dataManager->settingsRepo->sub_send_hwid, false, kMaxSubscriptionBytes);
         if (!resp.error.isEmpty()) {
@@ -255,6 +258,8 @@ namespace Subscription {
         }
         body = std::move(resp.data);
         userInfo = NetworkRequestHelper::GetHeader(resp.header, "Subscription-UserInfo");
+        const auto policy = Subscription::ParseProviderPolicy(resp.header);
+        policyJson = policy.isEmpty() ? QString() : Subscription::SerializeProviderPolicy(policy);
         MW_show_log("<<<<<<<< " + QObject::tr("Subscription request fininshed: %1").arg(name));
         return true;
     }
@@ -284,10 +289,13 @@ namespace Subscription {
 
         QByteArray body;
         QString userInfo;
-        if (!fetch(group->url.trimmed(), group->name, body, userInfo)) return;
+        QString policyJson;
+        if (!fetch(group->url.trimmed(), group->name, body, userInfo, policyJson)) return;
 
         group->sub_last_update = QDateTime::currentMSecsSinceEpoch() / 1000;
         group->info = userInfo;
+        // Пустая политика не затирает сохранённую: панель могла временно не прислать заголовки.
+        if (!policyJson.isEmpty()) group->provider_policy_json = policyJson;
         groupsRepo->Save(group);
 
         // Auto selectors are local state, not servers the remote sent: keep them out of the diff.

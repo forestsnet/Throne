@@ -728,7 +728,18 @@ sqlite3 <путь>/throne.db "SELECT name, provider_policy_json FROM groups;"
 
 Ожидаемо: в `provider_policy_json` виден JSON с `"tunEnable":true`, `"hideSettings":false`, `"updateIntervalHours":3`, `"title":"Заглушка"` и `"unknown":{"x-brand-new-flag":"yes"}`.
 
-Остановить заглушку: `kill %1`.
+**Подводный камень стенда.** Планировщик автообновления подписок глобальный: он смотрит на `settings.sub_auto_update_last`, а не только на `groups.sub_last_update`. Чтобы заставить обновление повториться, сбрасывать надо оба:
+
+```bash
+sqlite3 <путь>/throne.db "UPDATE settings SET value='0' WHERE key='sub_auto_update_last';"
+sqlite3 <путь>/throne.db "UPDATE groups SET sub_last_update=0 WHERE id=<gid>;"
+```
+
+Без сброса глобального счётчика приложение молча не пойдёт за подпиской, и проверка покажет старую политику — это выглядит как ошибка в коде, но ею не является.
+
+Отдельно проверить, что отсутствие заголовка не превращается в `false`: перезапустить заглушку с `SEND_TUN=0`, сбросить оба счётчика, обновить. В `provider_policy_json` ключа `tunEnable` быть не должно вовсе, а `hideSettings` должен остаться `false`.
+
+Остановить заглушку: `pkill -9 -f stub.py`.
 
 - [ ] **Step 5: Коммит**
 

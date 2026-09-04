@@ -45,7 +45,8 @@ namespace Subscription {
         void drain();
         void refresh(int gid, bool showDiff);
         void importDocuments(int gid, QList<QByteArray> documents);
-        bool fetch(const QString &url, const QString &name, QByteArray &body, QString &userInfo);
+        bool fetch(const QString &url, const QString &name, QByteArray &body, QString &userInfo,
+                   QString &policyJson);
 
         QMutex mutex;
         QList<Job> queue;
