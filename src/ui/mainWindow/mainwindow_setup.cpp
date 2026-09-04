@@ -1,4 +1,5 @@
 #include "include/ui/mainwindow.h"
+#include "NkrVersion.h"
 
 #include "include/ui/mainWindow/MainWindowInternal.h"
 // Full definition: MainWindow's destructor lives here and destroys the unique_ptr.
@@ -297,6 +298,25 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             btnFilter, [btnFilter] { btnFilter->setChecked(false); });
     ui->tabWidget->setCornerWidget(btnFilter, Qt::TopRightCorner);
     RegisterHotkey(false);
+
+    // Минимум задан в mainwindow.ui и подхватывается через designMinimumSize.
+    // Применяем размер только если геометрия не была восстановлена выше
+    if (Configs::dataManager->settingsRepo->mainWindowGeometry.isEmpty()) {
+        // Геометрия не сохранена, используем размер из mw_size или значения по умолчанию
+        auto last_size = Configs::dataManager->settingsRepo->mw_size.split("x");
+        if (last_size.length() == 2) {
+            auto w = last_size[0].toInt();
+            auto h = last_size[1].toInt();
+            // Применяем сохранённый размер, но не меньше минимального
+            if (w > 0 && h > 0) {
+                resize(qMax(w, 1000), qMax(h, 600));
+            } else {
+                resize(1200, 750);
+            }
+        } else {
+            resize(1200, 750);
+        }
+    }
     auto last_size = Configs::dataManager->settingsRepo->mw_size.split("x");
     if (last_size.length() == 2) {
         auto w = last_size[0].toInt();
@@ -306,7 +326,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         }
     }
 
-    software_name = "Throne";
+    QString fsntVersion = SubStrBefore(NKR_VERSION, "-");
+    if (!fsntVersion.contains(".")) fsntVersion = "1.0.0";
+    software_name = "Throne | " + fsntVersion + " | FSNT Fork";
     software_core_name = "sing-box";
     if (auto dashDir = QDir("dashboard"); !dashDir.exists() && QDir().mkdir("dashboard")) {
         if (auto dashFile = QFile(":/Throne/dashboard-notice.html"); dashFile.exists() && dashFile.open(QIODevice::ReadOnly))
@@ -332,6 +354,62 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->toolButton_testing->setMenu(ui->menuTesting);
     ui->toolButton_tools->setMenu(ui->menuTools);
     ui->toolButton_program->installEventFilter(this);
+
+    // --- Кнопки форка на верхней панели ---
+    ui->toolButton_hidden->setMenu(ui->menuHidden_menu);
+    ui->horizontalLayout_2->addStretch();
+    ui->horizontalLayout_2->addWidget(ui->toolButton_speedtest);
+    ui->horizontalLayout_2->addWidget(ui->toolButton_ping);
+    ui->horizontalLayout_2->addSpacing(50);
+
+    connect(ui->toolButton_speedtest, &QToolButton::clicked, this, [=,this]() {
+        // Используем существующий action из меню
+        ui->actionSpeedtest_Group->trigger();
+    });
+
+    connect(ui->toolButton_ping, &QToolButton::clicked, this, [=,this]() {
+        // Используем TCP Ping для быстрого теста
+        auto currentGroup = Configs::dataManager->groupsRepo->CurrentGroup();
+        if (!currentGroup || currentGroup->Profiles().isEmpty()) {
+            MessageBoxWarning(tr("Ping Test"), tr("No profiles in current group."));
+            return;
+        }
+        ui->actionUrl_Test_Group->trigger();
+    });
+
+    connect(ui->toolButton_update, &QToolButton::clicked, this, [=,this] {
+        QMenu menu(this);
+
+        if (QFile::exists(QApplication::applicationDirPath() + "/updater") ||
+            QFile::exists(QApplication::applicationDirPath() + "/updater.exe")) {
+            auto checkAction = menu.addAction(QObject::tr("Check for updates"));
+            connect(checkAction, &QAction::triggered, this, [=,this] {
+                runOnNewThread([=,this] { CheckUpdate(); });
+            });
+            menu.addSeparator();
+        } else {
+            auto noUpdaterAction = menu.addAction(QObject::tr("Updater not found. Please update manually from GitHub."));
+            noUpdaterAction->setEnabled(false);
+            menu.addSeparator();
+        }
+
+        auto githubAction = menu.addAction(QObject::tr("Open GitHub Releases"));
+        connect(githubAction, &QAction::triggered, this, [=,this] {
+            QDesktopServices::openUrl(QUrl("https://github.com/forestsnet/Throne/releases"));
+        });
+
+        auto repoAction = menu.addAction(QObject::tr("Open Repository"));
+        connect(repoAction, &QAction::triggered, this, [=,this] {
+            QDesktopServices::openUrl(QUrl("https://github.com/forestsnet/Throne"));
+        });
+
+        // Показываем меню под кнопкой синхронно
+        QPoint pos = ui->toolButton_update->mapToGlobal(QPoint(0, ui->toolButton_update->height()));
+        menu.exec(pos);
+    });
+
+    // Показывать кнопку всегда, независимо от наличия updater
+    ui->toolButton_update->setVisible(true);
 
     designMinimumSize = minimumSize();
     applyTopBarMetrics();
