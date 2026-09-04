@@ -1,19 +1,24 @@
 #include "include/ui/fsnt/ServerListPanel.h"
 
 #include <QComboBox>
+#include <QAction>
 #include <QMouseEvent>
+#include <QTimer>
 #include <QHBoxLayout>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QListWidget>
+#include <QScrollBar>
 #include <QVBoxLayout>
 
 #include "include/database/GroupsRepo.h"
 #include "include/database/ProfilesRepo.h"
 #include "include/global/Configs.hpp"
 #include "include/ui/fsnt/FsntTheme.hpp"
+#include "include/configs/sub/ProviderPolicy.hpp"
+#include "include/ui/mainwindow.h"
 #include "src/ui/fsnt/ServerItemDelegate.h"
 
 ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
@@ -25,11 +30,23 @@ ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
     m_groups->setObjectName("fsntGroupSwitch");
     layout->addWidget(m_groups);
 
+    auto *searchRow = new QHBoxLayout;
+    searchRow->setSpacing(6);
+
     m_search = new QLineEdit(this);
     m_search->setObjectName("fsntSearch");
     m_search->setPlaceholderText(tr("Search"));
     m_search->setClearButtonEnabled(true);
-    layout->addWidget(m_search);
+    searchRow->addWidget(m_search, 1);
+
+    m_refresh = new QPushButton("⟳", this);
+    m_refresh->setObjectName("fsntIconSquare");
+    m_refresh->setFixedSize(32, 32);
+    m_refresh->setCursor(Qt::PointingHandCursor);
+    m_refresh->setToolTip(tr("Measure latency"));
+    searchRow->addWidget(m_refresh);
+
+    layout->addLayout(searchRow);
 
     auto *tabs = new QHBoxLayout;
     tabs->setSpacing(4);
@@ -63,6 +80,14 @@ ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
     // Клик в правой зоне строки переключает избранное, не запуская сервер.
     m_list->viewport()->installEventFilter(this);
 
+    m_latencyPoll = new QTimer(this);
+    m_latencyPoll->setInterval(2000);
+    connect(m_latencyPoll, &QTimer::timeout, this, [this] {
+        reloadServers();
+        if (--m_latencyPollsLeft <= 0) m_latencyPoll->stop();
+    });
+
+    connect(m_refresh, &QPushButton::clicked, this, &ServerListPanel::measureLatency);
     connect(m_tabAll, &QPushButton::clicked, this, [this] { setShowFavouritesOnly(false); });
     connect(m_tabFav, &QPushButton::clicked, this, [this] { setShowFavouritesOnly(true); });
     connect(m_list, &QListWidget::itemActivated, this, [this](QListWidgetItem *item) {
@@ -70,6 +95,16 @@ ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
     });
 
     reloadGroups();
+
+    // subscription-ping-onopen-enabled: панель просит замерить пинги при открытии.
+    // Один раз за запуск и с задержкой — ядру нужно подняться.
+    const auto policy = Subscription::DeserializeProviderPolicy(
+        Configs::dataManager->groupsRepo->CurrentGroup()
+            ? Configs::dataManager->groupsRepo->CurrentGroup()->provider_policy_json
+            : QString());
+    if (policy.pingOnOpen.has_value() && policy.pingOnOpen.value()) {
+        QTimer::singleShot(4000, this, &ServerListPanel::measureLatency);
+    }
 }
 
 
@@ -119,6 +154,22 @@ void ServerListPanel::setShowFavouritesOnly(bool onlyFavourites) {
     applyFilter(m_search->text());
 }
 
+
+void ServerListPanel::measureLatency() {
+    auto *mw = GetMainWindow();
+    if (mw == nullptr) return;
+
+    // testRunner приватный, но действие меню — именованный дочерний объект окна.
+    // Дёргаем его, чтобы не править код, который правит upstream.
+    if (auto *action = mw->findChild<QAction *>("actionUrl_Test_Group")) {
+        action->trigger();
+        // Результаты приходят порциями и signals у TestRunner нет: обновляем список
+        // несколько раз, пока идёт замер, и останавливаемся сами.
+        m_latencyPollsLeft = 30;
+        m_latencyPoll->start();
+    }
+}
+
 void ServerListPanel::reloadGroups() {
     const QSignalBlocker blocker(m_groups);
     m_groups->clear();
@@ -153,6 +204,11 @@ void ServerListPanel::reloadGroups() {
 }
 
 void ServerListPanel::reloadServers() {
+    // Замер обновляет список каждые две секунды — не теряем выбор и прокрутку.
+    const int keepId = m_list->currentItem()
+                           ? m_list->currentItem()->data(ProfileIdRole).toInt() : -1;
+    const int scroll = m_list->verticalScrollBar()->value();
+
     m_list->clear();
 
     const auto group = Configs::dataManager->groupsRepo->CurrentGroup();
@@ -168,6 +224,16 @@ void ServerListPanel::reloadServers() {
     }
 
     applyFilter(m_search->text());
+
+    if (keepId >= 0) {
+        for (int row = 0; row < m_list->count(); ++row) {
+            if (m_list->item(row)->data(ProfileIdRole).toInt() == keepId) {
+                m_list->setCurrentRow(row);
+                break;
+            }
+        }
+    }
+    m_list->verticalScrollBar()->setValue(scroll);
 }
 
 void ServerListPanel::applyFilter(const QString &text) {

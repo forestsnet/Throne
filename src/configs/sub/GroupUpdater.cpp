@@ -295,7 +295,17 @@ namespace Subscription {
         group->sub_last_update = QDateTime::currentMSecsSinceEpoch() / 1000;
         group->info = userInfo;
         // Пустая политика не затирает сохранённую: панель могла временно не прислать заголовки.
-        if (!policyJson.isEmpty()) group->provider_policy_json = policyJson;
+        if (!policyJson.isEmpty()) {
+            group->provider_policy_json = policyJson;
+
+            // profile-title — как провайдер сам называет подписку. Имя группы
+            // берём оттуда, чтобы список подписок совпадал с тем, что видит
+            // пользователь в панели.
+            const auto policy = Subscription::DeserializeProviderPolicy(policyJson);
+            if (!policy.title.isEmpty() && group->name != policy.title) {
+                group->name = policy.title;
+            }
+        }
         groupsRepo->Save(group);
 
         // Auto selectors are local state, not servers the remote sent: keep them out of the diff.

@@ -45,6 +45,15 @@ namespace Fsnt {
             QComboBox#fsntGroupSwitch::drop-down { border: none; width: 18px; }
             QLineEdit#fsntSearch { background: %10; }
 
+            QPushButton#fsntIconSquare {
+                background: %10;
+                border: 1px solid %3;
+                border-radius: %6px;
+                color: %2;
+                font-size: 15px;
+            }
+            QPushButton#fsntIconSquare:hover { border-color: %4; }
+
             QPushButton#fsntTab {
                 background: transparent;
                 border: none;

@@ -7,6 +7,7 @@ class QComboBox;
 class QLineEdit;
 class QListWidget;
 class QPushButton;
+class QTimer;
 
 // Левая панель: переключатель подписок, поиск и список серверов.
 class ServerListPanel : public QWidget {
@@ -31,6 +32,10 @@ public:
     void reloadGroups();
     void reloadServers();
 
+    // Запускает замер пинга по текущей подписке и обновляет список,
+    // пока результаты приходят.
+    void measureLatency();
+
 signals:
     void serverActivated(int profileId);
 
@@ -44,6 +49,9 @@ private:
     bool m_favouritesOnly = false;
     QPushButton *m_tabAll = nullptr;
     QPushButton *m_tabFav = nullptr;
+    QPushButton *m_refresh = nullptr;
+    QTimer *m_latencyPoll = nullptr;
+    int m_latencyPollsLeft = 0;
 
     QComboBox *m_groups = nullptr;
     QLineEdit *m_search = nullptr;
