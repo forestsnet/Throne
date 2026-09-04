@@ -68,8 +68,11 @@ ConnectPanel::ConnectPanel(QWidget *parent) : QWidget(parent) {
     m_pendingGuard->setSingleShot(true);
     m_pendingGuard->setInterval(kPendingTimeoutMs);
     connect(m_pendingGuard, &QTimer::timeout, this, [this] {
+        // Молчаливый возврат к «Отключено» выглядел бы так, будто кнопку и не
+        // нажимали. Говорим прямо, что попытка не удалась.
         m_pending = false;
-        refresh();
+        m_button->setState(PowerButton::State::Off);
+        setStatus(tr("Could not connect"), "bad");
     });
 
     refresh();
@@ -164,6 +167,14 @@ void ConnectPanel::onButtonClicked() {
         mw->set_spmode_vpn(false);
     }
     mw->profile_start(id);
+}
+
+void ConnectPanel::reportFailure() {
+    if (!m_pending) return;
+    m_pending = false;
+    m_pendingGuard->stop();
+    m_button->setState(PowerButton::State::Off);
+    setStatus(tr("Could not connect"), "bad");
 }
 
 void ConnectPanel::updateElapsed() {

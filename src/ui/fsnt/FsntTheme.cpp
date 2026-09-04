@@ -198,6 +198,7 @@ namespace Fsnt {
             QLabel#fsntStatus { color: @muted; font-size: 12px; font-weight: 600; }
             QLabel#fsntStatus[tone="ok"] { color: @success; }
             QLabel#fsntStatus[tone="busy"] { color: @accent; }
+            QLabel#fsntStatus[tone="bad"] { color: @danger; }
             QLabel#fsntCurrentServer { color: @text; font-size: 14px; font-weight: 600; }
             QLabel#fsntPlaceholder { color: @muted; font-size: 13px; }
 

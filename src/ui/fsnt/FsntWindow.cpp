@@ -87,8 +87,13 @@ void FsntWindow::chainCoreMessages() {
 void FsntWindow::onCoreMessage(MwMessage cmd, const QStringList &args) {
     Q_UNUSED(args)
     switch (cmd) {
-        case MwMessage::CoreStarted:
         case MwMessage::CoreCrashed:
+            // Отдельной веткой: refresh() по одному лишь «не подключено» не
+            // отличит упавшую попытку от ещё идущей.
+            if (m_connectPanel != nullptr) m_connectPanel->reportFailure();
+            refreshConnectionState();
+            break;
+        case MwMessage::CoreStarted:
         case MwMessage::ProfileChanged:
             refreshConnectionState();
             break;

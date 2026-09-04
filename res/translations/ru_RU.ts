@@ -134,6 +134,10 @@
         <translation>Сервер не выбран</translation>
     </message>
     <message>
+        <source>Could not connect</source>
+        <translation>Не удалось подключиться</translation>
+    </message>
+    <message>
         <source>Disconnecting</source>
         <translation>Отключаемся</translation>
     </message>

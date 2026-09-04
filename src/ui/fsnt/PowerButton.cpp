@@ -9,7 +9,11 @@
 #include "include/ui/fsnt/FsntPalette.hpp"
 
 namespace {
-    constexpr int kSide = 176;      // сторона виджета
+    // Виджет заметно больше кольца: свечение уходит за него на треть радиуса,
+    // и если места не оставить, круглый ореол обрезается краями в квадрат.
+    constexpr int kSide = 216;
+    constexpr qreal kRingRadius = 76.0;
+    constexpr qreal kGlowRadius = 104.0;   // не больше kSide / 2
     constexpr qreal kRingWidth = 5.0;
     constexpr qreal kGlyphRadius = 21.0;
     constexpr int kSpinPeriodMs = 1400;
@@ -96,22 +100,24 @@ void PowerButton::paintEvent(QPaintEvent *event) {
     // При нажатии кнопка чуть проседает — единственная обратная связь на клик,
     // пока ядро ещё не ответило сменой состояния.
     const qreal squeeze = m_pressed ? 0.97 : 1.0;
-    const qreal outer = (kSide / 2.0 - 12.0) * squeeze;
+    const qreal outer = kRingRadius * squeeze;
 
     // Свечение: заметно только когда есть что показывать, иначе фон грязнится.
     if (m_state != State::Off || m_hovered) {
         const qreal strength = m_state == State::Connected ? 0.35 + 0.25 * m_pulse
                              : m_state == State::Off       ? 0.18
                                                            : 0.30;
-        QRadialGradient glow(centre, outer * 1.55);
+        QRadialGradient glow(centre, kGlowRadius);
         QColor inner = tint;
         inner.setAlphaF(strength);
-        glow.setColorAt(0.55, Qt::transparent);
+        // Кольцо приходится примерно на 0.73 радиуса свечения: ореол начинается
+        // сразу за ним и гаснет до нуля, не доходя до края виджета.
+        glow.setColorAt(0.62, Qt::transparent);
         glow.setColorAt(0.80, inner);
         glow.setColorAt(1.0, Qt::transparent);
         painter.setPen(Qt::NoPen);
         painter.setBrush(glow);
-        painter.drawEllipse(centre, outer * 1.55, outer * 1.55);
+        painter.drawEllipse(centre, kGlowRadius, kGlowRadius);
     }
 
     const QRectF ring(centre.x() - outer, centre.y() - outer, outer * 2, outer * 2);
