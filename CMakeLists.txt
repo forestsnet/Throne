@@ -612,6 +612,9 @@ endif ()
 
 set_target_properties(Throne PROPERTIES
         MACOSX_BUNDLE_ICON_FILE "Throne.icns"
+        # Отображаемое имя (CFBundleName). Идентификатор и имя бинаря остаются прежними:
+        # от них зависят каталог конфига, регистрация deeplink и обновления.
+        MACOSX_BUNDLE_BUNDLE_NAME "FSNT Client"
         RESOURCE ${MACOSX_ICON}
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/res/MacOSXBundleInfo.plist
         MACOSX_BUNDLE_GUI_IDENTIFIER moe.Throne.macosx

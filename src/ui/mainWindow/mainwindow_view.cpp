@@ -180,8 +180,7 @@ void MainWindow::refresh_status(const QString &traffic_update) {
         if (!settings->spmode_vpn && settings->spmode_system_proxy) tt << "[" + tr("System Proxy") + "]";
         if (settings->spmode_vpn && settings->spmode_system_proxy) tt << "[Tun+" + tr("System Proxy") + "]";
         tt << software_name;
-        // Версия уже показана в software_name ("Throne | <версия> | FSNT Fork"), не дублируем.
-        // if (!isTray) tt << QString(NKR_VERSION);
+        if (!isTray) tt << QString(NKR_VERSION);
         if (!activeRouteName.isEmpty()) {
             tt << "[" + activeRouteName + "]";
         }

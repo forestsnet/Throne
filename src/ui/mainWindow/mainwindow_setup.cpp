@@ -355,9 +355,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         }
     }
 
-    QString fsntVersion = SubStrBefore(NKR_VERSION, "-");
-    if (!fsntVersion.contains(".")) fsntVersion = "1.0.0";
-    software_name = "Throne | " + fsntVersion + " | FSNT Fork";
+    software_name = "FSNT Client";
     software_core_name = "sing-box";
     if (auto dashDir = QDir("dashboard"); !dashDir.exists() && QDir().mkdir("dashboard")) {
         if (auto dashFile = QFile(":/Throne/dashboard-notice.html"); dashFile.exists() && dashFile.open(QIODevice::ReadOnly))
