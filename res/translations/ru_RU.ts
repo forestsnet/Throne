@@ -3623,6 +3623,14 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
 <context>
     <name>MainWindow</name>
     <message>
+        <source>Simple mode</source>
+        <translation>Простой режим</translation>
+    </message>
+    <message>
+        <source>The application will restart in the simple interface. Continue?</source>
+        <translation>Приложение перезапустится в простом интерфейсе. Продолжить?</translation>
+    </message>
+    <message>
         <source>Per-app proxy...</source>
         <translation>Прокси по приложениям...</translation>
     </message>

@@ -17,6 +17,8 @@
 #include "include/sys/AutoRun.hpp"
 #include "include/sys/UrlScheme.hpp"
 #include "include/ui/setting/dialog_per_app_proxy.h"
+#include "include/ui/fsnt/FsntWindow.h"
+#include "include/ui/fsnt/UiMode.hpp"
 #include "include/configs/sub/ProviderPolicy.hpp"
 
 #include "include/ui/utils/ConnectionsFilterHeader.h"
@@ -72,7 +74,27 @@
 #include "include/global/DeviceDetailsHelper.hpp"
 
 void UI_InitMainWindow() {
-    mainwindow = new MainWindow;
+    auto &settings = Configs::dataManager->settingsRepo;
+
+    // Установка считается существующей, если в базе уже есть группа с профилями:
+    // свежая база содержит только пустую группу по умолчанию.
+    bool hasContent = false;
+    for (int gid : Configs::dataManager->groupsRepo->GetAllGroupIds()) {
+        const auto group = Configs::dataManager->groupsRepo->GetGroup(gid);
+        if (group && !group->Profiles().isEmpty()) { hasContent = true; break; }
+    }
+
+    const auto mode = Fsnt::ResolveInitialUiMode(settings->ui_mode, hasContent);
+    if (settings->ui_mode != static_cast<int>(mode)) {
+        settings->ui_mode = static_cast<int>(mode);
+        settings->Save();
+    }
+
+    if (mode == Fsnt::UiMode::Simple) {
+        new FsntWindow;
+    } else {
+        mainwindow = new MainWindow;
+    }
 }
 
 // Caller must hold coreProcessMutex (reads core_process lock-free by design).

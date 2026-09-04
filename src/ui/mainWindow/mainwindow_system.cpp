@@ -20,6 +20,7 @@
 #include "include/global/Configs.hpp"
 #include "include/global/HTTPRequestHelper.hpp"
 #include "include/global/Logger.hpp"
+#include "include/ui/fsnt/UiMode.hpp"
 #include "include/sys/Process.hpp"
 #include "include/ui/mainWindow/MainWindowInternal.h"
 
@@ -346,6 +347,18 @@ bool MainWindow::StopVPNProcess() {
     }, DS_cores, true);
 
     return true;
+}
+
+void MainWindow::on_menu_simple_mode_triggered() {
+    const auto answer = QMessageBox::question(
+        this, tr("Simple mode"),
+        tr("The application will restart in the simple interface. Continue?"));
+    if (answer != QMessageBox::StandardButton::Yes) return;
+
+    Configs::dataManager->settingsRepo->ui_mode = static_cast<int>(Fsnt::UiMode::Simple);
+    Configs::dataManager->settingsRepo->Save();
+    this->exit_reason = ExitReason::Restart;
+    on_menu_exit_triggered();
 }
 
 void MainWindow::RestartCore() {

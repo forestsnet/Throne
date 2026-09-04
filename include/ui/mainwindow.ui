@@ -829,6 +829,7 @@ QToolButton::menu-indicator {
     <addaction name="actionResolve_Out_IP"/>
     <addaction name="actionRefresh_Column_Widths"/>
     <addaction name="menu_profile_debug_info"/>
+    <addaction name="menu_simple_mode"/>
     <addaction name="menu_spmode"/>
    </widget>
    <widget class="QMenu" name="menuRouting_Menu">
@@ -945,6 +946,11 @@ QToolButton::menu-indicator {
    </property>
    <property name="shortcut">
     <string notr="true">Del</string>
+   </property>
+  </action>
+  <action name="menu_simple_mode">
+   <property name="text">
+    <string>Simple mode</string>
    </property>
   </action>
   <action name="menu_profile_debug_info">
