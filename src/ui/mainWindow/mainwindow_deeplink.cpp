@@ -232,6 +232,25 @@ void MainWindow::handle_add_remote_routes(const QString &url) {
     });
 }
 
+// Автосозданная пустая группа "Default" только мешает после добавления подписки.
+// Имя переводимое, поэтому сверяем и с оригиналом, и с переводом, а решает всё же
+// не имя: удаляем лишь группу без URL и без профилей, чтобы не задеть созданную вручную.
+void MainWindow::remove_leftover_default_group(int keepGid) {
+    const QString translated = QObject::tr("Default");
+    for (int gid : Configs::dataManager->groupsRepo->GetAllGroupIds()) {
+        if (gid == keepGid) continue;
+        const auto candidate = Configs::dataManager->groupsRepo->GetGroup(gid);
+        if (!candidate) continue;
+        if (!candidate->url.isEmpty()) continue;
+        if (!candidate->Profiles().isEmpty()) continue;
+        if (candidate->name != "Default" && candidate->name != translated) continue;
+
+        MW_show_log(tr("Removing empty default group: %1").arg(candidate->name));
+        Configs::dataManager->groupsRepo->DeleteGroup(gid);
+        break;
+    }
+}
+
 void MainWindow::handle_addsub(const QString &url, const QString &name) {
     if (url.isEmpty()) {
         MessageBoxWarning(tr("Add subscription"), tr("The link did not contain a subscription URL."));
@@ -261,6 +280,7 @@ void MainWindow::handle_addsub(const QString &url, const QString &name) {
             existing->skip_auto_update = !autoUpdate;
             Configs::dataManager->groupsRepo->Save(existing);
             refresh_groups();
+            show_group(existing->id);
             Subscription::updater()->RefreshGroup(existing->id);
             return;
         }
@@ -271,7 +291,11 @@ void MainWindow::handle_addsub(const QString &url, const QString &name) {
     group->url = url;
     group->skip_auto_update = !autoUpdate;
     Configs::dataManager->groupsRepo->AddGroup(group);
+
+    remove_leftover_default_group(group->id);
+
     refresh_groups();
+    show_group(group->id);
     Subscription::updater()->RefreshGroup(group->id);
 }
 

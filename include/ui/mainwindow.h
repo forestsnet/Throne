@@ -361,6 +361,7 @@ private:
     void handle_deeplink_impl(const QString &url);
 
     void handle_addsub(const QString &url, const QString &name);
+    void remove_leftover_default_group(int keepGid);
 
     void handle_import_route(const QString &url);
 
