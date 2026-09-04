@@ -2684,25 +2684,32 @@ Use a number followed by ns, us, ms, s, m, h or d.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Choose how traffic of each application is routed. The choice is stored as
-processName rules in the current routing profile.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>No routing profile is selected.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Filter applications...</source>
+        <source>Choose how each application is routed. The choice is stored as processName rules in the current routing profile.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Application</source>
-        <translation type="unfinished">برنامه</translation>
+        <source>Close</source>
+        <translation type="unfinished">بستن</translation>
     </message>
     <message>
-        <source>Routing</source>
-        <translation type="unfinished">مسیریابی</translation>
+        <source>Search applications</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show system processes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished">لغو کردن</translation>
+    </message>
+    <message>
+        <source>Save</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Not set</source>
@@ -6174,7 +6181,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Choose apps to route…</source>
+        <source>Choose apps to route</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -8938,6 +8945,14 @@ Remove that endpoint from this routing profile as well?</source>
     <name>ServerItemDelegate</name>
     <message>
         <source>ms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ok</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>no reply</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

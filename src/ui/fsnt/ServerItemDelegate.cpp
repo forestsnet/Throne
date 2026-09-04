@@ -3,6 +3,7 @@
 #include <QPainter>
 #include <QPainterPath>
 
+#include "include/database/entities/Profile.h"
 #include "include/ui/fsnt/FsntPalette.hpp"
 #include "include/ui/fsnt/FsntTheme.hpp"
 #include "include/ui/fsnt/ServerListPanel.h"
@@ -74,27 +75,50 @@ void ServerItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     row = row.adjusted(0, 0, -kHeartZone, 0);
 
     // --- пинг таблеткой ---
+    //
+    // Показываем все четыре состояния. Раньше плашка рисовалась только при
+    // latency > 0, и недоступный сервер выглядел ровно как неизмеренный —
+    // а это разные вещи: в России пинга нет вообще, и об этом надо сказать.
     const int latency = index.data(ServerListPanel::LatencyRole).toInt();
-    int pingBlock = 0;
+    QString pingText;
+    QColor tint;
+    bool filled = true;
     if (latency > 0) {
-        const QString text = QString("%1 %2").arg(latency).arg(tr("ms"));
+        pingText = QString("%1 %2").arg(latency).arg(tr("ms"));
+        tint = latencyColor(p, latency);
+    } else if (latency == Configs::kLatencyConnectOnly) {
+        // Соединение установилось, но замерить задержку не удалось.
+        pingText = tr("ok");
+        tint = p.success;
+    } else if (latency < 0) {
+        pingText = tr("no reply");
+        tint = p.danger;
+    } else {
+        pingText = QStringLiteral("—");
+        tint = p.textMuted;
+        filled = false;   // ещё не мерили — это не новость, кричать незачем
+    }
+
+    int pingBlock = 0;
+    {
         QFont pingFont = option.font;
         pingFont.setPointSizeF(pingFont.pointSizeF() - 1.5);
-        pingFont.setBold(true);
+        pingFont.setBold(filled);
         const QFontMetrics fm(pingFont);
 
-        const int pillW = fm.horizontalAdvance(text) + 16;
+        const int pillW = fm.horizontalAdvance(pingText) + 16;
         const int pillH = 20;
         const QRect pill(row.right() - pillW - 6, row.center().y() - pillH / 2 + 1, pillW, pillH);
 
-        const QColor tint = latencyColor(p, latency);
-        painter->setPen(Qt::NoPen);
-        painter->setBrush(withAlpha(tint, 38));
-        painter->drawRoundedRect(pill, pillH / 2.0, pillH / 2.0);
+        if (filled) {
+            painter->setPen(Qt::NoPen);
+            painter->setBrush(withAlpha(tint, 38));
+            painter->drawRoundedRect(pill, pillH / 2.0, pillH / 2.0);
+        }
 
         painter->setFont(pingFont);
         painter->setPen(tint);
-        painter->drawText(pill, Qt::AlignCenter, text);
+        painter->drawText(pill, Qt::AlignCenter, pingText);
 
         pingBlock = pillW + 12;
     }

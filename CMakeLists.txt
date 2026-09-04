@@ -380,6 +380,14 @@ set(PROJECT_SOURCES
         src/ui/fsnt/FsntSettingsDialog.cpp
 
         include/ui/fsnt/FsntSettingsDialog.h
+
+        src/ui/fsnt/SettingsCard.cpp
+
+        include/ui/fsnt/SettingsCard.h
+
+        src/ui/fsnt/FsntControls.cpp
+
+        include/ui/fsnt/FsntControls.h
         include/ui/setting/dialog_per_app_proxy.h
         include/ui/setting/dialog_basic_settings.h
         include/ui/setting/dialog_basic_settings.ui

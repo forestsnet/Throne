@@ -1,14 +1,12 @@
 #include "include/ui/fsnt/FsntSettingsDialog.h"
 
 #include <QAction>
-#include <QCheckBox>
 #include <QComboBox>
-#include <QFormLayout>
+#include <QDesktopServices>
+#include <QDir>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
-#include <QDesktopServices>
-#include <QDir>
 #include <QScrollArea>
 #include <QUrl>
 #include <QVBoxLayout>
@@ -21,7 +19,9 @@
 #include "include/database/SettingsRepo.h"
 #include "include/global/Configs.hpp"
 #include "include/sys/AutoRun.hpp"
+#include "include/ui/fsnt/FsntControls.h"
 #include "include/ui/fsnt/FsntTheme.hpp"
+#include "include/ui/fsnt/SettingsCard.h"
 #include "include/ui/mainwindow.h"
 #include "include/ui/setting/ThemeManager.hpp"
 #include "include/ui/setting/dialog_per_app_proxy.h"
@@ -29,13 +29,19 @@
 namespace {
     // Интервалы автообновления подписок в минутах, как их хранит sub_auto_update.
     constexpr int kAutoUpdateMinutes[] = {0, 30, 60, 120, 360, 720, 1440};
+
+    FsntSelect *makeSelect(QWidget *parent) {
+        auto *box = new FsntSelect(parent);
+        box->setMinimumWidth(190);
+        return box;
+    }
 }
 
 FsntSettingsDialog::FsntSettingsDialog(QWidget *parent) : QDialog(parent) {
     setObjectName("fsntDialog");
     setWindowTitle(tr("Settings"));
     setModal(true);
-    resize(520, 640);
+    resize(560, 660);
 
     auto *layout = new QVBoxLayout(this);
     layout->setContentsMargins(24, 22, 24, 20);
@@ -45,12 +51,11 @@ FsntSettingsDialog::FsntSettingsDialog(QWidget *parent) : QDialog(parent) {
     title->setObjectName("fsntDialogTitle");
     layout->addWidget(title);
 
-    // Настроек стало заметно больше одного экрана — без прокрутки диалог
-    // пришлось бы либо резать, либо растягивать выше экрана ноутбука.
+    // Настроек заметно больше одного экрана — без прокрутки диалог пришлось бы
+    // либо резать, либо растягивать выше экрана ноутбука.
     auto *scroll = new QScrollArea(this);
     scroll->setWidgetResizable(true);
     scroll->setFrameShape(QFrame::NoFrame);
-    // Длинные подписи не должны превращаться в горизонтальную прокрутку.
     scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scroll->viewport()->setAutoFillBackground(false);
 
@@ -58,7 +63,7 @@ FsntSettingsDialog::FsntSettingsDialog(QWidget *parent) : QDialog(parent) {
     host->setAutoFillBackground(false);
     auto *column = new QVBoxLayout(host);
     column->setContentsMargins(0, 0, 10, 0);
-    column->setSpacing(16);
+    column->setSpacing(18);
 
     buildConnection(column, host);
     buildSubscriptions(column, host);
@@ -92,23 +97,6 @@ FsntSettingsDialog::FsntSettingsDialog(QWidget *parent) : QDialog(parent) {
     setStyleSheet(Fsnt::BuildStyleSheet());
 }
 
-QFormLayout *FsntSettingsDialog::addSection(QVBoxLayout *column, QWidget *host,
-                                            const QString &title) {
-    auto *label = new QLabel(title, host);
-    label->setObjectName("fsntSectionLabel");
-    column->addWidget(label);
-
-    auto *card = new QWidget(host);
-    card->setObjectName("fsntCard");
-    auto *form = new QFormLayout(card);
-    form->setContentsMargins(14, 14, 14, 14);
-    form->setSpacing(12);
-    form->setLabelAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    form->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
-    column->addWidget(card);
-    return form;
-}
-
 void FsntSettingsDialog::triggerMainWindowAction(const char *actionName) {
     auto *mw = GetMainWindow();
     if (mw == nullptr) return;
@@ -116,18 +104,16 @@ void FsntSettingsDialog::triggerMainWindowAction(const char *actionName) {
 }
 
 void FsntSettingsDialog::buildConnection(QVBoxLayout *column, QWidget *host) {
-    auto *form = addSection(column, host, tr("Connection"));
+    Fsnt::SettingsCard card(column, host, tr("Connection"));
     const auto &settings = Configs::dataManager->settingsRepo;
 
-    m_transport = new QComboBox(host);
-    m_transport->setObjectName("fsntSelect");
+    m_transport = makeSelect(host);
     m_transport->addItem(tr("Full tunnel (TUN)"), 0);
     m_transport->addItem(tr("System proxy"), 1);
     m_transport->setCurrentIndex(qBound(0, settings->simple_transport, 1));
-    form->addRow(tr("Connection mode"), m_transport);
+    card.addControl(tr("Connection mode"), m_transport);
 
-    m_route = new QComboBox(host);
-    m_route->setObjectName("fsntSelect");
+    m_route = makeSelect(host);
     for (const auto &profile : Configs::dataManager->routesRepo->GetAllRouteProfiles()) {
         if (!profile) continue;
         m_route->addItem(profile->name, profile->id);
@@ -135,33 +121,24 @@ void FsntSettingsDialog::buildConnection(QVBoxLayout *column, QWidget *host) {
             m_route->setCurrentIndex(m_route->count() - 1);
         }
     }
-    form->addRow(tr("Routing"), m_route);
+    card.addControl(tr("Routing"), m_route);
 
-    m_autoConnect = new QCheckBox(tr("Reconnect on start"), host);
-    m_autoConnect->setChecked(settings->remember_enable);
-    form->addRow(m_autoConnect);
+    m_autoConnect = card.addToggle(tr("Reconnect on start"), settings->remember_enable);
+    m_allowLan = card.addToggle(tr("Allow local network access"),
+                                QStringList{"::", "0.0.0.0"}.contains(settings->inbound_address));
 
-    m_allowLan = new QCheckBox(tr("Allow local network access"), host);
-    m_allowLan->setChecked(QStringList{"::", "0.0.0.0"}.contains(settings->inbound_address));
-    form->addRow(m_allowLan);
-
-    auto *perApp = new QPushButton(tr("Choose apps to route…"), host);
-    perApp->setObjectName("fsntGhost");
-    perApp->setCursor(Qt::PointingHandCursor);
-    connect(perApp, &QPushButton::clicked, this, [this] {
+    connect(card.addAction(tr("Choose apps to route")), &QPushButton::clicked, this, [this] {
         auto *dialog = new DialogPerAppProxy(this);
         dialog->setAttribute(Qt::WA_DeleteOnClose);
         dialog->exec();
     });
-    form->addRow(perApp);
 }
 
 void FsntSettingsDialog::buildSubscriptions(QVBoxLayout *column, QWidget *host) {
-    auto *form = addSection(column, host, tr("Subscriptions"));
+    Fsnt::SettingsCard card(column, host, tr("Subscriptions"));
     const auto &settings = Configs::dataManager->settingsRepo;
 
-    m_subAutoUpdate = new QComboBox(host);
-    m_subAutoUpdate->setObjectName("fsntSelect");
+    m_subAutoUpdate = makeSelect(host);
     m_subAutoUpdate->addItem(tr("Off"), 0);
     m_subAutoUpdate->addItem(tr("Every 30 minutes"), 30);
     m_subAutoUpdate->addItem(tr("Every hour"), 60);
@@ -177,32 +154,22 @@ void FsntSettingsDialog::buildSubscriptions(QVBoxLayout *column, QWidget *host) 
             break;
         }
     }
-    form->addRow(tr("Auto update"), m_subAutoUpdate);
+    card.addControl(tr("Auto update"), m_subAutoUpdate);
 
-    auto *updateAll = new QPushButton(tr("Update all now"), host);
-    updateAll->setObjectName("fsntGhost");
-    updateAll->setCursor(Qt::PointingHandCursor);
-    connect(updateAll, &QPushButton::clicked, this,
+    connect(card.addAction(tr("Update all now")), &QPushButton::clicked, this,
             [] { Subscription::updater()->RefreshAll(); });
-    form->addRow(updateAll);
 
-    auto *remove = new QPushButton(tr("Remove the current subscription"), host);
-    remove->setObjectName("fsntGhost");
-    remove->setCursor(Qt::PointingHandCursor);
     // Действие расширенного режима уже умеет всё: не даёт удалить последнюю
     // группу, уважает pin провайдера и останавливает работающий профиль.
-    connect(remove, &QPushButton::clicked, this, [this] {
-        triggerMainWindowAction("actionDelete_Group");
-    });
-    form->addRow(remove);
+    connect(card.addAction(tr("Remove the current subscription")), &QPushButton::clicked, this,
+            [this] { triggerMainWindowAction("actionDelete_Group"); });
 }
 
 void FsntSettingsDialog::buildApplication(QVBoxLayout *column, QWidget *host) {
-    auto *form = addSection(column, host, tr("Application"));
+    Fsnt::SettingsCard card(column, host, tr("Application"));
     const auto &settings = Configs::dataManager->settingsRepo;
 
-    m_language = new QComboBox(host);
-    m_language->setObjectName("fsntSelect");
+    m_language = makeSelect(host);
     // Индексы совпадают со switch в main.cpp: 0 системный, 1 English, 2 中文, 3 فارسی, 4 русский.
     m_language->addItem(tr("System"), 0);
     m_language->addItem("English", 1);
@@ -210,10 +177,9 @@ void FsntSettingsDialog::buildApplication(QVBoxLayout *column, QWidget *host) {
     m_language->addItem("فارسی", 3);
     m_language->addItem("Русский", 4);
     m_language->setCurrentIndex(qBound(0, settings->language, 4));
-    form->addRow(tr("Language"), m_language);
+    card.addControl(tr("Language"), m_language);
 
-    m_theme = new QComboBox(host);
-    m_theme->setObjectName("fsntSelect");
+    m_theme = makeSelect(host);
     // Значения — те же строки, что понимает ThemeManager::ApplyTheme.
     // Простому режиму хватает трёх: остальные варианты живут в расширенном.
     m_theme->addItem(tr("System"), "System");
@@ -225,62 +191,34 @@ void FsntSettingsDialog::buildApplication(QVBoxLayout *column, QWidget *host) {
             break;
         }
     }
-    form->addRow(tr("Theme"), m_theme);
+    card.addControl(tr("Theme"), m_theme);
 
-    m_autoRun = new QCheckBox(tr("Launch at login"), host);
-    m_autoRun->setChecked(AutoRun_IsEnabled());
-    form->addRow(m_autoRun);
-
-    m_startMinimal = new QCheckBox(tr("Start minimized to tray"), host);
-    m_startMinimal->setChecked(settings->start_minimal);
-    form->addRow(m_startMinimal);
-
-    auto *hint = new QLabel(tr("Language changes apply after restarting the application."), host);
-    hint->setObjectName("fsntSubMeta");
-    hint->setWordWrap(true);
-    form->addRow(hint);
+    m_autoRun = card.addToggle(tr("Launch at login"), AutoRun_IsEnabled());
+    m_startMinimal = card.addToggle(tr("Start minimized to tray"), settings->start_minimal);
+    card.addNote(tr("Language changes apply after restarting the application."));
 }
 
 void FsntSettingsDialog::buildSupport(QVBoxLayout *column, QWidget *host) {
-    auto *form = addSection(column, host, tr("Help"));
+    Fsnt::SettingsCard card(column, host, tr("Help"));
 
-    auto *report = new QPushButton(tr("Build a support report"), host);
-    report->setObjectName("fsntGhost");
-    report->setCursor(Qt::PointingHandCursor);
-    connect(report, &QPushButton::clicked, this,
+    connect(card.addAction(tr("Build a support report")), &QPushButton::clicked, this,
             [this] { triggerMainWindowAction("menu_profile_debug_info"); });
-    form->addRow(report);
 
-    auto *update = new QPushButton(tr("Check for updates"), host);
-    update->setObjectName("fsntGhost");
-    update->setCursor(Qt::PointingHandCursor);
-    connect(update, &QPushButton::clicked, this,
+    connect(card.addAction(tr("Check for updates")), &QPushButton::clicked, this,
             [this] { triggerMainWindowAction("actionCheck_For_Update"); });
-    form->addRow(update);
 
-    auto *folder = new QPushButton(tr("Open the config folder"), host);
-    folder->setObjectName("fsntGhost");
-    folder->setCursor(Qt::PointingHandCursor);
-    connect(folder, &QPushButton::clicked, this, [] {
+    connect(card.addAction(tr("Open the config folder")), &QPushButton::clicked, this, [] {
         // Рабочий каталог приложения и есть каталог конфигурации, см. main.cpp.
         QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::currentPath()));
     });
-    form->addRow(folder);
 
-    auto *advanced = new QPushButton(tr("Open advanced mode"), host);
-    advanced->setObjectName("fsntGhost");
-    advanced->setCursor(Qt::PointingHandCursor);
-    connect(advanced, &QPushButton::clicked, this, [this] {
+    connect(card.addAction(tr("Open advanced mode")), &QPushButton::clicked, this, [this] {
         save();
         emit advancedModeRequested();
         accept();
     });
-    form->addRow(advanced);
 
-    auto *version = new QLabel(QString("FSNT Client · %1").arg(NKR_VERSION), host);
-    version->setObjectName("fsntSubMeta");
-    version->setAlignment(Qt::AlignCenter);
-    form->addRow(version);
+    card.addNote(QString("FSNT Client · %1").arg(NKR_VERSION));
 }
 
 void FsntSettingsDialog::save() {

@@ -19,6 +19,7 @@
 #include "include/database/ProfilesRepo.h"
 #include "include/global/Configs.hpp"
 #include "include/ui/fsnt/BusyButton.h"
+#include "include/ui/fsnt/FsntControls.h"
 #include "include/ui/fsnt/FsntTheme.hpp"
 #include "include/configs/sub/ProviderPolicy.hpp"
 #include "include/ui/mainwindow.h"
@@ -32,8 +33,7 @@ ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
     auto *groupRow = new QHBoxLayout;
     groupRow->setSpacing(6);
 
-    m_groups = new QComboBox(this);
-    m_groups->setObjectName("fsntGroupSwitch");
+    m_groups = new FsntSelect(this);
     groupRow->addWidget(m_groups, 1);
 
     m_addSub = new QPushButton("+", this);

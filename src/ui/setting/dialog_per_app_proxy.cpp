@@ -1,25 +1,27 @@
 #include "include/ui/setting/dialog_per_app_proxy.h"
 
-#include <QComboBox>
-#include <QDialogButtonBox>
+#include <QFileIconProvider>
 #include <QFileInfo>
-#include <QHeaderView>
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QListWidget>
 #include <QProcess>
 #include <QPushButton>
-#include <QSet>
-#include <QTableWidget>
 #include <QVBoxLayout>
 
 #include "include/database/RoutesRepo.h"
 #include "include/database/entities/RouteProfile.h"
 #include "include/global/Configs.hpp"
 #include "include/global/Utils.hpp"
+#include "include/ui/fsnt/FsntControls.h"
+#include "include/ui/fsnt/FsntTheme.hpp"
 #include "include/ui/mainwindow_interface.h"
 
 namespace {
     constexpr auto kPrefix = "processName:";
+    constexpr int kIconSize = 30;
+    constexpr int kRowHeight = 52;
 
     // Разделяем набор простых правил на строки по процессам и все остальные.
     // Остальные обязаны пережить сохранение: там пользовательские домены и адреса.
@@ -34,53 +36,123 @@ namespace {
             }
         }
     }
+
+    // Путь до бандла приложения, если исполняемый файл лежит внутри .app.
+    // Берём первый .app в пути: вложенные — это хелперы того же приложения,
+    // и относиться к ним надо как к нему самому.
+    QString bundlePath(const QString &executable) {
+        const int marker = executable.indexOf(QStringLiteral(".app/"));
+        if (marker < 0) return {};
+        return executable.left(marker + 4);
+    }
+
+    // Отличаем приложение пользователя от системной службы. Без этого список —
+    // сотни строк вроде cfprefsd, и найти в нём свой браузер невозможно.
+    bool looksLikeUserApp(const QString &path) {
+        if (path.isEmpty() || !path.contains('/')) return false;
+
+#ifdef Q_OS_MACOS
+        // .appex — виджет или расширение внутри приложения, а не приложение.
+        if (path.contains(QStringLiteral(".appex/"))) return false;
+        // Приложение пользователя на macOS — это бандл, всё остальное служебное.
+        if (!path.contains(QStringLiteral(".app/"))) return false;
+        return !path.startsWith(QStringLiteral("/System/"));
+#elif defined(Q_OS_WIN)
+        const QString lower = path.toLower();
+        return !lower.startsWith(QStringLiteral("c:\\windows\\"))
+               && !lower.startsWith(QStringLiteral("c:/windows/"));
+#else
+        return !path.startsWith(QStringLiteral("/usr/lib"))
+               && !path.startsWith(QStringLiteral("/usr/libexec"))
+               && !path.startsWith(QStringLiteral("/lib"))
+               && !path.startsWith(QStringLiteral("/sbin/"));
+#endif
+    }
 }
 
-QStringList DialogPerAppProxy::runningProcesses() {
+QList<DialogPerAppProxy::AppEntry> DialogPerAppProxy::runningApplications() {
     QProcess process;
 #ifdef Q_OS_WIN
-    process.start("tasklist", QStringList() << "/FO" << "CSV" << "/NH");
+    // tasklist не отдаёт путь, а без пути нет ни иконки, ни отсева системных.
+    process.start("powershell", QStringList()
+        << "-NoProfile" << "-NonInteractive" << "-Command"
+        << "Get-Process | Where-Object { $_.Path } | "
+           "Select-Object -ExpandProperty Path -Unique");
 #else
     process.start("ps", QStringList() << "ax" << "-o" << "comm=");
 #endif
-    if (!process.waitForFinished(5000)) return {};
+    if (!process.waitForFinished(8000)) return {};
 
-    QSet<QString> seen;
-    for (const QString &raw : QString::fromUtf8(process.readAllStandardOutput()).split('\n', Qt::SkipEmptyParts)) {
-        QString name = raw.trimmed();
-        if (name.isEmpty()) continue;
-#ifdef Q_OS_WIN
-        name = name.split(',').first().remove('"').trimmed();
-#else
-        // ps отдаёт полный путь: пользователю нужно имя исполняемого файла.
-        name = QFileInfo(name).fileName();
-#endif
-        if (name.isEmpty() || name.startsWith('[')) continue;
-        seen.insert(name);
+    // Ключ группы — бандл приложения, а для одиночных программ их собственный
+    // путь. Иначе Electron даёт четыре строки «Claude» на один значок.
+    QMap<QString, AppEntry> groups;
+    for (const QString &raw : QString::fromUtf8(process.readAllStandardOutput())
+                                  .split('\n', Qt::SkipEmptyParts)) {
+        const QString path = raw.trimmed();
+        // Ядерные потоки ps печатает в скобках, исполняемого файла у них нет.
+        if (path.isEmpty() || path.startsWith('[')) continue;
+
+        const QString processName = QFileInfo(path).fileName();
+        if (processName.isEmpty()) continue;
+
+        const QString bundle = bundlePath(path);
+        const QString key = bundle.isEmpty() ? path : bundle;
+
+        AppEntry &entry = groups[key];
+        if (entry.processes.isEmpty()) {
+            entry.iconPath = key;
+            entry.name = bundle.isEmpty() ? processName : QFileInfo(bundle).completeBaseName();
+        }
+        if (!entry.processes.contains(processName)) entry.processes << processName;
+        // Достаточно одного «настоящего» процесса, чтобы показать приложение:
+        // сам бандл лежит в /Applications, а хелперы — в его Frameworks.
+        entry.userApp = entry.userApp || looksLikeUserApp(path);
     }
 
-    QStringList list(seen.begin(), seen.end());
-    list.sort(Qt::CaseInsensitive);
-    return list;
+    return groups.values();
+}
+
+QIcon DialogPerAppProxy::iconFor(const AppEntry &entry) {
+    static QFileIconProvider provider;
+    const QFileInfo info(entry.iconPath);
+    if (!info.exists()) return {};
+    return provider.icon(info);
 }
 
 DialogPerAppProxy::DialogPerAppProxy(QWidget *parent) : QDialog(parent) {
+    setObjectName("fsntDialog");
     setWindowTitle(tr("Per-app proxy"));
-    resize(520, 560);
+    resize(580, 660);
 
     chain = Configs::dataManager->routesRepo->GetRouteProfile(
         Configs::dataManager->settingsRepo->current_route_id);
 
     auto *layout = new QVBoxLayout(this);
-    layout->addWidget(new QLabel(
-        tr("Choose how traffic of each application is routed. The choice is stored as\n"
-           "processName rules in the current routing profile."), this));
+    layout->setContentsMargins(24, 22, 24, 20);
+    layout->setSpacing(12);
+
+    auto *title = new QLabel(tr("Per-app proxy"), this);
+    title->setObjectName("fsntDialogTitle");
+    layout->addWidget(title);
+
+    auto *hint = new QLabel(
+        tr("Choose how each application is routed. The choice is stored as processName "
+           "rules in the current routing profile."), this);
+    hint->setObjectName("fsntDialogHint");
+    hint->setWordWrap(true);
+    layout->addWidget(hint);
 
     if (chain == nullptr) {
-        layout->addWidget(new QLabel(tr("No routing profile is selected."), this));
-        auto *box = new QDialogButtonBox(QDialogButtonBox::Close, this);
-        connect(box, &QDialogButtonBox::rejected, this, &QDialog::reject);
-        layout->addWidget(box);
+        auto *empty = new QLabel(tr("No routing profile is selected."), this);
+        empty->setObjectName("fsntDialogHint");
+        layout->addWidget(empty);
+        layout->addStretch();
+
+        auto *close = new QPushButton(tr("Close"), this);
+        close->setObjectName("fsntGhost");
+        connect(close, &QPushButton::clicked, this, &QDialog::reject);
+        layout->addWidget(close, 0, Qt::AlignRight);
+        setStyleSheet(Fsnt::BuildStyleSheet());
         return;
     }
 
@@ -92,76 +164,154 @@ DialogPerAppProxy::DialogPerAppProxy(QWidget *parent) : QDialog(parent) {
     for (const QString &p : proxyProcesses) known[p] = Proxy;
     for (const QString &p : directProcesses) known[p] = Direct;
 
-    // Запущенных процессов сотни, без поиска список бесполезен.
-    auto *filter = new QLineEdit(this);
-    filter->setPlaceholderText(tr("Filter applications..."));
-    filter->setClearButtonEnabled(true);
-    layout->addWidget(filter);
+    m_filter = new QLineEdit(this);
+    m_filter->setObjectName("fsntSearch");
+    m_filter->setPlaceholderText(tr("Search applications"));
+    m_filter->setClearButtonEnabled(true);
+    layout->addWidget(m_filter);
 
-    buildTable(known);
-    layout->addWidget(table);
+    auto *systemRow = new QHBoxLayout;
+    auto *systemLabel = new QLabel(tr("Show system processes"), this);
+    systemLabel->setObjectName("fsntRowLabel");
+    systemRow->addWidget(systemLabel);
+    systemRow->addStretch();
+    m_showSystem = new FsntSwitch(this);
+    systemRow->addWidget(m_showSystem);
+    layout->addLayout(systemRow);
 
-    connect(filter, &QLineEdit::textChanged, this, [this](const QString &text) {
-        for (int row = 0; row < table->rowCount(); ++row) {
-            const auto *item = table->item(row, 0);
-            const bool visible = text.isEmpty()
-                || (item != nullptr && item->text().contains(text, Qt::CaseInsensitive));
-            table->setRowHidden(row, !visible);
-        }
+    buildList(known);
+    layout->addWidget(m_list, 1);
+
+    connect(m_filter, &QLineEdit::textChanged, this, &DialogPerAppProxy::applyFilter);
+    connect(m_showSystem, &FsntSwitch::toggled, this, &DialogPerAppProxy::applyFilter);
+    applyFilter();
+
+    auto *cancel = new QPushButton(tr("Cancel"), this);
+    cancel->setObjectName("fsntGhost");
+    cancel->setCursor(Qt::PointingHandCursor);
+    connect(cancel, &QPushButton::clicked, this, &QDialog::reject);
+
+    auto *ok = new QPushButton(tr("Save"), this);
+    ok->setObjectName("fsntPrimary");
+    ok->setCursor(Qt::PointingHandCursor);
+    ok->setDefault(true);
+    connect(ok, &QPushButton::clicked, this, [this] {
+        save();
+        accept();
     });
 
-    auto *box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
-    connect(box, &QDialogButtonBox::accepted, this, [this] { save(); accept(); });
-    connect(box, &QDialogButtonBox::rejected, this, &QDialog::reject);
-    layout->addWidget(box);
+    auto *buttons = new QHBoxLayout;
+    buttons->addStretch();
+    buttons->addWidget(cancel);
+    buttons->addWidget(ok);
+    layout->addLayout(buttons);
+
+    setStyleSheet(Fsnt::BuildStyleSheet());
 }
 
-void DialogPerAppProxy::buildTable(const QMap<QString, int> &known) {
-    // Уже настроенные приложения могли завершиться — показываем их вместе с запущенными,
-    // иначе сохранение молча потеряло бы правило.
-    QStringList names = runningProcesses();
-    for (const QString &configured : known.keys()) {
-        if (!names.contains(configured, Qt::CaseInsensitive)) names << configured;
+void DialogPerAppProxy::buildList(const QMap<QString, int> &known) {
+    m_entries = runningApplications();
+
+    // Уже настроенные приложения могли завершиться — показываем их вместе с
+    // запущенными, иначе сохранение молча потеряло бы правило.
+    QSet<QString> present;
+    for (const AppEntry &entry : m_entries) {
+        for (const QString &name : entry.processes) present.insert(name);
     }
-    names.sort(Qt::CaseInsensitive);
+    for (const QString &configured : known.keys()) {
+        if (present.contains(configured)) continue;
+        AppEntry entry;
+        entry.name = configured;
+        entry.processes << configured;
+        entry.userApp = true;   // раз правило есть, прятать его нельзя
+        m_entries << entry;
+    }
 
-    table = new QTableWidget(names.size(), 2, this);
-    table->setHorizontalHeaderLabels({tr("Application"), tr("Routing")});
-    table->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
-    table->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
-    table->verticalHeader()->setVisible(false);
-    table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    std::sort(m_entries.begin(), m_entries.end(), [](const AppEntry &a, const AppEntry &b) {
+        return a.name.compare(b.name, Qt::CaseInsensitive) < 0;
+    });
 
-    for (int row = 0; row < names.size(); ++row) {
-        const QString &name = names[row];
-        table->setItem(row, 0, new QTableWidgetItem(name));
+    m_list = new QListWidget(this);
+    m_list->setObjectName("fsntServerList");
+    m_list->setFrameShape(QFrame::NoFrame);
+    m_list->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_list->setSelectionMode(QAbstractItemView::NoSelection);
 
-        auto *mode = new QComboBox(table);
+    for (const AppEntry &entry : m_entries) {
+        auto *item = new QListWidgetItem(m_list);
+        item->setSizeHint(QSize(0, kRowHeight));
+
+        auto *row = new QWidget(m_list);
+        auto *box = new QHBoxLayout(row);
+        box->setContentsMargins(10, 6, 10, 6);
+        box->setSpacing(12);
+
+        auto *icon = new QLabel(row);
+        icon->setFixedSize(kIconSize, kIconSize);
+        icon->setScaledContents(true);
+        if (const QIcon pic = iconFor(entry); !pic.isNull()) {
+            icon->setPixmap(pic.pixmap(kIconSize, kIconSize));
+        }
+        box->addWidget(icon);
+
+        auto *name = new QLabel(entry.name, row);
+        name->setObjectName("fsntRowLabel");
+        box->addWidget(name, 1);
+
+        auto *mode = new FsntSelect(row);
+        mode->setMinimumWidth(150);
         mode->addItem(tr("Not set"), None);
         mode->addItem(tr("Through proxy"), Proxy);
         mode->addItem(tr("Direct"), Direct);
-        mode->setCurrentIndex(known.value(name, None));
-        table->setCellWidget(row, 1, mode);
+        // Режим группы — режим любого её процесса: правила у них общие.
+        int current = None;
+        for (const QString &process : entry.processes) {
+            if (const int stored = known.value(process, None); stored != None) {
+                current = stored;
+                break;
+            }
+        }
+        mode->setCurrentIndex(current);
+        box->addWidget(mode);
+
+        m_modes << mode;
+        m_list->setItemWidget(item, row);
+    }
+}
+
+void DialogPerAppProxy::applyFilter() {
+    const QString text = m_filter->text().trimmed();
+    const bool showSystem = m_showSystem->isChecked();
+
+    for (int row = 0; row < m_list->count() && row < m_entries.size(); ++row) {
+        const AppEntry &entry = m_entries[row];
+        // Настроенное приложение видно всегда: иначе правило можно потерять из виду.
+        const bool configured = row < m_modes.size() && m_modes[row]->currentIndex() != None;
+
+        const bool matchesKind = showSystem || entry.userApp || configured;
+        const bool matchesText = text.isEmpty()
+            || entry.name.contains(text, Qt::CaseInsensitive)
+            || entry.processes.filter(text, Qt::CaseInsensitive).size() > 0;
+
+        m_list->item(row)->setHidden(!(matchesKind && matchesText));
     }
 }
 
 void DialogPerAppProxy::save() {
-    if (chain == nullptr || table == nullptr) return;
+    if (chain == nullptr) return;
 
     QStringList proxyProcesses, proxyOthers, directProcesses, directOthers;
     split(chain->GetSimpleRules(Configs::proxy), proxyProcesses, proxyOthers);
     split(chain->GetSimpleRules(Configs::bypass), directProcesses, directOthers);
 
     QStringList newProxy, newDirect;
-    for (int row = 0; row < table->rowCount(); ++row) {
-        const auto *item = table->item(row, 0);
-        const auto *mode = qobject_cast<QComboBox *>(table->cellWidget(row, 1));
-        if (item == nullptr || mode == nullptr) continue;
-
-        switch (mode->currentData().toInt()) {
-            case Proxy:  newProxy  << QString(kPrefix) + item->text(); break;
-            case Direct: newDirect << QString(kPrefix) + item->text(); break;
-            default: break;
+    for (int row = 0; row < m_entries.size() && row < m_modes.size(); ++row) {
+        const int mode = m_modes[row]->currentData().toInt();
+        if (mode == None) continue;
+        // Правило пишем на каждый процесс приложения: маршрутизатор знает только
+        // имена процессов и про бандлы не в курсе.
+        for (const QString &process : m_entries[row].processes) {
+            (mode == Proxy ? newProxy : newDirect) << QString(kPrefix) + process;
         }
     }
 

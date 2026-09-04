@@ -2693,22 +2693,32 @@ Use a number followed by ns, us, ms, s, m, h or d.</source>
         <translation>Прокси по приложениям</translation>
     </message>
     <message>
-        <source>Choose how traffic of each application is routed. The choice is stored as
-processName rules in the current routing profile.</source>
-        <translation>Выберите, как маршрутизировать трафик каждого приложения. Выбор сохраняется
-правилами processName в текущем профиле маршрутизации.</translation>
-    </message>
-    <message>
         <source>No routing profile is selected.</source>
         <translation>Профиль маршрутизации не выбран.</translation>
     </message>
     <message>
-        <source>Application</source>
-        <translation>Приложение</translation>
+        <source>Choose how each application is routed. The choice is stored as processName rules in the current routing profile.</source>
+        <translation>Выберите, как маршрутизировать каждое приложение. Выбор сохраняется правилами processName в текущем профиле маршрутизации.</translation>
     </message>
     <message>
-        <source>Routing</source>
-        <translation>Маршрутизация</translation>
+        <source>Close</source>
+        <translation>Закрыть</translation>
+    </message>
+    <message>
+        <source>Search applications</source>
+        <translation>Поиск приложений</translation>
+    </message>
+    <message>
+        <source>Show system processes</source>
+        <translation>Показать системные процессы</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Отмена</translation>
+    </message>
+    <message>
+        <source>Save</source>
+        <translation>Сохранить</translation>
     </message>
     <message>
         <source>Not set</source>
@@ -2721,10 +2731,6 @@ processName rules in the current routing profile.</source>
     <message>
         <source>Direct</source>
         <translation>Напрямую</translation>
-    </message>
-    <message>
-        <source>Filter applications...</source>
-        <translation>Поиск приложений...</translation>
     </message>
     <message>
         <source>Per-app routing updated: %1 via proxy, %2 direct</source>
@@ -6176,10 +6182,6 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Маршрутизация</translation>
     </message>
     <message>
-        <source>Choose apps to route…</source>
-        <translation>Выбрать приложения…</translation>
-    </message>
-    <message>
         <source>Subscriptions</source>
         <translation>Подписки</translation>
     </message>
@@ -6242,6 +6244,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
     <message>
         <source>Allow local network access</source>
         <translation>Разрешить доступ из локальной сети</translation>
+    </message>
+    <message>
+        <source>Choose apps to route</source>
+        <translation>Выбрать приложения</translation>
     </message>
     <message>
         <source>Dark</source>
@@ -8981,6 +8987,14 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>ms</source>
         <translation>мс</translation>
+    </message>
+    <message>
+        <source>ok</source>
+        <translation>есть связь</translation>
+    </message>
+    <message>
+        <source>no reply</source>
+        <translation>нет ответа</translation>
     </message>
 </context>
 <context>

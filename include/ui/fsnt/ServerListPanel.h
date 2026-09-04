@@ -3,7 +3,7 @@
 #include <QSet>
 #include <QWidget>
 
-class QComboBox;
+class FsntSelect;
 class QLabel;
 class QLineEdit;
 class QListWidget;
@@ -72,7 +72,7 @@ private:
     QTimer *m_latencyPoll = nullptr;
     int m_latencyPollsLeft = 0;
 
-    QComboBox *m_groups = nullptr;
+    FsntSelect *m_groups = nullptr;
     QLineEdit *m_search = nullptr;
     QListWidget *m_list = nullptr;
     QPushButton *m_addSub = nullptr;

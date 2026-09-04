@@ -214,6 +214,23 @@ namespace Fsnt {
             QLabel#fsntCurrentServer { color: @text; font-size: 14px; font-weight: 600; }
             QLabel#fsntPlaceholder { color: @muted; font-size: 13px; }
 
+            /* ---- строки настроек ---- */
+            QLabel#fsntRowLabel { color: @text; font-size: 13px; }
+            QLabel#fsntRowNote { color: @muted; font-size: 11px; }
+            QFrame#fsntRowSeparator { border: none; background: @border; }
+
+            QPushButton#fsntRowAction {
+                background: transparent;
+                border: none;
+                border-radius: 0;
+                padding: 0 14px;
+                color: @accent;
+                font-size: 13px;
+                text-align: left;
+            }
+            QPushButton#fsntRowAction:hover { background: @cardHover; }
+            QPushButton#fsntRowAction:pressed { background: @accentSoft; }
+
             /* ---- диалоги простого режима ---- */
             QDialog#fsntDialog { background: @bg; }
             QDialog#fsntDialog QLabel { color: @text; font-size: 13px; }
