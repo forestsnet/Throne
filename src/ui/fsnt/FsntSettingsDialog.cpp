@@ -2,13 +2,10 @@
 
 #include <QAction>
 #include <QComboBox>
-#include <QDesktopServices>
-#include <QDir>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
 #include <QScrollArea>
-#include <QUrl>
 #include <QVBoxLayout>
 
 #include "NkrVersion.h"
@@ -69,7 +66,6 @@ FsntSettingsDialog::FsntSettingsDialog(QWidget *parent) : QDialog(parent) {
     buildConnection(column, host);
     buildSubscriptions(column, host);
     buildApplication(column, host);
-    buildSupport(column, host);
     column->addStretch();
 
     scroll->setWidget(host);
@@ -217,29 +213,6 @@ void FsntSettingsDialog::buildApplication(QVBoxLayout *column, QWidget *host) {
     m_autoRun = card.addToggle(tr("Launch at login"), AutoRun_IsEnabled());
     m_startMinimal = card.addToggle(tr("Start minimized to tray"), settings->start_minimal);
     card.addNote(tr("Language changes apply after restarting the application."));
-}
-
-void FsntSettingsDialog::buildSupport(QVBoxLayout *column, QWidget *host) {
-    Fsnt::SettingsCard card(column, host, tr("Help"));
-
-    connect(card.addAction(tr("Build a support report")), &QPushButton::clicked, this,
-            [this] { triggerMainWindowAction("menu_profile_debug_info"); });
-
-    connect(card.addAction(tr("Check for updates")), &QPushButton::clicked, this,
-            [this] { triggerMainWindowAction("actionCheck_For_Update"); });
-
-    connect(card.addAction(tr("Open the config folder")), &QPushButton::clicked, this, [] {
-        // Рабочий каталог приложения и есть каталог конфигурации, см. main.cpp.
-        QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::currentPath()));
-    });
-
-    connect(card.addAction(tr("Open advanced mode")), &QPushButton::clicked, this, [this] {
-        save();
-        emit advancedModeRequested();
-        accept();
-    });
-
-    card.addNote(QString("FSNT Client · %1").arg(NKR_VERSION));
 }
 
 void FsntSettingsDialog::save() {

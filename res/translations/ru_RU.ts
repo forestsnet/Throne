@@ -6320,26 +6320,6 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <source>Language changes apply after restarting the application.</source>
         <translation>Смена языка применится после перезапуска приложения.</translation>
     </message>
-    <message>
-        <source>Help</source>
-        <translation>Поддержка</translation>
-    </message>
-    <message>
-        <source>Build a support report</source>
-        <translation>Собрать отчёт для поддержки</translation>
-    </message>
-    <message>
-        <source>Check for updates</source>
-        <translation>Проверить обновления</translation>
-    </message>
-    <message>
-        <source>Open the config folder</source>
-        <translation>Открыть папку конфигурации</translation>
-    </message>
-    <message>
-        <source>Open advanced mode</source>
-        <translation>Открыть расширенный режим</translation>
-    </message>
 </context>
 <context>
     <name>FsntWindow</name>
@@ -6356,8 +6336,24 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Логи</translation>
     </message>
     <message>
-        <source>Switch to the advanced interface</source>
-        <translation>Переключиться на расширенный интерфейс</translation>
+        <source>More</source>
+        <translation>Ещё</translation>
+    </message>
+    <message>
+        <source>Check for updates</source>
+        <translation>Проверить обновления</translation>
+    </message>
+    <message>
+        <source>Updates are unavailable in this build</source>
+        <translation>Обновления недоступны в этой сборке</translation>
+    </message>
+    <message>
+        <source>Build a support report</source>
+        <translation>Собрать отчёт для поддержки</translation>
+    </message>
+    <message>
+        <source>Open the config folder</source>
+        <translation>Открыть папку конфигурации</translation>
     </message>
     <message>
         <source>The application will restart in the advanced interface. Continue?</source>
@@ -8622,7 +8618,7 @@ Release note:
     </message>
     <message>
         <source>Copy</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Копировать</translation>
     </message>
     <message>
         <source>Connected</source>

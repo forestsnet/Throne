@@ -6318,26 +6318,6 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <source>Language changes apply after restarting the application.</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Help</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Build a support report</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Check for updates</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Open the config folder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Open advanced mode</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>FsntWindow</name>
@@ -6350,11 +6330,27 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation type="unfinished">日志</translation>
     </message>
     <message>
-        <source>Advanced mode</source>
+        <source>More</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Switch to the advanced interface</source>
+        <source>Check for updates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Updates are unavailable in this build</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Build a support report</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open the config folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Advanced mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

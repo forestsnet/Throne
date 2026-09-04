@@ -118,6 +118,14 @@ namespace {
                                   QPointF(c.x() + r * 0.66, c.y() + r * 0.66));
                 break;
 
+            case Fsnt::Glyph::More:
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(color);
+                for (int dot = -1; dot <= 1; ++dot) {
+                    painter->drawEllipse(QPointF(c.x() + dot * r * 0.52, c.y()), r * 0.14, r * 0.14);
+                }
+                break;
+
             case Fsnt::Glyph::Logs:
                 // Три строки разной длины: узнаваемее листа с загнутым углом
                 // и не превращается в кашу на 16 px.

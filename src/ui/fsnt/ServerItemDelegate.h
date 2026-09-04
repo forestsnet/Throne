@@ -2,6 +2,8 @@
 
 #include <QStyledItemDelegate>
 
+#include "include/ui/fsnt/FsntPalette.hpp"
+
 // Строка сервера: имя слева, пинг справа. Рисуем сами, чтобы строка выглядела
 // карточкой, а не ячейкой таблицы.
 class ServerItemDelegate : public QStyledItemDelegate {
@@ -20,4 +22,11 @@ public:
     void paint(QPainter *painter, const QStyleOptionViewItem &option,
                const QModelIndex &index) const override;
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+
+private:
+    // Имя и подпись под ним. Вынесено из paint(): тот и без того длинный,
+    // а здесь своя развилка на «с подписью» и «без».
+    static void drawNameAndSubtitle(QPainter *painter, const QStyleOptionViewItem &option,
+                                    const QModelIndex &index, const QRect &box,
+                                    const Fsnt::Palette &palette);
 };

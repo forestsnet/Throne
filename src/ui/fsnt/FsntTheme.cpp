@@ -232,6 +232,26 @@ namespace Fsnt {
                 selection-background-color: @accent;
             }
 
+            QMenu {
+                background: @card;
+                border: 1px solid @border;
+                border-radius: @rowRadiuspx;
+                padding: 5px;
+                color: @text;
+                font-size: 13px;
+            }
+            QMenu::item {
+                padding: 8px 16px;
+                border-radius: 6px;
+            }
+            QMenu::item:selected { background: @accentSoft; }
+            QMenu::item:disabled { color: @muted; }
+            QMenu::separator {
+                height: 1px;
+                background: @border;
+                margin: 5px 10px;
+            }
+
             /* ---- диалоги простого режима ---- */
             QDialog#fsntDialog { background: @bg; }
             /* Область прокрутки и её холст красит тема приложения: в LightBlue

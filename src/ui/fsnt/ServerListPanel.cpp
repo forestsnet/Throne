@@ -259,6 +259,10 @@ void ServerListPanel::measureLatency() {
 }
 
 void ServerListPanel::reloadGroups() {
+    // Состав профилей мог смениться: при sub_clear обновление подписки
+    // пересоздаёт их целиком, и старые id указывают уже не туда.
+    m_subtitleCache.clear();
+
     const QSignalBlocker blocker(m_groups);
     m_groups->clear();
 
@@ -338,6 +342,11 @@ void ServerListPanel::reloadServers() {
         item->setData(FavoriteRole, favs.contains(profile->outbound->DisplayName()));
         item->setData(MeasuringRole,
                       m_measureStartedAt > 0 && profile->latency_at < m_measureStartedAt);
+
+        // Подпись строим здесь, а не в делегате: у делегата нет доступа к
+        // профилю, только к ролям элемента.
+        item->setData(SubtitleRole, subtitleFor(profile));
+        item->setData(InsecureRole, profile->outbound->GetSecurity().isDangerous());
     }
 
     applyFilter(m_search->text());
@@ -378,6 +387,47 @@ void ServerListPanel::updateEmptyState() {
     m_emptyText->setText(hasGroups
         ? tr("This subscription has no servers yet. Refresh it or add another one.")
         : tr("No subscription yet.\nPaste the link your provider gave you and the servers will appear here."));
+}
+
+QString ServerListPanel::subtitleFor(const std::shared_ptr<Configs::Profile> &profile) {
+    if (const auto cached = m_subtitleCache.constFind(profile->id);
+        cached != m_subtitleCache.cend()) {
+        return cached.value();
+    }
+
+    const bool fullConfig = profile->outbound->IsXrayFullConfig();
+
+    // Описание от провайдера. Панели кладут его в meta.serverDescription
+    // полного конфига, и оно заменяет техническую строку целиком: провайдер
+    // лучше знает, что сказать про свой сервер, чем перечисление транспорта.
+    if (fullConfig) {
+        if (auto *custom = profile->Custom(); custom != nullptr) {
+            // Дешёвая проверка перед разбором: конфиг весит десятки килобайт,
+            // а поля в нём чаще всего нет.
+            if (custom->config.contains(QStringLiteral("serverDescription"))) {
+                const auto meta = QString2QJsonObject(custom->config)["meta"].toObject();
+                if (const auto text = meta["serverDescription"].toString(); !text.isEmpty()) {
+                    m_subtitleCache.insert(profile->id, text);
+                    return text;
+                }
+            }
+        }
+    }
+
+    const auto security = profile->outbound->GetSecurity();
+    QStringList parts;
+    // У полного конфига протокол лежит внутри JSON и наружу не выставлен,
+    // а DisplayType() у него — «Custom Xray Config», то есть то же самое
+    // слово «JSON», только длиннее. Не повторяемся: метку ставим в конец.
+    if (!fullConfig) parts << profile->outbound->DisplayType();
+    if (!security.transport.isEmpty()) parts << security.transport;
+    if (!security.label.isEmpty()) parts << security.label;
+    // По строке видно, пришёл сервер обычной ссылкой или полным конфигом JSON.
+    if (fullConfig) parts << QStringLiteral("JSON");
+
+    const QString subtitle = parts.join(QStringLiteral(" · "));
+    m_subtitleCache.insert(profile->id, subtitle);
+    return subtitle;
 }
 
 QSet<QString> ServerListPanel::serverNames(const QList<int> &ids) {

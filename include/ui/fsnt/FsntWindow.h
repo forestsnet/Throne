@@ -31,6 +31,9 @@ signals:
 protected:
     // Тост центрируем сами: он лежит поверх компоновки, и та его не двигает.
     void resizeEvent(QResizeEvent *event) override;
+    // Крестик прячет окно в трей. Без этого закрытие окна гасило единственное
+    // видимое окно приложения, Qt завершал программу — и туннель вместе с ней.
+    void closeEvent(QCloseEvent *event) override;
 
     // Точки расширения для следующих приростов.
     QVBoxLayout *serverPanelLayout() const { return m_serverLayout; }
@@ -47,6 +50,11 @@ private:
     void buildPanels(QVBoxLayout *root);
     void applyTheme();
     void switchToAdvancedMode();
+    // Меню «ещё» в шапке: очевидные действия, которые незачем искать в настройках.
+    void showMainMenu(QWidget *anchor);
+    // Дёргает именованное действие MainWindow: он остаётся движком, и повторять
+    // его логику здесь было бы вторым местом, где её надо чинить.
+    static void triggerAction(const char *actionName);
     // Диалог живёт здесь, а не в панелях: его открывают и список серверов,
     // и панель подключения, когда запускать нечего.
     void openAddSubscription();

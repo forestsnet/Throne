@@ -1,6 +1,11 @@
 #pragma once
 
+#include <QHash>
 #include <QSet>
+
+#include <memory>
+
+namespace Configs { class Profile; }
 #include <QWidget>
 
 class FsntSelect;
@@ -27,6 +32,10 @@ public:
         FavoriteRole,
         // Замер запущен, а этот сервер ещё не ответил.
         MeasuringRole,
+        // Техническая подпись: протокол, транспорт, шифрование, полный JSON.
+        SubtitleRole,
+        // Соединение без шифрования — подпись красится тревожным цветом.
+        InsecureRole,
     };
 
     // Избранное хранится списком имён в настройках, а не полем профиля:
@@ -69,6 +78,11 @@ private:
     // Замер закончен, когда не осталось профилей с latency == 0 («не измерялся»).
     // Имена серверов группы — для сравнения состава до и после обновления.
     static QSet<QString> serverNames(const QList<int> &ids);
+
+    // Подпись под именем сервера: описание от провайдера, если оно есть,
+    // иначе техническая строка. Результат кешируется: список пересобирается
+    // каждые две секунды во время замера, а разбор конфига стоит дорого.
+    QString subtitleFor(const std::shared_ptr<Configs::Profile> &profile);
     bool allMeasured() const;
     void finishMeasurement();
     void updateSubscription();
@@ -86,6 +100,7 @@ private:
     // Перерисовка «думающих» точек: делегат берёт фазу из часов, состояние
     // хранить не нужно, но кто-то должен будить viewport.
     QTimer *m_measureRepaint = nullptr;
+    QHash<int, QString> m_subtitleCache;
 
     FsntSelect *m_groups = nullptr;
     QLineEdit *m_search = nullptr;

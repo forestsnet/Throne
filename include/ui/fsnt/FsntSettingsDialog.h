@@ -18,16 +18,12 @@ class FsntSettingsDialog : public QDialog {
 public:
     explicit FsntSettingsDialog(QWidget *parent = nullptr);
 
-signals:
-    void advancedModeRequested();
-
 private:
     void save();
 
     void buildConnection(QVBoxLayout *column, QWidget *host);
     void buildSubscriptions(QVBoxLayout *column, QWidget *host);
     void buildApplication(QVBoxLayout *column, QWidget *host);
-    void buildSupport(QVBoxLayout *column, QWidget *host);
 
     // Дёргает действие расширенного режима по имени. Так переиспользуются его
     // проверки — и код, который правит upstream, остаётся нетронутым.

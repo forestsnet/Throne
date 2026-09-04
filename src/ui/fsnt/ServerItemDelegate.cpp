@@ -13,7 +13,7 @@
 #include "include/ui/fsnt/ServerListPanel.h"
 
 namespace {
-    constexpr int kRowHeight = 46;
+    constexpr int kRowHeight = 58;
     constexpr int kTextLeft = 14;
     // Толщина полоски-указателя у выбранной строки.
     constexpr int kMarkerWidth = 3;
@@ -162,13 +162,41 @@ void ServerItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
         pingBlock = pillW + 12;
     }
 
-    // --- имя ---
-    const QRect nameRect = row.adjusted(kTextLeft, 0, -pingBlock, 0);
+    // --- имя и техническая подпись ---
+    drawNameAndSubtitle(painter, option, index, row.adjusted(kTextLeft, 0, -pingBlock, 0), p);
+
+    painter->restore();
+}
+
+void ServerItemDelegate::drawNameAndSubtitle(QPainter *painter, const QStyleOptionViewItem &option,
+                                             const QModelIndex &index, const QRect &box,
+                                             const Fsnt::Palette &p) {
+    const QString subtitle = index.data(ServerListPanel::SubtitleRole).toString();
+
+    // Без подписи имя стоит по центру строки, иначе — двумя строками.
+    if (subtitle.isEmpty()) {
+        painter->setFont(option.font);
+        painter->setPen(p.text);
+        painter->drawText(box, Qt::AlignVCenter | Qt::AlignLeft,
+                          QFontMetrics(option.font).elidedText(
+                              index.data(Qt::DisplayRole).toString(), Qt::ElideRight, box.width()));
+        return;
+    }
+
+    const QRect nameRect(box.left(), box.top() + 8, box.width(), box.height() / 2 - 4);
     painter->setFont(option.font);
     painter->setPen(p.text);
     painter->drawText(nameRect, Qt::AlignVCenter | Qt::AlignLeft,
                       QFontMetrics(option.font).elidedText(index.data(Qt::DisplayRole).toString(),
                                                            Qt::ElideRight, nameRect.width()));
 
-    painter->restore();
+    QFont subFont = option.font;
+    subFont.setPointSizeF(subFont.pointSizeF() - 2.0);
+    const QRect subRect(box.left(), box.center().y() + 1, box.width(), box.height() / 2 - 6);
+    // Незашифрованное соединение подписывается тревожным цветом: это тот случай,
+    // когда мелкий серый текст обязан броситься в глаза.
+    painter->setFont(subFont);
+    painter->setPen(index.data(ServerListPanel::InsecureRole).toBool() ? p.warn : p.textMuted);
+    painter->drawText(subRect, Qt::AlignVCenter | Qt::AlignLeft,
+                      QFontMetrics(subFont).elidedText(subtitle, Qt::ElideRight, subRect.width()));
 }

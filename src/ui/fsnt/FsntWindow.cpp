@@ -1,6 +1,13 @@
 #include "include/ui/fsnt/FsntWindow.h"
 
+#include <QAction>
 #include <QApplication>
+#include <QDesktopServices>
+#include <QDir>
+#include <QFile>
+#include <QCloseEvent>
+#include <QMenu>
+#include <QUrl>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QSvgRenderer>
@@ -12,6 +19,8 @@
 #include <QWidget>
 
 #include "include/database/GroupsRepo.h"
+#include "NkrVersion.h"
+
 #include "include/database/SettingsRepo.h"
 #include "include/global/Configs.hpp"
 #include "include/ui/fsnt/AddSubscriptionDialog.h"
@@ -163,8 +172,6 @@ void FsntWindow::buildHeader(QVBoxLayout *root) {
     settings->setToolTip(tr("Settings"));
     connect(settings, &FsntIconButton::clicked, this, [this] {
         auto *dialog = new FsntSettingsDialog(this);
-        connect(dialog, &FsntSettingsDialog::advancedModeRequested,
-                this, &FsntWindow::switchToAdvancedMode);
         dialog->setAttribute(Qt::WA_DeleteOnClose);
         dialog->exec();
     });
@@ -183,13 +190,11 @@ void FsntWindow::buildHeader(QVBoxLayout *root) {
     });
     row->addWidget(logs);
 
-    auto *advanced = new QToolButton(header);
-    advanced->setObjectName("fsntIconButton");
-    advanced->setCursor(Qt::PointingHandCursor);
-    advanced->setText(tr("Advanced mode"));
-    advanced->setToolTip(tr("Switch to the advanced interface"));
-    connect(advanced, &QToolButton::clicked, this, &FsntWindow::switchToAdvancedMode);
-    row->addWidget(advanced);
+    auto *more = new FsntIconButton(Fsnt::Glyph::More, header);
+    more->setFixedSize(38, 38);
+    more->setToolTip(tr("More"));
+    connect(more, &FsntIconButton::clicked, this, [this, more] { showMainMenu(more); });
+    row->addWidget(more);
 
     root->addWidget(header);
 }
@@ -251,6 +256,44 @@ void FsntWindow::buildPanels(QVBoxLayout *root) {
     root->addWidget(body, 1);
 }
 
+void FsntWindow::showMainMenu(QWidget *anchor) {
+    QMenu menu(this);
+    menu.setStyleSheet(Fsnt::BuildStyleSheet());
+
+    auto *version = menu.addAction(QString("FSNT Client %1").arg(NKR_VERSION));
+    version->setEnabled(false);
+    menu.addSeparator();
+
+    // Обновление умеет только внешний updater; без него действие молча ничего
+    // не делало бы, поэтому говорим об этом прямо.
+    const QString appDir = QApplication::applicationDirPath();
+    const bool hasUpdater = QFile::exists(appDir + "/updater") || QFile::exists(appDir + "/updater.exe");
+    auto *update = menu.addAction(tr("Check for updates"));
+    update->setEnabled(hasUpdater);
+    if (!hasUpdater) update->setText(tr("Updates are unavailable in this build"));
+    connect(update, &QAction::triggered, this, [this] { triggerAction("actionCheck_For_Update"); });
+
+    connect(menu.addAction(tr("Build a support report")), &QAction::triggered, this,
+            [this] { triggerAction("menu_profile_debug_info"); });
+
+    connect(menu.addAction(tr("Open the config folder")), &QAction::triggered, this, [] {
+        // Рабочий каталог приложения и есть каталог конфигурации, см. main.cpp.
+        QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::currentPath()));
+    });
+
+    menu.addSeparator();
+    connect(menu.addAction(tr("Advanced mode")), &QAction::triggered,
+            this, &FsntWindow::switchToAdvancedMode);
+
+    menu.exec(anchor->mapToGlobal(QPoint(0, anchor->height() + 4)));
+}
+
+void FsntWindow::triggerAction(const char *actionName) {
+    auto *mw = GetMainWindow();
+    if (mw == nullptr) return;
+    if (auto *action = mw->findChild<QAction *>(QString::fromLatin1(actionName))) action->trigger();
+}
+
 void FsntWindow::refreshConnectionState() {
     if (m_connectPanel != nullptr) m_connectPanel->refresh();
 }
@@ -258,6 +301,18 @@ void FsntWindow::refreshConnectionState() {
 void FsntWindow::refreshServerList() {
     if (m_serverList != nullptr) m_serverList->reloadGroups();
     if (m_subscriptionCard != nullptr) m_subscriptionCard->refresh();
+}
+
+void FsntWindow::closeEvent(QCloseEvent *event) {
+    // Как и MainWindow: пока есть значок в трее, окно прячется, а приложение
+    // продолжает работать. Без трея прятать некуда — тогда честный выход.
+    if (!Configs::dataManager->settingsRepo->disable_tray) {
+        HideWindow(this);
+        event->ignore();
+        return;
+    }
+    triggerAction("menu_exit");
+    event->ignore();
 }
 
 void FsntWindow::resizeEvent(QResizeEvent *event) {
