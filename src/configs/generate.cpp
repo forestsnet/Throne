@@ -1,4 +1,5 @@
 #include "include/configs/generate.h"
+#include "include/configs/sub/ProviderPolicy.hpp"
 #include "include/api/RPC.h"
 #include "include/configs/AutoSelectorPlan.h"
 #include "include/global/Configs.hpp"
@@ -1394,6 +1395,13 @@ namespace Configs {
                 if (userXrayConfig.isEmpty()) {
                     ctx.error = "Custom Xray full config is not valid JSON";
                     return ingressTag;
+                }
+                // Панель может запретить брать DNS из конфига (dns-from-json-enable: false).
+                // Сравнение с false истинно только если заголовок реально прислан:
+                // отсутствие политики блок dns не трогает.
+                if (Subscription::ActiveProviderPolicy().dnsFromJson == false) {
+                    MW_show_log("[Policy] Provider disabled DNS from JSON, dropping dns section");
+                    userXrayConfig.remove("dns");
                 }
                 // A pre-probed 0 means the caller's probe failed; re-probe rather than bake in a dead port.
                 int port = req.xrayFullConfigPort;
