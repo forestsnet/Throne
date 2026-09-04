@@ -3623,6 +3623,10 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
 <context>
     <name>MainWindow</name>
     <message>
+        <source>Per-app proxy...</source>
+        <translation>Прокси по приложениям...</translation>
+    </message>
+    <message>
         <source>Delete group</source>
         <translation>Удаление группы</translation>
     </message>
@@ -5565,6 +5569,51 @@ Your local edits are overwritten on each update.</source>
     <message>
         <source>Page %1/%2</source>
         <translation>Страница %1/%2</translation>
+    </message>
+</context>
+<context>
+    <name>DialogPerAppProxy</name>
+    <message>
+        <source>Per-app proxy</source>
+        <translation>Прокси по приложениям</translation>
+    </message>
+    <message>
+        <source>Choose how traffic of each application is routed. The choice is stored as
+processName rules in the current routing profile.</source>
+        <translation>Выберите, как маршрутизировать трафик каждого приложения. Выбор сохраняется
+правилами processName в текущем профиле маршрутизации.</translation>
+    </message>
+    <message>
+        <source>No routing profile is selected.</source>
+        <translation>Профиль маршрутизации не выбран.</translation>
+    </message>
+    <message>
+        <source>Application</source>
+        <translation>Приложение</translation>
+    </message>
+    <message>
+        <source>Routing</source>
+        <translation>Маршрутизация</translation>
+    </message>
+    <message>
+        <source>Not set</source>
+        <translation>Не задано</translation>
+    </message>
+    <message>
+        <source>Through proxy</source>
+        <translation>Через прокси</translation>
+    </message>
+    <message>
+        <source>Direct</source>
+        <translation>Напрямую</translation>
+    </message>
+    <message>
+        <source>Filter applications...</source>
+        <translation>Поиск приложений...</translation>
+    </message>
+    <message>
+        <source>Per-app routing updated: %1 via proxy, %2 direct</source>
+        <translation>Маршрутизация по приложениям обновлена: %1 через прокси, %2 напрямую</translation>
     </message>
 </context>
 </TS>

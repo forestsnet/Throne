@@ -16,6 +16,7 @@
 #include "include/sys/Process.hpp"
 #include "include/sys/AutoRun.hpp"
 #include "include/sys/UrlScheme.hpp"
+#include "include/ui/setting/dialog_per_app_proxy.h"
 #include "include/configs/sub/ProviderPolicy.hpp"
 
 #include "include/ui/utils/ConnectionsFilterHeader.h"
@@ -946,6 +947,21 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     {
         ui->menuRouting_Menu->clear();
         ui->menuRouting_Menu->addAction(ui->menu_routing_settings);
+
+        auto* actionPerApp = new QAction(ui->menuRouting_Menu);
+        actionPerApp->setText(tr("Per-app proxy..."));
+        connect(actionPerApp, &QAction::triggered, this, [=,this] {
+            auto *dialog = new DialogPerAppProxy(this);
+            dialog->setAttribute(Qt::WA_DeleteOnClose);
+            connect(dialog, &QDialog::accepted, this, [=,this] {
+                // Правила уходят в ядро только при пересборке конфига.
+                if (Configs::dataManager->settingsRepo->started_id >= 0) {
+                    profile_start(Configs::dataManager->settingsRepo->started_id);
+                }
+            });
+            dialog->show();
+        });
+        ui->menuRouting_Menu->addAction(actionPerApp);
 
         auto* actionAdblock = new QAction(ui->menuRouting_Menu);
         actionAdblock->setText(tr("Enable AdBlock"));

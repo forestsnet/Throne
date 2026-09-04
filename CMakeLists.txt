@@ -324,6 +324,10 @@ set(PROJECT_SOURCES
         include/ui/profile/dialog_vpn_auth.ui
 
         src/ui/setting/dialog_basic_settings.cpp
+
+        src/ui/setting/dialog_per_app_proxy.cpp
+
+        include/ui/setting/dialog_per_app_proxy.h
         include/ui/setting/dialog_basic_settings.h
         include/ui/setting/dialog_basic_settings.ui
 
