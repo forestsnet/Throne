@@ -19,8 +19,8 @@ SubscriptionCard::SubscriptionCard(QWidget *parent) : QWidget(parent) {
     setObjectName("fsntSubscriptionCard");
 
     auto *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(12, 10, 12, 10);
-    layout->setSpacing(6);
+    layout->setContentsMargins(14, 13, 14, 13);
+    layout->setSpacing(8);
 
     auto *header = new QHBoxLayout;
     m_name = new QLabel(this);
@@ -35,12 +35,12 @@ SubscriptionCard::SubscriptionCard(QWidget *parent) : QWidget(parent) {
     m_bar = new QProgressBar(this);
     m_bar->setObjectName("fsntTrafficBar");
     m_bar->setTextVisible(false);
-    m_bar->setFixedHeight(6);
+    m_bar->setFixedHeight(7);
     m_bar->setRange(0, 1000);
     layout->addWidget(m_bar);
 
     m_traffic = new QLabel(this);
-    m_traffic->setObjectName("fsntSubMeta");
+    m_traffic->setObjectName("fsntSubStrong");
     layout->addWidget(m_traffic);
 
     m_refill = new QLabel(this);
@@ -48,7 +48,7 @@ SubscriptionCard::SubscriptionCard(QWidget *parent) : QWidget(parent) {
     layout->addWidget(m_refill);
 
     m_announce = new QLabel(this);
-    m_announce->setObjectName("fsntSubMeta");
+    m_announce->setObjectName("fsntAnnounce");
     m_announce->setWordWrap(true);
     layout->addWidget(m_announce);
 

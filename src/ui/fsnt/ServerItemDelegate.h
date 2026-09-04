@@ -8,6 +8,13 @@ class ServerItemDelegate : public QStyledItemDelegate {
     Q_OBJECT
 
 public:
+    // Ширина зоны сердечка справа. Живёт здесь, потому что по ней панель ловит
+    // клик: разъедься эти два числа — и попадание перестанет совпадать с рисунком.
+    static constexpr int kHeartZone = 34;
+    // Порог, за которым пинг перестаёт быть хорошим, и второй — за которым плохим.
+    static constexpr int kGoodLatencyMs = 120;
+    static constexpr int kFairLatencyMs = 250;
+
     explicit ServerItemDelegate(QObject *parent = nullptr);
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option,

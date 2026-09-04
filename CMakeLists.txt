@@ -337,6 +337,14 @@ set(PROJECT_SOURCES
 
         include/ui/fsnt/FsntTheme.hpp
 
+        src/ui/fsnt/FsntPalette.cpp
+
+        include/ui/fsnt/FsntPalette.hpp
+
+        src/ui/fsnt/PowerButton.cpp
+
+        include/ui/fsnt/PowerButton.h
+
         src/ui/fsnt/FsntWindow.cpp
 
         include/ui/fsnt/FsntWindow.h

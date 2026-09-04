@@ -26,8 +26,8 @@
 
 FsntWindow::FsntWindow(QWidget *parent) : QMainWindow(parent) {
     setWindowTitle("FSNT Client");
-    resize(880, 560);
-    setMinimumSize(760, 500);
+    resize(960, 640);
+    setMinimumSize(820, 560);
 
     // Тему и колбэки ядра уже поставил MainWindow: он создаётся раньше и служит движком.
     chainCoreMessages();
@@ -103,7 +103,7 @@ QPixmap FsntWindow::renderLogo(int size) {
 void FsntWindow::buildHeader(QVBoxLayout *root) {
     auto *header = new QWidget(this);
     header->setObjectName("fsntHeader");
-    header->setFixedHeight(44);
+    header->setFixedHeight(52);
 
     auto *row = new QHBoxLayout(header);
     row->setContentsMargins(Fsnt::kPanelPadding, 0, Fsnt::kPanelPadding, 0);
@@ -111,8 +111,8 @@ void FsntWindow::buildHeader(QVBoxLayout *root) {
 
     auto *logo = new QLabel(header);
     logo->setObjectName("fsntLogo");
-    logo->setPixmap(renderLogo(24));
-    logo->setFixedSize(28, 28);
+    logo->setPixmap(renderLogo(26));
+    logo->setFixedSize(30, 30);
     logo->setAlignment(Qt::AlignCenter);
     row->addWidget(logo);
 
@@ -147,6 +147,7 @@ void FsntWindow::buildHeader(QVBoxLayout *root) {
 
 void FsntWindow::buildPanels(QVBoxLayout *root) {
     auto *body = new QWidget(this);
+    body->setObjectName("fsntBody");
     auto *columns = new QHBoxLayout(body);
     columns->setContentsMargins(0, 0, 0, 0);
     columns->setSpacing(0);
@@ -171,6 +172,7 @@ void FsntWindow::buildPanels(QVBoxLayout *root) {
     });
 
     auto *sidePanel = new QWidget(body);
+    sidePanel->setObjectName("fsntSidePanel");
     m_sideLayout = new QVBoxLayout(sidePanel);
     m_sideLayout->setContentsMargins(Fsnt::kPanelPadding, Fsnt::kPanelPadding,
                                      Fsnt::kPanelPadding, Fsnt::kPanelPadding);
@@ -197,7 +199,7 @@ void FsntWindow::refreshServerList() {
 }
 
 void FsntWindow::applyTheme() {
-    setStyleSheet(Fsnt::BuildStyleSheet(themeManager()->tokens));
+    setStyleSheet(Fsnt::BuildStyleSheet());
 }
 
 void FsntWindow::switchToAdvancedMode() {

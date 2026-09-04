@@ -2,25 +2,26 @@
 
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QPushButton>
 #include <QStyle>
 #include <QTimer>
 #include <QVBoxLayout>
 
-#include "include/database/ProfilesRepo.h"
 #include "include/database/GroupsRepo.h"
+#include "include/database/ProfilesRepo.h"
 #include "include/global/Configs.hpp"
 #include "include/ui/fsnt/FsntTheme.hpp"
+#include "include/ui/fsnt/PowerButton.h"
 #include "include/ui/mainwindow.h"
 
 namespace {
-    constexpr int kButtonSize = 120;
+    // Сколько ждём ответа ядра, прежде чем признать попытку неудавшейся.
+    constexpr int kPendingTimeoutMs = 25000;
 }
 
 ConnectPanel::ConnectPanel(QWidget *parent) : QWidget(parent) {
     auto *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(8);
+    layout->setSpacing(6);
     layout->addStretch();
 
     m_elapsed = new QLabel("00:00:00", this);
@@ -33,14 +34,10 @@ ConnectPanel::ConnectPanel(QWidget *parent) : QWidget(parent) {
     m_status->setAlignment(Qt::AlignCenter);
     layout->addWidget(m_status);
 
-    layout->addSpacing(12);
+    layout->addSpacing(14);
 
-    m_button = new QPushButton(this);
-    m_button->setObjectName("fsntPowerButton");
-    m_button->setFixedSize(kButtonSize, kButtonSize);
-    m_button->setCursor(Qt::PointingHandCursor);
-    m_button->setText("⏻");
-    connect(m_button, &QPushButton::clicked, this, &ConnectPanel::onButtonClicked);
+    m_button = new PowerButton(this);
+    connect(m_button, &PowerButton::clicked, this, &ConnectPanel::onButtonClicked);
 
     auto *buttonRow = new QHBoxLayout;
     buttonRow->addStretch();
@@ -48,7 +45,7 @@ ConnectPanel::ConnectPanel(QWidget *parent) : QWidget(parent) {
     buttonRow->addStretch();
     layout->addLayout(buttonRow);
 
-    layout->addSpacing(12);
+    layout->addSpacing(14);
 
     m_server = new QLabel(tr("No server selected"), this);
     m_server->setObjectName("fsntCurrentServer");
@@ -56,11 +53,24 @@ ConnectPanel::ConnectPanel(QWidget *parent) : QWidget(parent) {
     m_server->setWordWrap(true);
     layout->addWidget(m_server);
 
+    m_transport = new QLabel(this);
+    m_transport->setObjectName("fsntSubMeta");
+    m_transport->setAlignment(Qt::AlignCenter);
+    layout->addWidget(m_transport);
+
     layout->addStretch();
 
     m_ticker = new QTimer(this);
     m_ticker->setInterval(1000);
     connect(m_ticker, &QTimer::timeout, this, &ConnectPanel::updateElapsed);
+
+    m_pendingGuard = new QTimer(this);
+    m_pendingGuard->setSingleShot(true);
+    m_pendingGuard->setInterval(kPendingTimeoutMs);
+    connect(m_pendingGuard, &QTimer::timeout, this, [this] {
+        m_pending = false;
+        refresh();
+    });
 
     refresh();
 }
@@ -82,20 +92,37 @@ int ConnectPanel::profileToStart() {
     return -1;
 }
 
+void ConnectPanel::setStatus(const QString &text, const char *tone) {
+    m_status->setText(text);
+    m_status->setProperty("tone", tone);
+    m_status->style()->unpolish(m_status);
+    m_status->style()->polish(m_status);
+}
+
 void ConnectPanel::onButtonClicked() {
     auto *mw = GetMainWindow();
     if (mw == nullptr) return;
 
     if (isConnected()) {
+        m_pending = true;
+        m_button->setState(PowerButton::State::Stopping);
+        setStatus(tr("Disconnecting"), "busy");
+        m_pendingGuard->start();
         mw->profile_stop(false, false, true);
         return;
     }
 
     const int id = profileToStart();
     if (id < 0) {
-        m_status->setText(tr("Add a subscription first"));
+        setStatus(tr("Add a subscription first"), "");
+        emit subscriptionNeeded();
         return;
     }
+
+    m_pending = true;
+    m_button->setState(PowerButton::State::Connecting);
+    setStatus(tr("Connecting"), "busy");
+    m_pendingGuard->start();
 
     // Одна кнопка: режим клиент выбирает сам. По умолчанию TUN, но пользователь
     // может переключиться на системный прокси в настройках простого режима.
@@ -124,6 +151,15 @@ void ConnectPanel::updateElapsed() {
 void ConnectPanel::refresh() {
     const bool connected = isConnected();
 
+    // Ядро ответило — ожидание закончилось, чем бы оно ни кончилось.
+    if (m_pending) {
+        const bool stopping = m_button->state() == PowerButton::State::Stopping;
+        if (connected != stopping) {
+            m_pending = false;
+            m_pendingGuard->stop();
+        }
+    }
+
     if (connected && !m_connectedAt.isValid()) {
         m_connectedAt = QDateTime::currentDateTime();
         m_ticker->start();
@@ -133,10 +169,10 @@ void ConnectPanel::refresh() {
         m_elapsed->setText("00:00:00");
     }
 
-    m_status->setText(connected ? tr("Connected") : tr("Disconnected"));
-    m_button->setProperty("connected", connected);
-    m_button->style()->unpolish(m_button);
-    m_button->style()->polish(m_button);
+    if (!m_pending) {
+        m_button->setState(connected ? PowerButton::State::Connected : PowerButton::State::Off);
+        setStatus(connected ? tr("Connected") : tr("Disconnected"), connected ? "ok" : "");
+    }
 
     const int id = Configs::dataManager->settingsRepo->started_id >= 0
                        ? Configs::dataManager->settingsRepo->started_id
@@ -146,4 +182,8 @@ void ConnectPanel::refresh() {
     } else {
         m_server->setText(tr("No server selected"));
     }
+
+    m_transport->setText(Configs::dataManager->settingsRepo->simple_transport == 0
+                             ? tr("Full tunnel (TUN)")
+                             : tr("System proxy"));
 }

@@ -3,8 +3,8 @@
 #include <QDateTime>
 #include <QWidget>
 
+class PowerButton;
 class QLabel;
-class QPushButton;
 class QTimer;
 
 // Правая панель: состояние подключения, таймер, кнопка и текущий сервер.
@@ -18,17 +18,26 @@ public:
     // Вызывается окном, когда ядро сообщило о смене состояния.
     void refresh();
 
+signals:
+    // Нечего запускать: окно предложит добавить подписку.
+    void subscriptionNeeded();
+
 private:
     static bool isConnected();
     static int profileToStart();
 
     void onButtonClicked();
     void updateElapsed();
+    void setStatus(const QString &text, const char *tone);
 
     QLabel *m_elapsed = nullptr;
     QLabel *m_status = nullptr;
     QLabel *m_server = nullptr;
-    QPushButton *m_button = nullptr;
+    QLabel *m_transport = nullptr;
+    PowerButton *m_button = nullptr;
     QTimer *m_ticker = nullptr;
+    // Сторожевой таймер: ядро может не ответить, и кольцо крутилось бы вечно.
+    QTimer *m_pendingGuard = nullptr;
     QDateTime m_connectedAt;
+    bool m_pending = false;
 };

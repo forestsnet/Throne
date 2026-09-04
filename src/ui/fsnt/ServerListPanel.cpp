@@ -41,25 +41,29 @@ ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
 
     m_refresh = new QPushButton("⟳", this);
     m_refresh->setObjectName("fsntIconSquare");
-    m_refresh->setFixedSize(32, 32);
+    m_refresh->setFixedSize(36, 36);
     m_refresh->setCursor(Qt::PointingHandCursor);
     m_refresh->setToolTip(tr("Measure latency"));
     searchRow->addWidget(m_refresh);
 
     layout->addLayout(searchRow);
 
-    auto *tabs = new QHBoxLayout;
-    tabs->setSpacing(4);
-    m_tabAll = new QPushButton(tr("All"), this);
-    m_tabFav = new QPushButton(tr("Favorites"), this);
+    // Полоса-подложка: без неё две пилюли висят в пустоте и не читаются как переключатель.
+    auto *tabStrip = new QWidget(this);
+    tabStrip->setObjectName("fsntTabStrip");
+    auto *tabs = new QHBoxLayout(tabStrip);
+    tabs->setContentsMargins(3, 3, 3, 3);
+    tabs->setSpacing(3);
+    m_tabAll = new QPushButton(tr("All"), tabStrip);
+    m_tabFav = new QPushButton(tr("Favorites"), tabStrip);
     for (auto *tab : {m_tabAll, m_tabFav}) {
         tab->setObjectName("fsntTab");
         tab->setCheckable(true);
         tab->setCursor(Qt::PointingHandCursor);
-        tabs->addWidget(tab);
+        tabs->addWidget(tab, 1);
     }
     m_tabAll->setChecked(true);
-    layout->addLayout(tabs);
+    layout->addWidget(tabStrip);
 
     m_list = new QListWidget(this);
     m_list->setObjectName("fsntServerList");
@@ -114,7 +118,7 @@ bool ServerListPanel::eventFilter(QObject *watched, QEvent *event) {
         const auto *mouse = static_cast<QMouseEvent *>(event);
         if (auto *item = m_list->itemAt(mouse->pos())) {
             const QRect row = m_list->visualItemRect(item);
-            if (mouse->pos().x() >= row.right() - 28) {
+            if (mouse->pos().x() >= row.right() - ServerItemDelegate::kHeartZone) {
                 toggleFavorite(item->data(ProfileIdRole).toInt());
                 item->setData(FavoriteRole, !item->data(FavoriteRole).toBool());
                 applyFilter(m_search->text());

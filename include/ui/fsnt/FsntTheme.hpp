@@ -2,15 +2,12 @@
 
 #include <QString>
 
-struct ThemeTokens;
-
 namespace Fsnt {
-    // Собирает QSS для окна FSNT Client из палитры приложения.
-    // Своей палитры не заводим: цвета обязаны совпадать с расширенным режимом.
-    QString BuildStyleSheet(const ThemeTokens &tokens);
+    // Собирает QSS для окна FSNT Client из фирменной палитры (см. FsntPalette.hpp).
+    QString BuildStyleSheet();
 
     // Радиусы и отступы в одном месте, чтобы карточки не разъезжались между виджетами.
-    inline constexpr int kCardRadius = 10;
-    inline constexpr int kRowRadius = 8;
-    inline constexpr int kPanelPadding = 12;
+    inline constexpr int kCardRadius = 14;
+    inline constexpr int kRowRadius = 9;
+    inline constexpr int kPanelPadding = 16;
 }
