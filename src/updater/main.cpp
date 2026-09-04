@@ -1,6 +1,11 @@
-// Throne Updater for macOS - Standalone application for installing updates
-// This runs after the main application exits to replace files
-// Note: Windows and Linux use the official Odin updater from https://github.com/throneproj/updater
+// Обновлятор Throne: отдельная программа, которая ставит обновление после
+// выхода основного приложения.
+//
+// На Windows раньше использовался сторонний Odin. Он не дожидается выхода
+// приложения и на попытке заменить ещё запущенный Throne.exe отвечает
+// Permission_Denied — обновление на Windows просто не работало. Здесь выход
+// приложения ожидается явно, поэтому свой обновлятор собирается и под Windows.
+// Linux по-прежнему на Odin.
 
 #include <QCoreApplication>
 #include <QProcess>
@@ -15,8 +20,16 @@
 
 class ThroneUpdater {
 public:
+    // Каталог обновления передаёт приложение первым аргументом: оно одно знает,
+    // куда клало архив (на Windows это зависит от flag_use_appdata). Значение по
+    // умолчанию оставлено для запуска вручную и для старых вызовов без аргумента.
     static QString GetUpdateDir() {
-        // macOS: ~/Library/Application Support/Throne/Throne_update
+        const auto args = QCoreApplication::arguments();
+        if (args.size() > 1 && !args[1].trimmed().isEmpty()) return args[1];
+#ifdef Q_OS_WIN
+        const QString beside = QCoreApplication::applicationDirPath() + "/Throne_update";
+        if (QFile::exists(beside + "/Throne.zip")) return beside;
+#endif
         return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/Throne_update";
     }
 
@@ -41,15 +54,23 @@ public:
 
     static bool IsProcessRunning(const QString& processName) {
         QProcess process;
+#ifdef Q_OS_WIN
+        // tasklist всегда завершается нулём, поэтому смотрим на вывод, а не на код.
+        const QString image = processName + ".exe";
+        process.start("tasklist", QStringList() << "/FI" << ("IMAGENAME eq " + image) << "/NH");
+        process.waitForFinished(10000);
+        return QString::fromLocal8Bit(process.readAllStandardOutput()).contains(image, Qt::CaseInsensitive);
+#else
         process.start("pgrep", QStringList() << "-x" << processName);
         process.waitForFinished();
         return process.exitCode() == 0;
+#endif
     }
 
     static bool WaitForMainAppExit(int timeoutSeconds = 30) {
         Log("Waiting for main application to exit...");
         
-        QString processName = "Throne";
+        const QString processName = QStringLiteral("Throne");
         int elapsed = 0;
         
         while (IsProcessRunning(processName) && elapsed < timeoutSeconds) {
@@ -74,13 +95,23 @@ public:
         Log(QString("Extracting update from: %1").arg(zipPath));
         Log(QString("Destination: %1").arg(destDir));
 
-        // Используем unzip на macOS
+        QDir().mkpath(destDir);
+
         QProcess process;
+#ifdef Q_OS_WIN
+        // unzip в Windows нет. Expand-Archive есть в PowerShell начиная с
+        // Windows 8.1 и работает без установки чего-либо ещё.
+        process.start("powershell", QStringList()
+            << "-NoProfile" << "-NonInteractive" << "-Command"
+            << QString("Expand-Archive -LiteralPath '%1' -DestinationPath '%2' -Force")
+                   .arg(QDir::toNativeSeparators(zipPath), QDir::toNativeSeparators(destDir)));
+#else
         process.start("unzip", QStringList() << "-o" << zipPath << "-d" << destDir);
-        process.waitForFinished(60000); // 60 секунд таймаут
-        
+#endif
+        process.waitForFinished(120000);
+
         if (process.exitCode() != 0) {
-            Log(QString("ERROR: Failed to extract: %1").arg(QString::fromUtf8(process.readAllStandardError())));
+            Log(QString("ERROR: Failed to extract: %1").arg(QString::fromLocal8Bit(process.readAllStandardError())));
             return false;
         }
 
@@ -116,11 +147,38 @@ public:
         return true;
     }
 
+    // Каталог внутри распакованного архива, где реально лежат файлы программы.
+    // Архив может быть как с папкой Throne внутри, так и без неё.
+    static QString FindPayloadDir(const QString& extractDir, const QString& marker) {
+        if (QFile::exists(extractDir + "/" + marker)) return extractDir;
+        const QString nested = extractDir + "/Throne";
+        if (QFile::exists(nested + "/" + marker)) return nested;
+        return {};
+    }
+
     static bool InstallUpdate(const QString& updateDir, const QString& appDir) {
         Log("Installing update...");
         Log(QString("From: %1").arg(updateDir));
         Log(QString("To: %1").arg(appDir));
 
+#ifdef Q_OS_WIN
+        // На Windows программа — это каталог с файлами, а не бандл. Копируем
+        // поверх, ничего не удаляя: рядом лежит config с настройками и базой.
+        const QString payload = FindPayloadDir(updateDir, "Throne.exe");
+        if (payload.isEmpty()) {
+            Log("ERROR: Throne.exe not found in the extracted update!");
+            return false;
+        }
+        Log(QString("Payload directory: %1").arg(payload));
+
+        if (!CopyDirectoryRecursively(payload, appDir)) {
+            Log("ERROR: Failed to copy new files!");
+            return false;
+        }
+
+        Log("Installation completed successfully.");
+        return true;
+#else
         // На macOS обновляем весь .app bundle
         QDir dir(appDir);
         dir.cdUp(); // Переходим к Throne.app
@@ -173,10 +231,20 @@ public:
         
         Log("Installation completed successfully.");
         return true;
+#endif
     }
 
     static bool StartApplication(const QString& appPath) {
         Log(QString("Starting application: %1").arg(appPath));
+
+#ifdef Q_OS_WIN
+        if (!QProcess::startDetached(appPath, QStringList{})) {
+            Log("ERROR: Failed to start application!");
+            return false;
+        }
+        Log("Application started successfully.");
+        return true;
+#else
         
         // На macOS используем 'open' для запуска .app bundle
         QDir dir(appPath);
@@ -190,6 +258,7 @@ public:
 
         Log("Application started successfully.");
         return true;
+#endif
     }
 
     static void Cleanup(const QString& updateDir) {
@@ -205,7 +274,7 @@ public:
 
     static int Run() {
         Log("========================================");
-        Log("Throne Updater for macOS Started");
+        Log("Throne Updater started");
         Log(QString("Version: %1").arg(THRONE_UPDATER_VERSION));
         Log("========================================");
 
@@ -250,7 +319,11 @@ public:
         }
 
         // Запускаем обновленное приложение
-        QString appPath = appDir + "/Throne";
+#ifdef Q_OS_WIN
+        const QString appPath = appDir + "/Throne.exe";
+#else
+        const QString appPath = appDir + "/Throne";
+#endif
 
         if (!StartApplication(appPath)) {
             Log("ERROR: Failed to start updated application!");

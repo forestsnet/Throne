@@ -724,15 +724,20 @@ if (THRONE_BUILD_TESTS)
     add_subdirectory(tests)
 endif()
 
-#### Throne Updater (macOS only - Windows/Linux use official Odin updater) ####
-if (APPLE)
+#### Throne Updater (macOS и Windows; Linux использует Odin) ####
+#
+# Под Windows раньше тоже брали Odin, но он не дожидается выхода приложения и
+# падает с Permission_Denied на замене ещё запущенного Throne.exe. Свой ждёт.
+if (APPLE OR WIN32)
     add_subdirectory(src/updater)
+    add_dependencies(Throne updater)
+endif()
 
+if (APPLE)
     # Кладём updater внутрь бандла и при локальной сборке. Приложение ищет его
     # рядом с собой, то есть в Contents/MacOS, а собирается он в корень build.
     # Раньше это делал только script/deploy_macos.sh, и в обычной сборке
     # проверка обновлений была недоступна без всякой на то причины.
-    add_dependencies(Throne updater)
     add_custom_command(TARGET Throne POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
             $<TARGET_FILE:updater>

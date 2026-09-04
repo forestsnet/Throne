@@ -174,11 +174,16 @@ void MainWindow::on_menu_exit_triggered() {
     prepare_exit();
     if (exit_reason == ExitReason::RunUpdater) {
         QDir::setCurrent(QApplication::applicationDirPath());
+        // Каталог обновления знает только приложение: на Windows он зависит от
+        // flag_use_appdata. Передаём явно, чтобы обновлятор не угадывал.
+        const QStringList updaterArgs{GetUpdateDirectory()};
 #ifdef Q_OS_WIN
+        // Запускаем копию: сам updater.exe будет заменён в ходе обновления.
+        QFile::remove("./updater.old");
         QFile::copy("./updater.exe", "./updater.old");
-        QProcess::startDetached("./updater.old", QStringList{});
+        QProcess::startDetached("./updater.old", updaterArgs);
 #else
-        QProcess::startDetached("./updater", QStringList{});
+        QProcess::startDetached("./updater", updaterArgs);
 #endif
     } else if (exit_reason == ExitReason::Restart || exit_reason == ExitReason::RestartWithTun || exit_reason == ExitReason::RestartWithDns) {
         QDir::setCurrent(QApplication::applicationDirPath());

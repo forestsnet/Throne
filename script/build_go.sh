@@ -9,10 +9,13 @@ mkdir -p $DEST
 [[ "$GOOS" =~ legacy$ ]] && IS_LEGACY=true && GOCMD="$PWD/golang.org/go/bin/go" && GOOS="${GOOS%legacy}" || { IS_LEGACY=false; GOCMD="go"; }
 
 if [[ "$GOOS" == "windows" || "$GOOS" == "linux" ]]; then
-    FILE=$([[ "$GOOS" == "windows" ]] && echo "updater-windows-x${GOARCH: -2}.exe" || echo "updater-linux-$GOARCH")
-    curl -fLso "$DEST/updater$([[ "$GOOS" == "windows" ]] && echo ".exe")" "https://github.com/throneproj/updater/releases/latest/download/$FILE"
-    [[ "$GOOS" == "linux" ]] && chmod +x "$DEST/updater"
-    # macOS: updater собирается через Qt/C++ (см. src/updater в CMakeLists.txt)
+    # Odin остался только под Linux. macOS и Windows собирают свой обновлятор
+    # через Qt/C++ (см. src/updater в CMakeLists.txt): Odin не дожидается
+    # выхода приложения и на Windows падал с Permission_Denied.
+    if [[ "$GOOS" == "linux" ]]; then
+        curl -fLso "$DEST/updater" "https://github.com/throneproj/updater/releases/latest/download/updater-linux-$GOARCH"
+        chmod +x "$DEST/updater"
+    fi
 fi
 
 case "$GOOS" in
