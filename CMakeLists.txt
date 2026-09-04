@@ -166,6 +166,7 @@ set(PROJECT_SOURCES
         src/ui/mainWindow/mainwindow_deeplink.cpp
         src/ui/mainWindow/mainwindow_system.cpp
         src/ui/mainWindow/mainwindow_conflicts.cpp
+        src/ui/mainWindow/mainwindow_debuginfo.cpp
         src/ui/mainWindow/mainwindow_log.cpp
         src/ui/mainWindow/mainwindow_hotkeys.cpp
         src/ui/mainWindow/mainwindow_profile_lifecycle.cpp

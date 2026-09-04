@@ -223,6 +223,8 @@ private slots:
 
     void on_menu_update_subscription_triggered();
 
+    void on_menu_profile_debug_info_triggered();
+
     void on_profilesTableView_doubleClicked(const QModelIndex &index);
 
     void on_profilesTableView_customContextMenuRequested(const QPoint &pos);

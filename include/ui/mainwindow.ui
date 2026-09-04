@@ -828,6 +828,7 @@ QToolButton::menu-indicator {
     <addaction name="actionSpeedtest_Group"/>
     <addaction name="actionResolve_Out_IP"/>
     <addaction name="actionRefresh_Column_Widths"/>
+    <addaction name="menu_profile_debug_info"/>
     <addaction name="menu_spmode"/>
    </widget>
    <widget class="QMenu" name="menuRouting_Menu">
@@ -949,6 +950,9 @@ QToolButton::menu-indicator {
   <action name="menu_profile_debug_info">
    <property name="text">
     <string>Debug Info</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+D</string>
    </property>
   </action>
   <action name="menu_qr">
