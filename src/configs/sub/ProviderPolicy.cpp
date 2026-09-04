@@ -22,6 +22,15 @@ namespace Subscription {
             return QString::fromUtf8(decoded.decoded);
         }
 
+        void putOpt(QJsonObject &o, const char *key, const std::optional<bool> &v) {
+            if (v.has_value()) o[key] = v.value();   // отсутствие = ключа нет
+        }
+
+        std::optional<bool> getOpt(const QJsonObject &o, const char *key) {
+            if (!o.contains(key)) return std::nullopt;
+            return o.value(key).toBool();
+        }
+
         std::optional<bool> toBool(const QString &value) {
             const QString v = value.trimmed().toLower();
             if (v == "true" || v == "1" || v == "yes" || v == "on") return true;
@@ -89,6 +98,65 @@ namespace Subscription {
             if (ignored.contains(name)) continue;
             p.unknown[name] = value;
         }
+        return p;
+    }
+
+    QString SerializeProviderPolicy(const ProviderPolicy &policy) {
+        QJsonObject o;
+        o["schema"] = policy.schema;
+        if (!policy.title.isEmpty())           o["title"] = policy.title;
+        if (!policy.announce.isEmpty())        o["announce"] = policy.announce;
+        if (!policy.supportUrl.isEmpty())      o["supportUrl"] = policy.supportUrl;
+        if (!policy.webPageUrl.isEmpty())      o["webPageUrl"] = policy.webPageUrl;
+        if (!policy.providerId.isEmpty())      o["providerId"] = policy.providerId;
+        if (policy.refillDate != 0)            o["refillDate"] = policy.refillDate;
+        if (policy.updateIntervalHours != 0)   o["updateIntervalHours"] = policy.updateIntervalHours;
+        if (!policy.perAppProxyList.isEmpty()) o["perAppProxyList"] = policy.perAppProxyList;
+
+        putOpt(o, "tunEnable", policy.tunEnable);
+        putOpt(o, "alwaysHwid", policy.alwaysHwid);
+        putOpt(o, "autoUpdate", policy.autoUpdate);
+        putOpt(o, "dnsFromJson", policy.dnsFromJson);
+        putOpt(o, "hideSettings", policy.hideSettings);
+        putOpt(o, "hideUrl", policy.hideUrl);
+        putOpt(o, "pin", policy.pin);
+        putOpt(o, "collapse", policy.collapse);
+        putOpt(o, "pingOnOpen", policy.pingOnOpen);
+
+        if (!policy.unknown.isEmpty()) o["unknown"] = policy.unknown;
+
+        return QString::fromUtf8(QJsonDocument(o).toJson(QJsonDocument::Compact));
+    }
+
+    ProviderPolicy DeserializeProviderPolicy(const QString &json) {
+        ProviderPolicy p;
+        if (json.trimmed().isEmpty()) return p;
+
+        const auto doc = QJsonDocument::fromJson(json.toUtf8());
+        if (!doc.isObject()) return p;   // битая строка -> пустая политика, ограничений нет
+        const auto o = doc.object();
+
+        p.schema              = o.value("schema").toInt(1);
+        p.title               = o.value("title").toString();
+        p.announce            = o.value("announce").toString();
+        p.supportUrl          = o.value("supportUrl").toString();
+        p.webPageUrl          = o.value("webPageUrl").toString();
+        p.providerId          = o.value("providerId").toString();
+        p.refillDate          = o.value("refillDate").toVariant().toLongLong();
+        p.updateIntervalHours = o.value("updateIntervalHours").toInt(0);
+        p.perAppProxyList     = o.value("perAppProxyList").toString();
+
+        p.tunEnable    = getOpt(o, "tunEnable");
+        p.alwaysHwid   = getOpt(o, "alwaysHwid");
+        p.autoUpdate   = getOpt(o, "autoUpdate");
+        p.dnsFromJson  = getOpt(o, "dnsFromJson");
+        p.hideSettings = getOpt(o, "hideSettings");
+        p.hideUrl      = getOpt(o, "hideUrl");
+        p.pin          = getOpt(o, "pin");
+        p.collapse     = getOpt(o, "collapse");
+        p.pingOnOpen   = getOpt(o, "pingOnOpen");
+
+        p.unknown = o.value("unknown").toObject();
         return p;
     }
 }

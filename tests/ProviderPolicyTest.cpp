@@ -72,6 +72,43 @@ private slots:
         QCOMPARE(p.unknown.value("x-brand-new-flag").toString(), QStringLiteral("yes"));
     }
 
+    void roundTripPreservesEverything() {
+        const auto original = ParseProviderPolicy(H({
+            {"profile-title", "base64:VmxleFZQTiB8IERFVg=="},
+            {"tun-enable", "true"},
+            {"hide-settings", "false"},
+            {"profile-update-interval", "3"},
+            {"subscription-refill-date", "1788566400"},
+            {"providerid", "g7PI7IhM"},
+            {"x-brand-new-flag", "yes"},
+        }));
+
+        const auto restored = DeserializeProviderPolicy(SerializeProviderPolicy(original));
+
+        QCOMPARE(restored.title, original.title);
+        QCOMPARE(restored.tunEnable.value(), true);
+        QCOMPARE(restored.hideSettings.value(), false);
+        QCOMPARE(restored.updateIntervalHours, 3);
+        QCOMPARE(restored.refillDate, static_cast<qint64>(1788566400));
+        QCOMPARE(restored.providerId, QStringLiteral("g7PI7IhM"));
+        QCOMPARE(restored.unknown.value("x-brand-new-flag").toString(), QStringLiteral("yes"));
+    }
+
+    void roundTripKeepsAbsentDistinctFromFalse() {
+        ProviderPolicy p;
+        p.hideSettings = false;   // прислано и false
+        // p.tunEnable не задано вовсе
+        const auto restored = DeserializeProviderPolicy(SerializeProviderPolicy(p));
+        QVERIFY(restored.hideSettings.has_value());
+        QCOMPARE(restored.hideSettings.value(), false);
+        QVERIFY(!restored.tunEnable.has_value());
+    }
+
+    void brokenJsonGivesEmptyPolicy() {
+        const auto p = DeserializeProviderPolicy(QStringLiteral("{ not json"));
+        QVERIFY(p.isEmpty());
+    }
+
     void unrelatedHttpHeadersIgnored() {
         const auto p = ParseProviderPolicy(H({
             {"content-type", "application/json"},
