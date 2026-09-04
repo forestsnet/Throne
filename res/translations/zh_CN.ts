@@ -2,6 +2,174 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="zh_CN">
 <context>
+    <name></name>
+    <message>
+        <source>Auto-update: running %1</source>
+        <translation type="unfinished">自动更新: 正在运行 %1</translation>
+    </message>
+    <message>
+        <source>The schema is empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The schema has no definition at %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Expected %1, got %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> or </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Expected %1 here</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 is not valid here (expected: %2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This option is deprecated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&quot;%1&quot; is not in the expected format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value must be at least %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value must be at most %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown field &quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Missing required field &quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown %1 %2 (expected: %3)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value does not match any accepted form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Traffic statistics paused</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The statistics database is unusable (%1). Statistics are paused for this session and the file will be rebuilt when Throne restarts.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Writing statistics keeps failing (%1). Statistics are paused until Throne restarts.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AddSubscriptionDialog</name>
+    <message>
+        <source>Add subscription</source>
+        <translation type="unfinished">添加订阅</translation>
+    </message>
+    <message>
+        <source>Paste the link your provider gave you.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Paste from clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished">取消</translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The provider did not answer. Check the link and your connection.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The clipboard is empty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Adding…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter a link first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fetching the subscription…</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ConnectPanel</name>
+    <message>
+        <source>Disconnected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No server selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disconnecting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add a subscription first</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connecting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Full tunnel (TUN)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>System proxy</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ConnectionsFilterHeader</name>
+    <message>
+        <source>Disable Filter</source>
+        <translation type="unfinished">禁用筛选</translation>
+    </message>
+    <message>
+        <source>Enable Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter...</source>
+        <translation type="unfinished">筛选...</translation>
+    </message>
+</context>
+<context>
     <name>DialogAutoSelector</name>
     <message>
         <source>Auto Selector Stats</source>
@@ -279,22 +447,6 @@ It stays a preference, not a lock: if that profile stops working the selector st
         <translation>核心</translation>
     </message>
     <message>
-        <source>Multiplex (mux)</source>
-        <translation>多路复用(Mux)</translation>
-    </message>
-    <message>
-        <source>concurrency</source>
-        <translation>并发</translation>
-    </message>
-    <message>
-        <source>Default On</source>
-        <translation>默认开启</translation>
-    </message>
-    <message>
-        <source>Core Options</source>
-        <translation>核心选项</translation>
-    </message>
-    <message>
         <source>outbound</source>
         <translation>出站</translation>
     </message>
@@ -317,14 +469,6 @@ It stays a preference, not a lock: if that profile stops working the selector st
     <message>
         <source>Xray Core</source>
         <translation>Xray 核心</translation>
-    </message>
-    <message>
-        <source>Mux Concurrency</source>
-        <translation>多路复用并发</translation>
-    </message>
-    <message>
-        <source>Default Mux On</source>
-        <translation>默认复用开启</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When to choose Xray when importing vless profiles&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -411,10 +555,6 @@ It stays a preference, not a lock: if that profile stops working the selector st
         <translation>默认跳过 TLS 证书验证 (allowInsecure)</translation>
     </message>
     <message>
-        <source>Default uTLS Fingerprint</source>
-        <translation>默认 uTLS 指纹</translation>
-    </message>
-    <message>
         <source>Always Start as Standard User</source>
         <translation>始终以标准用户身份启动</translation>
     </message>
@@ -457,6 +597,34 @@ It stays a preference, not a lock: if that profile stops working the selector st
     <message>
         <source>Concurrency</source>
         <translation>并发数</translation>
+    </message>
+    <message>
+        <source>URL Scheme</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Registers Throne as the handler for throne:// links and adds it to the &quot;Open with&quot; list for config files, re-applying the registration whenever the install is moved.&lt;/p&gt;&lt;p&gt;Turning this off does not undo an existing registration: use Uninstall for that.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Register throne:// links at startup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Registers the handler now, without waiting for the next start.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Install</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Removes every entry Throne wrote for the handler and the config file associations. Entries owned by other applications are left alone.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Uninstall</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Logging</source>
@@ -531,6 +699,10 @@ It stays a preference, not a lock: if that profile stops working the selector st
         <translation>路由配置档自动更新</translation>
     </message>
     <message>
+        <source>Clash API</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Secret</source>
         <translation>加密</translation>
     </message>
@@ -555,42 +727,6 @@ It stays a preference, not a lock: if that profile stops working the selector st
         <translation>DNS 服务器端口</translation>
     </message>
     <message>
-        <source>TLS Fragment</source>
-        <translation>TLS 分段</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Which TLS fragmentation implementation profiles use: built-in (sing-box tls.fragment) or custom (Hiddify dialer-level ClientHello fragmentation).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;使用何种 TLS 分段实现配置档： built-in (sing-box tls.fragment) 或 custom (Hiddify 拨号器级别 ClientHello 分段).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fragment profiles whose Fragment setting is left on &amp;quot;Keep Default&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;分段设置保持在 &amp;quot;Keep Default&amp;quot; (保持默认设置)的分段配置档。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Size</source>
-        <translation>大小</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Custom implementation only: bytes per ClientHello fragment, as a range min-max (e.g. 10-100).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;仅适用于 Custom （自定义）实现：每 ClientHello 片段的字节数，采用最小-最大取值范围形式（如 10-100）。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Sleep</source>
-        <translation>睡眠</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Custom implementation only: milliseconds to sleep between fragment bursts, as a range min-max (e.g. 2-5).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;仅适用于 Custom （自定义）实现：片段突发间的睡眠时间，以毫秒计算，采用最小-最大取值范围形式（如 2-5）。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable mixed-case SNI for profiles whose TLS Tricks setting is left on &amp;quot;Keep Default&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;对于其 TLS Tricks （TLS 伪装）设置保留为 &amp;quot;Keep Default&amp;quot;（保持默认）的配置档启用混合大小写的 SNI。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>TLS Tricks Default On</source>
-        <translation>TLS Tricks 默认开启</translation>
-    </message>
-    <message>
         <source>NTP Settings</source>
         <translation>NTP 设置</translation>
     </message>
@@ -605,18 +741,6 @@ It stays a preference, not a lock: if that profile stops working the selector st
     <message>
         <source>sync interval</source>
         <translation>同步间隔</translation>
-    </message>
-    <message>
-        <source>5m</source>
-        <translation>5分</translation>
-    </message>
-    <message>
-        <source>10m</source>
-        <translation>10分</translation>
-    </message>
-    <message>
-        <source>30m</source>
-        <translation>30分</translation>
     </message>
     <message>
         <source>Listen Port</source>
@@ -792,6 +916,22 @@ Select which parts to restore:</source>
         <translation>未知日期</translation>
     </message>
     <message>
+        <source>Could not register the handler for throne:// links.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not available for this installation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Installed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not installed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Download geo asset</source>
         <translation>下载 geo 资源</translation>
     </message>
@@ -856,26 +996,6 @@ Throne will restart to complete the restore.</source>
         <source>Select at least one part to restore.</source>
         <translation>至少选择一个要恢复的部分。</translation>
     </message>
-    <message>
-        <source>Concurrent</source>
-        <translation>并发</translation>
-    </message>
-    <message>
-        <source>Padding</source>
-        <translation>填充</translation>
-    </message>
-    <message>
-        <source>Automatic update</source>
-        <translation>自动更新</translation>
-    </message>
-    <message>
-        <source>Loglevel</source>
-        <translation>日志级别</translation>
-    </message>
-    <message>
-        <source>Test Settings</source>
-        <translation>测试设置</translation>
-    </message>
 </context>
 <context>
     <name>DialogEditGroup</name>
@@ -916,6 +1036,18 @@ Throne will restart to complete the restore.</source>
         <translation>复制配置档分享链接</translation>
     </message>
     <message>
+        <source>The provider hides the subscription URL.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Support: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refill date: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Copied</source>
         <translation>已复制</translation>
     </message>
@@ -947,9 +1079,108 @@ Throne will restart to complete the restore.</source>
         <source>Copy profile share links (Deep Links)</source>
         <translation>复制配置档分享链接(深度链接)</translation>
     </message>
+</context>
+<context>
+    <name>DialogEditOtp</name>
     <message>
-        <source>Advanced Settings</source>
-        <translation>高级设置</translation>
+        <source>OTP Profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished">名称</translation>
+    </message>
+    <message>
+        <source>How you will refer to this OTP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Secret</source>
+        <translation type="unfinished">加密</translation>
+    </message>
+    <message>
+        <source>Base32 secret</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show secret</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Issuer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Optional, kept for import and export</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished">类型</translation>
+    </message>
+    <message>
+        <source>TOTP (time based)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>HOTP (counter based)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Algorithm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SHA1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SHA256</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SHA512</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Digits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period (seconds)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Counter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide secret</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name cannot be empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Secret is empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Secret is not valid base32</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No code yet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Current code: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Current code: %1 (%2s)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1039,8 +1270,16 @@ Throne will restart to complete the restore.</source>
         <translation>高级设置</translation>
     </message>
     <message>
+        <source>Finalmask</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Network Settings (%1)</source>
         <translation>传输设置 (%1)</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Service Name</source>
@@ -1139,8 +1378,120 @@ Throne will restart to complete the restore.</source>
         <translation>多模式</translation>
     </message>
     <message>
+        <source>xPaddingObfsMode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>xPaddingMethod</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>xPaddingPlacement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>xPaddingKey</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>xPaddingHeader</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Upload / Stream Tuning</source>
         <translation>上传/串流调优</translation>
+    </message>
+    <message>
+        <source>scMaxEachPostBytes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>scMinPostsIntervalMs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>scMaxBufferedPosts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>uplinkHTTPMethod</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>uplinkDataPlacement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>uplinkDataKey</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>uplinkChunkSize</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>noGRPCHeader</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>noSSEHeader</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>scStreamUpServerSecs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>sessionPlacement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>sessionKey</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>sessionIDTable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>sessionIDLength</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>seqPlacement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>seqKey</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Xmux</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>maxConcurrency</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>maxConnections</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>hMaxRequestTimes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>hMaxReusableSecs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>cMaxReuseTimes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>hKeepAlivePeriod</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Max Concurrency</source>
@@ -1500,17 +1851,76 @@ Throne will restart to complete the restore.</source>
         <source>XHTTP maxConnections cannot be specified together with maxConcurrency.</source>
         <translation>XHTTP 中 maxConnections 不能与 maxConcurrency 同时指定。</translation>
     </message>
+</context>
+<context>
+    <name>DialogEndpointDetails</name>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TLS ClientHello 分片。该实现 (built-in / custom) 以及 &amp;quot;Keep Default&amp;quot; (保持默认)的行为在&amp;quot;设置 &gt; 核心&amp;quot;中配置。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation></translation>
+        <source>Endpoint Details</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;May degrade performance, try record fragment first&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;可能降低性能，请先尝试记录片段&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>Endpoint — %1</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enable TLS fragment</source>
-        <translation>启用 TLS 片段</translation>
+        <source>State</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation type="unfinished">错误</translation>
+    </message>
+    <message>
+        <source>Server</source>
+        <translation type="unfinished">服务器</translation>
+    </message>
+    <message>
+        <source>Transport</source>
+        <translation type="unfinished">传输</translation>
+    </message>
+    <message>
+        <source>Cipher</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MTU</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connected for</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>IPv4 address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>IPv6 address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All domains — every DNS query goes through this tunnel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Routes through this tunnel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Kept outside this tunnel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DNS servers pushed by the server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Domains routed to this tunnel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No longer running</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1650,20 +2060,8 @@ Throne will restart to complete the restore.</source>
         <translation>启用 DNS 路由</translation>
     </message>
     <message>
-        <source>Query Strategy</source>
-        <translation>查询策略</translation>
-    </message>
-    <message>
         <source>Remote DNS</source>
         <translation>远程 DNS</translation>
-    </message>
-    <message>
-        <source>DNS Object Settings</source>
-        <translation>DNS 对象设置</translation>
-    </message>
-    <message>
-        <source>Use DNS Object</source>
-        <translation>使用 DNS 对象</translation>
     </message>
     <message>
         <source>Format</source>
@@ -1708,6 +2106,10 @@ For more information, see the document &quot;Configuration/DNS&quot;.</source>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Answer A/AAAA queries from the system hosts file before consulting any DNS server. Only domains actually listed in the file are affected.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;在查询任何 DNS 服务器前，先从系统 hosts 文件回答 A/AAAA 查询。只有该文件中实际列出的域名会受到影响。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>DNS</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Respect Hosts File</source>
@@ -1874,8 +2276,60 @@ For more information, see the document &quot;Configuration/DNS&quot;.</source>
         <translation>路由配置档列表为空，这应该是一个不可达的状态，现在可能会发生崩溃</translation>
     </message>
     <message>
+        <source>Predefined DNS Answers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable predefined answers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>One entry per line, hosts-file syntax:
+
+127.0.0.1 localhost
+10.0.0.5 nas.lan files.lan
+::1 localhost6
+
+A domain listed with only one address family is answered NXDOMAIN for the other, so the override cannot be bypassed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not a valid predefined DNS entry:
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Advanced DNS Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>10s (default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>3d (default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Invalid settings</source>
         <translation>无效设置</translation>
+    </message>
+    <message>
+        <source>Not a valid duration: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>
+Use a number followed by ns, us, ms, s, m, h or d.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DNS Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The DNS object is not a valid JSON object</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Routing profile cannot be empty</source>
@@ -1884,6 +2338,10 @@ For more information, see the document &quot;Configuration/DNS&quot;.</source>
     <message>
         <source>DNS Rules are not valid</source>
         <translation>DNS 规则无效</translation>
+    </message>
+    <message>
+        <source>Exported with warnings</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Copied!</source>
@@ -1916,6 +2374,10 @@ For more information, see the document &quot;Configuration/DNS&quot;.</source>
     <message>
         <source>Import %1 from the clipboard?</source>
         <translation>从剪贴板中导入 %1 吗?</translation>
+    </message>
+    <message>
+        <source>Note:</source>
+        <translation type="unfinished">备注:</translation>
     </message>
     <message>
         <source>Import routing profile</source>
@@ -2073,37 +2535,336 @@ For more information, see the document &quot;Configuration/DNS&quot;.</source>
         <source>Add these remote routing profiles?</source>
         <translation>添加这些远程路由配置档吗?</translation>
     </message>
+</context>
+<context>
+    <name>DialogOtpManager</name>
     <message>
-        <source>Disable</source>
-        <translation>禁用</translation>
+        <source>OTP Manager</source>
+        <translation>OTP 管理器</translation>
     </message>
     <message>
-        <source>Sniffing Mode</source>
-        <translation>嗅探模式(流量探测)</translation>
+        <source>Import</source>
+        <translation>导入</translation>
     </message>
     <message>
-        <source>Sniff result for routing</source>
-        <translation>用于路由判断的嗅探结果</translation>
+        <source>Scan QR Code</source>
+        <translation>扫描 QR 码</translation>
     </message>
     <message>
-        <source>Sniffs the connections intial packet(s?) to identify the protocol and the SNI. Sniff result for destination also rewrites the destionation of the connection to the sniffed SNI. For more data on the sniffed protocol refer to the sing-box&apos;s documentation.</source>
-        <translation>嗅探连接的初始数据包以识别协议和 SNI。目标的嗅探结果还会将重写连接的目标为嗅探到的 SNI。有关嗅探协议的更多数据，请参考 sing-box 的文档。</translation>
+        <source>OTP</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Outbound Domain Strategy</source>
-        <translation>出站域名策略</translation>
+        <source>No usable code; check the secret.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Inbound Domain Strategy</source>
-        <translation>入站域名策略</translation>
+        <source>Copied</source>
+        <translation type="unfinished">已复制</translation>
     </message>
     <message>
-        <source>Rule Settings</source>
-        <translation>规则设置</translation>
+        <source>Confirmation</source>
+        <translation type="unfinished">确认</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Resolve domains to IP before connect, also affects the server address as well&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;连接前解析地址为 IP，也会影响服务器地址&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>Delete &quot;%1&quot;? Its secret cannot be recovered.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to store the OTP profile.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This one as otpauth:// link and QR</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All as otpauth-migration:// link and QR</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All as JSON file...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add manually...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>From link or text...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Import OTP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Paste otpauth:// links, an otpauth-migration:// link, a JSON export, or just a base32 secret.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>From clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>From QR image file...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to capture screen</source>
+        <translation type="unfinished">无法捕获屏幕</translation>
+    </message>
+    <message>
+        <source>QR Code not found</source>
+        <translation type="unfinished">未找到二维码</translation>
+    </message>
+    <message>
+        <source>No QR code found in the clipboard image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clipboard is empty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>QR images and exports (*.png *.jpg *.jpeg *.bmp *.gif *.json *.txt);;All files (*)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: cannot be opened</source>
+        <translation type="unfinished">%1: 无法打开</translation>
+    </message>
+    <message>
+        <source>%1: larger than 50 MB, skipped</source>
+        <translation type="unfinished">%1: 大于 50 MB，已跳过</translation>
+    </message>
+    <message>
+        <source>%1: no QR code found</source>
+        <translation type="unfinished">%1: 找不到二维码</translation>
+    </message>
+    <message>
+        <source>Nothing to import.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OTP %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Imported %1 OTP profile(s).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Skipped %1 duplicate or unusable entries.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Export OTP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>None of the selected profiles could be exported.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>JSON (*.json)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot write to: %1</source>
+        <translation type="unfinished">无法写到: %1</translation>
+    </message>
+    <message>
+        <source>Exported %1 OTP profile(s) to:
+%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DialogPerAppProxy</name>
+    <message>
+        <source>Per-app proxy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose how traffic of each application is routed. The choice is stored as
+processName rules in the current routing profile.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No routing profile is selected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter applications...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Application</source>
+        <translation type="unfinished">应用</translation>
+    </message>
+    <message>
+        <source>Routing</source>
+        <translation type="unfinished">路由</translation>
+    </message>
+    <message>
+        <source>Not set</source>
+        <translation type="unfinished">未设置</translation>
+    </message>
+    <message>
+        <source>Through proxy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Direct</source>
+        <translation type="unfinished">直连</translation>
+    </message>
+    <message>
+        <source>Per-app routing updated: %1 via proxy, %2 direct</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DialogPresetSettings</name>
+    <message>
+        <source>Preset Settings</source>
+        <translation>预设设置</translation>
+    </message>
+    <message>
+        <source>Multiplex</source>
+        <translation>复用</translation>
+    </message>
+    <message>
+        <source>Protocol</source>
+        <translation>协议</translation>
+    </message>
+    <message>
+        <source>Concurrency</source>
+        <translation>并发</translation>
+    </message>
+    <message>
+        <source>Default On</source>
+        <translation>默认开启</translation>
+    </message>
+    <message>
+        <source>Default Mux On</source>
+        <translation>默认多路复用开启</translation>
+    </message>
+    <message>
+        <source>TLS Fragment</source>
+        <translation type="unfinished">TLS 分段</translation>
+    </message>
+    <message>
+        <source>Implementation</source>
+        <translation>实现</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Which TLS fragmentation implementation profiles use: built-in (sing-box tls.fragment) or custom (Hiddify dialer-level ClientHello fragmentation).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;使用哪个 TLS 分片实现配置档: built-in (sing-box tls.fragment) 或 custom (Hiddify 拨号器级 ClientHello 分片)。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation>大小</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Custom implementation only: bytes per ClientHello fragment, as a range min-max (e.g. 10-100).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;仅自定义实现: 每个 ClientHello 分片字节数，以最小-最大值的范围表示(如 10-100).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Sleep</source>
+        <translation>睡眠</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Custom implementation only: milliseconds to sleep between fragment bursts, as a range min-max (e.g. 2-5).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;仅自定义实现: 每次分片突发间睡眠的毫秒数，以最小-最大值的范围表示(如 2-5).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fragment profiles whose Fragment setting is left on &amp;quot;Keep Default&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;分片设置保持在&amp;quot;Keep Default&amp;quot;（保持默认）的分片配置档。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>TLS Tricks</source>
+        <translation>TLS 技巧</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable mixed-case SNI for profiles whose TLS Tricks setting is left on &amp;quot;Keep Default&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;对其 TLS Tricks 设置保持在 &amp;quot;Keep Default&amp;quot;（保持默认）的配置档启用混合大小写的 SNI。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Default Fingerprint</source>
+        <translation>默认指纹</translation>
+    </message>
+    <message>
+        <source>TLS Spoof</source>
+        <translation>TLS 欺骗</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Inject a forged TLS ClientHello carrying this SNI before the real one, to pass SNI filtering that allows specific hostnames. Profiles that set their own Spoof SNI override this one.&lt;/p&gt;&lt;p&gt;Client only. Requires elevated privileges (root on macOS, CAP_NET_RAW and CAP_NET_ADMIN on Linux, Administrator on Windows for the WinDivert driver). Not supported on Windows ARM64. &amp;quot;wrong-timestamp&amp;quot; is not supported on macOS.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;在真实的 TLS ClientHello 前，注入一个承载这个 SNI 的伪造 TLS ClientHello，以传递允许特定主机名的 SNI 过滤。 设置其自有的欺骗 SNI 的配置档会凌驾于这个。&lt;/p&gt;&lt;p&gt;仅客户端。需要提权 (在 macOS 上的 root，在 Linux 上的 CAP_NET_RAW 和 CAP_NET_ADMIN，在 Windows 上的 Administrator 用于 WinDivert 驱动程序)。在 Windows ARM64 上不被支持。 macOS 上不支持 &amp;quot;wrong-timestamp&amp;quot;。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Spoof SNI</source>
+        <translation>欺骗 SNI</translation>
+    </message>
+    <message>
+        <source>Allowed SNI to forge</source>
+        <translation>允许 SNI 伪装</translation>
+    </message>
+    <message>
+        <source>Method</source>
+        <translation>方法</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How the forged ClientHello is made invalid for the server, so only the filter acts on it. Empty keeps the core&apos;s default.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;如何使伪造的 ClientHello 对服务器无效，从而仅由过滤器对其进行处理。留空则保持核心的默认设置。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spoof profiles whose TLS Spoof setting is left on &amp;quot;Keep Default&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TLS Spoof （TLS欺骗）设置保持在 &amp;quot;Keep Default&amp;quot;（保持默认）的欺骗配置档。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>HTTP/2 &amp;&amp; QUIC</source>
+        <translation>HTTP/2 和 QUIC</translation>
+    </message>
+    <message>
+        <source>HTTP/2 parameters also apply to Hysteria, Hysteria2 and TUIC. Empty keeps the core&apos;s default.</source>
+        <translation>HTTP/2 参数同样适用于 Hysteria、Hysteria2 和 TUIC。留空则使用核心的默认值。</translation>
+    </message>
+    <message>
+        <source>HTTP/2 Parameters</source>
+        <translation>HTTP/2 参数</translation>
+    </message>
+    <message>
+        <source>Idle Timeout</source>
+        <translation>空闲超时</translation>
+    </message>
+    <message>
+        <source>Keep Alive Period</source>
+        <translation>保持活动周期</translation>
+    </message>
+    <message>
+        <source>Stream Receive Window</source>
+        <translation>流接收窗口</translation>
+    </message>
+    <message>
+        <source>Connection Receive Window</source>
+        <translation>连接接收窗口</translation>
+    </message>
+    <message>
+        <source>Max Concurrent Streams</source>
+        <translation>最大并发流数</translation>
+    </message>
+    <message>
+        <source>QUIC Parameters</source>
+        <translation>QUIC 参数</translation>
+    </message>
+    <message>
+        <source>Initial Packet Size</source>
+        <translation>初始数据包大小</translation>
+    </message>
+    <message>
+        <source>Disable Path MTU Discovery</source>
+        <translation>禁用路径 MTU 发现</translation>
     </message>
 </context>
 <context>
@@ -2135,6 +2896,10 @@ For more information, see the document &quot;Configuration/DNS&quot;.</source>
     <message>
         <source>in %1</source>
         <translation>于 %1</translation>
+    </message>
+    <message>
+        <source>Details</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Unavailable</source>
@@ -2215,6 +2980,18 @@ For more information, see the document &quot;Configuration/DNS&quot;.</source>
     <message>
         <source>Ping</source>
         <translation>Ping</translation>
+    </message>
+    <message>
+        <source>VPN Endpoints</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Endpoint</source>
+        <translation type="unfinished">端点</translation>
+    </message>
+    <message>
+        <source>State</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2315,6 +3092,18 @@ For more information, see the document &quot;Configuration/DNS&quot;.</source>
         <translation>排除故障</translation>
     </message>
     <message>
+        <source>Invalid Private Range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&quot;%1&quot; is not a valid address or CIDR.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&quot;%1&quot; covers every address, which would stop Tun from routing anything.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>If you have trouble starting VPN, you can force reset Core process here.
 
 If still not working, see documentation for more information.
@@ -2343,14 +3132,6 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     <message>
         <source>Enable Tun Routing</source>
         <translation>启用 Tun 路由</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Allows traffics destined for private ranges to be hijacked into The Core&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;允许把目标为私有地址段(Private ranges)的流量劫持到该核心&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Disable Private Range Bypass</source>
-        <translation>禁止私有地址段绕过</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Required on newer Linux kernels for the system and mixed stacks to pass traffic. While enabled, this machine cannot be used as a network gateway for other devices.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -2410,6 +3191,69 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
 </context>
 <context>
+    <name>DialogVpnAuth</name>
+    <message>
+        <source>VPN Authentication</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Endpoint: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reconnect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Submit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The VPN server sent a message.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Finish signing in at the address shown below, then close this window. The connection continues on its own once the server accepts it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open in Browser</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This server requires single sign-on in a browser, which Throne does not support yet. Cancel here and use a profile with direct credentials, or supply an authentication cookie in the profile&apos;s advanced settings.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unsupported authentication request: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Expires in %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Username</source>
+        <translation type="unfinished">用户名</translation>
+    </message>
+    <message>
+        <source>Password</source>
+        <translation type="unfinished">密码</translation>
+    </message>
+    <message>
+        <source>Answer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This request expired.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Submitting...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>EditAdvanced</name>
     <message>
         <source>Dialog</source>
@@ -2452,12 +3296,104 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>UDP 碎片</translation>
     </message>
     <message>
+        <source>Interface</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Requires privilege and cannot conflict with existing system interfaces. The internal network stack is used when disabled.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use System Interface</source>
+        <translation type="unfinished">使用系统接口</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Custom system interface name. A generated name is used by default.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Interface Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;UDP NAT expiration time.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>UDP Timeout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>5m (default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;UDP NAT mapping behavior. endpoint_independent is used by default.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>UDP Mapping</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;UDP NAT filtering behavior. endpoint_independent is used by default.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>UDP Filtering</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Maximum number of UDP NAT entries.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>UDP NAT Max</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>TLS</source>
         <translation>TLS</translation>
     </message>
     <message>
         <source>Enable ECH</source>
         <translation>启用 ECH</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Whether this profile injects a forged ClientHello. &amp;quot;Keep Default&amp;quot; follows Preset Settings, unless a Spoof SNI is set below.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TLS Spoof</source>
+        <translation type="unfinished">TLS 欺骗</translation>
+    </message>
+    <message>
+        <source>Keep Default</source>
+        <translation type="unfinished">保持默认</translation>
+    </message>
+    <message>
+        <source>On</source>
+        <translation type="unfinished">开启</translation>
+    </message>
+    <message>
+        <source>Off</source>
+        <translation type="unfinished">关闭</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Inject a forged TLS ClientHello carrying this SNI before the real one, to pass SNI filtering that allows specific hostnames.&lt;/p&gt;&lt;p&gt;Client only. Requires elevated privileges (root / Administrator). Not supported on Windows ARM64. &amp;quot;wrong-timestamp&amp;quot; is not supported on macOS.&lt;/p&gt;&lt;p&gt;Leave empty to inherit the global value from Preset Settings.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Spoof SNI</source>
+        <translation type="unfinished">欺骗 SNI</translation>
+    </message>
+    <message>
+        <source>Allowed SNI to forge</source>
+        <translation type="unfinished">允许 SNI 伪装</translation>
+    </message>
+    <message>
+        <source>Method</source>
+        <translation type="unfinished">方法</translation>
     </message>
     <message>
         <source>ECH Config</source>
@@ -2478,6 +3414,42 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     <message>
         <source>Client Key</source>
         <translation>客户端钥匙</translation>
+    </message>
+    <message>
+        <source>QUIC Parameters</source>
+        <translation type="unfinished">QUIC 参数</translation>
+    </message>
+    <message>
+        <source>Empty fields fall back to the global values in Preset Settings.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Idle Timeout</source>
+        <translation type="unfinished">空闲超时</translation>
+    </message>
+    <message>
+        <source>Keep Alive Period</source>
+        <translation type="unfinished">保持活动周期</translation>
+    </message>
+    <message>
+        <source>Stream Receive Window</source>
+        <translation type="unfinished">流接收窗口</translation>
+    </message>
+    <message>
+        <source>Connection Receive Window</source>
+        <translation type="unfinished">连接接收窗口</translation>
+    </message>
+    <message>
+        <source>Max Concurrent Streams</source>
+        <translation type="unfinished">最大并发流数</translation>
+    </message>
+    <message>
+        <source>Initial Packet Size</source>
+        <translation type="unfinished">初始数据包大小</translation>
+    </message>
+    <message>
+        <source>Disable Path MTU Discovery</source>
+        <translation type="unfinished">禁用路径 MTU 发现</translation>
     </message>
     <message>
         <source>Disable SNI</source>
@@ -2918,8 +3890,16 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>Socks 地址</translation>
     </message>
     <message>
+        <source>127.0.0.1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Socks port</source>
         <translation>Socks 端口</translation>
+    </message>
+    <message>
+        <source>1080</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Core path</source>
@@ -2996,12 +3976,48 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>上行(↑ Mbps)</translation>
     </message>
     <message>
+        <source>Hop Interval Max</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>When set, each hop waits a random duration between Hop Interval and this value. Requires Hop Interval.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>BBR Profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Congestion control aggressiveness. Leave empty to use the default (standard).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Authentication Payload</source>
         <translation>认证负载</translation>
     </message>
     <message>
+        <source>Obfuscation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>salamander</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>gecko</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Obfuscation Password</source>
         <translation>混淆密码</translation>
+    </message>
+    <message>
+        <source>Minimum Packet Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum Packet Size</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Recv window</source>
@@ -3015,12 +4031,99 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <source>Password</source>
         <translation>密码</translation>
     </message>
+    <message>
+        <source>Parroting makes the QUIC handshake look like Chrome&apos;s. On by default.
+It overrides idle timeout, max concurrent streams,
+initial packet size and the initial receive windows.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disable Chrome Parrot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reach a Hysteria2 server behind NAT through a Hysteria Realm
+rendezvous service. Replaces the server address and port.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Realm (NAT Traversal)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Realm Options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Realm needs a URL, an ID and at least one STUN server.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>EditHysteriaRealm</name>
+    <message>
+        <source>Realm (NAT Traversal)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The realm is a rendezvous service: it hands out the server&apos;s current public addresses so the connection can be hole-punched directly.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Realm URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Realm ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The slot the target Hysteria2 server registered on the realm.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Realm Token</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>STUN Servers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Comma separated host or host:port entries used to discover this client&apos;s public addresses.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>IP Version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maintain a UDP port mapping on the local gateway via UPnP or NAT-PMP.
+Improves hole-punching reliability. Requires IPv4.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Port Mapping</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mapping Timeout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mapping Lifetime</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>EditJuicity</name>
     <message>
         <source>Password</source>
         <translation>密码</translation>
+    </message>
+    <message>
+        <source>UUID</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3068,13 +4171,1373 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <source>Congestion Control</source>
         <translation>拥塞控制</translation>
     </message>
+    <message>
+        <source>QUIC</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>EditOpenConnect</name>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OpenConnect protocol flavor. Leave empty to use the core default (anyconnect).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Flavor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Username used to fill matching authentication form fields.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Username</source>
+        <translation type="unfinished">用户名</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Password used to fill matching authentication form fields.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Password</source>
+        <translation type="unfinished">密码</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Preselects a matching group, realm, domain or gateway choice when the flavor supports it.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auth Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Path part of the server URL, appended to the address above. Load-bearing on gp, f5 and fortinet portals.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Server Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Preferred tunnel MTU. Values below 576 are treated as 576; the maximum is 65535.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MTU</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OTP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Traffic that falls through to this profile reaches the tunnel only when the destination is inside a subnet the VPN server advertises; anything else is blocked. Routing rules that name this profile explicitly are not affected and always win.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Only route advertised network</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Resolve the names the VPN server claims - its split-DNS suffixes and search domains - through the resolvers it pushes. Turn this off if the server claims every domain and breaks public DNS. Kept on regardless while this profile carries all traffic with &quot;Only route advertised network&quot; enabled, since the pushed resolvers are then the only reachable ones.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Resolve through this tunnel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fail a lookup the tunnel cannot answer instead of retrying it directly. Leave this off for a management VPN: names it does not claim then still resolve through the direct resolver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Block outside DNS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Advanced</source>
+        <translation type="unfinished">高级</translation>
+    </message>
+    <message>
+        <source>TLS</source>
+        <translation type="unfinished">TLS</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Disables verification of the server certificate and hostname. This lets an active attacker impersonate the VPN server; prefer a CA certificate or a peer fingerprint.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Allow insecure</source>
+        <translation type="unfinished">允许不安全</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Server name used for TLS SNI and certificate hostname verification. The hostname from the address is used when empty.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Server Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Additional trusted CA certificate content in PEM format, added to the system certificate pool.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CA Certificate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not set</source>
+        <translation type="unfinished">未设置</translation>
+    </message>
+    <message>
+        <source>Client Certificate</source>
+        <translation type="unfinished">客户端证书</translation>
+    </message>
+    <message>
+        <source>Client Key</source>
+        <translation type="unfinished">客户端钥匙</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Password for the encrypted client private key.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Client Key Password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Binds an authenticator entry to this profile. %1 in the username, password, software token or form entry fields is replaced with a generated code at connect time.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 is replaced at connect time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Already set</source>
+        <translation type="unfinished">已设置</translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>EditOpenConnectAdvanced</name>
+    <message>
+        <source>OpenConnect Advanced</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Session</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Existing authentication session used to connect without first prompting for credentials. The accepted format depends on the flavor.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cookie</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Operating system identity reported to the server. anyconnect, gp and pulse accept linux, linux-64, win, mac-intel, android and apple-ios. The system platform is used by default.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reported OS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;User agent reported to the server. The default is flavor specific.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>User Agent</source>
+        <translation type="unfinished">UserAgent标识</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Client version reported separately from the user agent. Currently used by AnyConnect XML authentication.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Version</source>
+        <translation type="unfinished">版本</translation>
+    </message>
+    <message>
+        <source>v9.21 (default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Local hostname reported to the server. The system hostname is used by default.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Local Hostname</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This is the token the core generates itself. To use a Throne OTP profile, bind it on the main editor instead.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Software Token</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;totp and hotp are one-time password modes, stoken is an RSA SecurID software token and oidc is an access token used for HTTP Bearer authentication.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mode</source>
+        <translation type="unfinished">模式</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A Base32 secret, a base32: prefixed secret or an otpauth:// URI for totp and hotp; the encoded CTF content for stoken; the access token for oidc. Conflicts with the secret path.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Secret</source>
+        <translation type="unfinished">加密</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Path to the token secret or access token. Conflicts with the inline secret.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Secret Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;RSA SecurID PIN for stoken mode.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PIN</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Password for decrypting a password-protected RSA SecurID token.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Password</source>
+        <translation type="unfinished">密码</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Device ID for decrypting a device-bound RSA SecurID token.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Initial counter for hotp mode. Empty uses the counter from an otpauth:// URI, otherwise zero.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Counter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TLS</source>
+        <translation type="unfinished">TLS</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Allowed server certificate fingerprints, one per line. Accepts a bare SHA-1 fingerprint or sha1:, sha256: and pin-sha256: values, abbreviated to at least four characters.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Peer Fingerprint</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not set</source>
+        <translation type="unfinished">未设置</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use a CA certificate or a peer fingerprint to establish trust when this is enabled.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disable the system CA certificate pool</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Conflicts with the inline CA certificate on the main editor.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CA Certificate Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Conflicts with the inline client certificate on the main editor.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Client Certificate Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Conflicts with the inline client key on the main editor.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Client Key Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AnyConnect multiple-certificate authentication chain in PEM format. Conflicts with the MCA certificate path.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MCA Certificate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Conflicts with the inline MCA certificate.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MCA Certificate Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AnyConnect multiple-certificate authentication private key in PEM format. Conflicts with the MCA key path.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MCA Key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Conflicts with the inline MCA key.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MCA Key Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Password for the encrypted MCA private key.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MCA Key Password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;All three fields are required when a mobile identity is configured.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mobile Identity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mobile operating system version reported to the AnyConnect server.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Platform Version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mobile device model or type reported to the AnyConnect server.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mobile device identifier reported to the AnyConnect server.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device Unique ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Compliance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;External AnyConnect CSD / host scan wrapper executable. Built-in handling is used when empty.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CSD Wrapper Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;External GlobalProtect HIP report wrapper executable. Built-in reporting is used when empty.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>HIP Wrapper Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fortinet hostcheck result string, conventionally security-status,os-version such as 0100,10.0.19042. An empty value disables hostcheck.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fortinet Hostcheck</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fortinet virtual desktop check result, conventionally colon separated MAC addresses joined by a vertical bar.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fortinet Virtual Desktop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TNCC</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;External Network Connect TNCC wrapper executable. Conflicts with every other field in this group.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Wrapper Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Device ID reported by the built-in TNCC handler.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;User agent used by the built-in TNCC handler. Neoteris HC Http is used by default.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reports the platform, hostname and observed MAC addresses. Required before machine certificates are used.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable machine identification</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Machine certificates used by the built-in TNCC handler to answer certificate requests. Requires machine identification.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Certificate</source>
+        <translation type="unfinished">证书</translation>
+    </message>
+    <message>
+        <source>Certificate Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation type="unfinished">删除</translation>
+    </message>
+    <message>
+        <source>Edit Certificate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Authentication Forms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;An entry matches by submission key when set, or by the combination of form ID and name. Later matching entries take precedence. Ask interactively conflicts with a value.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Form ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Submission Key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished">名称</translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ask interactively</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Transport</source>
+        <translation type="unfinished">传输</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Uses the TLS data channel only.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disable the DTLS or ESP data channel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Local UDP port used by the secondary data channel. An ephemeral port is selected by default.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DTLS Local Port</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Compression can weaken traffic confidentiality. Conflicts with the compression mode all.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disable compression negotiation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;stateless is used by default. all additionally advertises stateful deflate for CSTP and carries extra confidentiality risk.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Compression Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disable IPv6 tunnel configuration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Applies to authentication and configuration requests.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disable HTTP connection reuse</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Starts AnyConnect authentication with the legacy GET flow.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disable XML POST authentication</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;External authentication is not advertised and any unexpected SSO or SAML request is rejected.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disable external browser authentication</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Matches OpenConnect --no-passwd. Does not affect other flavors or a session supplied by a cookie.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Abort on a non-success authentication form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Disabled by default to match OpenConnect.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable TCP keep alive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;For TLS 1.2 and earlier. Disabled by default for servers that require RSA key exchange.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Require forward-secret cipher suites</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables weak cipher suites and TLS 1.0 compatibility. It does not disable server certificate verification.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Allow legacy TLS and DTLS crypto</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Base path MTU used to calculate the tunnel MTU after outer IP, transport and protocol overhead. Values below 1280 are treated as 1280.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Base MTU</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1406 (default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Overrides the dead peer detection interval. Positive values below 2s are treated as 2s.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>DPD Interval</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Maximum accumulated backoff time after failed reconnect attempts.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reconnect Timeout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>300s (default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Overrides the interval between GlobalProtect HIP reports or Network Connect TNCC checks.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trojan Interval</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Inbound and outbound packet queue length between the VPN transport and the tunnel interface.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Queue Length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>32 (default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Already set</source>
+        <translation type="unfinished">已设置</translation>
+    </message>
+    <message>
+        <source>TNCC Machine Certificate</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>EditOpenVPN</name>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Default transport network. Leave empty to use the core default (udp).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Network</source>
+        <translation type="unfinished">传输(网络)</translation>
+    </message>
+    <message>
+        <source>Username</source>
+        <translation type="unfinished">用户名</translation>
+    </message>
+    <message>
+        <source>Password</source>
+        <translation type="unfinished">密码</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Static challenge text shown by the server when it asks for a second authentication response. When a challenge is set and an OTP profile is bound, Throne sends the answer itself and no interactive prompt appears.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Static Challenge</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show the static challenge response as plain text.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Echo challenge response</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tunnel MTU. Empty uses 1500 until the server pushes a value.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MTU</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OTP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Traffic that falls through to this profile reaches the tunnel only when the destination is inside a subnet the VPN server advertises; anything else is blocked. Routing rules that name this profile explicitly are not affected and always win.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Only route advertised network</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Resolve the names the VPN server claims - its split-DNS suffixes and search domains - through the resolvers it pushes. Turn this off if the server claims every domain and breaks public DNS. Kept on regardless while this profile carries all traffic with &quot;Only route advertised network&quot; enabled, since the pushed resolvers are then the only reachable ones.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Resolve through this tunnel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fail a lookup the tunnel cannot answer instead of retrying it directly. Leave this off for a management VPN: names it does not claim then still resolve through the direct resolver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Block outside DNS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Advanced</source>
+        <translation type="unfinished">高级</translation>
+    </message>
+    <message>
+        <source>TLS</source>
+        <translation type="unfinished">TLS</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Trusted CA certificate content (PEM).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CA Certificate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not set</source>
+        <translation type="unfinished">未设置</translation>
+    </message>
+    <message>
+        <source>Client Certificate</source>
+        <translation type="unfinished">客户端证书</translation>
+    </message>
+    <message>
+        <source>Client Key</source>
+        <translation type="unfinished">客户端钥匙</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OpenVPN tls-auth / tls-crypt / tls-crypt-v2 control channel wrapping. Disabled when the type is empty.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Control Channel Wrap</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished">类型</translation>
+    </message>
+    <message>
+        <source>Key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;tls-auth key direction. Only used when the type is tls_auth; the key is bidirectional when empty.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Direction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Binds an authenticator entry to this profile. %1 in the username or password is replaced with a generated code at connect time, and a static challenge is answered with the same code.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 is replaced at connect time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Control Channel Wrap Key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Already set</source>
+        <translation type="unfinished">已设置</translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>EditOpenVPNAdvanced</name>
+    <message>
+        <source>OpenVPN Advanced</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Session</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OpenVPN session mode. tls is used by default; static_key is a deprecated mode without a TLS control channel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mode</source>
+        <translation type="unfinished">模式</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tunnel topology. The topology pulled from the server is used when empty in TLS mode.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Topology</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Behavior after username/password authentication fails. none is used by default and treats a permanent failure as terminal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auth Retry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Randomize the server list before connecting.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Randomize server order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Comma separated local tunnel prefixes. At least one is required in static_key mode.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Local Address</source>
+        <translation type="unfinished">本地地址</translation>
+    </message>
+    <message>
+        <source>10.8.0.2/24, fd00::2/64</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;IPv4 tunnel peer address and VPN gateway. Required with an IPv4 local address in static_key mode.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Peer Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;IPv6 tunnel peer address and VPN gateway. Required with an IPv6 local address in static_key mode.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Peer Address (IPv6)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Servers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Servers are tried in order and the client moves to the next one when a connection fails. Leave empty to use the address and port from the profile.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Server</source>
+        <translation type="unfinished">服务器</translation>
+    </message>
+    <message>
+        <source>Port</source>
+        <translation type="unfinished">端口</translation>
+    </message>
+    <message>
+        <source>Network</source>
+        <translation type="unfinished">传输(网络)</translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation type="unfinished">删除</translation>
+    </message>
+    <message>
+        <source>Static Key Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Static key content. Required in static_key mode. Conflicts with the static key path.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Static Key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not set</source>
+        <translation type="unfinished">未设置</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Conflicts with the inline static key.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Static Key Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Static key direction. The key is used bidirectionally when empty. Only available in static_key mode.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Key Direction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Data channel cipher used in static_key mode. The upstream default BF-CBC is used when empty.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Data Cipher</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TLS</source>
+        <translation type="unfinished">TLS</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Expected server certificate name. Name verification is disabled when empty.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Server Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Certificate field matched by the server name. name is used by default and matches the common name exactly.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Server Name Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Conflicts with the inline CA certificate on the main editor.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CA Certificate Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Conflicts with the inline client certificate on the main editor.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Client Certificate Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Conflicts with the inline client key on the main editor.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Client Key Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Conflicts with the inline control channel wrap key on the main editor.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Control Wrap Key Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Allowed SHA-256 fingerprints of the server leaf certificate, one per line, 64 lowercase hexadecimal characters without separators.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Peer Fingerprint</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PEM or DER certificate revocation list used to reject revoked server certificates.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CRL Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Comma separated hexadecimal key usage masks in OpenVPN remote-cert-ku format.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remote Certificate KU</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Required extended key usage. Conflicts with an explicit remote certificate TLS check.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remote Certificate EKU</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Peer certificate purpose check. server is used by default; none disables the check.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remote Certificate TLS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;legacy is used by default. insecure accepts MD5 and SHA-1 signed chains; preferred requires stronger signatures and keys.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Certificate Profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Deprecated Netscape certificate type check. Prefer Remote Certificate TLS.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>NS Certificate Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;1.2 is used by default.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Min TLS Version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The maximum supported version is used by default. It cannot be lower than the minimum.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max TLS Version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Colon separated OpenSSL cipher suite names allowed for TLS 1.2 and earlier.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TLS Cipher</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Colon separated key exchange groups in preference order: X25519, SECP256R1, SECP384R1, SECP521R1.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TLS Groups</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Data Channel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Comma separated allowed data channel ciphers. Only available in TLS mode.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Data Ciphers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>AES-256-GCM,AES-128-GCM,CHACHA20-POLY1305</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Data channel cipher for peers that do not support cipher negotiation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Data Ciphers Fallback</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Data channel authentication digest. SHA1 is used by default and only applies to non-AEAD ciphers and tls_auth.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auth Digest</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Maximum UDP packet size used to clamp the MSS of TCP connections sent through the tunnel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MSS Fix</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Disables MSS clamping including the default clamp. Conflicts with MSS Fix and MSS Fix Mode.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disable MSS clamping</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;mtu also accounts for the outer IP and transport headers; fixed treats MSS Fix as an inner IPv4 packet size. Requires MSS Fix.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MSS Fix Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Maximum UDP packet size used for data channel fragmentation. A non-zero value must be at least 68. Conflicts with TCP transport.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fragment</source>
+        <translation type="unfinished">分片</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;UDP replay window size. 64 is used by default and the maximum is 65536.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Replay Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;UDP replay window duration in whole seconds. The maximum is 10m.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Replay Window Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>15s (default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Compression</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OpenVPN compress framing mode. Disabled by default. Compression can weaken traffic confidentiality.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OpenVPN comp-lzo mode. Disabled by default. Enable it only when required by the server.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Compression LZO</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Policy for compression pushed by the server. no is used by default and permits only stub framing.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Allow Compression</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Routing</source>
+        <translation type="unfinished">路由</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ignores routes, DNS, route metrics, redirect-gateway, redirect-private and block-ipv6 pushed by the server.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ignore pushed routes, DNS and gateway options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Comma separated prefixes preferred for this endpoint, in addition to routes accepted from the server.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Routes</source>
+        <translation type="unfinished">路由</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;IPv4 gateway for routes through the endpoint. The gateway received from the server is used when empty.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Route Gateway</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Default metric for routes through the endpoint. The platform default is used when empty.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Route Metric</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Does not install an operating system default route.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Prefer this endpoint for all IPv4 destinations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Comma separated OpenVPN redirect-gateway flags, for example !ipv4, def1 or ipv6.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Redirect Gateway Flags</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Accept redirect gateway flags without a default route preference</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reject IPv6 traffic locally instead of sending it through the VPN</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ordered filters for options pushed by the server. The first filter whose text is a case-sensitive prefix of the complete pushed option is applied.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Action</source>
+        <translation type="unfinished">动作</translation>
+    </message>
+    <message>
+        <source>Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Timers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Whole seconds of silence before a data channel ping is sent. A server-pushed value overrides it.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ping Interval</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Whole seconds without a received packet before reconnecting. 120s is used for UDP with pull enabled.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ping Restart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Disables the initial 120s UDP pull timeout and any configured ping restart. Conflicts with Ping Restart.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disable ping restart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TLS renegotiation interval.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Renegotiate Interval</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1h (default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Conflicts with Renegotiate Interval.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disable time based renegotiation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renegotiate data channel keys after this many bytes. Empty uses the cipher-dependent default.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Renegotiate Bytes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renegotiate data channel keys after this many packets. Empty uses the cipher-dependent default.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Renegotiate Packets</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Initial retransmission timeout for TLS control packets.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TLS Timeout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>2s (default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Maximum time allowed for the initial handshake and each renegotiation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Handshake Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1m (default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of exit notifications sent one second apart when closing a UDP connection.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Explicit Exit Notify</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Already set</source>
+        <translation type="unfinished">已设置</translation>
+    </message>
 </context>
 <context>
     <name>EditSSH</name>
-    <message>
-        <source>EditSSH</source>
-        <translation>编辑SSH</translation>
-    </message>
     <message>
         <source>User</source>
         <translation>用户</translation>
@@ -3147,6 +5610,57 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
 </context>
 <context>
+    <name>EditSnell</name>
+    <message>
+        <source>Version</source>
+        <translation type="unfinished">版本</translation>
+    </message>
+    <message>
+        <source>PSK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Per-user key on a multi-user server. Leave empty when the server only has a PSK.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>User Key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Restrict this outbound to one network. Leave empty to carry both TCP and UDP.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Network</source>
+        <translation type="unfinished">传输(网络)</translation>
+    </message>
+    <message>
+        <source>Obfuscation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Obfuscation Host</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Traffic shaping used by Snell v6. &quot;unsafe-raw&quot; disables padding and is faster but easier to fingerprint.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mode</source>
+        <translation type="unfinished">模式</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Keep idle connections to the server open and reuse them for later requests.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reuse connections</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>EditSocks</name>
     <message>
         <source>Password</source>
@@ -3159,6 +5673,14 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     <message>
         <source>Username</source>
         <translation>用户名</translation>
+    </message>
+    <message>
+        <source>5</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>4</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3238,8 +5760,36 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>用户名</translation>
     </message>
     <message>
+        <source>bbr</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>cubic</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>reno</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>bbr_standard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>bbr2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>bbr_variant</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Congestion Control</source>
         <translation>拥塞控制</translation>
+    </message>
+    <message>
+        <source>QUIC</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3261,8 +5811,32 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>零 RTT 握手</translation>
     </message>
     <message>
+        <source>UUID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>bbr</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>cubic</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>new_reno</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Congestion Control</source>
         <translation>拥塞控制</translation>
+    </message>
+    <message>
+        <source>native</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>quic</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>UDP over Stream</source>
@@ -3280,6 +5854,10 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation></translation>
     </message>
     <message>
+        <source>UUID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Packet Encoding</source>
         <translation>数据包编码</translation>
     </message>
@@ -3291,16 +5869,16 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
 <context>
     <name>EditVless</name>
     <message>
+        <source>UUID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Packet Encoding</source>
         <translation>数据包编码</translation>
     </message>
 </context>
 <context>
     <name>EditWireguard</name>
-    <message>
-        <source>EditWireguard</source>
-        <translation>编辑 Wireguard</translation>
-    </message>
     <message>
         <source>Reserved</source>
         <translation>保留</translation>
@@ -3318,140 +5896,32 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>本地地址</translation>
     </message>
     <message>
+        <source>MTU</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1420</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Amnezia</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit the AmneziaWG obfuscation parameters (junk packets, magic headers, signatures).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Amnezia Options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Generate a Cloudflare WARP account and fill the key, address and endpoint fields above.</source>
         <translation>生成一个 Cloudflare WARP 账户并填写上面的钥匙、地址以及端点字段。</translation>
     </message>
     <message>
         <source>Generate Warp Config</source>
         <translation>生成 Warp 配置</translation>
-    </message>
-    <message>
-        <source>Amnezia Settings</source>
-        <translation>Amnezia 设置</translation>
-    </message>
-    <message>
-        <source>Cookie Reply Packet Junk Size (S3)</source>
-        <translation>Cookie 回复数据包垃圾大小 (S3)</translation>
-    </message>
-    <message>
-        <source>Cookie Reply Packet Magic Header (H3)</source>
-        <translation>Cookie 回复数据包魔术报头 (H3)</translation>
-    </message>
-    <message>
-        <source>Junk Packet Count (Jc)</source>
-        <translation>垃圾数据包数量 (Jc)</translation>
-    </message>
-    <message>
-        <source>Response Packet Magic Header (H2)</source>
-        <translation>响应数据包魔术报头 (H2)</translation>
-    </message>
-    <message>
-        <source>Init Packet Junk Size (S1)</source>
-        <translation>初始数据包垃圾大小 (S1)</translation>
-    </message>
-    <message>
-        <source>Junk Packet Min Size (Jmin)</source>
-        <translation>垃圾数据包最小大小 (Jmin)</translation>
-    </message>
-    <message>
-        <source>Junk Packet Max Size (Jmax)</source>
-        <translation>垃圾数据包最大大小 (Jmax)</translation>
-    </message>
-    <message>
-        <source>Signature Packet (I4)</source>
-        <translation>签名数据包 (I4)</translation>
-    </message>
-    <message>
-        <source>Signature Packet (I1)</source>
-        <translation>签名数据包 (I1)</translation>
-    </message>
-    <message>
-        <source>Enable</source>
-        <translation>启用</translation>
-    </message>
-    <message>
-        <source>Response Packet Junk Size (S2)</source>
-        <translation>响应数据包垃圾大小 (S2)</translation>
-    </message>
-    <message>
-        <source>Transport Packet Magic Header (H4)</source>
-        <translation>传送报头魔法报头 (H4)</translation>
-    </message>
-    <message>
-        <source>Init Packet Magic Header (H1)</source>
-        <translation>初始数据包魔术报头 (H1)</translation>
-    </message>
-    <message>
-        <source>Transport Packet Junk Size (S4)</source>
-        <translation>传送数据包垃圾大小 (S4)</translation>
-    </message>
-    <message>
-        <source>Signature Packet (I2)</source>
-        <translation>签名数据包 (I2)</translation>
-    </message>
-    <message>
-        <source>Signature Packet (I3)</source>
-        <translation>签名数据包 (I3)</translation>
-    </message>
-    <message>
-        <source>Signature Packet (I5)</source>
-        <translation>签名数据包 (I5)</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. Base64 key. Requires S1-S4 to be at least 12.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. Base64 钥匙。要求 S1-S4 至少 12。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Header Protection Key</source>
-        <translation>报头保护钥匙</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. Bytes of random trailing padding, as a value or range (e.g. 0-64).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. 随机尾部填充的字节数，可以为一个值或范围 (如 0-64)。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Content Padding Addition</source>
-        <translation>内容填充添加</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. Seconds before a rekey is attempted, as a value or range.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. 尝试 rekey（重新密钥协商）前的秒数，可以是一个具体值或范围。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Rekey After Time</source>
-        <translation>指定时间后 Rekey</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. Seconds before a handshake is retried, as a value or range.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. 重试握手前的秒数，可以是一个具体值或范围。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Rekey Timeout</source>
-        <translation>Rekey 超时</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. Seconds before keys are rejected, as a value or range.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. 拒绝钥匙前的秒数，可以是一个具体值或范围。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Reject After Time</source>
-        <translation>指定时间后拒绝</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. Seconds of idle time before a keepalive is sent, as a value or range.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. 发送 keepalive（保活）前的空闲时间（秒数），可以是一个具体值或范围。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Keepalive Timeout</source>
-        <translation>保活超时</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. Handshake retries before giving up, as a value or range.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. 放弃前的握手重试次数，可以是一个具体值或范围。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Max Handshake Attempts</source>
-        <translation>最多握手尝试次数</translation>
     </message>
     <message>
         <source>Pre Shared Key</source>
@@ -3501,45 +5971,156 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <source>Success!</source>
         <translation>成功!</translation>
     </message>
+</context>
+<context>
+    <name>EditWireguardAmnezia</name>
     <message>
-        <source>Junk Packet Count</source>
-        <translation>垃圾数据包数量</translation>
+        <source>Amnezia Options</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Junk Packet Min Size</source>
-        <translation>垃圾数据包最小尺寸</translation>
+        <source>Junk Packet Count (Jc)</source>
+        <translation type="unfinished">垃圾数据包数量 (Jc)</translation>
     </message>
     <message>
-        <source>Junk Packet Max Size</source>
-        <translation>垃圾数据包最大尺寸</translation>
+        <source>Junk Packet Min Size (Jmin)</source>
+        <translation type="unfinished">垃圾数据包最小大小 (Jmin)</translation>
     </message>
     <message>
-        <source>Init Packet Junk Size</source>
-        <translation>初始数据包垃圾大小</translation>
+        <source>Junk Packet Max Size (Jmax)</source>
+        <translation type="unfinished">垃圾数据包最大大小 (Jmax)</translation>
     </message>
     <message>
-        <source>Response Packet Junk Size</source>
-        <translation>响应数据包垃圾大小</translation>
+        <source>Init Packet Junk Size (S1)</source>
+        <translation type="unfinished">初始数据包垃圾大小 (S1)</translation>
     </message>
     <message>
-        <source>Init Packet Magic Header</source>
-        <translation>初始数据包魔术报头</translation>
+        <source>Response Packet Junk Size (S2)</source>
+        <translation type="unfinished">响应数据包垃圾大小 (S2)</translation>
     </message>
     <message>
-        <source>Response Packet Magic Header</source>
-        <translation>响应数据包魔术报头</translation>
+        <source>Cookie Reply Packet Junk Size (S3)</source>
+        <translation type="unfinished">Cookie 回复数据包垃圾大小 (S3)</translation>
     </message>
     <message>
-        <source>Underload Packet Magic Header</source>
-        <translation>欠载数据包魔法报头</translation>
+        <source>Transport Packet Junk Size (S4)</source>
+        <translation type="unfinished">传送数据包垃圾大小 (S4)</translation>
     </message>
     <message>
-        <source>Transport Header Magic Header</source>
-        <translation>传送报头魔法报头</translation>
+        <source>Init Packet Magic Header (H1)</source>
+        <translation type="unfinished">初始数据包魔术报头 (H1)</translation>
+    </message>
+    <message>
+        <source>Response Packet Magic Header (H2)</source>
+        <translation type="unfinished">响应数据包魔术报头 (H2)</translation>
+    </message>
+    <message>
+        <source>Cookie Reply Packet Magic Header (H3)</source>
+        <translation type="unfinished">Cookie 回复数据包魔术报头 (H3)</translation>
+    </message>
+    <message>
+        <source>Transport Packet Magic Header (H4)</source>
+        <translation type="unfinished">传送报头魔法报头 (H4)</translation>
+    </message>
+    <message>
+        <source>Signature Packet (I1)</source>
+        <translation type="unfinished">签名数据包 (I1)</translation>
+    </message>
+    <message>
+        <source>Signature Packet (I2)</source>
+        <translation type="unfinished">签名数据包 (I2)</translation>
+    </message>
+    <message>
+        <source>Signature Packet (I3)</source>
+        <translation type="unfinished">签名数据包 (I3)</translation>
+    </message>
+    <message>
+        <source>Signature Packet (I4)</source>
+        <translation type="unfinished">签名数据包 (I4)</translation>
+    </message>
+    <message>
+        <source>Signature Packet (I5)</source>
+        <translation type="unfinished">签名数据包 (I5)</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. Base64 key. Requires S1-S4 to be at least 12.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. Base64 钥匙。要求 S1-S4 至少 12。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Header Protection Key</source>
+        <translation type="unfinished">报头保护钥匙</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. Bytes of random trailing padding, as a value or range (e.g. 0-64).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. 随机尾部填充的字节数，可以为一个值或范围 (如 0-64)。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Content Padding Addition</source>
+        <translation type="unfinished">内容填充添加</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. Seconds before a rekey is attempted, as a value or range.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. 尝试 rekey（重新密钥协商）前的秒数，可以是一个具体值或范围。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Rekey After Time</source>
+        <translation type="unfinished">指定时间后 Rekey</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. Seconds before a handshake is retried, as a value or range.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. 重试握手前的秒数，可以是一个具体值或范围。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Rekey Timeout</source>
+        <translation type="unfinished">Rekey 超时</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. Seconds before keys are rejected, as a value or range.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. 拒绝钥匙前的秒数，可以是一个具体值或范围。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Reject After Time</source>
+        <translation type="unfinished">指定时间后拒绝</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. Seconds of idle time before a keepalive is sent, as a value or range.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. 发送 keepalive（保活）前的空闲时间（秒数），可以是一个具体值或范围。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Keepalive Timeout</source>
+        <translation type="unfinished">保活超时</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. Handshake retries before giving up, as a value or range.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.0. 放弃前的握手重试次数，可以是一个具体值或范围。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Max Handshake Attempts</source>
+        <translation type="unfinished">最多握手尝试次数</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.1. Appends a random trailer to every packet, so message types are no longer identifiable by size.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Random Trailers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AmneziaWG 3.1. Never send cookie replies, so an under-load peer stays silent instead of answering with a fixed-size message.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disable Cookies</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>EditXrayVless</name>
+    <message>
+        <source>UUID</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Encryption</source>
         <translation>加密</translation>
@@ -3551,6 +6132,172 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     <message>
         <source>Flow</source>
         <translation>流</translation>
+    </message>
+</context>
+<context>
+    <name>FsntSettingsDialog</name>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished">设置</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished">取消</translation>
+    </message>
+    <message>
+        <source>Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Full tunnel (TUN)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>System proxy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connection mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Routing</source>
+        <translation type="unfinished">路由</translation>
+    </message>
+    <message>
+        <source>Reconnect on start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Allow local network access</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose apps to route…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Subscriptions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Off</source>
+        <translation type="unfinished">关闭</translation>
+    </message>
+    <message>
+        <source>Every 30 minutes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Every hour</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Every 2 hours</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Every 6 hours</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Every 12 hours</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Once a day</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto update</source>
+        <translation type="unfinished">自动更新</translation>
+    </message>
+    <message>
+        <source>Update all now</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove the current subscription</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Application</source>
+        <translation type="unfinished">应用</translation>
+    </message>
+    <message>
+        <source>System</source>
+        <translation type="unfinished">系统</translation>
+    </message>
+    <message>
+        <source>Language</source>
+        <translation type="unfinished">语言</translation>
+    </message>
+    <message>
+        <source>Dark</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Light</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Theme</source>
+        <translation type="unfinished">主题</translation>
+    </message>
+    <message>
+        <source>Launch at login</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start minimized to tray</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Language changes apply after restarting the application.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Build a support report</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Check for updates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open the config folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open advanced mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>FsntWindow</name>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished">设置</translation>
+    </message>
+    <message>
+        <source>Advanced mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Switch to the advanced interface</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The application will restart in the advanced interface. Continue?</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3584,6 +6331,14 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>最后更新 %1</translation>
     </message>
     <message>
+        <source>Delete group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This subscription is pinned by the provider and cannot be removed while its profile is running.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Confirmation</source>
         <translation>确认</translation>
     </message>
@@ -3593,50 +6348,56 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
 </context>
 <context>
-    <name>JsonEditor</name>
+    <name>JsonCodeEdit</name>
+    <message>
+        <source>Empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n problem(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <source>%n warning(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Valid JSON</source>
+        <translation type="unfinished">有效 JSON</translation>
+    </message>
+</context>
+<context>
+    <name>JsonEditorDialog</name>
     <message>
         <source>JSON Editor</source>
-        <translation>JSON 编辑器</translation>
+        <translation type="unfinished">JSON 编辑器</translation>
     </message>
     <message>
-        <source>Format JSON</source>
-        <translation>格式化 JSON</translation>
+        <source>Format</source>
+        <translation type="unfinished">格式化</translation>
     </message>
     <message>
-        <source>Remove All Comments</source>
-        <translation>移除所有注释</translation>
+        <source>Invalid JSON</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Json Editor</source>
-        <translation>JSON 编辑器</translation>
+        <source>Fix the errors before formatting the document.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Structure Preview</source>
-        <translation>结构预览</translation>
+        <source>The document must be a JSON object.</source>
+        <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>JsonIssueList</name>
     <message>
-        <source>OK</source>
-        <translation>确定</translation>
-    </message>
-    <message>
-        <source>Json Contains Syntax Errors</source>
-        <translation>JSON 包含语法错误</translation>
-    </message>
-    <message>
-        <source>Original Json may contain syntax errors. Json tree is disabled.</source>
-        <translation>原始 JSON 可能包含语法错误。JSON 树已禁用。</translation>
-    </message>
-    <message>
-        <source>You must correct these errors before continuing.</source>
-        <translation>继续前，您必须修正这些错误。</translation>
-    </message>
-    <message>
-        <source>Syntax Errors</source>
-        <translation>语法错误</translation>
-    </message>
-    <message>
-        <source>Please fix the JSON errors or remove the comments before continue</source>
-        <translation>请修正 JSON 错误或移除注释后再继续</translation>
+        <source>Line %1: %2</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3666,10 +6427,6 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>测试结果</translation>
     </message>
     <message>
-        <source>Traffic</source>
-        <translation>流量</translation>
-    </message>
-    <message>
         <source>Share</source>
         <translation>分享</translation>
     </message>
@@ -3692,6 +6449,22 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     <message>
         <source>Groups</source>
         <translation>分组</translation>
+    </message>
+    <message>
+        <source>Service Menu</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Update / Github</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Speedtest</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ping</source>
+        <translation type="unfinished">Ping</translation>
     </message>
     <message>
         <source>Start</source>
@@ -3754,16 +6527,16 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>工具</translation>
     </message>
     <message>
-        <source>Click to sort by traffic; right-click to choose total/down/up</source>
-        <translation>点击按流量排序; 右击选择“合计/下载/上传”</translation>
-    </message>
-    <message>
-        <source>Click to sort by speed; right-click to choose total/down/up</source>
-        <translation>点击按速度排序; 右击选择“合计/下载/上传”</translation>
-    </message>
-    <message>
         <source>Manage Groups</source>
         <translation>管理分组</translation>
+    </message>
+    <message>
+        <source>Simple mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+Shift+D</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Clear Group test result</source>
@@ -3914,18 +6687,6 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>添加这些远程路由配置档吗?</translation>
     </message>
     <message>
-        <source>auto update</source>
-        <translation>自动更新</translation>
-    </message>
-    <message>
-        <source>On</source>
-        <translation>开启</translation>
-    </message>
-    <message>
-        <source>Off</source>
-        <translation>关闭</translation>
-    </message>
-    <message>
         <source>Tun Settings changed</source>
         <translation>Tun 设置已改变</translation>
     </message>
@@ -3992,6 +6753,14 @@ URL: %2</translation>
         <translation>没有可被导入的内容:</translation>
     </message>
     <message>
+        <source>Removing empty default group: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Updating existing subscription for domain: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Settings changed, restart proxy?</source>
         <translation>设置已改变，重启代理吗？</translation>
     </message>
@@ -4018,6 +6787,22 @@ URL: %2</translation>
     <message>
         <source>Select mode, double-click or press Enter to select a profile, press ESC to exit.</source>
         <translation>选择模式，双击或按 ENTER 键选择一个配置档，按 ESC 键退出。</translation>
+    </message>
+    <message>
+        <source>Connect OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connecting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Waiting for authentication</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tunnel error</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Clone %1 item(s)</source>
@@ -4084,10 +6869,6 @@ URL: %2</translation>
         <translation>构建批处理测试配置失败: </translation>
     </message>
     <message>
-        <source>[interface-bind] default route changed (%1 -&gt; %2), restarting profile</source>
-        <translation>[interface-bind] 默认路由已更改 (%1 -&gt; %2), 正在重启配置档</translation>
-    </message>
-    <message>
         <source>a required category</source>
         <translation>一个必需的类别</translation>
     </message>
@@ -4128,14 +6909,6 @@ Download them now?</source>
         <translation>Geo 资源已安装</translation>
     </message>
     <message>
-        <source>Geo data files were downloaded successfully.
-
-Please start your profile again.</source>
-        <translation>Geo 数据文件被成功下载。
-
-请再次启动你的配置档。</translation>
-    </message>
-    <message>
         <source>[Auto selector] Running the best %1 of %2 ranked profiles.</source>
         <translation>[自动选择器] 正在运行排名最优的 %1 / %2 个配置档。</translation>
     </message>
@@ -4166,10 +6939,6 @@ Please start your profile again.</source>
     <message>
         <source>Tun device misbehaving</source>
         <translation>Tun 设备运行异常</translation>
-    </message>
-    <message>
-        <source>Reset</source>
-        <translation>重置</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -4268,6 +7037,14 @@ Please start your profile again.</source>
         <translation>排序依据:</translation>
     </message>
     <message>
+        <source>Ping Test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No profiles in current group.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Latency</source>
         <translation>延迟</translation>
     </message>
@@ -4300,8 +7077,28 @@ Please start your profile again.</source>
         <translation>选择配置档</translation>
     </message>
     <message>
+        <source>OTP Codes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This subscription is pinned by the provider and cannot be removed while its profile is running.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Per-app proxy...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source> Test result(s) copied to clipboard!</source>
         <translation> 测试结果已被复制到剪贴板!</translation>
+    </message>
+    <message>
+        <source>Config files (*.json *.conf *.txt *.yaml *.yml *.ini *.ovpn *.xml)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>No insecure configs found.</source>
@@ -4324,14 +7121,6 @@ Please start your profile again.</source>
         <translation>连接</translation>
     </message>
     <message>
-        <source>Click To Disable Sorting</source>
-        <translation>点击以“禁用排序”</translation>
-    </message>
-    <message>
-        <source>Protocol</source>
-        <translation>协议</translation>
-    </message>
-    <message>
         <source>Logs</source>
         <translation>日志</translation>
     </message>
@@ -4348,8 +7137,32 @@ Please start your profile again.</source>
         <translation>请在打开的终端中输入您的密码，然后重试</translation>
     </message>
     <message>
-        <source>Application</source>
-        <translation>应用</translation>
+        <source>The application will restart in the simple interface. Continue?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The sing-box API is disabled. Set a listen port in Preferences &gt; Basic Settings &gt; Core.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start a profile first; the dashboard is served by the running core.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Web dashboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The dashboard is not installed yet. Download it now?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to prepare update environment!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Update is ready. The update will be installed on next application restart.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Settings</source>
@@ -4358,18 +7171,6 @@ Please start your profile again.</source>
     <message>
         <source>Routing</source>
         <translation>路由</translation>
-    </message>
-    <message>
-        <source>Destination (Domain)</source>
-        <translation>目标（域名）</translation>
-    </message>
-    <message>
-        <source>Process</source>
-        <translation>进程</translation>
-    </message>
-    <message>
-        <source>Click To Sort By Process</source>
-        <translation>点击以“按进程排序”</translation>
     </message>
     <message>
         <source>Operation Mode</source>
@@ -4416,8 +7217,65 @@ Please start your profile again.</source>
         <translation>设置系统 DNS 失败： </translation>
     </message>
     <message>
+        <source>Geo data files were downloaded successfully.
+
+Please try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Обнаружены программы, которые могут помешать работе TUN режима:
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>
+
+Эти программы могут конфликтовать с виртуальным сетевым адаптером TUN.
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Рекомендуется закрыть эти программы перед запуском профиля в VPN режиме.
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Продолжить запуск?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Предупреждение о конфликтах</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Продолжить</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Отмена</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>BuildConfig return error</source>
         <translation>BuildConfig 返回错误</translation>
+    </message>
+    <message>
+        <source>Strict routing unavailable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Windows could not enable strict routing. Open Tun Settings, disable Strict Route, and start the profile again.
+
+Disabling Strict Route may cause DNS leaks.
+
+Error: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset and Restart</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Another profile is starting...</source>
@@ -4436,6 +7294,42 @@ Please start your profile again.</source>
         <translation>停止返回错误</translation>
     </message>
     <message>
+        <source>[VPN] %1: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>VPN endpoint problem</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>VPN endpoint</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>[VPN] %1: the core did not answer the sign-in prompt.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>[VPN] %1: could not answer the sign-in prompt: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>[VPN] %1: signed in again with a new one-time code.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>[VPN] %1 rejected the saved credentials; restarting the profile with a new one-time code.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The server refused the credentials saved with this profile. Enter the ones to use for this session; the profile itself is left unchanged.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>[VPN] %1 rejected the saved credentials.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Copy core config</source>
         <translation>复制核心配置</translation>
     </message>
@@ -4446,6 +7340,22 @@ Please start your profile again.</source>
     <message>
         <source>Cannot start</source>
         <translation>无法启动</translation>
+    </message>
+    <message>
+        <source>A dashboard download is already running</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The core did not answer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to install the dashboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Updater not found! Please download update manually.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Last download request has not finished yet</source>
@@ -4496,30 +7406,8 @@ Please start your profile again.</source>
         <translation>无法捕获屏幕</translation>
     </message>
     <message>
-        <source>Outbound</source>
-        <translation>出站</translation>
-    </message>
-    <message>
-        <source>Invalid JSON Array</source>
-        <translation>无效 JSON 数组</translation>
-    </message>
-    <message>
-        <source>The provided input cannot be parsed to a valid route rule array:
-</source>
-        <translation>提供的输入无法解析为有效的路由规则数组:
-</translation>
-    </message>
-    <message>
         <source>Please run Throne as admin</source>
         <translation>请以管理员身份运行 Throne</translation>
-    </message>
-    <message>
-        <source>Click To Sort By Protocol</source>
-        <translation>点击“按协议排序”</translation>
-    </message>
-    <message>
-        <source>Click To Sort By Outbound</source>
-        <translation>点击“按出站排序”</translation>
     </message>
     <message>
         <source>Add profile from File(s)</source>
@@ -4536,10 +7424,6 @@ Please start your profile again.</source>
     <message>
         <source>All files (*)</source>
         <translation>所有文件 (*)</translation>
-    </message>
-    <message>
-        <source>Config files (*.json *.conf *.txt *.yaml *.yml *.ini)</source>
-        <translation>配置文件 (*.json *.conf *.txt *.yaml *.yml *.ini)</translation>
     </message>
     <message>
         <source>QR code images (*.png *.jpg *.jpeg *.bmp *.gif *.webp)</source>
@@ -4566,18 +7450,6 @@ Please start your profile again.</source>
         <translation>已导入配置档</translation>
     </message>
     <message>
-        <source>Add this subscription?
-
-Name: %1
-URL: %2
-Auto update: %3</source>
-        <translation>添加这个订阅吗?
-
-名称: %1
-URL: %2
-自动更新: %3</translation>
-    </message>
-    <message>
         <source>Add this routing profile?
 
 Name: %1</source>
@@ -4596,92 +7468,8 @@ Name: %1</source>
 </translation>
     </message>
     <message>
-        <source>Resolve Out IP</source>
-        <translation>解析出口 IP</translation>
-    </message>
-    <message>
-        <source>Update the selected remote routing profile, or all of them</source>
-        <translation>更新选定的远程路由配置档，或它们全部</translation>
-    </message>
-    <message>
         <source>Update</source>
         <translation>更新</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables the following config to be used as egress, useful for bypassing services restrciting non-warp VPNs&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;启用以下配置作为出口 (egress) 使用，对于绕过限制非 warp VPNs 的服务很有用&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Endpoint</source>
-        <translation>端点</translation>
-    </message>
-    <message>
-        <source>Private Key</source>
-        <translation>私钥</translation>
-    </message>
-    <message>
-        <source>Public Key</source>
-        <translation>公钥</translation>
-    </message>
-    <message>
-        <source>Interface Addresses</source>
-        <translation>接口地址</translation>
-    </message>
-    <message>
-        <source>Generate Warp Config</source>
-        <translation>生成 Warp 配置</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gets a new config from cloudflare API&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;从 cloudflare API 获取一个新配置&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Resolve domain</source>
-        <translation>解析(服务器)域名</translation>
-    </message>
-    <message>
-        <source>Export %1 config</source>
-        <translation>导出 %1 配置</translation>
-    </message>
-    <message>
-        <source>Profiles</source>
-        <translation>配置档</translation>
-    </message>
-    <message>
-        <source>Click To Toggle sort by Traffic</source>
-        <translation>点击以切换“按流量排序”</translation>
-    </message>
-    <message>
-        <source>Stop: %1</source>
-        <translation>停止: %1</translation>
-    </message>
-    <message>
-        <source>No servers</source>
-        <translation>无服务器</translation>
-    </message>
-    <message>
-        <source>Back to groups</source>
-        <translation>返回分组</translation>
-    </message>
-    <message>
-        <source>Previous %1</source>
-        <translation>上一个 %1</translation>
-    </message>
-    <message>
-        <source>More (%1)</source>
-        <translation>更多 (%1)</translation>
-    </message>
-    <message>
-        <source> — page %1/%2</source>
-        <translation> — 第 %1/%2 页</translation>
-    </message>
-    <message>
-        <source>Update found: %1
-Release note:
-%2</source>
-        <translation>发现更新: %1
-更新日志:
-%2</translation>
     </message>
     <message>
         <source>[Auto selector] Reusing existing test results; ranked %1 profiles.</source>
@@ -4706,6 +7494,156 @@ Release note:
     <message>
         <source>Copied!</source>
         <translation>已复制!</translation>
+    </message>
+    <message>
+        <source>Close every connection listed below</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to close connections: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>IPC error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Collecting debug information...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Debug information saved to: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Debug information collected successfully!
+
+Saved to:
+%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to create debug archive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to create debug information archive</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>OnboardingDialog</name>
+    <message>
+        <source>Continue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The provider did not answer. Check the link and your connection.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Private and fast access to the internet.
+Setup takes about a minute.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Get started</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add your subscription</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Paste the link your provider gave you. The server list will fill in automatically.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Paste from clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The clipboard is empty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>I&apos;ll do it later</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>How should traffic be routed?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You can change this later in settings.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Everything through the tunnel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All apps. Needs administrator rights once.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Browsers only</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>System proxy. No extra rights needed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pick a server on the left and press the power button.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Launch FSNT Client at login</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start using</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter a link, or skip this step.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Adding…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fetching the subscription…</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>OtpItem</name>
+    <message>
+        <source>Edit</source>
+        <translation type="unfinished">编辑</translation>
+    </message>
+    <message>
+        <source>Export</source>
+        <translation type="unfinished">导出</translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="unfinished">删除</translation>
+    </message>
+    <message>
+        <source>invalid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1s</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4779,12 +7717,20 @@ Release note:
         <translation>用代理请求，但未启动代理配置档。</translation>
     </message>
     <message>
+        <source>Response larger than %1 MB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Download failed: server returned HTTP status %1.</source>
         <translation>下载失败: 服务器返回 HTTP 状态 %1。</translation>
     </message>
     <message>
         <source>Download failed: the server returned an empty response.</source>
         <translation>下载失败: 服务器返回一个空响应。</translation>
+    </message>
+    <message>
+        <source>Could not create destination directory.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Could not open file.</source>
@@ -4847,6 +7793,10 @@ How to update?</source>
         <translation>正在处理订阅数据...</translation>
     </message>
     <message>
+        <source>Subscription update already queued: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Process complete, applying...</source>
         <translation>处理完成，正在应用...</translation>
     </message>
@@ -4863,6 +7813,11 @@ Deleted %5 Profiles:
 %4
 删除了 %5 个配置档：
 %6</translation>
+    </message>
+    <message>
+        <source>Still in use, so kept instead of deleted:
+%1</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Nothing</source>
@@ -4887,6 +7842,22 @@ Deleted %5 Profiles:
     <message>
         <source>Restarting the core ...</source>
         <translation>正在重启核心...</translation>
+    </message>
+    <message>
+        <source>Check for updates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Updater not found. Please update manually from GitHub.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open GitHub Releases</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open Repository</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Download Profiles</source>
@@ -4951,14 +7922,6 @@ Release note:
     <message>
         <source>Default</source>
         <translation>默认</translation>
-    </message>
-    <message>
-        <source>Local DNS and Tun mode do not work together, please set an IP to be used as the Local DNS server in the Routing Settings -&gt; Local override</source>
-        <translation>本地 NDS 和 Tun 模式不能同时使用，请在「路由设置 → 本地覆盖」中设置一个 IP 用作本地 DNS 服务器</translation>
-    </message>
-    <message>
-        <source>Auto-update: running %1</source>
-        <translation>自动更新: 正在运行 %1</translation>
     </message>
     <message>
         <source>internal error: null profile</source>
@@ -5091,6 +8054,10 @@ Release note:
         <translation>Tailscale 配置档</translation>
     </message>
     <message>
+        <source>OpenVPN or OpenConnect profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>filtered out by name</source>
         <translation>按名称过滤掉</translation>
     </message>
@@ -5101,6 +8068,10 @@ Release note:
     <message>
         <source>last test failed</source>
         <translation>上次测试失败</translation>
+    </message>
+    <message>
+        <source>Xray full config cannot be combined with the group&apos;s proxies</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>never</source>
@@ -5250,6 +8221,406 @@ Release note:
         <source>%1 of %2 checks failed</source>
         <translation>%1 / %2 个检查失败</translation>
     </message>
+    <message>
+        <source>Secret is empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Secret is not valid base32</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Secret is too short</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Digits must be between %1 and %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period must be between %1 and %2 seconds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not a readable OTP export</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unreadable migration link</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not an otpauth link or secret: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to parse the Clash configuration.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to import the OpenVPN profile.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to import the OpenConnect profile.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to decode the vpn:// link.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No importable profile found in the vpn:// link.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Empty OpenVPN configuration.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;connection&gt; block without a remote, skipped.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ignored an unreadable peer fingerprint: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PKCS#12 bundles are not supported; export the CA, certificate and key as PEM.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ignored inline block: &lt;%1&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is an OpenVPN server configuration (%1), not a client profile.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TAP (layer 2) tunnels are not supported; only `dev tun` profiles can be imported.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is an OpenVPN server configuration (mode server), not a client profile.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>`proto %1` is a server transport.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown transport: proto %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ignored an unreadable IPv6 interface address: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Credentials live in %1; enter them in the profile editor.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A hash-directory CRL is not supported; point `crl-verify` at a PEM or DER file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ignored a symbolic route target: route %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ignored an unreadable route: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>redirect-gateway flag has no sing-box equivalent: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not supported by the OpenVPN endpoint, ignored: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown OpenVPN directive, ignored: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>`%1` turns the client certificate off; it was dropped and the server has to accept password login.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>`cert` without a `key`: add the private key, or `client-cert-not-required` for password-only login.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>`key` without a `cert`: add the client certificate.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No `remote` server in the OpenVPN configuration.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ignored an unreadable interface address: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>`remote-cert-eku` replaces `remote-cert-tls`; the latter was dropped.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unsupported OpenConnect protocol, ignored: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown compression mode, ignored: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown reported OS, ignored: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unsupported token mode, ignored: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Expected --form-entry=FORM:OPTION=VALUE, ignored: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Configure a proxy through Throne&apos;s chain instead, ignored: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown OpenConnect option, ignored: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown OpenConnect option, ignored: -%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An AnyConnect profile carrying a DTD is not accepted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Malformed AnyConnect profile: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The AnyConnect profile lists no host entry.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Skipped a host entry without an address.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Skipped &quot;%1&quot;: IKEv2/IPsec is not spoken by the OpenConnect endpoint.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Skipped an unreadable host address: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Empty OpenConnect profile.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The AnyConnect profile has no host entry this endpoint can use.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No OpenConnect options found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No OpenConnect server address found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>null</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>boolean</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>array</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Empty document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unexpected content after the end of the document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The document is nested too deeply</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unexpected end of document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Expected a property name in quotes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Expected a colon after the property name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trailing comma</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Expected a comma or a closing brace</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Expected a comma or a closing bracket</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unterminated string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unterminated escape sequence</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Incomplete unicode escape sequence</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid unicode escape sequence</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid escape sequence</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Control character in string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Too much data to fit in a QR code.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connecting…</source>
+        <translation type="unfinished">连接中…</translation>
+    </message>
+    <message>
+        <source>Waiting for sign-in</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation type="unfinished">错误</translation>
+    </message>
+    <message>
+        <source>Unknown</source>
+        <translation type="unfinished">未知</translation>
+    </message>
+    <message>
+        <source>Static Key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unverified TLS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The routing profile lists an endpoint profile (id %1) that no longer exists</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 is listed as a routing profile endpoint but is empty or corrupted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 is listed as a routing profile endpoint but a hop of it no longer exists</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 is listed as a routing profile endpoint, so its last hop must be an OpenVPN or OpenConnect profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hops of the routing profile endpoint %1 cannot use an extra core, a full config, or be a chain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hops of the routing profile endpoint %1 cannot run on the Xray core</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 is used as an endpoint of the routing profile and by the started profile at the same time, remove it from one of them</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 is listed twice in the endpoints of the routing profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Database error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 failed: %2. Details are in the log file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Endpoint</source>
+        <translation type="unfinished">端点</translation>
+    </message>
+    <message>
+        <source>Connect OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 route prefer</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QPlatformTheme</name>
@@ -5298,14 +8669,6 @@ outbounds and other Throne features may break. For advanced users only.</source>
         <translation>按原样使用路由对象 (outbounds 标识符仍被解析为标记)。
 在 Throne 中「不会」添加它的 DNS-hijack (DNS劫持)或 xray bridge plumbing (桥接)，所以 DNS、链式/xray
 出口和其它 Throne 功能可能会失效。仅限高级用户。</translation>
-    </message>
-    <message>
-        <source>Valid JSON</source>
-        <translation>有效 JSON</translation>
-    </message>
-    <message>
-        <source>Invalid JSON: %1 (offset %2)</source>
-        <translation>无效 JSON: %1 (偏移 %2)</translation>
     </message>
     <message>
         <source>Format JSON</source>
@@ -5385,6 +8748,22 @@ Your local edits are overwritten on each update.</source>
         <translation>Warp-bypass</translation>
     </message>
     <message>
+        <source>Endpoints</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OpenVPN / OpenConnect profiles started alongside this routing profile. Traffic for the networks they advertise goes through them; everything else follows this profile&apos;s rules. Each endpoint gets a rule in the Advanced tab that you can move among your own rules.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation type="unfinished">删除</translation>
+    </message>
+    <message>
         <source>Rules</source>
         <translation>规则</translation>
     </message>
@@ -5403,6 +8782,10 @@ Your local edits are overwritten on each update.</source>
     <message>
         <source>Delete</source>
         <translation>删除</translation>
+    </message>
+    <message>
+        <source>This rule is managed by the Endpoints tab. You can only move it.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Preview</source>
@@ -5455,6 +8838,14 @@ Your local edits are overwritten on each update.</source>
         <translation>简单规则手册</translation>
     </message>
     <message>
+        <source>Profile #%1 — deleted, dropped when you save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 route prefer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Invalid operation</source>
         <translation>无效操作</translation>
     </message>
@@ -5471,8 +8862,30 @@ Your local edits are overwritten on each update.</source>
         <translation>配置档中没有有效的规则</translation>
     </message>
     <message>
+        <source>%1 endpoint profile(s) no longer exist and were removed from this routing profile.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Endpoint rule: move it to choose where the endpoint claims traffic. Managed by the Endpoints tab.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Check attributes to show as tabs; unchecking clears their values.</source>
         <translation>勾选显示为标签的属性; 取消勾选则清除它们的值。</translation>
+    </message>
+    <message>
+        <source>This rule installs a &apos;preferred by&apos; rule so that the networks advertised by the endpoint %1 get routed into the endpoint tunnel.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Endpoint rule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This rule belongs to the endpoint &quot;%1&quot; and cannot be deleted on its own.
+
+Remove that endpoint from this routing profile as well?</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Some rules could not be added, fix them before saving:
@@ -5540,31 +8953,48 @@ Your local edits are overwritten on each update.</source>
         <source>Fetched with warnings</source>
         <translation>已获取，但带警告</translation>
     </message>
+</context>
+<context>
+    <name>ServerItemDelegate</name>
     <message>
-        <source>Rule Attributes</source>
-        <translation>规则属性</translation>
+        <source>ms</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ServerListPanel</name>
+    <message>
+        <source>Add subscription</source>
+        <translation type="unfinished">添加订阅</translation>
     </message>
     <message>
-        <source>Attribute</source>
-        <translation>属性</translation>
+        <source>Update subscription</source>
+        <translation type="unfinished">更新订阅</translation>
     </message>
     <message>
-        <source>Name_Placeholder</source>
-        <translation>名称_占位符</translation>
+        <source>Search</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Import JSON</source>
-        <translation>导入 JSON</translation>
+        <source>Measure latency</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Invalid JSON Array</source>
-        <translation>无效 JSON 数组</translation>
+        <source>All</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The provided input cannot be parsed to a valid route rule array:
-</source>
-        <translation>提供的输入无法解析为有效的路由规则数组:
-</translation>
+        <source>Favorites</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This subscription has no servers yet. Refresh it or add another one.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No subscription yet.
+Paste the link your provider gave you and the servers will appear here.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -5602,6 +9032,41 @@ Your local edits are overwritten on each update.</source>
     </message>
 </context>
 <context>
+    <name>SubscriptionCard</name>
+    <message>
+        <source>until %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No traffic data yet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 used, unlimited</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 of %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Traffic resets on %1, in %2 day(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Traffic resets on %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Support</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Subscription page</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>TrafficChartWidget</name>
     <message>
         <source>Download</source>
@@ -5614,6 +9079,25 @@ Your local edits are overwritten on each update.</source>
     <message>
         <source>No traffic recorded for this period</source>
         <translation>这个周期无流量记录</translation>
+    </message>
+</context>
+<context>
+    <name>TrayOtpCodes</name>
+    <message>
+        <source>No OTP profiles yet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No matches</source>
+        <translation type="unfinished">无匹配</translation>
+    </message>
+    <message>
+        <source>Invalid secret</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copied</source>
+        <translation type="unfinished">已复制</translation>
     </message>
 </context>
 <context>
@@ -5660,224 +9144,6 @@ Your local edits are overwritten on each update.</source>
     <message>
         <source>Page %1/%2</source>
         <translation>页面 %1/%2</translation>
-    </message>
-</context>
-<context>
-    <name>GroupUpdater</name>
-    <message>
-        <source>%1
-How to update?</source>
-        <translation>%1
-如何更新？</translation>
-    </message>
-    <message>
-        <source>Added %1 profiles:
-%2
-Deleted %3 Profiles:
-%4</source>
-        <translation>添加了 %1 个配置档：
-%2
-删除了 %3 个配置档：
-%4</translation>
-    </message>
-</context>
-<context>
-    <name>PeriodicRunner</name>
-    <message>
-        <source>Auto-update: running %1</source>
-        <translation>自动更新: 正在运行 %1</translation>
-    </message>
-</context>
-<context>
-    <name>RouteUpdater</name>
-    <message>
-        <source>remote URL is empty</source>
-        <translation>远程 URL 为空</translation>
-    </message>
-    <message>
-        <source>internal error: null profile</source>
-        <translation>内部错误: 虚配置档</translation>
-    </message>
-    <message>
-        <source>not a remote routing profile</source>
-        <translation>不是一个远程路由配置档</translation>
-    </message>
-</context>
-<context>
-    <name>edit_wireguard</name>
-    <message>
-        <source>Generating config...</source>
-        <translation>正在生成配置…</translation>
-    </message>
-    <message>
-        <source>Success!</source>
-        <translation>成功!</translation>
-    </message>
-    <message>
-        <source>Getting keypair...</source>
-        <translation>正在获取钥匙对…</translation>
-    </message>
-    <message>
-        <source>Failed to generate warp config</source>
-        <translation>生成 warp 配置失败</translation>
-    </message>
-    <message>
-        <source>Failed to get key pair</source>
-        <translation>获取钥匙对失败</translation>
-    </message>
-</context>
-<context>
-    <name>DialogPresetSettings</name>
-    <message>
-        <source>Preset Settings</source>
-        <translation>预设设置</translation>
-    </message>
-    <message>
-        <source>Multiplex</source>
-        <translation>复用</translation>
-    </message>
-    <message>
-        <source>Protocol</source>
-        <translation>协议</translation>
-    </message>
-    <message>
-        <source>Concurrency</source>
-        <translation>并发</translation>
-    </message>
-    <message>
-        <source>Default On</source>
-        <translation>默认开启</translation>
-    </message>
-    <message>
-        <source>Default Mux On</source>
-        <translation>默认多路复用开启</translation>
-    </message>
-    <message>
-        <source>Implementation</source>
-        <translation>实现</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Which TLS fragmentation implementation profiles use: built-in (sing-box tls.fragment) or custom (Hiddify dialer-level ClientHello fragmentation).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;使用哪个 TLS 分片实现配置档: built-in (sing-box tls.fragment) 或 custom (Hiddify 拨号器级 ClientHello 分片)。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Size</source>
-        <translation>大小</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Custom implementation only: bytes per ClientHello fragment, as a range min-max (e.g. 10-100).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;仅自定义实现: 每个 ClientHello 分片字节数，以最小-最大值的范围表示(如 10-100).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Sleep</source>
-        <translation>睡眠</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Custom implementation only: milliseconds to sleep between fragment bursts, as a range min-max (e.g. 2-5).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;仅自定义实现: 每次分片突发间睡眠的毫秒数，以最小-最大值的范围表示(如 2-5).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fragment profiles whose Fragment setting is left on &amp;quot;Keep Default&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;分片设置保持在&amp;quot;Keep Default&amp;quot;（保持默认）的分片配置档。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>TLS Tricks</source>
-        <translation>TLS 技巧</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable mixed-case SNI for profiles whose TLS Tricks setting is left on &amp;quot;Keep Default&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;对其 TLS Tricks 设置保持在 &amp;quot;Keep Default&amp;quot;（保持默认）的配置档启用混合大小写的 SNI。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Default Fingerprint</source>
-        <translation>默认指纹</translation>
-    </message>
-    <message>
-        <source>TLS Spoof</source>
-        <translation>TLS 欺骗</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Inject a forged TLS ClientHello carrying this SNI before the real one, to pass SNI filtering that allows specific hostnames. Profiles that set their own Spoof SNI override this one.&lt;/p&gt;&lt;p&gt;Client only. Requires elevated privileges (root on macOS, CAP_NET_RAW and CAP_NET_ADMIN on Linux, Administrator on Windows for the WinDivert driver). Not supported on Windows ARM64. &amp;quot;wrong-timestamp&amp;quot; is not supported on macOS.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;在真实的 TLS ClientHello 前，注入一个承载这个 SNI 的伪造 TLS ClientHello，以传递允许特定主机名的 SNI 过滤。 设置其自有的欺骗 SNI 的配置档会凌驾于这个。&lt;/p&gt;&lt;p&gt;仅客户端。需要提权 (在 macOS 上的 root，在 Linux 上的 CAP_NET_RAW 和 CAP_NET_ADMIN，在 Windows 上的 Administrator 用于 WinDivert 驱动程序)。在 Windows ARM64 上不被支持。 macOS 上不支持 &amp;quot;wrong-timestamp&amp;quot;。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Spoof SNI</source>
-        <translation>欺骗 SNI</translation>
-    </message>
-    <message>
-        <source>Allowed SNI to forge</source>
-        <translation>允许 SNI 伪装</translation>
-    </message>
-    <message>
-        <source>Method</source>
-        <translation>方法</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How the forged ClientHello is made invalid for the server, so only the filter acts on it. Empty keeps the core&apos;s default.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;如何使伪造的 ClientHello 对服务器无效，从而仅由过滤器对其进行处理。留空则保持核心的默认设置。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spoof profiles whose TLS Spoof setting is left on &amp;quot;Keep Default&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TLS Spoof （TLS欺骗）设置保持在 &amp;quot;Keep Default&amp;quot;（保持默认）的欺骗配置档。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>HTTP/2 &amp;&amp; QUIC</source>
-        <translation>HTTP/2 和 QUIC</translation>
-    </message>
-    <message>
-        <source>HTTP/2 parameters also apply to Hysteria, Hysteria2 and TUIC. Empty keeps the core&apos;s default.</source>
-        <translation>HTTP/2 参数同样适用于 Hysteria、Hysteria2 和 TUIC。留空则使用核心的默认值。</translation>
-    </message>
-    <message>
-        <source>HTTP/2 Parameters</source>
-        <translation>HTTP/2 参数</translation>
-    </message>
-    <message>
-        <source>Idle Timeout</source>
-        <translation>空闲超时</translation>
-    </message>
-    <message>
-        <source>Keep Alive Period</source>
-        <translation>保持活动周期</translation>
-    </message>
-    <message>
-        <source>Stream Receive Window</source>
-        <translation>流接收窗口</translation>
-    </message>
-    <message>
-        <source>Connection Receive Window</source>
-        <translation>连接接收窗口</translation>
-    </message>
-    <message>
-        <source>Max Concurrent Streams</source>
-        <translation>最大并发流数</translation>
-    </message>
-    <message>
-        <source>QUIC Parameters</source>
-        <translation>QUIC 参数</translation>
-    </message>
-    <message>
-        <source>Initial Packet Size</source>
-        <translation>初始数据包大小</translation>
-    </message>
-    <message>
-        <source>Disable Path MTU Discovery</source>
-        <translation>禁用路径 MTU 发现</translation>
-    </message>
-</context>
-<context>
-    <name>DialogOtpManager</name>
-    <message>
-        <source>OTP Manager</source>
-        <translation>OTP 管理器</translation>
-    </message>
-    <message>
-        <source>Import</source>
-        <translation>导入</translation>
-    </message>
-    <message>
-        <source>Scan QR Code</source>
-        <translation>扫描 QR 码</translation>
     </message>
 </context>
 </TS>
