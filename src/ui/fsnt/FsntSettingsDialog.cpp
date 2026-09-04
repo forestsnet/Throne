@@ -261,9 +261,12 @@ void FsntSettingsDialog::save() {
     const int minutes = m_subAutoUpdate->currentData().toInt();
     settings->sub_auto_update = settings->sub_auto_update < 0 ? -minutes : minutes;
 
+    // Пишем только при настоящей смене: значение в базе хранится в нижнем
+    // регистре, а у пунктов списка он смешанный, и запись «как есть» меняла бы
+    // регистр при каждом сохранении без всякой причины.
     const QString theme = m_theme->currentData().toString();
     const bool themeChanged = theme.compare(settings->theme, Qt::CaseInsensitive) != 0;
-    settings->theme = theme;
+    if (themeChanged) settings->theme = theme;
 
     settings->Save();
 
