@@ -2,10 +2,14 @@
 #include "NkrVersion.h"
 
 #include <QApplication>
+#include <QStandardPaths>
+#include <QCoreApplication>
+#include <QThread>
 #include <QDesktopServices>
 #include <QDir>
 #include <QDirIterator>
 #include <QFile>
+#include <QFileInfo>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QMessageBox>
@@ -127,6 +131,8 @@ void MainWindow::prepare_exit()
     LOG_INFO("prepare_exit started, tearing down proxy/tun/core");
     if (Configs::dataManager->settingsRepo->spmode_system_proxy) set_system_proxy(false);
     if (Configs::dataManager->settingsRepo->system_dns_set) set_system_dns(false, false);
+    // Сбрасываем режим VPN, иначе TUN-интерфейс может пережить приложение.
+    if (Configs::dataManager->settingsRepo->spmode_vpn) set_spmode_vpn(false, false);
     RegisterHiddenMenuShortcuts(true);
     RegisterHotkey(true);
     on_commitDataRequest();
@@ -137,6 +143,25 @@ void MainWindow::prepare_exit()
     {
         core_process->Kill();
     }, DS_cores, true);
+
+    // Многократная проверка с прокачкой событий: без неё core успевает
+    // не отпустить порты и файлы, и обновление падает.
+    qDebug() << "Waiting for core process to fully terminate...";
+    for (int i = 0; i < 20; i++) {
+        QThread::msleep(150);
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+    }
+
+    // Убеждаемся, что VPN-процесс тоже завершён
+    qDebug() << "Force stopping VPN process...";
+    StopVPNProcess();
+
+    for (int i = 0; i < 10; i++) {
+        QThread::msleep(100);
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
+    }
+    qDebug() << "All processes terminated, cleaning up...";
+
     HideWindow(this);
     tray->hide();
 
@@ -308,6 +333,9 @@ void MainWindow::set_spmode_vpn(bool enable, bool save) {
     Configs::dataManager->settingsRepo->spmode_vpn = enable;
     refresh_status();
 
+    // При отключении VPN явно останавливаем процесс: сам по себе он не всегда завершается.
+    if (!enable) StopVPNProcess();
+
     if (Configs::dataManager->settingsRepo->started_id >= 0) profile_start(Configs::dataManager->settingsRepo->started_id);
 }
 
@@ -329,6 +357,72 @@ void MainWindow::RestartCore() {
 }
 
 namespace {
+
+// Ассеты форка называются Throne-<platform>-<arch>.zip и версии в имени не содержат,
+// поэтому сравнение идёт по тегу релиза, а не по имени файла.
+bool compareVersions(const QStringList& parts, const QStringList& currentParts) {
+    if (parts.size() < 3 || currentParts.size() < 3) {
+        MW_show_log("Version strings seem to be invalid in compareVersions");
+        return false;
+    }
+
+    std::vector<int> verNums;
+    std::vector<int> currNums;
+
+    verNums.push_back(parts[0].toInt());
+    verNums.push_back(parts[1].toInt());
+    verNums.push_back(parts[2].toInt());
+    if (parts.size() > 3) {
+        if (parts[3] == "alpha") verNums.push_back(1);
+        if (parts[3] == "beta") verNums.push_back(2);
+        if (parts[3] == "rc") verNums.push_back(3);
+        if (parts.size() > 4) verNums.push_back(parts[4].toInt());
+    }
+
+    currNums.push_back(currentParts[0].toInt());
+    currNums.push_back(currentParts[1].toInt());
+    currNums.push_back(currentParts[2].toInt());
+    if (currentParts.size() > 3) {
+        if (currentParts[3] == "alpha") currNums.push_back(1);
+        if (currentParts[3] == "beta") currNums.push_back(2);
+        if (currentParts[3] == "rc") currNums.push_back(3);
+        if (currentParts.size() > 4) currNums.push_back(currentParts[4].toInt());
+    }
+
+    if (verNums.size() < 3 || currNums.size() < 3) {
+        MW_show_log("Version parsing failed in compareVersions");
+        return false;
+    }
+
+    for (int i = 0; i < 3; i++) {
+        if (verNums[i] > currNums[i]) return true;
+        if (verNums[i] < currNums[i]) return false;
+    }
+
+    if (verNums.size() == 5 && currNums.size() == 3) return false;
+    if (verNums.size() == 3 && currNums.size() == 5) return true;
+    if (verNums.size() == 5 && currNums.size() == 5) {
+        for (int i = 3; i < 5; i++) {
+            if (verNums[i] > currNums[i]) return true;
+            if (verNums[i] < currNums[i]) return false;
+        }
+    }
+    return false;
+}
+
+bool isNewerByTag(const QString& releaseTag) {
+    if (QString(NKR_VERSION).isEmpty()) return false;
+
+    QString version = releaseTag;
+    if (version.startsWith('v') || version.startsWith('V')) {
+        version = version.mid(1);
+    }
+
+    auto parts = version.replace("-", ".").split(".");
+    auto currentParts = QString(NKR_VERSION).replace("-", ".").split('.');
+
+    return compareVersions(parts, currentParts);
+}
 
 bool isNewer(QString assetName) {
     if (QString(NKR_VERSION).isEmpty()) return false;
@@ -499,6 +593,64 @@ void MainWindow::OpenDashboard() {
     });
 }
 
+QString MainWindow::GetUpdateDirectory() {
+#ifdef Q_OS_WIN
+    if (Configs::dataManager->settingsRepo->flag_use_appdata) {
+        return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/Throne_update";
+    }
+    return QApplication::applicationDirPath() + "/Throne_update";
+#else
+    return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/Throne_update";
+#endif
+}
+
+bool MainWindow::PrepareUpdateEnvironment() {
+    QString updateDir = GetUpdateDirectory();
+    MW_show_log(QString("[Update] Preparing update environment: %1").arg(updateDir));
+
+    QDir dir;
+    if (!dir.exists(updateDir) && !dir.mkpath(updateDir)) {
+        MW_show_log("[Update] ERROR: Failed to create update directory!");
+        return false;
+    }
+
+    // Чистим остатки прошлой попытки обновления
+    QDir updateFolder(updateDir);
+    updateFolder.setNameFilters(QStringList() << "Throne.zip" << "extracted" << "*.log");
+    updateFolder.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+    for (const QString &entry : updateFolder.entryList()) {
+        const QString path = updateDir + "/" + entry;
+        if (QFileInfo(path).isDir()) {
+            QDir(path).removeRecursively();
+        } else {
+            QFile::remove(path);
+        }
+    }
+
+    MW_show_log("[Update] Update environment prepared");
+    return true;
+}
+
+void MainWindow::InstallUpdateAndRestart() {
+    MW_show_log("[Update] Starting update installation...");
+
+#ifdef Q_OS_WIN
+    const QString updaterPath = QApplication::applicationDirPath() + "/updater.exe";
+#else
+    const QString updaterPath = QApplication::applicationDirPath() + "/updater";
+#endif
+
+    if (!QFile::exists(updaterPath)) {
+        MW_show_log("[Update] ERROR: Updater not found!");
+        MessageBoxWarning(tr("Update"), tr("Updater not found! Please download update manually."));
+        return;
+    }
+
+    this->exit_reason = ExitReason::RunUpdater;
+    MW_show_log("[Update] Closing application to start updater...");
+    on_menu_exit_triggered();
+}
+
 void MainWindow::CheckUpdate() {
     QString search;
 #ifdef Q_OS_WIN
@@ -536,7 +688,7 @@ void MainWindow::CheckUpdate() {
         return;
     }
 
-    auto resp = NetworkRequestHelper::HttpGet("https://api.github.com/repos/throneproj/Throne/releases");
+    auto resp = NetworkRequestHelper::HttpGet("https://api.github.com/repos/forestsnet/Throne/releases");
     if (!resp.error.isEmpty()) {
         runOnUiThread([=,this] {
             MessageBoxWarning(QObject::tr("Update"), QObject::tr("Requesting update error: %1").arg(resp.error + "\n" + resp.data));
@@ -544,7 +696,7 @@ void MainWindow::CheckUpdate() {
         return;
     }
 
-    QString assets_name, release_download_url, release_url, release_note, note_pre_release;
+    QString assets_name, release_download_url, release_url, release_note, note_pre_release, release_tag_name;
     bool exitFlag = false;
     QJsonArray array = QString2QJsonArray(resp.data);
     for (const QJsonValue value : array) {
@@ -553,6 +705,7 @@ void MainWindow::CheckUpdate() {
         for (const QJsonValue asset : release["assets"].toArray()) {
             if (asset["name"].toString().contains(search) && asset["name"].toString().section('.', -1) == QString("zip")) {
                 note_pre_release = release["prerelease"].toBool() ? " (Pre-release)" : "";
+                release_tag_name = release["tag_name"].toString();
                 release_url = release["html_url"].toString();
                 release_note = release["body"].toString();
                 assets_name = asset["name"].toString();
@@ -564,7 +717,7 @@ void MainWindow::CheckUpdate() {
         if (exitFlag) break;
     }
 
-    if (release_download_url.isEmpty() || !isNewer(assets_name)) {
+    if (release_download_url.isEmpty() || !isNewerByTag(release_tag_name)) {
         runOnUiThread([=,this] {
             MessageBoxInfo(QObject::tr("Update"), QObject::tr("No update"));
         });
@@ -572,7 +725,8 @@ void MainWindow::CheckUpdate() {
     }
 
     runOnUiThread([=,this] {
-        auto allow_updater = !Configs::dataManager->settingsRepo->flag_use_appdata;
+        // Форк: свой обновлятор умеет ставить обновление и при flag_use_appdata
+        auto allow_updater = true;
         QMessageBox box(QMessageBox::Question, QObject::tr("Update") + note_pre_release,
                         QObject::tr("Update found: %1\nRelease note:\n%2").arg(assets_name, release_note));
         QAbstractButton *btn1 = nullptr;
@@ -590,11 +744,25 @@ void MainWindow::CheckUpdate() {
                     });
                     return;
                 }
+                MW_show_log("[Update] Starting update download...");
+                if (!PrepareUpdateEnvironment()) {
+                    mu_download_update.unlock();
+                    runOnUiThread([=,this](){
+                        MessageBoxWarning(tr("Update"), tr("Failed to prepare update environment!"));
+                    });
+                    return;
+                }
+                const QString updateDir = GetUpdateDirectory();
+
                 QString errors;
                 if (!release_download_url.isEmpty()) {
-                    auto res = NetworkRequestHelper::DownloadAsset(release_download_url, "Throne.zip");
+                    MW_show_log(QString("[Update] Downloading from: %1").arg(release_download_url));
+                    auto res = NetworkRequestHelper::DownloadAsset(release_download_url, "Throne.zip", false, updateDir);
                     if (!res.isEmpty()) {
+                        MW_show_log(QString("[Update] Download error: %1").arg(res));
                         errors += res;
+                    } else {
+                        MW_show_log("[Update] Download completed successfully");
                     }
                 }
                 mu_download_update.unlock();
@@ -603,8 +771,10 @@ void MainWindow::CheckUpdate() {
                         auto q = QMessageBox::question(nullptr, QObject::tr("Update"),
                                                        QObject::tr("Update is ready, restart to install?"));
                         if (q == QMessageBox::StandardButton::Yes) {
-                            this->exit_reason = ExitReason::RunUpdater;
-                            on_menu_exit_triggered();
+                            InstallUpdateAndRestart();
+                        } else {
+                            MW_show_log("[Update] Installation postponed.");
+                            MessageBoxInfo(tr("Update"), tr("Update is ready. The update will be installed on next application restart."));
                         }
                     } else {
                         MessageBoxWarning(tr("Failed to download update assets"), errors);

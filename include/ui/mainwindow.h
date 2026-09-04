@@ -231,6 +231,11 @@ private slots:
 
     void on_tabWidget_customContextMenuRequested(const QPoint& p);
 
+    // Обновление через собственный обновлятор форка
+    QString GetUpdateDirectory();
+    bool PrepareUpdateEnvironment();
+    void InstallUpdateAndRestart();
+
 private:
     Ui::MainWindow *ui;
     QElapsedTimer sinceWindowDeactivated;
