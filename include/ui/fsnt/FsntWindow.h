@@ -5,6 +5,7 @@
 #include "include/global/Utils.hpp"
 
 class ConnectPanel;
+class ServerListPanel;
 class QVBoxLayout;
 
 // Потребительское окно FSNT Client. В этом приросте панели пустые:
@@ -25,12 +26,14 @@ private:
     void chainCoreMessages();
     void onCoreMessage(MwMessage cmd, const QStringList &args);
     void refreshConnectionState();
+    void refreshServerList();
     void buildHeader(QVBoxLayout *root);
     void buildPanels(QVBoxLayout *root);
     void applyTheme();
     void switchToAdvancedMode();
 
     ConnectPanel *m_connectPanel = nullptr;
+    ServerListPanel *m_serverList = nullptr;
     QVBoxLayout *m_serverLayout = nullptr;
     QVBoxLayout *m_sideLayout = nullptr;
 };

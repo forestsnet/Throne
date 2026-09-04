@@ -343,6 +343,14 @@ set(PROJECT_SOURCES
         src/ui/fsnt/ConnectPanel.cpp
 
         include/ui/fsnt/ConnectPanel.h
+
+        src/ui/fsnt/ServerListPanel.cpp
+
+        include/ui/fsnt/ServerListPanel.h
+
+        src/ui/fsnt/ServerItemDelegate.cpp
+
+        src/ui/fsnt/ServerItemDelegate.h
         include/ui/setting/dialog_per_app_proxy.h
         include/ui/setting/dialog_basic_settings.h
         include/ui/setting/dialog_basic_settings.ui

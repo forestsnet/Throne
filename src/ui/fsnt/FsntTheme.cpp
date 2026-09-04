@@ -34,6 +34,23 @@ namespace Fsnt {
 
             QLabel#fsntPlaceholder { color: %8; font-size: 13px; }
 
+            QComboBox#fsntGroupSwitch, QLineEdit#fsntSearch {
+                background: %10;
+                border: 1px solid %3;
+                border-radius: %6px;
+                padding: 6px 9px;
+                color: %2;
+                font-size: 13px;
+            }
+            QComboBox#fsntGroupSwitch::drop-down { border: none; width: 18px; }
+            QLineEdit#fsntSearch { background: %10; }
+
+            QListWidget#fsntServerList {
+                background: transparent;
+                border: none;
+                outline: none;
+            }
+
             QLabel#fsntElapsed { color: %2; font-size: 26px; }
             QLabel#fsntStatus { color: %8; font-size: 13px; }
             QLabel#fsntCurrentServer { color: %2; font-size: 14px; }
@@ -59,6 +76,7 @@ namespace Fsnt {
                  QString::number(kRowRadius),     // 6
                  c(t.hoverFill),                  // 7
                  c(t.muted),                      // 8
-                 c(t.success));                   // 9
+                 c(t.success),                    // 9
+                 c(t.hoverFill));                 // 10
     }
 }

@@ -12,7 +12,9 @@
 #include "include/database/SettingsRepo.h"
 #include "include/global/Configs.hpp"
 #include "include/ui/fsnt/ConnectPanel.h"
+#include "include/ui/mainwindow.h"
 #include "include/ui/fsnt/FsntTheme.hpp"
+#include "include/ui/fsnt/ServerListPanel.h"
 #include "include/ui/fsnt/UiMode.hpp"
 #include "include/global/Logger.hpp"
 #include "include/global/Utils.hpp"
@@ -65,6 +67,13 @@ void FsntWindow::onCoreMessage(MwMessage cmd, const QStringList &args) {
         case MwMessage::ProfileChanged:
             refreshConnectionState();
             break;
+        case MwMessage::GroupsChanged:
+        case MwMessage::SubscriptionFinished:
+        case MwMessage::SubscriptionGroupChanged:
+        case MwMessage::SubscriptionNewGroup:
+            refreshServerList();
+            refreshConnectionState();
+            break;
         default:
             break;
     }
@@ -111,10 +120,15 @@ void FsntWindow::buildPanels(QVBoxLayout *root) {
     m_serverLayout->setContentsMargins(Fsnt::kPanelPadding, Fsnt::kPanelPadding,
                                        Fsnt::kPanelPadding, Fsnt::kPanelPadding);
 
-    auto *serverStub = new QLabel(tr("Server list appears here"), serverPanel);
-    serverStub->setObjectName("fsntPlaceholder");
-    serverStub->setAlignment(Qt::AlignCenter);
-    m_serverLayout->addWidget(serverStub);
+    m_serverList = new ServerListPanel(serverPanel);
+    m_serverLayout->addWidget(m_serverList);
+
+    connect(m_serverList, &ServerListPanel::serverActivated, this, [](int profileId) {
+        if (auto *mw = GetMainWindow()) {
+            if (!Configs::dataManager->settingsRepo->spmode_vpn) mw->set_spmode_vpn(true);
+            mw->profile_start(profileId);
+        }
+    });
 
     auto *sidePanel = new QWidget(body);
     m_sideLayout = new QVBoxLayout(sidePanel);
@@ -132,6 +146,10 @@ void FsntWindow::buildPanels(QVBoxLayout *root) {
 
 void FsntWindow::refreshConnectionState() {
     if (m_connectPanel != nullptr) m_connectPanel->refresh();
+}
+
+void FsntWindow::refreshServerList() {
+    if (m_serverList != nullptr) m_serverList->reloadGroups();
 }
 
 void FsntWindow::applyTheme() {

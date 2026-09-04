@@ -5666,4 +5666,11 @@ processName rules in the current routing profile.</source>
         <translation>Сначала добавьте подписку</translation>
     </message>
 </context>
+<context>
+    <name>ServerListPanel</name>
+    <message>
+        <source>Search</source>
+        <translation>Поиск</translation>
+    </message>
+</context>
 </TS>
