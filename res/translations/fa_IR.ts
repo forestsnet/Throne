@@ -6331,6 +6331,14 @@ Improves hole-punching reliability. Requires IPv4.</source>
 <context>
     <name>FsntWindow</name>
     <message>
+        <source>dev</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Application version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Settings</source>
         <translation type="unfinished">تنظیمات</translation>
     </message>

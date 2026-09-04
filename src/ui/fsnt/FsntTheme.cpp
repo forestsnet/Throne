@@ -37,6 +37,7 @@ namespace Fsnt {
                 border-bottom: 1px solid @border;
             }
             QLabel#fsntTitle { color: @text; font-size: 14px; font-weight: 600; }
+            QLabel#fsntVersion { color: @muted; font-size: 11px; padding-top: 3px; }
             QLabel#fsntLogo { background: transparent; }
             QLabel#fsntSectionLabel {
                 color: @muted;

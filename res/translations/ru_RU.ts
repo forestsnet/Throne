@@ -6348,6 +6348,14 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Настройки</translation>
     </message>
     <message>
+        <source>dev</source>
+        <translation>dev</translation>
+    </message>
+    <message>
+        <source>Application version</source>
+        <translation>Версия приложения</translation>
+    </message>
+    <message>
         <source>Logs</source>
         <translation>Логи</translation>
     </message>

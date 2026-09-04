@@ -165,6 +165,15 @@ void FsntWindow::buildHeader(QVBoxLayout *root) {
     title->setObjectName("fsntTitle");
     row->addWidget(title);
 
+    // Версия рядом с названием: пользователю есть что назвать в поддержке, а
+    // нам — понять, о какой сборке речь. NKR_VERSION подставляется из тега при
+    // сборке, локально он пуст.
+    const QString build = QStringLiteral(NKR_VERSION);
+    auto *version = new QLabel(build.isEmpty() ? tr("dev") : build, header);
+    version->setObjectName("fsntVersion");
+    version->setToolTip(tr("Application version"));
+    row->addWidget(version);
+
     row->addStretch();
 
     auto *settings = new FsntIconButton(Fsnt::Glyph::Gear, header);
