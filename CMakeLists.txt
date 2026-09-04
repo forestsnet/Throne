@@ -535,6 +535,10 @@ set(PROJECT_SOURCES
         src/configs/outbounds/custom.cpp
         include/configs/generate.h
         src/configs/generate.cpp
+
+        src/configs/XrayDnsStrip.cpp
+
+        include/configs/XrayDnsStrip.hpp
         include/configs/common/utils.h
         src/configs/common/utils.cpp
         include/configs/outbounds/custom.h

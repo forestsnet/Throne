@@ -29,3 +29,12 @@ target_include_directories(SubscriptionUsageTest PRIVATE ${CMAKE_SOURCE_DIR})
 target_link_libraries(SubscriptionUsageTest PRIVATE Qt6::Test)
 
 add_test(NAME SubscriptionUsageTest COMMAND SubscriptionUsageTest)
+
+qt_add_executable(XrayDnsStripTest
+        XrayDnsStripTest.cpp
+        ../src/configs/XrayDnsStrip.cpp
+)
+target_include_directories(XrayDnsStripTest PRIVATE ${CMAKE_SOURCE_DIR})
+target_link_libraries(XrayDnsStripTest PRIVATE Qt6::Test)
+
+add_test(NAME XrayDnsStripTest COMMAND XrayDnsStripTest)

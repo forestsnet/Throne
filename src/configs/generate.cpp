@@ -1,3 +1,4 @@
+#include "include/configs/XrayDnsStrip.hpp"
 #include "include/configs/generate.h"
 #include "include/configs/sub/ProviderPolicy.hpp"
 #include "include/api/RPC.h"
@@ -38,6 +39,8 @@ namespace {
 }
 
 namespace Configs {
+
+
     namespace {
 
         // ------------------------------------------------------------- tags
@@ -1400,8 +1403,10 @@ namespace Configs {
                 // Сравнение с false истинно только если заголовок реально прислан:
                 // отсутствие политики блок dns не трогает.
                 if (Subscription::ActiveProviderPolicy().dnsFromJson == false) {
-                    MW_show_log("[Policy] Provider disabled DNS from JSON, dropping dns section");
-                    userXrayConfig.remove("dns");
+                    const auto stripped = StripXrayDns(userXrayConfig);
+                    MW_show_log(QString("[Policy] Provider disabled DNS from JSON: dropped dns "
+                                        "section, %1 dns outbound(s), %2 routing rule(s)")
+                                    .arg(stripped.outbounds).arg(stripped.rules));
                 }
                 // A pre-probed 0 means the caller's probe failed; re-probe rather than bake in a dead port.
                 int port = req.xrayFullConfigPort;
