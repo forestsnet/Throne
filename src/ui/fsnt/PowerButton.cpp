@@ -11,26 +11,26 @@
 namespace {
     // Виджет заметно больше кольца: свечение уходит за него на треть радиуса,
     // и если места не оставить, круглый ореол обрезается краями в квадрат.
-    constexpr int kSide = 216;
-    constexpr qreal kRingRadius = 76.0;
-    constexpr qreal kGlowRadius = 104.0;   // не больше kSide / 2
-    constexpr qreal kRingWidth = 5.0;
-    constexpr qreal kGlyphRadius = 21.0;
-    constexpr int kSpinPeriodMs = 1400;
-    constexpr int kPulsePeriodMs = 2400;
+    constexpr int kPowerSide = 216;
+    constexpr qreal kPowerRingRadius = 76.0;
+    constexpr qreal kPowerGlowRadius = 104.0;   // не больше kPowerSide / 2
+    constexpr qreal kPowerRingWidth = 5.0;
+    constexpr qreal kPowerGlyphRadius = 21.0;
+    constexpr int kPowerSpinPeriodMs = 1400;
+    constexpr int kPowerPulsePeriodMs = 2400;
     // Длина бегущей дуги при подключении, в градусах.
-    constexpr int kArcSpanDeg = 110;
+    constexpr int kPowerArcSpanDeg = 110;
 }
 
 PowerButton::PowerButton(QWidget *parent) : QWidget(parent) {
-    setFixedSize(kSide, kSide);
+    setFixedSize(kPowerSide, kPowerSide);
     setCursor(Qt::PointingHandCursor);
     setAttribute(Qt::WA_Hover, true);
 
     m_spinAnim = new QVariantAnimation(this);
     m_spinAnim->setStartValue(0.0);
     m_spinAnim->setEndValue(360.0);
-    m_spinAnim->setDuration(kSpinPeriodMs);
+    m_spinAnim->setDuration(kPowerSpinPeriodMs);
     m_spinAnim->setLoopCount(-1);
     connect(m_spinAnim, &QVariantAnimation::valueChanged, this, [this](const QVariant &v) {
         m_spin = v.toReal();
@@ -40,7 +40,7 @@ PowerButton::PowerButton(QWidget *parent) : QWidget(parent) {
     m_pulseAnim = new QVariantAnimation(this);
     m_pulseAnim->setStartValue(0.0);
     m_pulseAnim->setEndValue(1.0);
-    m_pulseAnim->setDuration(kPulsePeriodMs);
+    m_pulseAnim->setDuration(kPowerPulsePeriodMs);
     m_pulseAnim->setEasingCurve(QEasingCurve::InOutSine);
     m_pulseAnim->setLoopCount(-1);
     connect(m_pulseAnim, &QVariantAnimation::valueChanged, this, [this](const QVariant &v) {
@@ -100,14 +100,14 @@ void PowerButton::paintEvent(QPaintEvent *event) {
     // При нажатии кнопка чуть проседает — единственная обратная связь на клик,
     // пока ядро ещё не ответило сменой состояния.
     const qreal squeeze = m_pressed ? 0.97 : 1.0;
-    const qreal outer = kRingRadius * squeeze;
+    const qreal outer = kPowerRingRadius * squeeze;
 
     // Свечение: заметно только когда есть что показывать, иначе фон грязнится.
     if (m_state != State::Off || m_hovered) {
         const qreal strength = m_state == State::Connected ? 0.35 + 0.25 * m_pulse
                              : m_state == State::Off       ? 0.18
                                                            : 0.30;
-        QRadialGradient glow(centre, kGlowRadius);
+        QRadialGradient glow(centre, kPowerGlowRadius);
         QColor inner = tint;
         inner.setAlphaF(strength);
         // Кольцо приходится примерно на 0.73 радиуса свечения: ореол начинается
@@ -117,17 +117,17 @@ void PowerButton::paintEvent(QPaintEvent *event) {
         glow.setColorAt(1.0, Qt::transparent);
         painter.setPen(Qt::NoPen);
         painter.setBrush(glow);
-        painter.drawEllipse(centre, kGlowRadius, kGlowRadius);
+        painter.drawEllipse(centre, kPowerGlowRadius, kPowerGlowRadius);
     }
 
     const QRectF ring(centre.x() - outer, centre.y() - outer, outer * 2, outer * 2);
 
     // Дорожка кольца — всегда целиком, чтобы бегущая дуга читалась как прогресс.
     painter.setBrush(Qt::NoBrush);
-    painter.setPen(QPen(p.border, kRingWidth, Qt::SolidLine, Qt::RoundCap));
+    painter.setPen(QPen(p.border, kPowerRingWidth, Qt::SolidLine, Qt::RoundCap));
     painter.drawEllipse(ring);
 
-    QPen activePen(tint, kRingWidth, Qt::SolidLine, Qt::RoundCap);
+    QPen activePen(tint, kPowerRingWidth, Qt::SolidLine, Qt::RoundCap);
     painter.setPen(activePen);
     switch (m_state) {
         case State::Connected:
@@ -137,7 +137,7 @@ void PowerButton::paintEvent(QPaintEvent *event) {
         case State::Stopping:
             // drawArc считает в 1/16 градуса и против часовой стрелки; знак минус
             // разворачивает бег дуги по часовой, как ждёт глаз.
-            painter.drawArc(ring, static_cast<int>(-m_spin * 16), -kArcSpanDeg * 16);
+            painter.drawArc(ring, static_cast<int>(-m_spin * 16), -kPowerArcSpanDeg * 16);
             break;
         case State::Off:
             if (m_hovered) painter.drawEllipse(ring);
@@ -147,15 +147,15 @@ void PowerButton::paintEvent(QPaintEvent *event) {
     // Внутренний диск: отделяет знак от кольца и даёт кнопке объём.
     painter.setPen(Qt::NoPen);
     painter.setBrush(m_hovered && m_state == State::Off ? p.cardHover : p.card);
-    painter.drawEllipse(centre, outer - kRingWidth * 1.6, outer - kRingWidth * 1.6);
+    painter.drawEllipse(centre, outer - kPowerRingWidth * 1.6, outer - kPowerRingWidth * 1.6);
 
     // Знак питания: разомкнутая сверху окружность плюс вертикальная черта.
-    const QRectF glyph(centre.x() - kGlyphRadius, centre.y() - kGlyphRadius + 2,
-                       kGlyphRadius * 2, kGlyphRadius * 2);
+    const QRectF glyph(centre.x() - kPowerGlyphRadius, centre.y() - kPowerGlyphRadius + 2,
+                       kPowerGlyphRadius * 2, kPowerGlyphRadius * 2);
     painter.setBrush(Qt::NoBrush);
     painter.setPen(QPen(tint, 3.4, Qt::SolidLine, Qt::RoundCap));
     painter.drawArc(glyph, 125 * 16, 290 * 16);
-    painter.drawLine(QPointF(centre.x(), centre.y() - kGlyphRadius - 4),
+    painter.drawLine(QPointF(centre.x(), centre.y() - kPowerGlyphRadius - 4),
                      QPointF(centre.x(), centre.y() + 1));
 }
 

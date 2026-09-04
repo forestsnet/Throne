@@ -15,7 +15,7 @@
 
 namespace {
     // Сколько ждём ответа ядра, прежде чем признать попытку неудавшейся.
-    constexpr int kPendingTimeoutMs = 25000;
+    constexpr int kConnectPendingTimeoutMs = 25000;
 }
 
 ConnectPanel::ConnectPanel(QWidget *parent) : QWidget(parent) {
@@ -66,7 +66,7 @@ ConnectPanel::ConnectPanel(QWidget *parent) : QWidget(parent) {
 
     m_pendingGuard = new QTimer(this);
     m_pendingGuard->setSingleShot(true);
-    m_pendingGuard->setInterval(kPendingTimeoutMs);
+    m_pendingGuard->setInterval(kConnectPendingTimeoutMs);
     connect(m_pendingGuard, &QTimer::timeout, this, [this] {
         const bool wasStopping = m_button->state() == PowerButton::State::Stopping;
         endPending();

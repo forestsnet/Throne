@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "include/ui/fsnt/ServerListPanel.h"
 
 #include <QComboBox>

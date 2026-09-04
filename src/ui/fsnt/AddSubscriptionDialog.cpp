@@ -15,7 +15,7 @@
 
 namespace {
     // Подписка тянется по сети и может упереться в таймаут HTTP-клиента.
-    constexpr int kGuardMs = 45000;
+    constexpr int kAddSubGuardMs = 45000;
 }
 
 AddSubscriptionDialog::AddSubscriptionDialog(QWidget *parent) : QDialog(parent) {
@@ -83,7 +83,7 @@ AddSubscriptionDialog::AddSubscriptionDialog(QWidget *parent) : QDialog(parent) 
 
     m_guard = new QTimer(this);
     m_guard->setSingleShot(true);
-    m_guard->setInterval(kGuardMs);
+    m_guard->setInterval(kAddSubGuardMs);
     connect(m_guard, &QTimer::timeout, this, [this] {
         fail(tr("The provider did not answer. Check the link and your connection."));
     });

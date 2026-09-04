@@ -18,7 +18,7 @@
 namespace {
     // Сколько строк держим в памяти. Журнал за сеанс легко уходит в десятки
     // тысяч строк, а листать столько в окне всё равно никто не станет.
-    constexpr int kMaxLines = 5000;
+    constexpr int kLogMaxLines = 5000;
 
     // Слова, по которым строка считается проблемной. Уровня в пользовательском
     // журнале нет — он собирается из свободного текста ядра и интерфейса.
@@ -77,7 +77,7 @@ FsntLogDialog::FsntLogDialog(QWidget *parent) : QDialog(parent) {
     m_view->setObjectName("fsntLogView");
     m_view->setReadOnly(true);
     m_view->setLineWrapMode(QPlainTextEdit::NoWrap);
-    m_view->setMaximumBlockCount(kMaxLines);
+    m_view->setMaximumBlockCount(kLogMaxLines);
     QFont mono("Menlo");
     mono.setStyleHint(QFont::Monospace);
     mono.setPointSizeF(11.5);
@@ -86,7 +86,7 @@ FsntLogDialog::FsntLogDialog(QWidget *parent) : QDialog(parent) {
 
     // История сеанса: журнал держит кольцо последних строк, и без него окно
     // открывалось бы пустым ровно в тот момент, когда что-то уже случилось.
-    m_lines = Logging::RecentLines(kMaxLines);
+    m_lines = Logging::RecentLines(kLogMaxLines);
     rebuild();
 
     connect(m_filter, &QLineEdit::textChanged, this, &FsntLogDialog::rebuild);
@@ -139,7 +139,7 @@ bool FsntLogDialog::passes(const QString &line) const {
 
 void FsntLogDialog::appendLine(const QString &line) {
     m_lines << line;
-    if (m_lines.size() > kMaxLines) m_lines.remove(0, m_lines.size() - kMaxLines);
+    if (m_lines.size() > kLogMaxLines) m_lines.remove(0, m_lines.size() - kLogMaxLines);
     if (!passes(line)) return;
 
     // Прокрутку двигаем, только если пользователь сам не ушёл вверх читать:

@@ -10,21 +10,21 @@
 #include "include/ui/fsnt/FsntPalette.hpp"
 
 namespace {
-    constexpr int kHeight = 46;
-    constexpr int kRadius = 12;
-    constexpr int kSidePadding = 16;
-    constexpr int kCloseSide = 24;
-    constexpr qreal kBorderWidth = 2.0;
-    constexpr int kTopMargin = 12;
-    constexpr int kMaxWidth = 520;
-    constexpr int kTickMs = 40;
+    constexpr int kToastHeight = 46;
+    constexpr int kToastRadius = 12;
+    constexpr int kToastSidePadding = 16;
+    constexpr int kToastCloseSide = 24;
+    constexpr qreal kToastBorderWidth = 2.0;
+    constexpr int kToastTopMargin = 12;
+    constexpr int kToastMaxWidth = 520;
+    constexpr int kToastTickMs = 40;
 }
 
 FsntToast::FsntToast(QWidget *parent) : QWidget(parent) {
     setVisible(false);
     setAttribute(Qt::WA_TransparentForMouseEvents, false);
     setMouseTracking(true);
-    setFixedHeight(kHeight);
+    setFixedHeight(kToastHeight);
 
     m_countdown = new QVariantAnimation(this);
     m_countdown->setStartValue(0.0);
@@ -45,7 +45,7 @@ void FsntToast::show(const QString &text, const int milliseconds) {
     relayout();
 
     m_countdown->stop();
-    m_countdown->setDuration(qMax(kTickMs, milliseconds));
+    m_countdown->setDuration(qMax(kToastTickMs, milliseconds));
     m_countdown->start();
 
     raise();
@@ -57,15 +57,15 @@ void FsntToast::relayout() {
     if (parentWidget() == nullptr) return;
 
     const QFontMetrics fm(font());
-    const int wanted = fm.horizontalAdvance(m_text) + kSidePadding * 2 + kCloseSide + 12;
-    const int width = qBound(220, wanted, qMin(kMaxWidth, parentWidget()->width() - 40));
+    const int wanted = fm.horizontalAdvance(m_text) + kToastSidePadding * 2 + kToastCloseSide + 12;
+    const int width = qBound(220, wanted, qMin(kToastMaxWidth, parentWidget()->width() - 40));
 
     setFixedWidth(width);
-    move((parentWidget()->width() - width) / 2, kTopMargin);
+    move((parentWidget()->width() - width) / 2, kToastTopMargin);
 }
 
 QRect FsntToast::closeRect() const {
-    return {width() - kSidePadding - kCloseSide, (height() - kCloseSide) / 2, kCloseSide, kCloseSide};
+    return {width() - kToastSidePadding - kToastCloseSide, (height() - kToastCloseSide) / 2, kToastCloseSide, kToastCloseSide};
 }
 
 void FsntToast::paintEvent(QPaintEvent *event) {
@@ -75,18 +75,18 @@ void FsntToast::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
-    const QRectF card = QRectF(rect()).adjusted(kBorderWidth, kBorderWidth,
-                                                -kBorderWidth, -kBorderWidth);
+    const QRectF card = QRectF(rect()).adjusted(kToastBorderWidth, kToastBorderWidth,
+                                                -kToastBorderWidth, -kToastBorderWidth);
 
     painter.setPen(Qt::NoPen);
     painter.setBrush(p.card);
-    painter.drawRoundedRect(card, kRadius, kRadius);
+    painter.drawRoundedRect(card, kToastRadius, kToastRadius);
 
     // Рамка-отсчёт. Частичный контур скруглённого прямоугольника рисуем штриховым
     // пером: длина штриха — остаток, длина пропуска — всё остальное. Считать
     // точки пути вручную здесь незачем.
     QPainterPath ring;
-    ring.addRoundedRect(card, kRadius, kRadius);
+    ring.addRoundedRect(card, kToastRadius, kToastRadius);
     const qreal perimeter = ring.length();
     const qreal remaining = perimeter * (1.0 - m_progress);
 
@@ -99,17 +99,17 @@ void FsntToast::paintEvent(QPaintEvent *event) {
             p.accent.greenF() + (p.border.greenF() - p.accent.greenF()) * fade,
             p.accent.blueF() + (p.border.blueF() - p.accent.blueF()) * fade);
 
-        QPen pen(tint, kBorderWidth, Qt::CustomDashLine, Qt::FlatCap);
+        QPen pen(tint, kToastBorderWidth, Qt::CustomDashLine, Qt::FlatCap);
         // Шаблон задаётся в толщинах пера, отсюда деление.
-        pen.setDashPattern({remaining / kBorderWidth,
-                            qMax(0.01, (perimeter - remaining) / kBorderWidth)});
+        pen.setDashPattern({remaining / kToastBorderWidth,
+                            qMax(0.01, (perimeter - remaining) / kToastBorderWidth)});
         painter.setPen(pen);
         painter.setBrush(Qt::NoBrush);
         painter.drawPath(ring);
     }
 
-    const QRect textRect(kSidePadding, 0,
-                         width() - kSidePadding * 2 - kCloseSide - 8, height());
+    const QRect textRect(kToastSidePadding, 0,
+                         width() - kToastSidePadding * 2 - kToastCloseSide - 8, height());
     painter.setPen(p.text);
     painter.setFont(font());
     painter.drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft,

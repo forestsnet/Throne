@@ -20,17 +20,17 @@
 #include "include/ui/fsnt/FsntTheme.hpp"
 
 namespace {
-    constexpr int kSwitchWidth = 46;
-    constexpr int kSwitchHeight = 26;
-    constexpr int kSwitchPadding = 3;
-    constexpr int kSlideMs = 160;
+    constexpr int kCtlSwitchWidth = 46;
+    constexpr int kCtlSwitchHeight = 26;
+    constexpr int kCtlSwitchPadding = 3;
+    constexpr int kCtlSlideMs = 160;
 
-    constexpr int kSelectHeight = 38;
-    constexpr int kSelectPadding = 12;
-    constexpr int kPopupRowHeight = 34;
+    constexpr int kCtlSelectHeight = 38;
+    constexpr int kCtlSelectPadding = 12;
+    constexpr int kCtlPopupRowHeight = 34;
 
 
-    constexpr int kIconButtonSide = 36;
+    constexpr int kCtlIconButtonSide = 36;
 
     // --- значки путями ---
 
@@ -188,7 +188,7 @@ namespace {
         QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override {
             Q_UNUSED(option)
             Q_UNUSED(index)
-            return {0, kPopupRowHeight};
+            return {0, kCtlPopupRowHeight};
         }
 
         void paint(QPainter *painter, const QStyleOptionViewItem &option,
@@ -231,7 +231,7 @@ FsntSwitch::FsntSwitch(QWidget *parent) : QAbstractButton(parent) {
     setAttribute(Qt::WA_Hover, true);
 
     m_slide = new QVariantAnimation(this);
-    m_slide->setDuration(kSlideMs);
+    m_slide->setDuration(kCtlSlideMs);
     m_slide->setEasingCurve(QEasingCurve::OutCubic);
     connect(m_slide, &QVariantAnimation::valueChanged, this, [this](const QVariant &value) {
         m_position = value.toReal();
@@ -247,7 +247,7 @@ FsntSwitch::FsntSwitch(QWidget *parent) : QAbstractButton(parent) {
 }
 
 QSize FsntSwitch::sizeHint() const {
-    return {kSwitchWidth, kSwitchHeight};
+    return {kCtlSwitchWidth, kCtlSwitchHeight};
 }
 
 void FsntSwitch::paintEvent(QPaintEvent *event) {
@@ -257,7 +257,7 @@ void FsntSwitch::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
-    const QRectF track(0, (height() - kSwitchHeight) / 2.0, kSwitchWidth, kSwitchHeight);
+    const QRectF track(0, (height() - kCtlSwitchHeight) / 2.0, kCtlSwitchWidth, kCtlSwitchHeight);
     const qreal radius = track.height() / 2.0;
 
     QColor off = p.dark ? p.cardHover : p.border;
@@ -273,10 +273,10 @@ void FsntSwitch::paintEvent(QPaintEvent *event) {
     painter.setBrush(trackColor);
     painter.drawRoundedRect(track, radius, radius);
 
-    const qreal knobSize = kSwitchHeight - kSwitchPadding * 2;
-    const qreal travel = kSwitchWidth - knobSize - kSwitchPadding * 2;
-    const QRectF knob(track.left() + kSwitchPadding + travel * m_position,
-                      track.top() + kSwitchPadding, knobSize, knobSize);
+    const qreal knobSize = kCtlSwitchHeight - kCtlSwitchPadding * 2;
+    const qreal travel = kCtlSwitchWidth - knobSize - kCtlSwitchPadding * 2;
+    const QRectF knob(track.left() + kCtlSwitchPadding + travel * m_position,
+                      track.top() + kCtlSwitchPadding, knobSize, knobSize);
 
     painter.setBrush(QColor("#FFFFFF"));
     painter.drawEllipse(knob);
@@ -312,7 +312,7 @@ FsntSelect::FsntSelect(QWidget *parent) : QComboBox(parent) {
 }
 
 QSize FsntSelect::sizeHint() const {
-    return {qMax(160, QComboBox::sizeHint().width() + 40), kSelectHeight};
+    return {qMax(160, QComboBox::sizeHint().width() + 40), kCtlSelectHeight};
 }
 
 void FsntSelect::showPopup() {
@@ -354,14 +354,14 @@ void FsntSelect::paintEvent(QPaintEvent *event) {
     painter.setPen(QPen(m_hovered || hasFocus() ? p.accent : p.border, 1.0));
     painter.drawRoundedRect(frame, Fsnt::kRowRadius, Fsnt::kRowRadius);
 
-    const QRect textRect = rect().adjusted(kSelectPadding, 0, -(kSelectPadding + 20), 0);
+    const QRect textRect = rect().adjusted(kCtlSelectPadding, 0, -(kCtlSelectPadding + 20), 0);
     painter.setPen(p.text);
     painter.setFont(font());
     painter.drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft,
                      QFontMetrics(font()).elidedText(currentText(), Qt::ElideRight,
                                                      textRect.width()));
 
-    drawChevron(&painter, QPointF(rect().right() - kSelectPadding - 4, rect().center().y() + 1),
+    drawChevron(&painter, QPointF(rect().right() - kCtlSelectPadding - 4, rect().center().y() + 1),
                 5, p.textMuted);
 }
 
@@ -407,7 +407,7 @@ FsntIconButton::FsntIconButton(const Fsnt::Glyph glyph, QWidget *parent)
 }
 
 QSize FsntIconButton::sizeHint() const {
-    return {kIconButtonSide, kIconButtonSide};
+    return {kCtlIconButtonSide, kCtlIconButtonSide};
 }
 
 void FsntIconButton::setFlat(const bool flat) {

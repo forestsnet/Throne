@@ -24,8 +24,8 @@
 #include "include/ui/fsnt/FsntTheme.hpp"
 
 namespace {
-    constexpr int kPageCount = 4;
-    constexpr int kGuardMs = 45000;
+    constexpr int kOnbPageCount = 4;
+    constexpr int kOnbGuardMs = 45000;
 
     QLabel *heading(QWidget *parent, const QString &text) {
         auto *label = new QLabel(text, parent);
@@ -118,7 +118,7 @@ OnboardingDialog::OnboardingDialog(QWidget *parent) : QDialog(parent) {
     dotRow->setContentsMargins(0, 0, 0, 20);
     dotRow->setSpacing(7);
     dotRow->addStretch();
-    for (int i = 0; i < kPageCount; ++i) {
+    for (int i = 0; i < kOnbPageCount; ++i) {
         auto *dot = new QLabel(m_dots);
         dot->setObjectName("fsntDot");
         dot->setFixedSize(7, 7);
@@ -129,7 +129,7 @@ OnboardingDialog::OnboardingDialog(QWidget *parent) : QDialog(parent) {
 
     m_subGuard = new QTimer(this);
     m_subGuard->setSingleShot(true);
-    m_subGuard->setInterval(kGuardMs);
+    m_subGuard->setInterval(kOnbGuardMs);
     connect(m_subGuard, &QTimer::timeout, this, [this] {
         m_subBusy = false;
         m_subAdd->setEnabled(true);
@@ -337,7 +337,7 @@ void OnboardingDialog::selectTransport(const int transport) {
 }
 
 void OnboardingDialog::goTo(const int page) {
-    m_pages->setCurrentIndex(qBound(0, page, kPageCount - 1));
+    m_pages->setCurrentIndex(qBound(0, page, kOnbPageCount - 1));
     refreshDots();
 }
 

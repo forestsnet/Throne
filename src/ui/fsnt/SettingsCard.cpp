@@ -9,14 +9,14 @@
 #include <QWidget>
 
 namespace {
-    constexpr int kRowHeight = 44;
-    constexpr int kSidePadding = 14;
+    constexpr int kCardRowHeight = 44;
+    constexpr int kCardSidePadding = 14;
 
     QWidget *makeRow(QWidget *parent, QHBoxLayout **layout) {
         auto *row = new QWidget(parent);
-        row->setMinimumHeight(kRowHeight);
+        row->setMinimumHeight(kCardRowHeight);
         auto *box = new QHBoxLayout(row);
-        box->setContentsMargins(kSidePadding, 6, kSidePadding, 6);
+        box->setContentsMargins(kCardSidePadding, 6, kCardSidePadding, 6);
         box->setSpacing(12);
         *layout = box;
         return row;
@@ -50,7 +50,7 @@ namespace Fsnt {
         // подписи, а не как рассечение карточки надвое.
         auto *holder = new QWidget(m_card);
         auto *box = new QHBoxLayout(holder);
-        box->setContentsMargins(kSidePadding, 0, 0, 0);
+        box->setContentsMargins(kCardSidePadding, 0, 0, 0);
         box->setSpacing(0);
         box->addWidget(line);
         holder->setFixedHeight(1);
@@ -95,7 +95,7 @@ namespace Fsnt {
         auto *button = new QPushButton(label, m_card);
         button->setObjectName("fsntRowAction");
         button->setCursor(Qt::PointingHandCursor);
-        button->setMinimumHeight(kRowHeight);
+        button->setMinimumHeight(kCardRowHeight);
         m_rows->addWidget(button);
         return button;
     }
@@ -105,7 +105,7 @@ namespace Fsnt {
         auto *note = new QLabel(text, m_card);
         note->setObjectName("fsntRowNote");
         note->setWordWrap(true);
-        note->setContentsMargins(kSidePadding, 10, kSidePadding, 12);
+        note->setContentsMargins(kCardSidePadding, 10, kCardSidePadding, 12);
         m_rows->addWidget(note);
     }
 } // namespace Fsnt

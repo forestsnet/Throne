@@ -1,3 +1,5 @@
+#include <iterator>
+
 #include "include/ui/fsnt/FsntSettingsDialog.h"
 
 #include <QAction>

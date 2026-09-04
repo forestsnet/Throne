@@ -13,13 +13,13 @@
 #include "include/ui/fsnt/ServerListPanel.h"
 
 namespace {
-    constexpr int kRowHeight = 58;
-    constexpr int kTextLeft = 14;
+    constexpr int kRowRowHeight = 58;
+    constexpr int kRowTextLeft = 14;
     // Толщина полоски-указателя у выбранной строки.
-    constexpr int kMarkerWidth = 3;
+    constexpr int kRowMarkerWidth = 3;
     // Место под три точки «идёт замер» и период их пульсации.
-    constexpr int kMeasuringZone = 40;
-    constexpr int kDotCycleMs = 900;
+    constexpr int kRowMeasuringZone = 40;
+    constexpr int kRowDotCycleMs = 900;
 
     QColor latencyColor(const Fsnt::Palette &p, const int ms) {
         if (ms <= ServerItemDelegate::kGoodLatencyMs) return p.success;
@@ -39,7 +39,7 @@ QSize ServerItemDelegate::sizeHint(const QStyleOptionViewItem &option,
                                    const QModelIndex &index) const {
     Q_UNUSED(option)
     Q_UNUSED(index)
-    return {0, kRowHeight};
+    return {0, kRowRowHeight};
 }
 
 void ServerItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
@@ -64,7 +64,7 @@ void ServerItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
         // когда обе залиты близкими оттенками.
         QPainterPath marker;
         marker.addRoundedRect(QRectF(fullRow.left() + 1, fullRow.top() + 8,
-                                     kMarkerWidth, fullRow.height() - 16),
+                                     kRowMarkerWidth, fullRow.height() - 16),
                               1.5, 1.5);
         painter->fillPath(marker, p.accent);
     }
@@ -93,14 +93,14 @@ void ServerItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     // Замер идёт секундами, и без этого непонятно, работает ли кнопка вообще:
     // строка просто показывает прежнее число.
     if (index.data(ServerListPanel::MeasuringRole).toBool()) {
-        const QRect zone(row.right() - kMeasuringZone, row.top(), kMeasuringZone, row.height());
+        const QRect zone(row.right() - kRowMeasuringZone, row.top(), kRowMeasuringZone, row.height());
         // Фазу берём из часов: делегат не хранит состояния, а панель лишь будит
         // перерисовку, поэтому все строки дышат согласованно.
         const qint64 now = QDateTime::currentMSecsSinceEpoch();
         painter->setPen(Qt::NoPen);
         for (int dot = 0; dot < 3; ++dot) {
             const qreal phase = std::fmod(
-                static_cast<qreal>(now % kDotCycleMs) / kDotCycleMs + dot * 0.22, 1.0);
+                static_cast<qreal>(now % kRowDotCycleMs) / kRowDotCycleMs + dot * 0.22, 1.0);
             // Треугольная волна: точка разгорается и гаснет, а не мигает.
             const qreal wave = phase < 0.5 ? phase * 2.0 : (1.0 - phase) * 2.0;
             painter->setBrush(withAlpha(p.accent, 60 + static_cast<int>(150 * wave)));
@@ -108,7 +108,7 @@ void ServerItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
             painter->drawEllipse(centre, 2.6 + wave * 0.9, 2.6 + wave * 0.9);
         }
 
-        const QRect nameZone = row.adjusted(kTextLeft, 0, -(kMeasuringZone + 8), 0);
+        const QRect nameZone = row.adjusted(kRowTextLeft, 0, -(kRowMeasuringZone + 8), 0);
         painter->setFont(option.font);
         painter->setPen(p.text);
         painter->drawText(nameZone, Qt::AlignVCenter | Qt::AlignLeft,
@@ -163,7 +163,7 @@ void ServerItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     }
 
     // --- имя и техническая подпись ---
-    drawNameAndSubtitle(painter, option, index, row.adjusted(kTextLeft, 0, -pingBlock, 0), p);
+    drawNameAndSubtitle(painter, option, index, row.adjusted(kRowTextLeft, 0, -pingBlock, 0), p);
 
     painter->restore();
 }

@@ -7,10 +7,10 @@
 #include "include/ui/fsnt/FsntTheme.hpp"
 
 namespace {
-    constexpr int kSpinPeriodMs = 900;
-    constexpr int kArcSpanDeg = 100;
-    constexpr qreal kArcWidth = 2.0;
-    constexpr int kSide = 36;
+    constexpr int kBusySpinPeriodMs = 900;
+    constexpr int kBusyArcSpanDeg = 100;
+    constexpr qreal kBusyArcWidth = 2.0;
+    constexpr int kBusySide = 36;
 }
 
 BusyButton::BusyButton(const Fsnt::Glyph glyph, QWidget *parent)
@@ -22,7 +22,7 @@ BusyButton::BusyButton(const Fsnt::Glyph glyph, QWidget *parent)
     m_spinAnim = new QVariantAnimation(this);
     m_spinAnim->setStartValue(0.0);
     m_spinAnim->setEndValue(360.0);
-    m_spinAnim->setDuration(kSpinPeriodMs);
+    m_spinAnim->setDuration(kBusySpinPeriodMs);
     m_spinAnim->setLoopCount(-1);
     connect(m_spinAnim, &QVariantAnimation::valueChanged, this, [this](const QVariant &v) {
         m_spin = v.toReal();
@@ -31,7 +31,7 @@ BusyButton::BusyButton(const Fsnt::Glyph glyph, QWidget *parent)
 }
 
 QSize BusyButton::sizeHint() const {
-    return {kSide, kSide};
+    return {kBusySide, kBusySide};
 }
 
 void BusyButton::setBusy(const bool busy) {
@@ -73,8 +73,8 @@ void BusyButton::paintEvent(QPaintEvent *event) {
     // drawArc считает в 1/16 градуса против часовой стрелки; минус разворачивает
     // бег по часовой, как ждёт глаз.
     painter.setBrush(Qt::NoBrush);
-    painter.setPen(QPen(p.accent, kArcWidth, Qt::SolidLine, Qt::RoundCap));
-    painter.drawArc(ring, static_cast<int>(-m_spin * 16), -kArcSpanDeg * 16);
+    painter.setPen(QPen(p.accent, kBusyArcWidth, Qt::SolidLine, Qt::RoundCap));
+    painter.drawArc(ring, static_cast<int>(-m_spin * 16), -kBusyArcSpanDeg * 16);
 }
 
 void BusyButton::enterEvent(QEnterEvent *event) {

@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "include/ui/setting/dialog_per_app_proxy.h"
 
 #include <QFileIconProvider>
@@ -19,9 +21,9 @@
 #include "include/ui/mainwindow_interface.h"
 
 namespace {
-    constexpr auto kPrefix = "processName:";
-    constexpr int kIconSize = 30;
-    constexpr int kRowHeight = 52;
+    constexpr auto kAppPrefix = "processName:";
+    constexpr int kAppIconSize = 30;
+    constexpr int kAppRowHeight = 52;
 
     // Разделяем набор простых правил на строки по процессам и все остальные.
     // Остальные обязаны пережить сохранение: там пользовательские домены и адреса.
@@ -29,8 +31,8 @@ namespace {
         for (const QString &line : rules.split('\n', Qt::SkipEmptyParts)) {
             const QString trimmed = line.trimmed();
             if (trimmed.isEmpty()) continue;
-            if (trimmed.startsWith(kPrefix, Qt::CaseInsensitive)) {
-                processes << trimmed.mid(QString(kPrefix).length()).trimmed();
+            if (trimmed.startsWith(kAppPrefix, Qt::CaseInsensitive)) {
+                processes << trimmed.mid(QString(kAppPrefix).length()).trimmed();
             } else {
                 others << trimmed;
             }
@@ -239,7 +241,7 @@ void DialogPerAppProxy::buildList(const QMap<QString, int> &known) {
 
     for (const AppEntry &entry : m_entries) {
         auto *item = new QListWidgetItem(m_list);
-        item->setSizeHint(QSize(0, kRowHeight));
+        item->setSizeHint(QSize(0, kAppRowHeight));
 
         auto *row = new QWidget(m_list);
         auto *box = new QHBoxLayout(row);
@@ -247,10 +249,10 @@ void DialogPerAppProxy::buildList(const QMap<QString, int> &known) {
         box->setSpacing(12);
 
         auto *icon = new QLabel(row);
-        icon->setFixedSize(kIconSize, kIconSize);
+        icon->setFixedSize(kAppIconSize, kAppIconSize);
         icon->setScaledContents(true);
         if (const QIcon pic = iconFor(entry); !pic.isNull()) {
-            icon->setPixmap(pic.pixmap(kIconSize, kIconSize));
+            icon->setPixmap(pic.pixmap(kAppIconSize, kAppIconSize));
         }
         box->addWidget(icon);
 
@@ -311,7 +313,7 @@ void DialogPerAppProxy::save() {
         // Правило пишем на каждый процесс приложения: маршрутизатор знает только
         // имена процессов и про бандлы не в курсе.
         for (const QString &process : m_entries[row].processes) {
-            (mode == Proxy ? newProxy : newDirect) << QString(kPrefix) + process;
+            (mode == Proxy ? newProxy : newDirect) << QString(kAppPrefix) + process;
         }
     }
 
