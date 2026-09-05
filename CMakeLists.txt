@@ -375,9 +375,9 @@ set(PROJECT_SOURCES
 
         include/ui/fsnt/AddSubscriptionDialog.h
 
-        src/ui/fsnt/OnboardingDialog.cpp
+        src/ui/fsnt/CoachMarks.cpp
 
-        include/ui/fsnt/OnboardingDialog.h
+        include/ui/fsnt/CoachMarks.h
 
         src/ui/fsnt/FsntSettingsDialog.cpp
 

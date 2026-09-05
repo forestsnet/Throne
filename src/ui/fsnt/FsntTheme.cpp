@@ -278,6 +278,22 @@ namespace Fsnt {
             QDialog#fsntDialog QLabel { color: @text; font-size: 13px; }
             QLabel#fsntDialogTitle { color: @text; font-size: 19px; font-weight: 600; }
             QLabel#fsntDialogHint { color: @muted; font-size: 12px; }
+
+            /* ---- экскурсия по интерфейсу ---- */
+            QLabel#fsntCoachStep {
+                color: @accent;
+                font-size: 11px;
+                font-weight: 600;
+            }
+            QLabel#fsntCoachTitle { color: @text; font-size: 16px; font-weight: 600; }
+            QPushButton#fsntCoachSkip {
+                background: transparent;
+                border: none;
+                padding: 2px 4px;
+                color: @muted;
+                font-size: 12px;
+            }
+            QPushButton#fsntCoachSkip:hover { color: @accent; }
         )");
 
         // Именованные подстановки вместо %N: многоаргументный QString::arg раскладывает

@@ -501,6 +501,13 @@ void ServerListPanel::finishMeasurement() {
     }
 }
 
+QWidget *ServerListPanel::addSubscriptionButton() const { return m_addSub; }
+
+QWidget *ServerListPanel::listArea() const {
+    if (m_list != nullptr && m_list->isVisible()) return m_list;
+    return m_empty != nullptr ? m_empty : m_list;
+}
+
 void ServerListPanel::updateSubscription() {
     const auto group = Configs::dataManager->groupsRepo->CurrentGroup();
     if (!group || group->url.isEmpty()) return;

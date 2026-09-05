@@ -146,6 +146,8 @@ void ConnectPanel::setStatus(const QString &text, const char *tone) {
     m_status->style()->polish(m_status);
 }
 
+QWidget *ConnectPanel::powerButton() const { return m_button; }
+
 void ConnectPanel::requestConnection(const bool wantConnect) {
     if (isConnected() == wantConnect) return;
     onButtonClicked();

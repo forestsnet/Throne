@@ -24,7 +24,7 @@
 #include "include/database/SettingsRepo.h"
 #include "include/global/Configs.hpp"
 #include "include/ui/fsnt/AddSubscriptionDialog.h"
-#include "include/ui/fsnt/OnboardingDialog.h"
+#include "include/ui/fsnt/CoachMarks.h"
 #include "include/ui/fsnt/ConnectPanel.h"
 #include "include/ui/mainwindow.h"
 #include "include/ui/fsnt/FsntSettingsDialog.h"
@@ -73,22 +73,69 @@ FsntWindow::FsntWindow(QWidget *parent) : QMainWindow(parent) {
     // Как и MainWindow: при запуске в трей окно не показываем.
     if (!Configs::dataManager->settingsRepo->flag_tray) show();
 
-    // Мастер поднимаем после первого прохода цикла событий: до show() модальный
-    // диалог встал бы поверх ещё не отрисованного окна.
-    if (!Configs::dataManager->settingsRepo->flag_tray && OnboardingDialog::ShouldRun()) {
-        QTimer::singleShot(0, this, [this] {
-            auto dialog = OnboardingDialog(this);
-            dialog.exec();
-            // Закрытие крестиком — тоже ответ: показывать мастер на каждом
-            // запуске, пока его не пройдут до конца, значит навязываться.
-            // finish() уже поставил флаг, MarkDone() здесь закрывает
-            // остальные пути выхода.
-            OnboardingDialog::MarkDone();
-            // Мастер мог добавить подписку и сменить транспорт — перечитываем всё.
-            refreshServerList();
-            refreshConnectionState();
+    // Экскурсию запускаем после первого прохода цикла событий: до него у
+    // виджетов ещё нет окончательной геометрии, а подсвечивать надо по ней.
+    // Если она всё же окажется неточной, оверлей пересчитает вырез сам по
+    // событию Resize.
+    if (!Configs::dataManager->settingsRepo->flag_tray && shouldRunTour()) {
+        QTimer::singleShot(0, this, [this] { runTour(); });
+    }
+}
+
+bool FsntWindow::shouldRunTour() {
+    if (Configs::dataManager->settingsRepo->onboarding_done) return false;
+
+    // Считаем по серверам, а не по числу групп: у чистой установки есть пустая
+    // группа Default, а у обновившегося пользователя может быть ровно одна
+    // подписка — по количеству групп эти два случая не различить.
+    for (const int gid : Configs::dataManager->groupsRepo->GetGroupsTabOrder()) {
+        const auto group = Configs::dataManager->groupsRepo->GetGroup(gid);
+        if (group && !group->Profiles().isEmpty()) return false;
+    }
+    return true;
+}
+
+void FsntWindow::runTour() {
+    // Один оверлей на окно: повторный запуск из меню переиспользует его.
+    if (m_tour == nullptr) {
+        m_tour = new Fsnt::CoachMarks(this);
+        connect(m_tour, &Fsnt::CoachMarks::finished, this, [](bool) {
+            // И пройденная, и пропущенная экскурсия одинаково означают, что
+            // навязываться больше не надо. Повторить можно из меню.
+            Configs::dataManager->settingsRepo->onboarding_done = true;
+            Configs::dataManager->settingsRepo->Save();
         });
     }
+
+    QList<Fsnt::CoachMarks::Step> steps;
+    steps << Fsnt::CoachMarks::Step{
+        m_serverList->addSubscriptionButton(), tr("Start with a subscription"),
+        tr("Many providers put an Add button right on your subscription page: it opens "
+           "the client and fills everything in. If yours does not, press this plus and "
+           "paste the link by hand.")};
+    steps << Fsnt::CoachMarks::Step{
+        m_serverList->listArea(), tr("Your servers"),
+        tr("Servers appear here once the subscription loads. The number on the right is "
+           "the ping: the lower it is, the faster the server answers.")};
+    steps << Fsnt::CoachMarks::Step{
+        m_connectPanel->powerButton(), tr("One button"),
+        tr("Press it to send your traffic through the tunnel, press it again to stop. "
+           "With no server picked, the fastest one is chosen for you.")};
+    steps << Fsnt::CoachMarks::Step{
+        m_gear, tr("Settings"),
+        tr("Connection mode, DNS and the apps that go through the tunnel. Everything "
+           "here has a working default, so you do not have to touch it.")};
+    steps << Fsnt::CoachMarks::Step{
+        m_logs, tr("Logs"),
+        tr("A live log. If something goes wrong, open it and copy the last lines into "
+           "your message to support.")};
+    steps << Fsnt::CoachMarks::Step{
+        m_more, tr("Everything else"),
+        tr("App updates, a support report and the config folder. Closing the window "
+           "only hides it to the tray: the tunnel keeps running.")};
+
+    m_tour->setSteps(steps);
+    m_tour->start();
 }
 
 
@@ -186,6 +233,7 @@ void FsntWindow::buildHeader(QVBoxLayout *root) {
     row->addStretch();
 
     auto *settings = new FsntIconButton(Fsnt::Glyph::Gear, header);
+    m_gear = settings;
     settings->setFixedSize(38, 38);
     settings->setToolTip(tr("Settings"));
     connect(settings, &FsntIconButton::clicked, this, [this] {
@@ -196,6 +244,7 @@ void FsntWindow::buildHeader(QVBoxLayout *root) {
     row->addWidget(settings);
 
     auto *logs = new FsntIconButton(Fsnt::Glyph::Logs, header);
+    m_logs = logs;
     logs->setFixedSize(38, 38);
     logs->setToolTip(tr("Logs"));
     connect(logs, &FsntIconButton::clicked, this, [this] {
@@ -209,6 +258,7 @@ void FsntWindow::buildHeader(QVBoxLayout *root) {
     row->addWidget(logs);
 
     auto *more = new FsntIconButton(Fsnt::Glyph::More, header);
+    m_more = more;
     more->setFixedSize(38, 38);
     more->setToolTip(tr("More"));
     connect(more, &FsntIconButton::clicked, this, [this, more] { showMainMenu(more); });
@@ -303,6 +353,9 @@ void FsntWindow::showMainMenu(QWidget *anchor) {
         // Рабочий каталог приложения и есть каталог конфигурации, см. main.cpp.
         QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::currentPath()));
     });
+
+    connect(menu.addAction(tr("How to use the app")), &QAction::triggered,
+            this, &FsntWindow::runTour);
 
     menu.addSeparator();
     connect(menu.addAction(tr("Advanced mode")), &QAction::triggered,

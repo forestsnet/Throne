@@ -6338,7 +6338,74 @@ Improves hole-punching reliability. Requires IPv4.</source>
     </message>
 </context>
 <context>
+    <name>Fsnt::CoachMarks</name>
+    <message>
+        <source>Skip</source>
+        <translation>Пропустить</translation>
+    </message>
+    <message>
+        <source>Back</source>
+        <translation>Назад</translation>
+    </message>
+    <message>
+        <source>STEP %1 OF %2</source>
+        <translation>ШАГ %1 ИЗ %2</translation>
+    </message>
+    <message>
+        <source>Got it</source>
+        <translation>Понятно</translation>
+    </message>
+    <message>
+        <source>Next</source>
+        <translation>Дальше</translation>
+    </message>
+</context>
+<context>
     <name>FsntWindow</name>
+    <message>
+        <source>How to use the app</source>
+        <translation>Как пользоваться приложением</translation>
+    </message>
+    <message>
+        <source>Start with a subscription</source>
+        <translation>Начните с подписки</translation>
+    </message>
+    <message>
+        <source>Many providers put an Add button right on your subscription page: it opens the client and fills everything in. If yours does not, press this plus and paste the link by hand.</source>
+        <translation>У многих провайдеров прямо на странице подписки есть кнопка «Добавить»: она сама открывает клиент и всё заполняет. Если её нет — нажмите плюс и вставьте ссылку вручную.</translation>
+    </message>
+    <message>
+        <source>Your servers</source>
+        <translation>Ваши серверы</translation>
+    </message>
+    <message>
+        <source>Servers appear here once the subscription loads. The number on the right is the ping: the lower it is, the faster the server answers.</source>
+        <translation>Серверы появятся здесь, когда загрузится подписка. Число справа — пинг: чем меньше, тем быстрее отвечает сервер.</translation>
+    </message>
+    <message>
+        <source>One button</source>
+        <translation>Одна кнопка</translation>
+    </message>
+    <message>
+        <source>Press it to send your traffic through the tunnel, press it again to stop. With no server picked, the fastest one is chosen for you.</source>
+        <translation>Нажмите — и трафик пойдёт через туннель, нажмите ещё раз — остановится. Если сервер не выбран, возьмётся самый быстрый.</translation>
+    </message>
+    <message>
+        <source>Connection mode, DNS and the apps that go through the tunnel. Everything here has a working default, so you do not have to touch it.</source>
+        <translation>Режим подключения, DNS и приложения, которые идут через туннель. Всё здесь уже настроено разумно, трогать необязательно.</translation>
+    </message>
+    <message>
+        <source>A live log. If something goes wrong, open it and copy the last lines into your message to support.</source>
+        <translation>Живой журнал. Если что-то пошло не так — откройте и скопируйте последние строки в обращение в поддержку.</translation>
+    </message>
+    <message>
+        <source>Everything else</source>
+        <translation>Всё остальное</translation>
+    </message>
+    <message>
+        <source>App updates, a support report and the config folder. Closing the window only hides it to the tray: the tunnel keeps running.</source>
+        <translation>Обновление приложения, отчёт для поддержки и папка конфигурации. Крестик только прячет окно в трей — туннель продолжает работать.</translation>
+    </message>
     <message>
         <source>Advanced mode</source>
         <translation>Расширенный режим</translation>
@@ -6498,6 +6565,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
 </context>
 <context>
     <name>MainWindow</name>
+    <message>
+        <source>Deeplink %1: no profile to start</source>
+        <translation>Ссылка %1: нечего запускать</translation>
+    </message>
     <message>
         <source>Simple mode</source>
         <translation>Простой режим</translation>
@@ -7661,99 +7732,6 @@ Saved to:
     <message>
         <source>Failed to create debug information archive</source>
         <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>OnboardingDialog</name>
-    <message>
-        <source>Continue</source>
-        <translation>Продолжить</translation>
-    </message>
-    <message>
-        <source>The provider did not answer. Check the link and your connection.</source>
-        <translation>Провайдер не ответил. Проверьте ссылку и соединение.</translation>
-    </message>
-    <message>
-        <source>Private and fast access to the internet.
-Setup takes about a minute.</source>
-        <translation>Приватный и быстрый доступ в интернет.
-Настройка займёт около минуты.</translation>
-    </message>
-    <message>
-        <source>Get started</source>
-        <translation>Начать</translation>
-    </message>
-    <message>
-        <source>Add your subscription</source>
-        <translation>Добавьте подписку</translation>
-    </message>
-    <message>
-        <source>Paste the link your provider gave you. The server list will fill in automatically.</source>
-        <translation>Вставьте ссылку, которую выдал провайдер. Список серверов заполнится сам.</translation>
-    </message>
-    <message>
-        <source>Paste from clipboard</source>
-        <translation>Вставить из буфера</translation>
-    </message>
-    <message>
-        <source>The clipboard is empty.</source>
-        <translation>Буфер обмена пуст.</translation>
-    </message>
-    <message>
-        <source>I&apos;ll do it later</source>
-        <translation>Сделаю позже</translation>
-    </message>
-    <message>
-        <source>How should traffic be routed?</source>
-        <translation>Как пускать трафик?</translation>
-    </message>
-    <message>
-        <source>You can change this later in settings.</source>
-        <translation>Это можно изменить позже в настройках.</translation>
-    </message>
-    <message>
-        <source>Everything through the tunnel</source>
-        <translation>Весь трафик через туннель</translation>
-    </message>
-    <message>
-        <source>All apps. Needs administrator rights once.</source>
-        <translation>Все приложения. Один раз потребуются права администратора.</translation>
-    </message>
-    <message>
-        <source>Browsers only</source>
-        <translation>Только браузеры</translation>
-    </message>
-    <message>
-        <source>System proxy. No extra rights needed.</source>
-        <translation>Системный прокси. Особых прав не нужно.</translation>
-    </message>
-    <message>
-        <source>All set</source>
-        <translation>Готово</translation>
-    </message>
-    <message>
-        <source>Pick a server on the left and press the power button.</source>
-        <translation>Выберите сервер слева и нажмите кнопку включения.</translation>
-    </message>
-    <message>
-        <source>Launch FSNT Client at login</source>
-        <translation>Запускать FSNT Client при входе в систему</translation>
-    </message>
-    <message>
-        <source>Start using</source>
-        <translation>Начать пользоваться</translation>
-    </message>
-    <message>
-        <source>Enter a link, or skip this step.</source>
-        <translation>Вставьте ссылку или пропустите этот шаг.</translation>
-    </message>
-    <message>
-        <source>Adding…</source>
-        <translation>Добавляем…</translation>
-    </message>
-    <message>
-        <source>Fetching the subscription…</source>
-        <translation>Загружаем подписку…</translation>
     </message>
 </context>
 <context>

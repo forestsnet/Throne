@@ -92,6 +92,17 @@ private:
     int m_measureIdlePolls = 0;
     void updateSubscription();
 
+public:
+    // Цели для экскурсии. Возвращаем QWidget*, потому что поднимать тип до
+    // базового в заголовке нельзя: FsntIconButton здесь только объявлен.
+    QWidget *addSubscriptionButton() const;
+    // Не сам QListWidget: на чистой установке он скрыт, а вместо него показана
+    // заглушка. Экскурсия должна указывать на то место, где серверы появятся,
+    // а скрытый виджет подсветить нельзя.
+    QWidget *listArea() const;
+
+private:
+
     bool m_favouritesOnly = false;
     QPushButton *m_tabAll = nullptr;
     QPushButton *m_tabFav = nullptr;
