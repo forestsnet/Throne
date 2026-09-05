@@ -79,6 +79,11 @@ FsntWindow::FsntWindow(QWidget *parent) : QMainWindow(parent) {
         QTimer::singleShot(0, this, [this] {
             auto dialog = OnboardingDialog(this);
             dialog.exec();
+            // Закрытие крестиком — тоже ответ: показывать мастер на каждом
+            // запуске, пока его не пройдут до конца, значит навязываться.
+            // finish() уже поставил флаг, MarkDone() здесь закрывает
+            // остальные пути выхода.
+            OnboardingDialog::MarkDone();
             // Мастер мог добавить подписку и сменить транспорт — перечитываем всё.
             refreshServerList();
             refreshConnectionState();
