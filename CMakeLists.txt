@@ -399,6 +399,14 @@ set(PROJECT_SOURCES
 
         include/ui/fsnt/TunnelProbe.hpp
 
+        src/ui/fsnt/Diagnostics.cpp
+
+        include/ui/fsnt/Diagnostics.hpp
+
+        src/ui/fsnt/DiagnosticsDialog.cpp
+
+        include/ui/fsnt/DiagnosticsDialog.h
+
         src/ui/fsnt/FsntSettingsDialog.cpp
 
         include/ui/fsnt/FsntSettingsDialog.h

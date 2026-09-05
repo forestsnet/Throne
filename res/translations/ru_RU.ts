@@ -6471,7 +6471,62 @@ Improves hole-punching reliability. Requires IPv4.</source>
     </message>
 </context>
 <context>
+    <name>FsntDiagnosticsDialog</name>
+    <message>
+        <source>Diagnostics</source>
+        <translation>Диагностика</translation>
+    </message>
+    <message>
+        <source>The client checks itself and says what to fix. Everything here runs on this computer; nothing is sent anywhere.</source>
+        <translation>Клиент проверяет себя сам и говорит, что чинить. Всё это выполняется на вашем компьютере, никуда ничего не отправляется.</translation>
+    </message>
+    <message>
+        <source>checking…</source>
+        <translation>проверяю…</translation>
+    </message>
+    <message>
+        <source>Run again</source>
+        <translation>Проверить заново</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>Закрыть</translation>
+    </message>
+    <message>
+        <source>OK</source>
+        <translation>Норма</translation>
+    </message>
+    <message>
+        <source>Check</source>
+        <translation>Внимание</translation>
+    </message>
+    <message>
+        <source>Problem</source>
+        <translation>Проблема</translation>
+    </message>
+    <message>
+        <source>Skipped</source>
+        <translation>Не нужно</translation>
+    </message>
+    <message>
+        <source>Found %1 problem(s). Fix the topmost one first: the checks run from cause to effect, and the rest are often its consequences.</source>
+        <translation>Найдено проблем: %1. Начните с верхней: проверки идут от причины к следствию, и остальные часто её последствия.</translation>
+    </message>
+    <message>
+        <source>No breakage found, but %1 thing(s) are worth a look.</source>
+        <translation>Поломок нет, но стоит взглянуть: %1.</translation>
+    </message>
+    <message>
+        <source>Everything checks out. If something still does not work, build a support report from the menu and send it over.</source>
+        <translation>Всё в порядке. Если что-то всё равно не работает — соберите отчёт для поддержки из меню и пришлите его.</translation>
+    </message>
+</context>
+<context>
     <name>FsntWindow</name>
+    <message>
+        <source>Diagnostics</source>
+        <translation>Диагностика</translation>
+    </message>
     <message>
         <source>Connected, but nothing opens</source>
         <translation>Подключено, но ничего не открывается</translation>
@@ -7945,6 +8000,146 @@ Saved to:
 </context>
 <context>
     <name>QObject</name>
+    <message>
+        <source>OK</source>
+        <translation>Норма</translation>
+    </message>
+    <message>
+        <source>Check</source>
+        <translation>Внимание</translation>
+    </message>
+    <message>
+        <source>Problem</source>
+        <translation>Проблема</translation>
+    </message>
+    <message>
+        <source>Skipped</source>
+        <translation>Не нужно</translation>
+    </message>
+    <message>
+        <source>Subscription</source>
+        <translation>Подписка</translation>
+    </message>
+    <message>
+        <source>Connection</source>
+        <translation>Подключение</translation>
+    </message>
+    <message>
+        <source>Connection mode</source>
+        <translation>Режим подключения</translation>
+    </message>
+    <message>
+        <source>Apply</source>
+        <translation>Применить</translation>
+    </message>
+    <message>
+        <source>Core files</source>
+        <translation>Файлы ядра</translation>
+    </message>
+    <message>
+        <source>The core executable is missing. Antivirus software often quarantines it without asking.</source>
+        <translation>Файл ядра отсутствует. Чаще всего его молча уносит в карантин антивирус.</translation>
+    </message>
+    <message>
+        <source>Download again</source>
+        <translation>Скачать заново</translation>
+    </message>
+    <message>
+        <source>No servers in the current subscription. Add the link your provider gave you, or refresh the subscription.</source>
+        <translation>В текущей подписке нет серверов. Добавьте ссылку от провайдера или обновите подписку.</translation>
+    </message>
+    <message>
+        <source>Administrator rights</source>
+        <translation>Права администратора</translation>
+    </message>
+    <message>
+        <source>Only needed for the full tunnel.</source>
+        <translation>Нужны только для полного туннеля.</translation>
+    </message>
+    <message>
+        <source>The full tunnel needs administrator rights to create its network adapter. Restart the client as administrator.</source>
+        <translation>Полному туннелю нужны права администратора, чтобы создать сетевой адаптер. Перезапустите клиент от имени администратора.</translation>
+    </message>
+    <message>
+        <source>Conflicting programs</source>
+        <translation>Конфликтующие программы</translation>
+    </message>
+    <message>
+        <source>Running: %1. Other VPN clients and traffic filters intercept packets before they reach the tunnel.</source>
+        <translation>Запущено: %1. Другие VPN-клиенты и фильтры трафика перехватывают пакеты раньше, чем те доходят до туннеля.</translation>
+    </message>
+    <message>
+        <source>The core is not running. Press the power button.</source>
+        <translation>Ядро не запущено. Нажмите кнопку подключения.</translation>
+    </message>
+    <message>
+        <source>Not connected. Press the power button.</source>
+        <translation>Не подключено. Нажмите кнопку подключения.</translation>
+    </message>
+    <message>
+        <source>Connect first.</source>
+        <translation>Сначала подключитесь.</translation>
+    </message>
+    <message>
+        <source>Full tunnel is selected, but the tunnel mode is not active.</source>
+        <translation>Выбран полный туннель, но режим туннеля не включён.</translation>
+    </message>
+    <message>
+        <source>Turn on</source>
+        <translation>Включить</translation>
+    </message>
+    <message>
+        <source>System proxy is selected, but Windows has it switched off, so traffic bypasses the VPN.</source>
+        <translation>Выбран системный прокси, но в Windows он выключен — трафик идёт мимо VPN.</translation>
+    </message>
+    <message>
+        <source>System proxy is selected, but it is not active.</source>
+        <translation>Выбран системный прокси, но он не включён.</translation>
+    </message>
+    <message>
+        <source>Tunnel adapter</source>
+        <translation>Адаптер туннеля</translation>
+    </message>
+    <message>
+        <source>Not used in proxy mode.</source>
+        <translation>В режиме прокси не используется.</translation>
+    </message>
+    <message>
+        <source>The tunnel adapter was not created. Usually this is missing administrator rights or an antivirus blocking the driver.</source>
+        <translation>Адаптер туннеля не создан. Обычно это нехватка прав администратора или антивирус, блокирующий драйвер.</translation>
+    </message>
+    <message>
+        <source>Traffic through the tunnel</source>
+        <translation>Трафик через туннель</translation>
+    </message>
+    <message>
+        <source>The tunnel is up, but nothing passes through it. The fast tunnel mode gives packets to Windows, where another program's filter takes them.</source>
+        <translation>Туннель поднят, но через него ничего не проходит. Быстрый режим отдаёт пакеты Windows, где их забирает фильтр другой программы.</translation>
+    </message>
+    <message>
+        <source>Switch to compatible</source>
+        <translation>Переключить на совместимый</translation>
+    </message>
+    <message>
+        <source>The tunnel is up, but nothing passes through it: %1</source>
+        <translation>Туннель поднят, но через него ничего не проходит: %1</translation>
+    </message>
+    <message>
+        <source>System clock</source>
+        <translation>Системные часы</translation>
+    </message>
+    <message>
+        <source>No answer to compare against.</source>
+        <translation>Не с чем сравнить: ответа нет.</translation>
+    </message>
+    <message>
+        <source>Could not read server time.</source>
+        <translation>Не удалось прочитать время сервера.</translation>
+    </message>
+    <message>
+        <source>The clock is off by %1 minutes. Certificate checks fail and connections break during the handshake. Turn on automatic time in Windows settings.</source>
+        <translation>Часы расходятся на %1 мин. Проверка сертификатов не проходит, и соединение рвётся на рукопожатии. Включите автоматическое время в настройках Windows.</translation>
+    </message>
     <message>
         <source>Request with proxy but no profile started.</source>
         <translation>Запрос через прокси, но профиль не запущен.</translation>

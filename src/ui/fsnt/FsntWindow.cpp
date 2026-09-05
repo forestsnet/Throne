@@ -28,6 +28,7 @@
 #include "include/ui/fsnt/CoachMarks.h"
 #include "include/ui/fsnt/TrayMenu.h"
 #include "include/ui/fsnt/Transport.hpp"
+#include "include/ui/fsnt/DiagnosticsDialog.h"
 #include "include/ui/fsnt/TunnelProbe.hpp"
 #include "include/ui/fsnt/ConnectPanel.h"
 #include "include/ui/mainwindow.h"
@@ -365,6 +366,12 @@ void FsntWindow::showMainMenu(QWidget *anchor) {
     connect(menu.addAction(tr("Open the config folder")), &QAction::triggered, this, [] {
         // Рабочий каталог приложения и есть каталог конфигурации, см. main.cpp.
         QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::currentPath()));
+    });
+
+    connect(menu.addAction(tr("Diagnostics")), &QAction::triggered, this, [this] {
+        auto *dialog = new FsntDiagnosticsDialog(this);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->exec();
     });
 
     connect(menu.addAction(tr("How to use the app")), &QAction::triggered,

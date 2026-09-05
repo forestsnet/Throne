@@ -19,6 +19,19 @@
 
 // Детект программ, мешающих работе TUN-режима (VPN-клиенты, антивирусы с фильтрацией трафика).
 // Список форка: проверяется перед стартом профиля в режиме VPN.
+namespace {
+    // Совпадение считаем только с начала имени или на границе слова.
+    // Простое contains() ловило постороннее: запись «eset» находилась внутри
+    // HeadphoneSettingsExtension и PasscodeSettingsSubscriber, и диагностика
+    // объявляла конфликтом системные процессы macOS.
+    bool processMatches(const QString &name, const QString &needle) {
+        if (name == needle || name.startsWith(needle)) return true;
+        const qsizetype at = name.indexOf(needle);
+        if (at <= 0) return false;
+        return !name.at(at - 1).isLetterOrNumber();
+    }
+}
+
 QStringList MainWindow::CheckConflictingProcesses() {
     QStringList conflictingProcesses;
     
@@ -159,7 +172,7 @@ QStringList MainWindow::CheckConflictingProcesses() {
             if (isWhitelisted) continue;
             
             for (const QString& conflicting : conflictingNames) {
-                if (processName.contains(conflicting)) {
+                if (processMatches(processName, conflicting)) {
                     QString displayName = line.split(',').first().replace("\"", "");
                     if (!conflictingProcesses.contains(displayName)) {
                         conflictingProcesses.append(displayName);
@@ -201,7 +214,7 @@ QStringList MainWindow::CheckConflictingProcesses() {
             if (isWhitelisted) continue;
             
             for (const QString& conflicting : conflictingNames) {
-                if (processName.contains(conflicting)) {
+                if (processMatches(processName, conflicting)) {
                     QString displayName = line.trimmed();
                     if (displayName.contains('/')) {
                         displayName = displayName.split('/').last();
@@ -242,7 +255,7 @@ QStringList MainWindow::CheckConflictingProcesses() {
             if (isWhitelisted) continue;
             
             for (const QString& conflicting : conflictingNames) {
-                if (processName.contains(conflicting)) {
+                if (processMatches(processName, conflicting)) {
                     QString displayName = line.trimmed();
                     if (!conflictingProcesses.contains(displayName)) {
                         conflictingProcesses.append(displayName);
