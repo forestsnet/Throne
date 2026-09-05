@@ -9077,6 +9077,14 @@ Release note:
         <source>Add</source>
         <translation>Добавить</translation>
     </message>
+    <message>
+        <source>Allow</source>
+        <translation>Разрешить</translation>
+    </message>
+    <message>
+        <source>Restart</source>
+        <translation>Перезапустить</translation>
+    </message>
 </context>
 <context>
     <name>QPlatformTheme</name>

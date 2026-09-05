@@ -1,5 +1,6 @@
 #include "include/ui/mainwindow.h"
 #include "NkrVersion.h"
+#include "include/ui/fsnt/FsntControls.h"
 
 #include <QApplication>
 #include <QStandardPaths>
@@ -221,6 +222,17 @@ void MainWindow::toggle_system_proxy() {
     }
 }
 
+namespace {
+    // Спросить в оформлении простого режима, а в инженерном — как раньше.
+    bool askInOwnStyle(const QString &text, const QString &acceptText) {
+        if (GetFacadeWindow() != nullptr) {
+            return Fsnt::Confirm(GetMessageBoxParent(), software_name, text, acceptText);
+        }
+        return QMessageBox::warning(GetMessageBoxParent(), software_name, text,
+                                    QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes;
+    }
+}
+
 bool MainWindow::get_elevated_permissions(ExitReason reason) {
     if (Configs::dataManager->settingsRepo->disable_privilege_req)
     {
@@ -254,8 +266,10 @@ bool MainWindow::get_elevated_permissions(ExitReason reason) {
     }
 #endif
 #ifdef Q_OS_WIN
-    auto n = QMessageBox::warning(GetMessageBoxParent(), software_name, tr("Please run Throne as admin"), QMessageBox::Yes | QMessageBox::No);
-    if (n == QMessageBox::Yes) {
+    // Кнопки QMessageBox приходят из перевода Qt, которого в сборке нет, и
+    // человек видит английские Yes/No под русским вопросом. Своё окно решает
+    // и это, и вид.
+    if (askInOwnStyle(tr("Please run Throne as admin"), tr("Restart"))) {
         this->exit_reason = reason;
         on_menu_exit_triggered();
     }
@@ -267,8 +281,7 @@ bool MainWindow::get_elevated_permissions(ExitReason reason) {
         StopVPNProcess();
         return true;
     }
-    auto n = QMessageBox::warning(GetMessageBoxParent(), software_name, tr("Please give the core root privileges"), QMessageBox::Yes | QMessageBox::No);
-    if (n == QMessageBox::Yes)
+    if (askInOwnStyle(tr("Please give the core root privileges"), tr("Allow")))
     {
         auto Command = QString("sudo chown root:wheel '%1' && sudo chmod u+s '%1'").arg(Configs::FindCoreRealPath());
         auto ret = Mac_Run_Command(Command);
