@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iterator>
 
 #include "include/ui/fsnt/FsntSettingsDialog.h"
@@ -15,6 +16,7 @@
 #include "include/configs/sub/GroupUpdater.hpp"
 #include "include/configs/sub/ProviderPolicy.hpp"
 #include "include/database/GroupsRepo.h"
+#include "include/configs/RoutePresets.hpp"
 #include "include/database/RoutesRepo.h"
 #include "include/database/SettingsRepo.h"
 #include "include/global/Configs.hpp"
@@ -120,15 +122,46 @@ void FsntSettingsDialog::buildConnection(QVBoxLayout *column, QWidget *host) {
     const bool providerManagesRouting = Subscription::PolicyHidesSettings();
 
     if (!providerManagesRouting) {
+        // Сначала готовые схемы, потом всё, что пользователь собрал сам в
+        // расширенном режиме. Данные пункта: ключ пресета либо id профиля,
+        // поэтому храним оба вида в QVariant и различаем по типу.
         m_route = makeSelect(host);
+        const auto presets = Configs::RoutePresets();
+        for (const auto &preset : presets) m_route->addItem(preset.title, preset.key);
+
+        const auto current = Configs::dataManager->routesRepo->GetRouteProfile(
+            settings->current_route_id);
+        QString currentKey = current ? Configs::RoutePresetKeyOf(current->name) : QString();
+        if (currentKey.isEmpty() && Configs::IsUntouchedDefaultProfile(settings->current_route_id)) {
+            currentKey = presets.first().key;
+        }
+
         for (const auto &profile : Configs::dataManager->routesRepo->GetAllRouteProfiles()) {
-            if (!profile) continue;
-            m_route->addItem(profile->name, profile->id);
-            if (profile->id == settings->current_route_id) {
-                m_route->setCurrentIndex(m_route->count() - 1);
+            if (!profile || !Configs::RoutePresetKeyOf(profile->name).isEmpty()) continue;
+            // Стоковый Default в списке лишний: его роль занял первый пресет.
+            if (Configs::IsUntouchedDefaultProfile(profile->id)) continue;
+            m_route->addItem(tr("Custom: %1").arg(profile->name), profile->id);
+        }
+
+        if (!currentKey.isEmpty()) {
+            m_route->setCurrentIndex(static_cast<int>(std::distance(
+                presets.begin(),
+                std::find_if(presets.begin(), presets.end(),
+                             [&](const Configs::RoutePreset &p) { return p.key == currentKey; }))));
+        } else {
+            for (int i = 0; i < m_route->count(); ++i) {
+                if (m_route->itemData(i).typeId() == QMetaType::Int
+                    && m_route->itemData(i).toInt() == settings->current_route_id) {
+                    m_route->setCurrentIndex(i);
+                    break;
+                }
             }
         }
         card.addControl(tr("Routing"), m_route);
+        m_routeNote = card.addNote({});
+        connect(m_route, &QComboBox::currentIndexChanged, this,
+                &FsntSettingsDialog::updateRouteNote);
+        updateRouteNote();
     }
 
     m_autoConnect = card.addToggle(tr("Reconnect on start"), settings->remember_enable);
@@ -145,6 +178,22 @@ void FsntSettingsDialog::buildConnection(QVBoxLayout *column, QWidget *host) {
         card.addNote(tr("Routing is managed by your provider while this subscription is "
                         "connected. Disconnect to change it."));
     }
+}
+
+void FsntSettingsDialog::updateRouteNote() {
+    if (m_route == nullptr || m_routeNote == nullptr) return;
+    const QVariant chosen = m_route->currentData();
+    if (chosen.typeId() != QMetaType::QString) {
+        m_routeNote->setText(tr("A profile you built yourself in advanced mode."));
+        return;
+    }
+    for (const auto &preset : Configs::RoutePresets()) {
+        if (preset.key == chosen.toString()) {
+            m_routeNote->setText(preset.description);
+            return;
+        }
+    }
+    m_routeNote->clear();
 }
 
 namespace {
@@ -278,7 +327,12 @@ void FsntSettingsDialog::save() {
 
     // m_route отсутствует, когда маршрутизацией управляет провайдер.
     if (m_route != nullptr && m_route->currentIndex() >= 0) {
-        settings->current_route_id = m_route->currentData().toInt();
+        const QVariant chosen = m_route->currentData();
+        // Профиль пресета создаём только когда его действительно выбрали: иначе
+        // база обрастала бы схемами, которых пользователь не просил.
+        settings->current_route_id = chosen.typeId() == QMetaType::QString
+                                         ? Configs::EnsureRoutePreset(chosen.toString())
+                                         : chosen.toInt();
     }
 
     // Знак интервала несёт свой смысл в расширенном режиме, поэтому меняем

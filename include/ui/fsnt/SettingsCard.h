@@ -3,6 +3,7 @@
 #include <QString>
 
 class FsntSwitch;
+class QLabel;
 class QPushButton;
 class QVBoxLayout;
 class QWidget;
@@ -29,7 +30,7 @@ namespace Fsnt {
         QPushButton *addAction(const QString &label);
 
         // Пояснение мелким шрифтом, без разделителя сверху.
-        void addNote(const QString &text);
+        QLabel *addNote(const QString &text);
 
     private:
         void addSeparator();

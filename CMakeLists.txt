@@ -383,6 +383,10 @@ set(PROJECT_SOURCES
 
         include/ui/fsnt/WindowChrome.hpp
 
+        src/configs/RoutePresets.cpp
+
+        include/configs/RoutePresets.hpp
+
         src/ui/fsnt/FsntSettingsDialog.cpp
 
         include/ui/fsnt/FsntSettingsDialog.h

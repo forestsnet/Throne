@@ -100,12 +100,13 @@ namespace Fsnt {
         return button;
     }
 
-    void SettingsCard::addNote(const QString &text) {
+    QLabel *SettingsCard::addNote(const QString &text) {
         addSeparator();
         auto *note = new QLabel(text, m_card);
         note->setObjectName("fsntRowNote");
         note->setWordWrap(true);
         note->setContentsMargins(kCardSidePadding, 10, kCardSidePadding, 12);
         m_rows->addWidget(note);
+        return note;
     }
 } // namespace Fsnt

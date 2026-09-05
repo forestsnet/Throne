@@ -6189,6 +6189,14 @@ Improves hole-punching reliability. Requires IPv4.</source>
 <context>
     <name>FsntSettingsDialog</name>
     <message>
+        <source>Custom: %1</source>
+        <translation>Своя: %1</translation>
+    </message>
+    <message>
+        <source>A profile you built yourself in advanced mode.</source>
+        <translation>Схема, собранная вами в расширенном режиме.</translation>
+    </message>
+    <message>
         <source>Settings</source>
         <translation>Настройки</translation>
     </message>
@@ -6358,6 +6366,33 @@ Improves hole-punching reliability. Requires IPv4.</source>
     <message>
         <source>Next</source>
         <translation>Дальше</translation>
+    </message>
+</context>
+<context>
+    <name>RoutePresets</name>
+    <message>
+        <source>Everything through the VPN</source>
+        <translation>Всё через VPN</translation>
+    </message>
+    <message>
+        <source>Every app and every site goes through the tunnel. The safest choice and the one to pick if you are not sure; the local network still works.</source>
+        <translation>Все приложения и все сайты идут через туннель. Самый надёжный вариант и тот, что стоит выбрать, если не уверены; локальная сеть при этом работает.</translation>
+    </message>
+    <message>
+        <source>Except domestic sites</source>
+        <translation>Кроме российских сайтов</translation>
+    </message>
+    <message>
+        <source>Russian sites and addresses go directly, everything else through the tunnel. Banking and government sites keep working and stay fast.</source>
+        <translation>Российские сайты и адреса идут напрямую, остальное — через туннель. Банки и госуслуги продолжают работать и не теряют в скорости.</translation>
+    </message>
+    <message>
+        <source>Blocked sites only</source>
+        <translation>Только заблокированное</translation>
+    </message>
+    <message>
+        <source>Only what is blocked goes through the tunnel, the rest directly. The fastest option, but a site missing from the list will not be unblocked.</source>
+        <translation>Через туннель идёт только заблокированное, остальное напрямую. Самый быстрый вариант, но сайт, которого нет в списке, не откроется.</translation>
     </message>
 </context>
 <context>

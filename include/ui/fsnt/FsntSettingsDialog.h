@@ -4,6 +4,7 @@
 
 class FsntSwitch;
 class FsntSelect;
+class QLabel;
 class QVBoxLayout;
 
 // Настройки простого режима.
@@ -33,6 +34,9 @@ private:
     FsntSelect *m_transport = nullptr;
     FsntSelect *m_language = nullptr;
     FsntSelect *m_route = nullptr;
+    // Подпись под выбором: объясняет выбранную схему словами.
+    QLabel *m_routeNote = nullptr;
+    void updateRouteNote();
     FsntSelect *m_subAutoUpdate = nullptr;
     FsntSwitch *m_startMinimal = nullptr;
     FsntSwitch *m_autoConnect = nullptr;
