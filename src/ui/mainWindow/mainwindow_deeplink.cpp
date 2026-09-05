@@ -19,6 +19,7 @@
 #include "include/global/PeriodicRunner.hpp"
 #include "include/sys/AutoRun.hpp"
 #include "include/ui/mainWindow/MainWindowInternal.h"
+#include "include/ui/fsnt/FsntControls.h"
 #include "include/ui/setting/Icon.hpp"
 #include "include/ui/utils/ProfilesTableModel.h"
 
@@ -293,7 +294,12 @@ void MainWindow::handle_addsub(const QString &url, const QString &name) {
     const auto prompt = tr("Add this subscription?\n\nName: %1\nURL: %2")
                             .arg(groupName, url);
     bool autoUpdate = true;
-    if (MessageBoxCheck(tr("Add subscription"), prompt, tr("Auto update"), autoUpdate) != QMessageBox::Ok) {
+    // В простом режиме спрашиваем своим окном: QMessageBox рисуется стилем
+    // системы и рядом с окном клиента выглядит чужим. В инженерном режиме
+    // оставляем штатный диалог — там всё остальное тоже платформенное.
+    if (auto *facade = GetFacadeWindow(); facade != nullptr) {
+        if (!Fsnt::ConfirmSubscription(facade, groupName, url, autoUpdate)) return;
+    } else if (MessageBoxCheck(tr("Add subscription"), prompt, tr("Auto update"), autoUpdate) != QMessageBox::Ok) {
         return;
     }
 

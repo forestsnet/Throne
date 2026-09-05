@@ -5,11 +5,34 @@
 #include <QThread>
 #include <QTimer>
 #include <QDir>
+#include <QFile>
+#include <QFileInfo>
 #include <QApplication>
 
 
 
 #include "include/ui/mainwindow.h"
+
+namespace {
+    // Ядро, поднятое с правами root (полный туннель на macOS и Linux), создаёт
+    // cache.db во владении root. Следующий запуск уже без прав падает с
+    // «initialize cache-file: open cache.db: permission denied» — человеку эта
+    // строка не говорит ничего, а туннель просто не поднимается. Внутри файла
+    // только кэш fakeip и DNS, терять там нечего: удаляем, ядро создаст заново.
+    void coreDropUnusableCacheFile() {
+        const QString path = QDir(Configs::GetBasePath()).filePath("cache.db");
+        const QFileInfo info(path);
+        if (!info.exists() || info.isWritable()) return;
+        // Если у ядра стоит setuid, оно всё равно пойдёт под root и файл ему
+        // доступен — тогда чужой владелец не мешает и кэш стоит сохранить.
+        if (Configs::isSetuidSet(Configs::FindCoreRealPath().toStdString())) return;
+        if (QFile::remove(path)) {
+            LOG_WARN("cache.db was owned by another user (core ran as root before), removed");
+        } else {
+            LOG_WARN("cache.db is not writable and could not be removed: " + path);
+        }
+    }
+}
 
 namespace Configs_sys {
     CoreProcess::~CoreProcess() {
@@ -116,6 +139,7 @@ namespace Configs_sys {
         // Points Xray's asset loader at our writable config dir, so a geoip.dat/geosite.dat downloaded later is found with no core restart.
         env.insert("XRAY_LOCATION_ASSET", Configs::GetBasePath());
         setProcessEnvironment(env);
+        coreDropUnusableCacheFile();
         start(program, {});
     }
 

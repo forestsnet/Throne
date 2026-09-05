@@ -25,6 +25,8 @@
 #include <QDialogButtonBox>
 #include <QDialog>
 
+#include "include/ui/fsnt/FsntControls.h"
+
 #ifdef Q_OS_WIN
 #include "include/sys/windows/guihelper.h"
 #endif
@@ -290,6 +292,12 @@ void ActivateUiWindow() {
 }
 
 int MessageBoxWarning(const QString &title, const QString &text) {
+    // Простой режим показывает свои окна: штатный QMessageBox рисуется стилем
+    // системы и посреди клиента выглядит как окно чужой программы.
+    if (GetFacadeWindow() != nullptr) {
+        Fsnt::Notice(GetMessageBoxParent(), title, text);
+        return QMessageBox::Ok;
+    }
     return QMessageBox::warning(GetMessageBoxParent(), title, text);
 }
 
@@ -314,6 +322,10 @@ void PostPassiveWarning(const QString &title, const QString &text) {
 }
 
 int MessageBoxInfo(const QString &title, const QString &text) {
+    if (GetFacadeWindow() != nullptr) {
+        Fsnt::Notice(GetMessageBoxParent(), title, text);
+        return QMessageBox::Ok;
+    }
     return QMessageBox::information(GetMessageBoxParent(), title, text);
 }
 

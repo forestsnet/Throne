@@ -41,6 +41,18 @@ namespace Fsnt {
     // стилем платформы и посреди клиентского окна выглядит чужим.
     bool Confirm(QWidget *parent, const QString &title, const QString &text,
                  const QString &acceptText);
+
+    // Подтверждение подписки, пришедшей ссылкой throne://. Адрес показываем
+    // целиком: по нему человек и опознаёт своего провайдера, а ссылка могла
+    // прийти откуда угодно. autoUpdate одновременно вход и выход — тумблер
+    // стартует с переданного значения и возвращает выбранное.
+    bool ConfirmSubscription(QWidget *parent, const QString &name, const QString &url,
+                             bool &autoUpdate);
+
+    // Сообщение с одной кнопкой в том же оформлении. Через него идут все
+    // информационные окна простого режима: штатный QMessageBox приходит со
+    // стилем системы и рядом с окном клиента выглядит чужой программой.
+    void Notice(QWidget *parent, const QString &title, const QString &text);
 } // namespace Fsnt
 
 // Современные замены штатным виджетам.

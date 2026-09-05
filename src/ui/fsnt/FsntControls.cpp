@@ -515,4 +515,121 @@ namespace Fsnt {
 
         return dialog.exec() == QDialog::Accepted;
     }
+
+    bool ConfirmSubscription(QWidget *parent, const QString &name, const QString &url,
+                             bool &autoUpdate) {
+        QDialog dialog(parent);
+        dialog.setObjectName(QStringLiteral("fsntDialog"));
+        dialog.setWindowTitle(QObject::tr("Add subscription"));
+        dialog.setModal(true);
+        dialog.setStyleSheet(BuildStyleSheet());
+        dialog.setMinimumWidth(460);
+
+        auto *layout = new QVBoxLayout(&dialog);
+        layout->setContentsMargins(24, 22, 24, 20);
+        layout->setSpacing(12);
+
+        auto *heading = new QLabel(QObject::tr("Add subscription"), &dialog);
+        heading->setObjectName(QStringLiteral("fsntDialogTitle"));
+        layout->addWidget(heading);
+
+        auto *hint = new QLabel(QObject::tr("This link came from outside the app. Check the address: "
+                                            "it is what gives the client your servers."), &dialog);
+        hint->setObjectName(QStringLiteral("fsntDialogHint"));
+        hint->setWordWrap(true);
+        layout->addWidget(hint);
+
+        auto *card = new QWidget(&dialog);
+        card->setObjectName(QStringLiteral("fsntCard"));
+        auto *cardBox = new QVBoxLayout(card);
+        cardBox->setContentsMargins(14, 12, 14, 12);
+        cardBox->setSpacing(6);
+
+        auto *nameLabel = new QLabel(name, card);
+        nameLabel->setObjectName(QStringLiteral("fsntRowLabel"));
+        nameLabel->setWordWrap(true);
+        cardBox->addWidget(nameLabel);
+
+        // Длинный адрес переносим по символам: в ссылке нет пробелов, и без
+        // этого карточка растягивает окно на всю ширину экрана.
+        auto *urlLabel = new QLabel(url, card);
+        urlLabel->setObjectName(QStringLiteral("fsntRowNote"));
+        urlLabel->setWordWrap(true);
+        urlLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
+        cardBox->addWidget(urlLabel);
+
+        layout->addWidget(card);
+
+        auto *toggleRow = new QHBoxLayout;
+        auto *toggleLabel = new QLabel(QObject::tr("Keep this subscription updated"), &dialog);
+        toggleLabel->setObjectName(QStringLiteral("fsntRowLabel"));
+        auto *toggle = new FsntSwitch(&dialog);
+        toggle->setChecked(autoUpdate);
+        toggleRow->addWidget(toggleLabel, 1);
+        toggleRow->addWidget(toggle);
+        layout->addLayout(toggleRow);
+
+        layout->addSpacing(4);
+
+        auto *cancel = new QPushButton(QObject::tr("Cancel"), &dialog);
+        cancel->setObjectName(QStringLiteral("fsntGhost"));
+        cancel->setCursor(Qt::PointingHandCursor);
+        QObject::connect(cancel, &QPushButton::clicked, &dialog, &QDialog::reject);
+
+        auto *accept = new QPushButton(QObject::tr("Add"), &dialog);
+        accept->setObjectName(QStringLiteral("fsntPrimary"));
+        accept->setCursor(Qt::PointingHandCursor);
+        accept->setDefault(true);
+        QObject::connect(accept, &QPushButton::clicked, &dialog, &QDialog::accept);
+
+        auto *buttons = new QHBoxLayout;
+        buttons->addStretch();
+        buttons->addWidget(cancel);
+        buttons->addWidget(accept);
+        layout->addLayout(buttons);
+
+        const bool accepted = dialog.exec() == QDialog::Accepted;
+        if (accepted) autoUpdate = toggle->isChecked();
+        return accepted;
+    }
+
+    void Notice(QWidget *parent, const QString &title, const QString &text) {
+        QDialog dialog(parent);
+        dialog.setObjectName(QStringLiteral("fsntDialog"));
+        dialog.setWindowTitle(title);
+        dialog.setModal(true);
+        dialog.setStyleSheet(BuildStyleSheet());
+
+        auto *layout = new QVBoxLayout(&dialog);
+        layout->setContentsMargins(24, 22, 24, 20);
+        layout->setSpacing(12);
+
+        auto *heading = new QLabel(title, &dialog);
+        heading->setObjectName(QStringLiteral("fsntDialogTitle"));
+        heading->setWordWrap(true);
+        layout->addWidget(heading);
+
+        auto *body = new QLabel(text, &dialog);
+        body->setObjectName(QStringLiteral("fsntDialogHint"));
+        body->setWordWrap(true);
+        body->setMinimumWidth(340);
+        // Технические строки от ядра приходят одной длинной фразой; дать их
+        // выделить полезнее, чем заставлять переписывать с экрана.
+        body->setTextInteractionFlags(Qt::TextSelectableByMouse);
+        layout->addWidget(body);
+        layout->addSpacing(6);
+
+        auto *close = new QPushButton(QObject::tr("Close"), &dialog);
+        close->setObjectName(QStringLiteral("fsntPrimary"));
+        close->setCursor(Qt::PointingHandCursor);
+        close->setDefault(true);
+        QObject::connect(close, &QPushButton::clicked, &dialog, &QDialog::accept);
+
+        auto *buttons = new QHBoxLayout;
+        buttons->addStretch();
+        buttons->addWidget(close);
+        layout->addLayout(buttons);
+
+        dialog.exec();
+    }
 } // namespace Fsnt

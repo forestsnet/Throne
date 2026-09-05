@@ -9061,6 +9061,22 @@ Release note:
         <source>Local</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Add subscription</source>
+        <translation>Добавить подписку</translation>
+    </message>
+    <message>
+        <source>This link came from outside the app. Check the address: it is what gives the client your servers.</source>
+        <translation>Ссылка пришла со стороны. Проверьте адрес: именно по нему клиент получит ваши серверы.</translation>
+    </message>
+    <message>
+        <source>Keep this subscription updated</source>
+        <translation>Обновлять эту подписку</translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation>Добавить</translation>
+    </message>
 </context>
 <context>
     <name>QPlatformTheme</name>
