@@ -81,6 +81,19 @@ QStringList MainWindow::CheckConflictingProcesses() {
         "vipre",
         "360safe", "360tray", // 360 Total Security
         // Другие VPN решения
+        // Cloudflare WARP ставит собственный TUN и драйвер-фильтр WFP: наш
+        // туннель поднимается, но маршруты в него не встают, и снаружи это
+        // выглядит как «имена резолвятся, сайты не открываются».
+        "warp-svc", "warp-cli", "cloudflare warp", "cloudflarewarp",
+        "outline", "outlineservice",
+        "amnezia", "amneziavpn",
+        "mullvad",
+        "adguardvpn",
+        "browsec",
+        "hiddify",
+        "nekoray", "nekobox",
+        "karing",
+        "v2raya",
         "openvpn",
         "wireguard",
         "softether", "vpnserver", "vpnbridge", "vpnclient",
