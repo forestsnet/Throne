@@ -379,6 +379,10 @@ set(PROJECT_SOURCES
 
         include/ui/fsnt/CoachMarks.h
 
+        src/ui/fsnt/WindowChrome.cpp
+
+        include/ui/fsnt/WindowChrome.hpp
+
         src/ui/fsnt/FsntSettingsDialog.cpp
 
         include/ui/fsnt/FsntSettingsDialog.h

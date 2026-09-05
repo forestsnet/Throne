@@ -20,6 +20,7 @@
 #include <QMenuBar>
 
 #include "include/ui/fsnt/FsntWindow.h"
+#include "include/ui/fsnt/WindowChrome.hpp"
 #include "include/ui/fsnt/UiMode.hpp"
 #include "include/configs/sub/ProviderPolicy.hpp"
 
@@ -88,6 +89,9 @@ void UI_InitMainWindow() {
     // держит трей и горячие клавиши. В простом режиме он служит движком и не
     // показывается — лицом работает FsntWindow. Так в код, который правит upstream,
     // не вносится ни одной правки ради нового интерфейса.
+    // До создания окон: наблюдатель красит рамку каждому, что появится.
+    Fsnt::InstallWindowChromeWatcher();
+
     mainwindow = new MainWindow;
 
     if (mode == Fsnt::UiMode::Simple) {
