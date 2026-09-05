@@ -391,6 +391,10 @@ set(PROJECT_SOURCES
 
         include/ui/fsnt/TrayMenu.h
 
+        src/ui/fsnt/Transport.cpp
+
+        include/ui/fsnt/Transport.hpp
+
         src/ui/fsnt/FsntSettingsDialog.cpp
 
         include/ui/fsnt/FsntSettingsDialog.h

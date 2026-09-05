@@ -151,8 +151,8 @@ namespace Fsnt {
         settings->simple_selected_server = name;
         settings->Save();
 
-        // На поднятом туннеле profile_start переключает ядро на новый профиль;
-        // на опущенном выбор просто запомнится до нажатия «Подключить».
+        // На поднятом туннеле ядро переключается на новый профиль; на
+        // опущенном выбор просто запомнится до нажатия «Подключить».
         if (tunnelRunning()) {
             if (auto *mw = GetMainWindow(); mw != nullptr) mw->profile_start(profileId);
         }

@@ -17,6 +17,7 @@
 #include "include/configs/sub/ProviderPolicy.hpp"
 #include "include/database/GroupsRepo.h"
 #include "include/configs/RoutePresets.hpp"
+#include "include/ui/fsnt/Transport.hpp"
 #include "include/database/RoutesRepo.h"
 #include "include/database/SettingsRepo.h"
 #include "include/global/Configs.hpp"
@@ -317,7 +318,9 @@ void FsntSettingsDialog::buildApplication(QVBoxLayout *column, QWidget *host) {
 void FsntSettingsDialog::save() {
     auto &settings = Configs::dataManager->settingsRepo;
 
-    settings->simple_transport = m_transport->currentData().toInt();
+    const int transport = m_transport->currentData().toInt();
+    const bool transportChanged = transport != settings->simple_transport;
+    settings->simple_transport = transport;
     settings->language = m_language->currentData().toInt();
     settings->start_minimal = m_startMinimal->isChecked();
     settings->remember_enable = m_autoConnect->isChecked();
@@ -356,6 +359,17 @@ void FsntSettingsDialog::save() {
     // Автозапуск живёт не в базе, а в системе, и пишется отдельно.
     if (m_autoRun->isChecked() != AutoRun_IsEnabled()) {
         AutoRun_SetEnabled(m_autoRun->isChecked());
+    }
+
+    // Транспорт задаётся режимами ядра, а не одной настройкой. Раньше здесь
+    // сохранялось только число, режим применялся лишь при подключении, и на
+    // работающем профиле смена транспорта не делала ничего — перезапуск просто
+    // гасил соединение.
+    if (transportChanged) {
+        Fsnt::ApplyTransportMode();
+        if (const int running = settings->started_id; running >= 0) {
+            if (auto *mw = GetMainWindow(); mw != nullptr) mw->profile_start(running);
+        }
     }
 
     // Смена адреса приёма и маршрута требует пересборки конфига ядра.

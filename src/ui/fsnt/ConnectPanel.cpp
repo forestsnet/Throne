@@ -12,6 +12,7 @@
 #include "include/global/Configs.hpp"
 #include "include/ui/fsnt/FsntTheme.hpp"
 #include "include/ui/fsnt/PowerButton.h"
+#include "include/ui/fsnt/Transport.hpp"
 #include "include/ui/mainwindow.h"
 
 namespace {
@@ -148,6 +149,17 @@ void ConnectPanel::setStatus(const QString &text, const char *tone) {
 
 QWidget *ConnectPanel::powerButton() const { return m_button; }
 
+void ConnectPanel::switchServer(const int profileId) {
+    if (profileId < 0 || !isConnected()) return;
+    if (Configs::dataManager->settingsRepo->started_id == profileId) return;
+    auto *mw = GetMainWindow();
+    if (mw == nullptr) return;
+    // Ядро переключается на новый профиль само, отдельная остановка не нужна:
+    // она оставила бы пользователя без связи на время пересборки конфига.
+    beginPending(false, tr("Connecting"));
+    mw->profile_start(profileId);
+}
+
 void ConnectPanel::requestConnection(const bool wantConnect) {
     if (isConnected() == wantConnect) return;
     onButtonClicked();
@@ -174,13 +186,7 @@ void ConnectPanel::onButtonClicked() {
 
     // Одна кнопка: режим клиент выбирает сам. По умолчанию TUN, но пользователь
     // может переключиться на системный прокси в настройках простого режима.
-    // Права для TUN запросит get_elevated_permissions() внутри set_spmode_vpn.
-    const bool wantTun = Configs::dataManager->settingsRepo->simple_transport == 0;
-    if (wantTun && !Configs::dataManager->settingsRepo->spmode_vpn) {
-        mw->set_spmode_vpn(true);
-    } else if (!wantTun && Configs::dataManager->settingsRepo->spmode_vpn) {
-        mw->set_spmode_vpn(false);
-    }
+    Fsnt::ApplyTransportMode();
     mw->profile_start(id);
 }
 

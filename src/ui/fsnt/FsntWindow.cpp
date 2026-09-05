@@ -26,6 +26,7 @@
 #include "include/ui/fsnt/AddSubscriptionDialog.h"
 #include "include/ui/fsnt/CoachMarks.h"
 #include "include/ui/fsnt/TrayMenu.h"
+#include "include/ui/fsnt/Transport.hpp"
 #include "include/ui/fsnt/ConnectPanel.h"
 #include "include/ui/mainwindow.h"
 #include "include/ui/fsnt/FsntSettingsDialog.h"
@@ -290,10 +291,7 @@ void FsntWindow::buildPanels(QVBoxLayout *root) {
 
     connect(m_serverList, &ServerListPanel::serverActivated, this, [](int profileId) {
         if (auto *mw = GetMainWindow()) {
-            const bool wantTun = Configs::dataManager->settingsRepo->simple_transport == 0;
-            if (wantTun != Configs::dataManager->settingsRepo->spmode_vpn) {
-                mw->set_spmode_vpn(wantTun);
-            }
+            Fsnt::ApplyTransportMode();
             mw->profile_start(profileId);
         }
     });
@@ -311,8 +309,12 @@ void FsntWindow::buildPanels(QVBoxLayout *root) {
     // Подпись под кнопкой и выделенная строка обязаны показывать один сервер.
     connect(m_connectPanel, &ConnectPanel::profileResolved,
             m_serverList, &ServerListPanel::selectProfile);
-    connect(m_serverList, &ServerListPanel::serverSelected,
-            this, [this](int) { refreshConnectionState(); });
+    connect(m_serverList, &ServerListPanel::serverSelected, this, [this](int profileId) {
+        // Выбор страны на работающем туннеле раньше только запоминался, и
+        // пользователь оставался на прежнем сервере, не понимая почему.
+        m_connectPanel->switchServer(profileId);
+        refreshConnectionState();
+    });
     connect(m_serverList, &ServerListPanel::notice, this, [this](const QString &text) {
         if (m_toast != nullptr) m_toast->show(text);
     });
