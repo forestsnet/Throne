@@ -805,8 +805,8 @@ namespace Configs {
             // Форк: вместо блокирующей ошибки подставляем DNS автоматически.
             if (settings.core_box_underlying_dns.isEmpty() && settings.spmode_vpn)
             {
-                MW_show_log("TUN mode enabled but no Local DNS set, auto-setting to 1.1.1.1");
-                dataManager->settingsRepo->core_box_underlying_dns = "1.1.1.1";
+                MW_show_log("TUN mode enabled but no Local DNS set, auto-setting to 9.9.9.9");
+                dataManager->settingsRepo->core_box_underlying_dns = "9.9.9.9";
                 dataManager->settingsRepo->Save();
             }
 
