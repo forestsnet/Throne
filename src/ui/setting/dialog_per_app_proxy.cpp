@@ -104,6 +104,10 @@ namespace {
     // одному пути их не ловит. Наличие окна и запись установщика — признаки
     // точные, и по ним видно ровно то, что пользователь считает приложением.
     //
+    // Имя приходит только с ярлыком: в реестре лежит то же имя файла, и оно
+    // перебивало бы человеческое. Chrome записан в App Paths дважды и в «Пуске»
+    // один раз, так что в списке он оказывался «chrome» вместо «Google Chrome».
+    //
     // Кавычек в скрипте нет намеренно: строки только в апострофах, символ
     // кавычки — через [char]34.
     const char *kAppScanScript = R"PS(
@@ -130,7 +134,7 @@ foreach ($root in $roots) {
     if ($v) {
       $v = $v.Trim([char]34).Trim()
       if ($v.ToLower().EndsWith('.exe') -and -not $v.ToLower().StartsWith($win) -and (Test-Path -LiteralPath $v -PathType Leaf)) {
-        'I' + $t + $v + $t + [IO.Path]::GetFileNameWithoutExtension($v)
+        'I' + $t + $v
       }
     }
   }
