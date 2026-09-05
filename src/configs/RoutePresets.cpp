@@ -11,12 +11,36 @@ namespace {
     constexpr auto kPresetAll = "all";
     constexpr auto kPresetBypassLocal = "bypass-local";
     constexpr auto kPresetBlockedOnly = "blocked-only";
+    constexpr auto kPresetGaming = "gaming";
+    constexpr auto kPresetServices = "services";
 
     // Наборы правил тянутся сами по .srs: локальные geoip.dat/geosite.dat для
     // пресетов не нужны, и первый запуск не упирается в их загрузку.
     const QStringList kDomesticSets = {QStringLiteral("geosite-ru"), QStringLiteral("geoip-ru")};
     const QStringList kBlockedSets = {QStringLiteral("geosite-ru-blocked"),
                                       QStringLiteral("geoip-ru-blocked")};
+
+    // Игровые площадки и Discord: голосовой чат для игры такая же обязательная
+    // часть, как сам лаунчер, и разносить их по разным схемам бессмысленно.
+    const QStringList kGamingSets = {
+        QStringLiteral("geosite-category-games"), QStringLiteral("geosite-steam"),
+        QStringLiteral("geosite-epicgames"),      QStringLiteral("geosite-riot"),
+        QStringLiteral("geosite-blizzard"),       QStringLiteral("geosite-playstation"),
+        QStringLiteral("geosite-xbox"),           QStringLiteral("geosite-nintendo"),
+        QStringLiteral("geosite-roblox"),         QStringLiteral("geosite-ea"),
+        QStringLiteral("geosite-ubisoft"),        QStringLiteral("geosite-discord"),
+    };
+
+    // Видео, соцсети, мессенджеры и ИИ. geosite-meta намеренно нет: это домены
+    // проекта Clash.Meta, а не Facebook, и по имени их легко перепутать.
+    const QStringList kMediaSets = {
+        QStringLiteral("geosite-youtube"),   QStringLiteral("geosite-twitch"),
+        QStringLiteral("geosite-netflix"),   QStringLiteral("geosite-spotify"),
+        QStringLiteral("geosite-instagram"), QStringLiteral("geosite-facebook"),
+        QStringLiteral("geosite-whatsapp"),  QStringLiteral("geosite-x"),
+        QStringLiteral("geosite-tiktok"),    QStringLiteral("geosite-openai"),
+        QStringLiteral("geosite-telegram"),  QStringLiteral("geoip-telegram"),
+    };
 
     std::shared_ptr<Configs::RouteRule> dnsRule() {
         auto rule = std::make_shared<Configs::RouteRule>();
@@ -57,6 +81,20 @@ namespace {
                                          Configs::directID);
             return;
         }
+        if (key == QLatin1String(kPresetGaming)) {
+            profile.defaultOutboundID = Configs::directID;
+            profile.Rules << ruleSetRule(QStringLiteral("Games via VPN"), kGamingSets,
+                                         Configs::proxyID);
+            return;
+        }
+        if (key == QLatin1String(kPresetServices)) {
+            profile.defaultOutboundID = Configs::directID;
+            profile.Rules << ruleSetRule(QStringLiteral("Games via VPN"), kGamingSets,
+                                         Configs::proxyID);
+            profile.Rules << ruleSetRule(QStringLiteral("Media and social via VPN"), kMediaSets,
+                                         Configs::proxyID);
+            return;
+        }
         if (key == QLatin1String(kPresetBlockedOnly)) {
             // Наоборот: по умолчанию напрямую, в туннель уходит только то, что
             // без него не открывается.
@@ -90,6 +128,19 @@ namespace Configs {
                  "RoutePresets",
                  "Only what is blocked goes through the tunnel, the rest directly. The fastest "
                  "option, but a site missing from the list will not be unblocked.")},
+            {QString::fromLatin1(kPresetGaming),
+             QCoreApplication::translate("RoutePresets", "Games and Discord"),
+             QCoreApplication::translate(
+                 "RoutePresets",
+                 "Steam, Epic, Riot, Battle.net, PlayStation, Xbox, Roblox and Discord go through "
+                 "the tunnel, everything else directly. Pick a nearby server: game traffic now "
+                 "goes through it, and distance turns into ping.")},
+            {QString::fromLatin1(kPresetServices),
+             QCoreApplication::translate("RoutePresets", "Games, video and social"),
+             QCoreApplication::translate(
+                 "RoutePresets",
+                 "The same plus YouTube, Twitch, Instagram, WhatsApp, Telegram, TikTok and "
+                 "ChatGPT. Banking and government sites stay direct, so they keep working.")},
         };
     }
 
@@ -97,6 +148,8 @@ namespace Configs {
         if (key == QLatin1String(kPresetAll)) return QStringLiteral("VPN: all traffic");
         if (key == QLatin1String(kPresetBypassLocal)) return QStringLiteral("VPN: except domestic");
         if (key == QLatin1String(kPresetBlockedOnly)) return QStringLiteral("VPN: blocked only");
+        if (key == QLatin1String(kPresetGaming)) return QStringLiteral("VPN: games and Discord");
+        if (key == QLatin1String(kPresetServices)) return QStringLiteral("VPN: games, video and social");
         return {};
     }
 

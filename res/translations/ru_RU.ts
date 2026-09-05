@@ -6371,6 +6371,22 @@ Improves hole-punching reliability. Requires IPv4.</source>
 <context>
     <name>RoutePresets</name>
     <message>
+        <source>Games and Discord</source>
+        <translation>Игры и Discord</translation>
+    </message>
+    <message>
+        <source>Steam, Epic, Riot, Battle.net, PlayStation, Xbox, Roblox and Discord go through the tunnel, everything else directly. Pick a nearby server: game traffic now goes through it, and distance turns into ping.</source>
+        <translation>Steam, Epic, Riot, Battle.net, PlayStation, Xbox, Roblox и Discord идут через туннель, остальное — напрямую. Берите сервер поближе: игровой трафик теперь идёт через него, и расстояние превращается в пинг.</translation>
+    </message>
+    <message>
+        <source>Games, video and social</source>
+        <translation>Игры, видео и соцсети</translation>
+    </message>
+    <message>
+        <source>The same plus YouTube, Twitch, Instagram, WhatsApp, Telegram, TikTok and ChatGPT. Banking and government sites stay direct, so they keep working.</source>
+        <translation>То же плюс YouTube, Twitch, Instagram, WhatsApp, Telegram, TikTok и ChatGPT. Банки и госуслуги остаются напрямую и продолжают работать.</translation>
+    </message>
+    <message>
         <source>Everything through the VPN</source>
         <translation>Всё через VPN</translation>
     </message>
