@@ -261,13 +261,32 @@ QString DisplayTime(long long time, int formatType) {
     return QLocale().toString(t, QLocale::FormatType(formatType));
 }
 
+// QPointer, а не сырой указатель: лицо может быть закрыто раньше, чем что-то
+// решит спросить у него родителя.
+static QPointer<QWidget> g_facadeWindow;
+
+void SetFacadeWindow(QWidget *w) { g_facadeWindow = w; }
+
+QWidget *GetFacadeWindow() { return g_facadeWindow.data(); }
+
 QWidget *GetMessageBoxParent() {
     auto activeWindow = QApplication::activeWindow();
-    if (activeWindow == nullptr && mainwindow != nullptr) {
-        if (mainwindow->isVisible()) return mainwindow;
-        return nullptr;
+    if (activeWindow != nullptr) return activeWindow;
+    // Простой режим: MainWindow спрятан, и без этой ветки родителя не было
+    // вовсе. Модальное окно вставало за простым, то переставало отвечать на
+    // клики, а вопрос оставался неотвеченным — и вызвавшая его операция
+    // молча отменялась.
+    if (!g_facadeWindow.isNull() && g_facadeWindow->isVisible()) return g_facadeWindow.data();
+    if (mainwindow != nullptr && mainwindow->isVisible()) return mainwindow;
+    return nullptr;
+}
+
+void ActivateUiWindow() {
+    if (!g_facadeWindow.isNull()) {
+        ActivateWindow(g_facadeWindow.data());
+        return;
     }
-    return activeWindow;
+    if (mainwindow != nullptr) ActivateWindow(mainwindow);
 }
 
 int MessageBoxWarning(const QString &title, const QString &text) {

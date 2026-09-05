@@ -131,6 +131,36 @@ void MainWindow::handle_deeplink_impl(const QString &url) {
         return;
     }
 
+    // Управление туннелем ссылкой: throne://connect, throne://disconnect,
+    // throne://toggle. Окно намеренно не поднимаем — смысл этих ссылок в том,
+    // чтобы их вешали на горячую клавишу или ярлык, и выскакивающее окно там
+    // только мешает. О результате говорит трей.
+    const bool wantConnect = cmd.compare("connect", Qt::CaseInsensitive) == 0;
+    const bool wantDisconnect = cmd.compare("disconnect", Qt::CaseInsensitive) == 0;
+    const bool wantToggle = cmd.compare("toggle", Qt::CaseInsensitive) == 0;
+    if (wantConnect || wantDisconnect || wantToggle) {
+        const bool running = Configs::dataManager->settingsRepo->started_id >= 0;
+        if (Fsnt_RequestConnection) {
+            if (running && (wantDisconnect || wantToggle)) Fsnt_RequestConnection(false);
+            else if (!running && (wantConnect || wantToggle)) Fsnt_RequestConnection(true);
+            return;
+        }
+        if (running && (wantDisconnect || wantToggle)) {
+            profile_stop(false, false, true);
+        } else if (!running && (wantConnect || wantToggle)) {
+            // Профиль берём тот же, что и кнопка подключения: последний
+            // запущенный, а если его нет — выбранный в списке.
+            int id = Configs::dataManager->settingsRepo->started_id;
+            if (id < 0) id = Configs::dataManager->settingsRepo->remember_id;
+            if (id < 0) {
+                MW_show_log(tr("Deeplink %1: no profile to start").arg(cmd));
+                return;
+            }
+            profile_start(id);
+        }
+        return;
+    }
+
     // Форма форка: throne://subscribe?url=<percent-encoded>. Ссылки такого вида
     // уже разошлись у пользователей, поэтому поддерживаем наравне с addsub.
     if (cmd.compare("subscribe", Qt::CaseInsensitive) == 0) {
@@ -179,7 +209,7 @@ void MainWindow::handle_import_route(const QString &url) {
     }
     if (profile->name.trimmed().isEmpty()) profile->name = tr("Imported profile");
 
-    ActivateWindow(this);
+    ActivateUiWindow();
 
     auto prompt = tr("Add this routing profile?\n\nName: %1").arg(profile->name);
     if (!warnings.isEmpty()) prompt += "\n\n" + tr("Note:") + "\n" + warnings.trimmed();
@@ -200,7 +230,7 @@ void MainWindow::handle_add_remote_routes(const QString &url) {
         return;
     }
 
-    ActivateWindow(this);
+    ActivateUiWindow();
 
     QString prompt = tr("Add these remote routing profiles?") + "\n";
     for (int i = 0; i < profiles.size(); ++i) {
@@ -257,7 +287,7 @@ void MainWindow::handle_addsub(const QString &url, const QString &name) {
         return;
     }
 
-    ActivateWindow(this);
+    ActivateUiWindow();
 
     const QString groupName = FIRST_OR_SECOND(name, QUrl(url).host());
     const auto prompt = tr("Add this subscription?\n\nName: %1\nURL: %2")
@@ -401,7 +431,7 @@ void MainWindow::dialog_message_impl(MwMessage cmd, const QStringList &args) {
         on_menu_exit_triggered();
         break;
     case MwMessage::Raise:
-        ActivateWindow(this);
+        ActivateUiWindow();
         break;
     case MwMessage::UpdateShortcuts:
         loadShortcuts();

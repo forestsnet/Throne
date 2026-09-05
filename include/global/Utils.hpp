@@ -100,6 +100,11 @@ namespace MwArg {
 inline std::function<void(MwMessage, QStringList)> MW_dialog_message;
 // Set by MainWindow; marshals to the UI thread.
 inline std::function<void(QString)> MW_handle_deeplink;
+// Подключение по ссылке throne://connect. Простое окно знает и выбранный
+// сервер, и режим транспорта, поэтому диплинк не повторяет этот выбор, а просит
+// окно сделать ровно то, что делает кнопка. В расширенном режиме колбэк пуст —
+// работает запасной путь по started_id/remember_id.
+inline std::function<void(bool /*connect*/)> Fsnt_RequestConnection;
 
 // Set by MainWindow; marshals to the UI thread.
 inline std::function<void(QStringList)> MW_import_files;
@@ -230,6 +235,16 @@ inline bool IsValidPort(int port) {
 }
 
 QWidget *GetMessageBoxParent();
+
+// Окно, которое пользователь реально видит. В простом режиме MainWindow создан,
+// но спрятан: он работает движком, а лицом служит FsntWindow. Поднимать на экран
+// и назначать родителем диалогов надо именно лицо, иначе показывается
+// инженерный интерфейс, а модальные окна уходят за простое и остаются
+// незамеченными.
+void SetFacadeWindow(QWidget *w);
+QWidget *GetFacadeWindow();
+// Поднять видимое окно: лицо, если оно есть, иначе MainWindow.
+void ActivateUiWindow();
 
 int MessageBoxWarning(const QString &title, const QString &text);
 

@@ -40,6 +40,10 @@
 #include "include/ui/setting/ThemeManager.hpp"
 
 FsntWindow::FsntWindow(QWidget *parent) : QMainWindow(parent) {
+    // С этого момента диплинки и диалоги ядра поднимают это окно, а не
+    // спрятанный MainWindow.
+    SetFacadeWindow(this);
+
     setWindowTitle("FSNT Client");
     resize(960, 640);
     setMinimumSize(820, 560);
