@@ -32,13 +32,16 @@ private:
     // chrome_crashpad_handler. По процессу на строку список превращался в
     // четыре одинаковых «Claude», а маршрутизировать надо их все разом.
     struct AppEntry {
-        QString name;             // отображаемое имя, обычно имя бандла
+        QString name;             // отображаемое имя: ярлык из «Пуска» или имя бандла
         QString iconPath;         // .app или исполняемый файл — с него берётся иконка
         QStringList processes;    // все имена процессов этого приложения
         bool userApp = false;     // приложение пользователя, а не системная служба
     };
 
-    static QList<AppEntry> runningApplications();
+    // Не только запущенное: установленное приложение попадает в список, даже
+    // если сейчас закрыто. Иначе настроить маршрут для браузера можно было бы
+    // только при запущенном браузере.
+    static QList<AppEntry> discoverApplications();
     static QIcon iconFor(const AppEntry &entry);
 
     void buildList(const QMap<QString, int> &known);

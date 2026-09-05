@@ -9,7 +9,9 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QListWidget>
+#include <QHash>
 #include <QProcess>
+#include <QSet>
 #include <QPushButton>
 #include <QVBoxLayout>
 
@@ -49,8 +51,10 @@ namespace {
         return executable.left(marker + 4);
     }
 
-    // Отличаем приложение пользователя от системной службы. Без этого список —
-    // сотни строк вроде cfprefsd, и найти в нём свой браузер невозможно.
+    // Отличаем приложение пользователя от системной службы. Запасной вариант:
+    // работает, когда точной разметки нет (см. AppScanResult::classified).
+    // Без отсева список — сотни строк вроде cfprefsd, и найти в нём свой
+    // браузер невозможно.
     bool looksLikeUserApp(const QString &path) {
         // Разделитель проверяем оба: в Windows путь идёт с обратным слэшем, и
         // проверка только на '/' помечала системным вообще всё, из-за чего
@@ -74,32 +78,165 @@ namespace {
                && !path.startsWith(QStringLiteral("/sbin/"));
 #endif
     }
+
+    // Что нашли в системе. Пути — то, из чего строим строки списка; userFacing —
+    // те из них, что точно приложения пользователя, а не служебные процессы.
+    struct AppScanResult {
+        QStringList paths;
+        QHash<QString, QString> names;   // ключ — путь в нижнем регистре
+        QSet<QString> userFacing;
+        // Разметка получилась. Если нет (перечисление не отработало), падаем
+        // обратно на эвристику по пути: пустой список хуже списка с лишним.
+        bool classified = false;
+    };
+
+    // Перечисление идёт синхронно и блокирует открытие диалога, поэтому запас
+    // по времени большой, но конечный: лучше неполный список, чем зависший.
+    constexpr int kAppScanTimeoutMs = 20000;
+
+#ifdef Q_OS_WIN
+    // Три вида строк: R — запущенный процесс, W — запущенный с окном,
+    // I — установленное приложение (реестр App Paths и меню «Пуск»).
+    //
+    // Одних запущенных процессов мало с обеих сторон. Установленный, но
+    // закрытый браузер в списке не появлялся вовсе, а служб вроде
+    // com.docker.service и FileCoAuth.exe, наоборот, было полно: отсев по
+    // одному пути их не ловит. Наличие окна и запись установщика — признаки
+    // точные, и по ним видно ровно то, что пользователь считает приложением.
+    //
+    // Кавычек в скрипте нет намеренно: строки только в апострофах, символ
+    // кавычки — через [char]34.
+    const char *kAppScanScript = R"PS(
+[Console]::OutputEncoding = [Text.Encoding]::UTF8
+$t = [char]9
+$win = ($env:SystemRoot + '\').ToLower()
+
+Get-Process -ErrorAction SilentlyContinue | ForEach-Object {
+  $p = $_.Path
+  if ($p) {
+    'R' + $t + $p
+    if ($_.MainWindowHandle -ne 0) { 'W' + $t + $p }
+  }
 }
 
-QList<DialogPerAppProxy::AppEntry> DialogPerAppProxy::runningApplications() {
-    QProcess process;
-#ifdef Q_OS_WIN
-    // tasklist не отдаёт путь, а без пути нет ни иконки, ни отсева системных.
-    //
-    // OutputEncoding задаём явно: по умолчанию PowerShell пишет в кодировке
-    // консоли, а не в UTF-8, и путь с кириллицей приезжал мусором.
-    // SilentlyContinue — у процессов другого пользователя чтение Path кидает
-    // отказ в доступе, и без этого поток ошибок забивал вывод.
-    process.start("powershell", QStringList()
-        << "-NoProfile" << "-NonInteractive" << "-Command"
-        << "[Console]::OutputEncoding=[Text.Encoding]::UTF8; "
-           "Get-Process -ErrorAction SilentlyContinue | "
-           "ForEach-Object { $_.Path } | Where-Object { $_ } | Sort-Object -Unique");
-#else
-    process.start("ps", QStringList() << "ax" << "-o" << "comm=");
+$roots = @(
+  'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths',
+  'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths',
+  'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths'
+)
+foreach ($root in $roots) {
+  Get-ChildItem -Path $root -ErrorAction SilentlyContinue | ForEach-Object {
+    $v = (Get-ItemProperty -Path $_.PSPath -ErrorAction SilentlyContinue).'(default)'
+    if ($v) {
+      $v = $v.Trim([char]34).Trim()
+      if ($v.ToLower().EndsWith('.exe') -and -not $v.ToLower().StartsWith($win) -and (Test-Path -LiteralPath $v -PathType Leaf)) {
+        'I' + $t + $v + $t + [IO.Path]::GetFileNameWithoutExtension($v)
+      }
+    }
+  }
+}
+
+$shell = New-Object -ComObject WScript.Shell
+$menus = @(
+  (Join-Path $env:ProgramData 'Microsoft\Windows\Start Menu\Programs'),
+  (Join-Path $env:AppData 'Microsoft\Windows\Start Menu\Programs')
+)
+foreach ($menu in $menus) {
+  Get-ChildItem -LiteralPath $menu -Recurse -Filter *.lnk -ErrorAction SilentlyContinue | ForEach-Object {
+    $name = $_.BaseName
+    if ($name -notmatch 'uninstall') {
+      $target = $null
+      try { $target = $shell.CreateShortcut($_.FullName).TargetPath } catch { $target = $null }
+      if ($target -and $target.ToLower().EndsWith('.exe') -and -not $target.ToLower().StartsWith($win) -and (Test-Path -LiteralPath $target -PathType Leaf)) {
+        'I' + $t + $target + $t + $name
+      }
+    }
+  }
+}
+)PS";
+
+    // -EncodedCommand вместо -Command: скрипт длинный и многострочный, а Qt по
+    // дороге собирает командную строку по своим правилам экранирования, и
+    // разбор на стороне PowerShell ломается. Base64 от UTF-16LE — то, что ждёт
+    // сам PowerShell.
+    QString encodeAppScanCommand(const QString &script) {
+        QByteArray utf16;
+        utf16.reserve(script.size() * 2);
+        for (const QChar symbol : script) {
+            utf16.append(static_cast<char>(symbol.unicode() & 0xFF));
+            utf16.append(static_cast<char>(symbol.unicode() >> 8));
+        }
+        return QString::fromLatin1(utf16.toBase64());
+    }
 #endif
-    if (!process.waitForFinished(8000)) return {};
+
+    AppScanResult scanApplications() {
+        AppScanResult result;
+        QProcess process;
+#ifdef Q_OS_WIN
+        process.start(QStringLiteral("powershell"), QStringList()
+            << QStringLiteral("-NoProfile") << QStringLiteral("-NonInteractive")
+            << QStringLiteral("-EncodedCommand")
+            << encodeAppScanCommand(QString::fromUtf8(kAppScanScript)));
+        if (!process.waitForFinished(kAppScanTimeoutMs)) return result;
+
+        for (const QString &raw : QString::fromUtf8(process.readAllStandardOutput())
+                                      .split('\n', Qt::SkipEmptyParts)) {
+            const QStringList parts = raw.trimmed().split('\t');
+            if (parts.size() < 2) continue;
+            const QString path = QDir::fromNativeSeparators(parts[1].trimmed());
+            if (path.isEmpty()) continue;
+            const QString key = path.toLower();
+
+            if (parts[0] == QLatin1String("R")) {
+                result.paths << path;
+                continue;
+            }
+            result.classified = true;
+            result.userFacing.insert(key);
+            if (parts[0] == QLatin1String("W")) continue;
+
+            result.paths << path;
+            if (parts.size() > 2 && !parts[2].trimmed().isEmpty() && !result.names.contains(key)) {
+                result.names.insert(key, parts[2].trimmed());
+            }
+        }
+
+        // Страховка: если развёрнутый запрос не отработал совсем, спрашиваем так
+        // же, как версия 1.2.2. Список без установленных программ хуже полного,
+        // но несравнимо лучше пустого, а пустой здесь уже случался.
+        if (result.paths.isEmpty()) {
+            QProcess plain;
+            plain.start(QStringLiteral("powershell"), QStringList()
+                << QStringLiteral("-NoProfile") << QStringLiteral("-NonInteractive")
+                << QStringLiteral("-Command")
+                << QStringLiteral("[Console]::OutputEncoding=[Text.Encoding]::UTF8; "
+                                  "Get-Process -ErrorAction SilentlyContinue | "
+                                  "ForEach-Object { $_.Path } | Where-Object { $_ } | "
+                                  "Sort-Object -Unique"));
+            if (plain.waitForFinished(kAppScanTimeoutMs)) {
+                result = AppScanResult{};
+                result.paths = QString::fromUtf8(plain.readAllStandardOutput())
+                                   .split('\n', Qt::SkipEmptyParts);
+            }
+        }
+#else
+        process.start(QStringLiteral("ps"), QStringList() << "ax" << "-o" << "comm=");
+        if (!process.waitForFinished(kAppScanTimeoutMs)) return result;
+        result.paths = QString::fromUtf8(process.readAllStandardOutput())
+                           .split('\n', Qt::SkipEmptyParts);
+#endif
+        return result;
+    }
+}
+
+QList<DialogPerAppProxy::AppEntry> DialogPerAppProxy::discoverApplications() {
+    const AppScanResult scan = scanApplications();
 
     // Ключ группы — бандл приложения, а для одиночных программ их собственный
     // путь. Иначе Electron даёт четыре строки «Claude» на один значок.
     QMap<QString, AppEntry> groups;
-    for (const QString &raw : QString::fromUtf8(process.readAllStandardOutput())
-                                  .split('\n', Qt::SkipEmptyParts)) {
+    for (const QString &raw : scan.paths) {
         const QString path = QDir::fromNativeSeparators(raw.trimmed());
         // Ядерные потоки ps печатает в скобках, исполняемого файла у них нет.
         if (path.isEmpty() || path.startsWith('[')) continue;
@@ -115,10 +252,18 @@ QList<DialogPerAppProxy::AppEntry> DialogPerAppProxy::runningApplications() {
             entry.iconPath = key;
             entry.name = bundle.isEmpty() ? processName : QFileInfo(bundle).completeBaseName();
         }
+        // Имя из ярлыка приходит позже пути запущенного процесса, поэтому
+        // подменяем уже проставленное: «Google Chrome» читается лучше, чем
+        // chrome.exe.
+        if (const QString shortcut = scan.names.value(path.toLower()); !shortcut.isEmpty()) {
+            entry.name = shortcut;
+        }
         if (!entry.processes.contains(processName)) entry.processes << processName;
         // Достаточно одного «настоящего» процесса, чтобы показать приложение:
         // сам бандл лежит в /Applications, а хелперы — в его Frameworks.
-        entry.userApp = entry.userApp || looksLikeUserApp(path);
+        entry.userApp = entry.userApp
+            || (scan.classified ? scan.userFacing.contains(path.toLower())
+                                : looksLikeUserApp(path));
     }
 
     return groups.values();
@@ -222,7 +367,7 @@ DialogPerAppProxy::DialogPerAppProxy(QWidget *parent) : QDialog(parent) {
 }
 
 void DialogPerAppProxy::buildList(const QMap<QString, int> &known) {
-    m_entries = runningApplications();
+    m_entries = discoverApplications();
 
     // Уже настроенные приложения могли завершиться — показываем их вместе с
     // запущенными, иначе сохранение молча потеряло бы правило.
