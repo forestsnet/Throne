@@ -6189,6 +6189,22 @@ Improves hole-punching reliability. Requires IPv4.</source>
 <context>
     <name>FsntSettingsDialog</name>
     <message>
+        <source>Tunnel mode</source>
+        <translation>Режим туннеля</translation>
+    </message>
+    <message>
+        <source>Compatible</source>
+        <translation>Совместимый</translation>
+    </message>
+    <message>
+        <source>Fast</source>
+        <translation>Быстрый</translation>
+    </message>
+    <message>
+        <source>If the client says connected but no site opens, switch to Compatible. The fast mode hands packets to Windows, where antivirus software, DPI-bypass tools and leftovers of other VPNs intercept them.</source>
+        <translation>Если клиент показывает «подключено», а сайты не открываются — переключите на совместимый. Быстрый отдаёт пакеты Windows, где их перехватывают антивирусы, обходчики блокировок и остатки других VPN.</translation>
+    </message>
+    <message>
         <source>Custom: %1</source>
         <translation>Своя: %1</translation>
     </message>
@@ -6456,6 +6472,18 @@ Improves hole-punching reliability. Requires IPv4.</source>
 </context>
 <context>
     <name>FsntWindow</name>
+    <message>
+        <source>Connected, but nothing opens</source>
+        <translation>Подключено, но ничего не открывается</translation>
+    </message>
+    <message>
+        <source>The tunnel is up, but no traffic goes through it. Usually another program on this computer intercepts network packets: an antivirus, a DPI-bypass tool or what another VPN left behind.
+
+Switch the tunnel to compatible mode and reconnect? It is a little slower, but it does not depend on them.</source>
+        <translation>Туннель поднят, но трафик через него не идёт. Обычно это значит, что пакеты перехватывает другая программа на этом компьютере: антивирус, обходчик блокировок или остатки другого VPN.
+
+Переключить туннель в совместимый режим и переподключиться? Он немного медленнее, зато от них не зависит.</translation>
+    </message>
     <message>
         <source>How to use the app</source>
         <translation>Как пользоваться приложением</translation>

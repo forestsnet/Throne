@@ -34,6 +34,8 @@ private:
     FsntSelect *m_transport = nullptr;
     FsntSelect *m_language = nullptr;
     FsntSelect *m_route = nullptr;
+    // Стек TUN. Только на Windows: там он ломается о чужие сетевые фильтры.
+    FsntSelect *m_tunStack = nullptr;
     // Подпись под выбором: объясняет выбранную схему словами.
     QLabel *m_routeNote = nullptr;
     void updateRouteNote();

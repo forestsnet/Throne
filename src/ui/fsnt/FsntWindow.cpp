@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QCloseEvent>
 #include <QMenu>
+#include <QMessageBox>
 #include <QUrl>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -27,6 +28,7 @@
 #include "include/ui/fsnt/CoachMarks.h"
 #include "include/ui/fsnt/TrayMenu.h"
 #include "include/ui/fsnt/Transport.hpp"
+#include "include/ui/fsnt/TunnelProbe.hpp"
 #include "include/ui/fsnt/ConnectPanel.h"
 #include "include/ui/mainwindow.h"
 #include "include/ui/fsnt/FsntSettingsDialog.h"
@@ -53,6 +55,9 @@ FsntWindow::FsntWindow(QWidget *parent) : QMainWindow(parent) {
     // Значок в трее тоже создал MainWindow, но с инженерным меню. Забираем
     // его под своё: в простом режиме то меню только мешает.
     if (auto *mw = GetMainWindow(); mw != nullptr) new Fsnt::TrayMenu(mw->trayIcon(), this);
+
+    m_probe = new Fsnt::TunnelProbe(this);
+    connect(m_probe, &Fsnt::TunnelProbe::tunnelDead, this, &FsntWindow::offerCompatibleTunnel);
 
     // Тему и колбэки ядра уже поставил MainWindow: он создаётся раньше и служит движком.
     chainCoreMessages();
@@ -189,6 +194,7 @@ void FsntWindow::onCoreMessage(MwMessage cmd, const QStringList &args) {
         case MwMessage::CoreStarted:
         case MwMessage::ProfileChanged:
             refreshConnectionState();
+            if (m_probe != nullptr) m_probe->start();
             break;
         case MwMessage::GroupsChanged:
         case MwMessage::SubscriptionFinished:
@@ -401,6 +407,32 @@ void FsntWindow::closeEvent(QCloseEvent *event) {
 void FsntWindow::resizeEvent(QResizeEvent *event) {
     QMainWindow::resizeEvent(event);
     if (m_toast != nullptr) m_toast->relayout();
+}
+
+void FsntWindow::offerCompatibleTunnel() {
+#ifdef Q_OS_WIN
+    auto &settings = Configs::dataManager->settingsRepo;
+    // Совместимый стек уже стоит — значит дело не в нём, и советовать нечего.
+    if (settings->vpn_implementation != QLatin1String("system")) return;
+    if (m_compatibleOffered) return;
+    m_compatibleOffered = true;
+
+    ActivateUiWindow();
+    const auto answer = QMessageBox::question(
+        this, tr("Connected, but nothing opens"),
+        tr("The tunnel is up, but no traffic goes through it. Usually another program on "
+           "this computer intercepts network packets: an antivirus, a DPI-bypass tool or "
+           "what another VPN left behind.\n\n"
+           "Switch the tunnel to compatible mode and reconnect? It is a little slower, "
+           "but it does not depend on them."));
+    if (answer != QMessageBox::Yes) return;
+
+    settings->vpn_implementation = QStringLiteral("gvisor");
+    settings->Save();
+    if (auto *mw = GetMainWindow(); mw != nullptr && settings->started_id >= 0) {
+        mw->profile_start(settings->started_id);
+    }
+#endif
 }
 
 void FsntWindow::applyTheme() {

@@ -395,6 +395,10 @@ set(PROJECT_SOURCES
 
         include/ui/fsnt/Transport.hpp
 
+        src/ui/fsnt/TunnelProbe.cpp
+
+        include/ui/fsnt/TunnelProbe.hpp
+
         src/ui/fsnt/FsntSettingsDialog.cpp
 
         include/ui/fsnt/FsntSettingsDialog.h

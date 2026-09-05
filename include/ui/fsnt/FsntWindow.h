@@ -13,7 +13,7 @@ class SubscriptionCard;
 class QLabel;
 class QVBoxLayout;
 
-namespace Fsnt { class CoachMarks; }
+namespace Fsnt { class CoachMarks; class TunnelProbe; }
 
 // Потребительское окно FSNT Client. В этом приросте панели пустые:
 // список серверов, кнопку подключения и карточку подписки добавляют
@@ -64,6 +64,8 @@ private:
     // можно из меню «ещё».
     static bool shouldRunTour();
     void runTour();
+    // Туннель поднят, но трафик не идёт: предлагаем совместимый стек.
+    void offerCompatibleTunnel();
 
     ConnectPanel *m_connectPanel = nullptr;
     ServerListPanel *m_serverList = nullptr;
@@ -75,6 +77,10 @@ private:
     QWidget *m_logs = nullptr;
     QWidget *m_more = nullptr;
     Fsnt::CoachMarks *m_tour = nullptr;
+    Fsnt::TunnelProbe *m_probe = nullptr;
+    // Предлагаем сменить стек один раз за запуск: если человек отказался,
+    // повторять при каждом переподключении значило бы навязываться.
+    bool m_compatibleOffered = false;
     QVBoxLayout *m_serverLayout = nullptr;
     QVBoxLayout *m_sideLayout = nullptr;
 };
