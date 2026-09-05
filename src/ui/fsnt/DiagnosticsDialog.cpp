@@ -15,7 +15,7 @@
 namespace {
     constexpr int kDiagRowSpacing = 6;
 
-    QString stateTone(const Fsnt::CheckResult::State state) {
+    QString diagStateTone(const Fsnt::CheckResult::State state) {
         switch (state) {
             case Fsnt::CheckResult::Ok: return QStringLiteral("ok");
             case Fsnt::CheckResult::Warning: return QStringLiteral("busy");
@@ -25,7 +25,7 @@ namespace {
         return {};
     }
 
-    QString stateText(const Fsnt::CheckResult::State state) {
+    QString diagStateText(const Fsnt::CheckResult::State state) {
         switch (state) {
             case Fsnt::CheckResult::Ok: return QObject::tr("OK");
             case Fsnt::CheckResult::Warning: return QObject::tr("Check");
@@ -164,8 +164,8 @@ void FsntDiagnosticsDialog::applyResult(const int index, const Fsnt::CheckResult
     if (index < 0 || index >= m_rows.size()) return;
     Row &row = m_rows[index];
 
-    row.status->setText(stateText(result.state));
-    row.status->setProperty("tone", stateTone(result.state));
+    row.status->setText(diagStateText(result.state));
+    row.status->setProperty("tone", diagStateTone(result.state));
     row.status->style()->unpolish(row.status);
     row.status->style()->polish(row.status);
 

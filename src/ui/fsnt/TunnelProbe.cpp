@@ -9,18 +9,18 @@
 namespace {
     // Сколько ждать после подключения. Маршруты встают не мгновенно, и проба
     // сразу после старта ловила бы ложные отказы.
-    constexpr int kProbeDelayMs = 6000;
+    constexpr int kTunnelProbeDelayMs = 6000;
 
     // Мелкая страница без содержимого: нам нужен сам факт ответа. Тот же адрес
     // Windows использует для проверки связи, так что он редко бывает закрыт.
-    const auto kProbeUrl = QStringLiteral("http://www.msftconnecttest.com/connecttest.txt");
+    const auto kTunnelProbeUrl = QStringLiteral("http://www.msftconnecttest.com/connecttest.txt");
 }
 
 namespace Fsnt {
     TunnelProbe::TunnelProbe(QObject *parent) : QObject(parent) {
         m_delay = new QTimer(this);
         m_delay->setSingleShot(true);
-        m_delay->setInterval(kProbeDelayMs);
+        m_delay->setInterval(kTunnelProbeDelayMs);
         connect(m_delay, &QTimer::timeout, this, &TunnelProbe::run);
     }
 
@@ -45,7 +45,7 @@ namespace Fsnt {
         runOnNewThread([self, generation] {
             // useProxy = false: идём через систему и TUN, как обычная программа,
             // а не через локальный прокси клиента.
-            const auto response = Configs_network::NetworkRequestHelper::HttpGet(kProbeUrl);
+            const auto response = Configs_network::NetworkRequestHelper::HttpGet(kTunnelProbeUrl);
             if (response.error.isEmpty()) return;
 
             runOnUiThread([self, generation] {
