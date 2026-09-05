@@ -52,7 +52,32 @@ curl -fsSL https://raw.githubusercontent.com/throneproj/Throne/dev/script/instal
 
 Various formats are supported, including share links, various JSON representation of Sing-box configs, and v2rayN link format as well as limited support for Shadowsocks and Clash formats.
 
-Deeplinks are also supported, read the [documentation](https://throneproj.github.io/advanced/deeplinks/) for more information.
+## Deep links
+
+The client registers the `throne://` URL scheme, so a link on a web page, in a
+chat message or in a desktop shortcut can drive it. Clicking one hands the URL
+to the already running instance; if the client is not running it starts first
+and then acts on the link.
+
+| Link | What it does |
+| --- | --- |
+| `throne://subscribe?url=<url>` | Add (or refresh) a subscription. The URL must be percent-encoded. If a subscription for the same host already exists it is updated in place rather than duplicated. |
+| `throne://addsub/<base64url>` | The same, with `<url>#<name>` packed into base64url. |
+| `throne://add/<base64url>` | Import share links or a config. |
+| `throne://route/<base64url>` | Import one routing profile. |
+| `throne://remoteroute/<base64url>` | Import a set of remote routing profiles. |
+| `throne://connect` | Connect, using the server the connect button would pick. |
+| `throne://disconnect` | Disconnect. |
+| `throne://toggle` | Connect if disconnected, disconnect if connected. |
+
+Links that add something ask for confirmation and bring the window forward.
+`connect`, `disconnect` and `toggle` deliberately do neither: they are meant for
+shortcuts and hotkeys, where a window appearing on top would be in the way. The
+tray icon reflects the result.
+
+Upstream Throne documents its own set of deep links
+[here](https://throneproj.github.io/advanced/deeplinks/); the table above is
+what this fork actually accepts.
 
 ## Credits
 

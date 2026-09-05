@@ -2,6 +2,7 @@
 
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QPointer>
 #include <QStyle>
 #include <QTimer>
 #include <QVBoxLayout>
@@ -19,6 +20,11 @@ namespace {
 }
 
 ConnectPanel::ConnectPanel(QWidget *parent) : QWidget(parent) {
+    // QPointer: колбэк живёт в глобальной переменной и переживёт панель.
+    Fsnt_RequestConnection = [self = QPointer(this)](const bool wantConnect) {
+        if (!self.isNull()) self->requestConnection(wantConnect);
+    };
+
     auto *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(6);
@@ -138,6 +144,11 @@ void ConnectPanel::setStatus(const QString &text, const char *tone) {
     m_status->setProperty("tone", tone);
     m_status->style()->unpolish(m_status);
     m_status->style()->polish(m_status);
+}
+
+void ConnectPanel::requestConnection(const bool wantConnect) {
+    if (isConnected() == wantConnect) return;
+    onButtonClicked();
 }
 
 void ConnectPanel::onButtonClicked() {
