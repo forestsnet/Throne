@@ -387,6 +387,10 @@ set(PROJECT_SOURCES
 
         include/configs/RoutePresets.hpp
 
+        src/ui/fsnt/TrayMenu.cpp
+
+        include/ui/fsnt/TrayMenu.h
+
         src/ui/fsnt/FsntSettingsDialog.cpp
 
         include/ui/fsnt/FsntSettingsDialog.h

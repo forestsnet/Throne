@@ -25,6 +25,7 @@
 #include "include/global/Configs.hpp"
 #include "include/ui/fsnt/AddSubscriptionDialog.h"
 #include "include/ui/fsnt/CoachMarks.h"
+#include "include/ui/fsnt/TrayMenu.h"
 #include "include/ui/fsnt/ConnectPanel.h"
 #include "include/ui/mainwindow.h"
 #include "include/ui/fsnt/FsntSettingsDialog.h"
@@ -47,6 +48,10 @@ FsntWindow::FsntWindow(QWidget *parent) : QMainWindow(parent) {
     setWindowTitle("FSNT Client");
     resize(960, 640);
     setMinimumSize(820, 560);
+
+    // Значок в трее тоже создал MainWindow, но с инженерным меню. Забираем
+    // его под своё: в простом режиме то меню только мешает.
+    if (auto *mw = GetMainWindow(); mw != nullptr) new Fsnt::TrayMenu(mw->trayIcon(), this);
 
     // Тему и колбэки ядра уже поставил MainWindow: он создаётся раньше и служит движком.
     chainCoreMessages();

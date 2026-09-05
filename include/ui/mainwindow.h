@@ -255,6 +255,11 @@ private slots:
     bool PrepareUpdateEnvironment();
     void InstallUpdateAndRestart();
 
+public:
+    // Форк: простому режиму нужен тот же значок, но со своим меню. Значок
+    // создаётся без родителя, поэтому findChild его не находит.
+    [[nodiscard]] QSystemTrayIcon *trayIcon() const { return tray; }
+
 private:
     Ui::MainWindow *ui;
     QElapsedTimer sinceWindowDeactivated;

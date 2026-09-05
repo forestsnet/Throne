@@ -6412,6 +6412,49 @@ Improves hole-punching reliability. Requires IPv4.</source>
     </message>
 </context>
 <context>
+    <name>Fsnt::TrayMenu</name>
+    <message>
+        <source>Connect</source>
+        <translation>Подключить</translation>
+    </message>
+    <message>
+        <source>Disconnect</source>
+        <translation>Отключить</translation>
+    </message>
+    <message>
+        <source>Connected</source>
+        <translation>Подключено</translation>
+    </message>
+    <message>
+        <source>Not connected</source>
+        <translation>Отключено</translation>
+    </message>
+    <message>
+        <source>Server</source>
+        <translation>Сервер</translation>
+    </message>
+    <message>
+        <source>Open FSNT Client</source>
+        <translation>Открыть FSNT Client</translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation>Настройки</translation>
+    </message>
+    <message>
+        <source>Quit</source>
+        <translation>Выход</translation>
+    </message>
+    <message>
+        <source>%1 — %2 ms</source>
+        <translation>%1 — %2 мс</translation>
+    </message>
+    <message>
+        <source>FSNT Client — %1</source>
+        <translation>FSNT Client — %1</translation>
+    </message>
+</context>
+<context>
     <name>FsntWindow</name>
     <message>
         <source>How to use the app</source>
