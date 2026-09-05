@@ -242,11 +242,23 @@ namespace Fsnt {
                 font-size: 13px;
             }
             QMenu::item {
+                /* background и border обязательны: без них пункт рисует базовая
+                   тема приложения, и на Windows каждая строка меню получала
+                   собственную рамку с заливкой — меню выглядело набором
+                   отдельных коробок. */
+                background: transparent;
+                border: none;
                 padding: 8px 16px;
+                margin: 1px 3px;
                 border-radius: 6px;
             }
-            QMenu::item:selected { background: @accentSoft; }
-            QMenu::item:disabled { color: @muted; }
+            QMenu::item:selected { background: @accentSoft; color: @text; }
+            QMenu::item:disabled {
+                color: @muted;
+                font-size: 11px;
+                padding: 5px 16px 3px 16px;
+            }
+            QMenu::item:disabled:selected { background: transparent; }
             QMenu::separator {
                 height: 1px;
                 background: @border;
