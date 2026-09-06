@@ -149,18 +149,14 @@ namespace MacNotify {
                                                              UNAuthorizationOptionSound)
                                           completionHandler:^(BOOL granted, NSError *error) {
                                               Q_UNUSED(error)
-                                              if (granted) {
-                                                  deliver(center, safeTitle, safeBody, safeRefused);
-                                              } else {
-                                                  toUiThread(safeRefused);
-                                              }
+                                              if (granted) deliver(center, safeTitle, safeBody, safeRefused);
                                           }];
                     break;
                 }
 
                 default:
-                    // Запрещено в настройках системы — показываем свою карточку.
-                    toUiThread(safeRefused);
+                    // Запрещено в настройках системы. Это ответ человека, а не
+                    // поломка: лезть в обход своей карточкой мы не станем.
                     break;
             }
         }];

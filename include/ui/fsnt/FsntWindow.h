@@ -1,5 +1,7 @@
 #pragma once
 
+#include "include/ui/fsnt/Notifier.hpp"
+
 #include <QMainWindow>
 #include <QPixmap>
 
@@ -73,6 +75,10 @@ private:
 
     // Нашлась новая версия: зажигаем колокольчик и, если человек не запретил,
     // один раз показываем системное уведомление.
+    // Одна дорога для всех сообщений: строка в окне, пока человек в нём, и
+    // системное уведомление, когда он ушёл в другие дела.
+    void announce(Fsnt::NotifyKind kind, const QString &title, const QString &body,
+                  const QString &inWindow, const std::function<void()> &onActivated = {});
     void onConnectionChanged(bool connected, const QString &server);
     void onSubscriptionUpdated();
     void onUpdateFound(const QString &tag, const QString &notes);

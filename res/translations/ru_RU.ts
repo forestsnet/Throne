@@ -6587,6 +6587,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Откройте клиент и нажмите на колокольчик, чтобы обновиться.</translation>
     </message>
     <message>
+        <source>FSNT Client %1 is out — press the bell</source>
+        <translation>Вышел FSNT Client %1 — нажмите на колокольчик</translation>
+    </message>
+    <message>
         <source>Click here to update — it takes about a minute.</source>
         <translation>Нажмите, чтобы обновиться — это займёт около минуты.</translation>
     </message>

@@ -438,28 +438,37 @@ void FsntWindow::refreshServerList() {
     maybeHintSubscriptionSwitch();
 }
 
-void FsntWindow::onConnectionChanged(bool connected, const QString &server) {
-    // Пока человек смотрит в окно, он видит и кнопку, и таймер: баннер поверх
-    // собственного окна — лишний шум. Уведомляем того, кто ушёл в другие дела.
-    if (isActiveWindow()) return;
+void FsntWindow::announce(Fsnt::NotifyKind kind, const QString &title, const QString &body,
+                          const QString &inWindow, const std::function<void()> &onActivated) {
+    if (!Fsnt::NotifyEnabled(kind)) return;
 
+    // Пока окно перед человеком, хватит строки в нём самом: системный баннер
+    // поверх собственного окна — это уведомление о том, что он и так видит.
+    // Пустая строка означает, что окно и без нас всё показывает: обновление
+    // подписки печатает свой итог, а подключение видно по кнопке и таймеру.
+    if (isActiveWindow()) {
+        if (!inWindow.isEmpty() && m_toast != nullptr) m_toast->show(inWindow);
+        return;
+    }
+    Fsnt::Notify(kind, title, body, onActivated);
+}
+
+void FsntWindow::onConnectionChanged(bool connected, const QString &server) {
     QPointer<FsntWindow> self = this;
     const QString title = connected ? tr("VPN is on") : tr("VPN is off");
     const QString body = connected && !server.isEmpty()
                              ? tr("Traffic goes through %1.").arg(server)
                              : (connected ? tr("Traffic goes through the tunnel.")
                                           : tr("Traffic goes directly again."));
-    Fsnt::Notify(Fsnt::NotifyKind::Connection, title, body, [self] {
-        if (self.isNull()) return;
-        self->show();
-        self->raise();
-        self->activateWindow();
-    });
+    announce(Fsnt::NotifyKind::Connection, title, body, QString(), [self] {
+                 if (self.isNull()) return;
+                 self->show();
+                 self->raise();
+                 self->activateWindow();
+             });
 }
 
 void FsntWindow::onSubscriptionUpdated() {
-    if (isActiveWindow()) return;
-
     // Считаем серверы в подписках: человеку важно, что список не опустел, а не
     // сколько строк переписалось внутри.
     int servers = 0;
@@ -468,16 +477,15 @@ void FsntWindow::onSubscriptionUpdated() {
         if (group && !group->url.isEmpty()) servers += group->Profiles().size();
     }
 
+    const QString body = servers > 0 ? tr("%n server(s) available.", nullptr, servers)
+                                     : tr("The provider returned no servers.");
     QPointer<FsntWindow> self = this;
-    Fsnt::Notify(Fsnt::NotifyKind::Subscription, tr("Subscription updated"),
-                 servers > 0 ? tr("%n server(s) available.", nullptr, servers)
-                             : tr("The provider returned no servers."),
-                 [self] {
-                     if (self.isNull()) return;
-                     self->show();
-                     self->raise();
-                     self->activateWindow();
-                 });
+    announce(Fsnt::NotifyKind::Subscription, tr("Subscription updated"), body, QString(), [self] {
+                 if (self.isNull()) return;
+                 self->show();
+                 self->raise();
+                 self->activateWindow();
+             });
 }
 
 void FsntWindow::onUpdateFound(const QString &tag, const QString &notes) {
@@ -493,14 +501,15 @@ void FsntWindow::onUpdateFound(const QString &tag, const QString &notes) {
     settings->Save();
 
     QPointer<FsntWindow> self = this;
-    Fsnt::Notify(Fsnt::NotifyKind::Update, tr("FSNT Client %1 is out").arg(tag),
-                 tr("Click here to update — it takes about a minute."), [self] {
-                     if (self.isNull()) return;
-                     self->show();
-                     self->raise();
-                     self->activateWindow();
-                     self->showUpdateCard();
-                 });
+    announce(Fsnt::NotifyKind::Update, tr("FSNT Client %1 is out").arg(tag),
+             tr("Click here to update — it takes about a minute."),
+             tr("FSNT Client %1 is out — press the bell").arg(tag), [self] {
+                 if (self.isNull()) return;
+                 self->show();
+                 self->raise();
+                 self->activateWindow();
+                 self->showUpdateCard();
+             });
 }
 
 void FsntWindow::showUpdateCard() {
