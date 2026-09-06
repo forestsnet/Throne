@@ -22,7 +22,12 @@ namespace Subscription {
 
         void RefreshAll(bool onlyAllowed = false);
 
-        void SubscribeUrl(const QString &url, const Finish &finish = nullptr);
+        // Результат подписки по ссылке: удалась ли загрузка и была ли эта
+        // ссылка уже добавлена раньше. Диалогу это нужно, чтобы сказать
+        // человеку правду, а не молча закрыться.
+        enum class SubscribeResult { Added, Updated, Failed };
+        using SubscribeFinish = std::function<void(SubscribeResult)>;
+        void SubscribeUrl(const QString &url, const SubscribeFinish &finish = nullptr);
 
         void ImportUrl(const QString &url, const Finish &finish = nullptr);
 

@@ -79,6 +79,14 @@
 <context>
     <name>AddSubscriptionDialog</name>
     <message>
+        <source>Could not open the subscription. Most likely it is blocked by %1 — such programs rewrite network packets, and the provider's site stops answering. Close it and try again.</source>
+        <translation>Не удалось открыть подписку. Скорее всего мешает %1 — такие программы правят сетевые пакеты, и сайт провайдера перестаёт отвечать. Закройте её и попробуйте снова.</translation>
+    </message>
+    <message>
+        <source>Could not open the subscription. Check the link, and if it opens in a browser — look for an anti-censorship tool or antivirus that filters traffic on this computer.</source>
+        <translation>Не удалось открыть подписку. Проверьте ссылку, а если в браузере она открывается — ищите обходчик блокировок или антивирус, который фильтрует трафик на этом компьютере.</translation>
+    </message>
+    <message>
         <source>Add subscription</source>
         <translation>Добавить подписку</translation>
     </message>
@@ -8236,6 +8244,42 @@ Details: %3</source>
 <context>
     <name>QObject</name>
     <message>
+        <source>Save</source>
+        <translation>Сохранить</translation>
+    </message>
+    <message>
+        <source>Subscription settings</source>
+        <translation>Настройки подписки</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation>Название</translation>
+    </message>
+    <message>
+        <source>Link</source>
+        <translation>Ссылка</translation>
+    </message>
+    <message>
+        <source>Copy</source>
+        <translation>Скопировать</translation>
+    </message>
+    <message>
+        <source>never</source>
+        <translation>ни разу</translation>
+    </message>
+    <message numerus="yes">
+        <source>%n server(s), updated %1</source>
+        <translation>
+            <numerusform>%n сервер, обновлено %1</numerusform>
+            <numerusform>%n сервера, обновлено %1</numerusform>
+            <numerusform>%n серверов, обновлено %1</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Update automatically</source>
+        <translation>Обновлять автоматически</translation>
+    </message>
+    <message>
         <source>OK</source>
         <translation>Норма</translation>
     </message>
@@ -9738,6 +9782,42 @@ Remove that endpoint from this routing profile as well?</source>
 </context>
 <context>
     <name>ServerListPanel</name>
+    <message>
+        <source>Subscription</source>
+        <translation>Подписка</translation>
+    </message>
+    <message>
+        <source>Copy link</source>
+        <translation>Скопировать ссылку</translation>
+    </message>
+    <message>
+        <source>Link copied</source>
+        <translation>Ссылка скопирована</translation>
+    </message>
+    <message>
+        <source>Subscription settings</source>
+        <translation>Настройки подписки</translation>
+    </message>
+    <message>
+        <source>Delete subscription</source>
+        <translation>Удалить подписку</translation>
+    </message>
+    <message>
+        <source>Delete «%1» along with its servers?</source>
+        <translation>Удалить «%1» вместе с её серверами?</translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation>Удалить</translation>
+    </message>
+    <message>
+        <source>The provider pinned this subscription: it cannot be removed while its server is running.</source>
+        <translation>Провайдер закрепил эту подписку: её нельзя удалить, пока работает её сервер.</translation>
+    </message>
+    <message>
+        <source>Subscription deleted</source>
+        <translation>Подписка удалена</translation>
+    </message>
     <message>
         <source>Add subscription</source>
         <translation>Добавить подписку</translation>

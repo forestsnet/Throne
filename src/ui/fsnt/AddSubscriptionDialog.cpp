@@ -1,5 +1,7 @@
 #include "include/ui/fsnt/AddSubscriptionDialog.h"
 
+#include "include/ui/mainwindow.h"
+
 #include <QApplication>
 #include <QClipboard>
 #include <QHBoxLayout>
@@ -110,6 +112,23 @@ void AddSubscriptionDialog::setBusy(const bool busy) {
     m_add->setText(busy ? tr("Adding…") : tr("Add"));
 }
 
+QString AddSubscriptionDialog::subscriptionFailureHint() {
+    // Чаще всего дело не в ссылке. У людей с обходчиками блокировок запрос к
+    // провайдеру умирает на рукопожатии TLS: пакеты правит сторонний драйвер,
+    // и клиент видит «wrong version number». Поэтому сначала называем причину,
+    // которую человек в состоянии проверить сам.
+    QStringList conflicts;
+    if (auto *mw = GetMainWindow(); mw != nullptr) conflicts = mw->CheckConflictingProcesses();
+    if (!conflicts.isEmpty()) {
+        return tr("Could not open the subscription. Most likely it is blocked by %1 — such programs "
+                  "rewrite network packets, and the provider's site stops answering. Close it and try "
+                  "again.")
+            .arg(conflicts.join(", "));
+    }
+    return tr("Could not open the subscription. Check the link, and if it opens in a browser — look "
+              "for an anti-censorship tool or antivirus that filters traffic on this computer.");
+}
+
 void AddSubscriptionDialog::fail(const QString &message) {
     m_guard->stop();
     setBusy(false);
@@ -150,9 +169,14 @@ void AddSubscriptionDialog::submit() {
     m_guard->start();
 
     // Колбэк приходит из рабочего потока обновлятора — возвращаемся в UI.
-    Subscription::updater()->SubscribeUrl(text, [this] {
-        QMetaObject::invokeMethod(this, [this] {
+    using Result = Subscription::GroupUpdater::SubscribeResult;
+    Subscription::updater()->SubscribeUrl(text, [this](Result result) {
+        QMetaObject::invokeMethod(this, [this, result] {
             m_guard->stop();
+            if (result == Result::Failed) {
+                fail(subscriptionFailureHint());
+                return;
+            }
             accept();
         }, Qt::QueuedConnection);
     });

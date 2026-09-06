@@ -376,6 +376,10 @@ set(PROJECT_SOURCES
 
         include/ui/fsnt/UpdatePopover.hpp
 
+        src/ui/fsnt/SubscriptionSettings.cpp
+
+        include/ui/fsnt/SubscriptionSettings.hpp
+
         src/ui/fsnt/ServerListPanel.cpp
 
         include/ui/fsnt/ServerListPanel.h

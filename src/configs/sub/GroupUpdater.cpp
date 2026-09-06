@@ -166,17 +166,48 @@ namespace Subscription {
         }
     }
 
-    void GroupUpdater::SubscribeUrl(const QString &url, const Finish &finish) {
+    void GroupUpdater::SubscribeUrl(const QString &url, const SubscribeFinish &finish) {
         const auto content = url.trimmed();
         enqueue({-1, false, [=, this] {
+            auto &groupsRepo = Configs::dataManager->groupsRepo;
+            const auto sameLink = [](const QString &a, const QString &b) {
+                return QUrl(a.trimmed()).toString(QUrl::StripTrailingSlash) ==
+                       QUrl(b.trimmed()).toString(QUrl::StripTrailingSlash);
+            };
+
+            // Та же ссылка уже добавлена — обновляем её, а не заводим соседнюю.
+            // Человек, у которого подписка не открывалась, нажимал «Добавить»
+            // снова и снова и получил полтора десятка одинаковых подписок.
+            for (const int gid : groupsRepo->GetGroupsTabOrder()) {
+                const auto existing = groupsRepo->GetGroup(gid);
+                if (existing == nullptr || existing->url.isEmpty()) continue;
+                if (!sameLink(existing->url, content)) continue;
+                refresh(existing->id, false);
+                emit asyncUpdateCallback(existing->id);
+                if (finish != nullptr) finish(SubscribeResult::Updated);
+                return;
+            }
+
             auto group = Configs::GroupsRepo::NewGroup();
             group->name = QUrl(content).host();
             group->url = content;
-            Configs::dataManager->groupsRepo->AddGroup(group);
+            groupsRepo->AddGroup(group);
             MW_dialog_message(MwMessage::SubscriptionNewGroup, {});
             refresh(group->id, false);
+
+            // Подписка не открылась — на месте новой группы остаётся пустая
+            // строка в списке. Убираем её: она ничего не даёт, а мешает.
+            const auto fresh = groupsRepo->GetGroup(group->id);
+            const bool loaded = fresh != nullptr && fresh->sub_last_update > 0;
+            if (!loaded) {
+                groupsRepo->DeleteGroup(group->id);
+                MW_dialog_message(MwMessage::GroupsChanged, {});
+                if (finish != nullptr) finish(SubscribeResult::Failed);
+                return;
+            }
+
             emit asyncUpdateCallback(group->id);
-            if (finish != nullptr) finish();
+            if (finish != nullptr) finish(SubscribeResult::Added);
         }});
     }
 

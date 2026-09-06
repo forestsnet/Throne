@@ -1,6 +1,9 @@
 #include <memory>
 
 #include "include/ui/fsnt/ServerListPanel.h"
+#include <QApplication>
+#include <QClipboard>
+#include "include/ui/fsnt/SubscriptionSettings.hpp"
 
 #include <QComboBox>
 #include <QDateTime>
@@ -59,6 +62,15 @@ ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
     m_updateSub->setToolTip(tr("Update subscription"));
     connect(m_updateSub, &BusyButton::clicked, this, &ServerListPanel::updateSubscription);
     groupRow->addWidget(m_updateSub);
+
+    // Что можно сделать с самой подпиской. Раньше за этим приходилось идти в
+    // расширенный режим: человек с полутора десятками случайных дублей удалял
+    // их по одному в инженерном окне групп.
+    m_subMenu = new FsntIconButton(Fsnt::Glyph::More, this);
+    m_subMenu->setFixedSize(36, 36);
+    m_subMenu->setToolTip(tr("Subscription"));
+    connect(m_subMenu, &FsntIconButton::clicked, this, &ServerListPanel::showSubscriptionMenu);
+    groupRow->addWidget(m_subMenu);
 
     layout->addLayout(groupRow);
 
@@ -313,6 +325,69 @@ void ServerListPanel::probeOne(const int profileId, const int kind) {
         if (ms < 0 && !error.isEmpty()) emit notice(error);
         reloadServers();
     });
+}
+
+void ServerListPanel::showSubscriptionMenu() {
+    const int gid = m_groups->currentData().toInt();
+    const auto group = Configs::dataManager->groupsRepo->GetGroup(gid);
+    if (group == nullptr) return;
+
+    QMenu menu(this);
+    auto *header = menu.addAction(group->name);
+    header->setEnabled(false);
+    menu.addSeparator();
+
+    const bool isSubscription = !group->url.isEmpty();
+    if (isSubscription) {
+        connect(menu.addAction(tr("Update subscription")), &QAction::triggered, this,
+                &ServerListPanel::updateSubscription);
+        connect(menu.addAction(tr("Copy link")), &QAction::triggered, this, [this, gid] {
+            const auto entity = Configs::dataManager->groupsRepo->GetGroup(gid);
+            if (entity == nullptr) return;
+            QApplication::clipboard()->setText(entity->url);
+            emit notice(tr("Link copied"));
+        });
+        connect(menu.addAction(tr("Subscription settings")), &QAction::triggered, this,
+                [this, gid] { Fsnt::EditSubscription(this, gid); });
+        menu.addSeparator();
+    }
+
+    // Последнюю группу удалять нельзя: списку серверов нужно хоть что-то.
+    auto *remove = menu.addAction(tr("Delete subscription"));
+    remove->setEnabled(Configs::dataManager->groupsRepo->GetAllGroupIds().size() > 1);
+    connect(remove, &QAction::triggered, this, [this, gid] { deleteSubscription(gid); });
+
+    menu.exec(m_subMenu->mapToGlobal(QPoint(0, m_subMenu->height() + 4)));
+}
+
+void ServerListPanel::deleteSubscription(int gid) {
+    const auto group = Configs::dataManager->groupsRepo->GetGroup(gid);
+    if (group == nullptr) return;
+
+    if (Subscription::PolicyBlocksDeletion(gid)) {
+        Fsnt::Notice(this, tr("Delete subscription"),
+                     tr("The provider pinned this subscription: it cannot be removed while its server "
+                        "is running."));
+        return;
+    }
+    if (!Fsnt::Confirm(this, tr("Delete subscription"),
+                       tr("Delete «%1» along with its servers?").arg(group->name), tr("Delete"))) {
+        return;
+    }
+
+    if (auto *mw = GetMainWindow(); mw != nullptr) {
+        // Работающий сервер этой подписки останавливаем: иначе туннель живёт
+        // на профиле, которого больше нет.
+        if (const auto running = Configs::dataManager->profilesRepo->GetProfile(
+                Configs::dataManager->settingsRepo->started_id);
+            running != nullptr && running->gid == gid) {
+            mw->profile_stop(false, true, false);
+        }
+    }
+    Configs::dataManager->groupsRepo->DeleteGroup(gid);
+    MW_dialog_message(MwMessage::GroupsChanged, {});
+    reloadGroups();
+    emit notice(tr("Subscription deleted"));
 }
 
 void ServerListPanel::showServerMenu(const QPoint &where) {

@@ -102,6 +102,8 @@ private:
     // Меню по правой кнопке на строке сервера: проверить его одного, и на
     // выбор — чем именно проверять.
     void showServerMenu(const QPoint &where);
+    void showSubscriptionMenu();
+    void deleteSubscription(int gid);
     void probeOne(int profileId, int kind);
 
 public:
@@ -123,6 +125,7 @@ private:
     QPushButton *m_tabFav = nullptr;
     BusyButton *m_ping = nullptr;
     BusyButton *m_updateSub = nullptr;
+    FsntIconButton *m_subMenu = nullptr;
     QTimer *m_latencyPoll = nullptr;
     int m_latencyPollsLeft = 0;
     // Момент запуска замера в секундах. Строка считается ждущей, пока её

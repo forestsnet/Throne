@@ -22,6 +22,8 @@ private:
     void pasteFromClipboard();
     void setBusy(bool busy);
     void fail(const QString &message);
+    // Почему подписка не открылась — словами, которые человеку что-то говорят.
+    static QString subscriptionFailureHint();
 
     QLineEdit *m_input = nullptr;
     QLabel *m_status = nullptr;
