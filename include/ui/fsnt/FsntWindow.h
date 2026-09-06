@@ -4,7 +4,9 @@
 #include <QPixmap>
 
 #include "include/global/Utils.hpp"
+#include "include/ui/fsnt/UpdateWatcher.hpp"
 
+class FsntIconButton;
 class ConnectPanel;
 class FsntLogDialog;
 class FsntToast;
@@ -68,6 +70,11 @@ private:
     // и переключатель, на который раньше не было причин смотреть, становится
     // главным. Показываем его один раз — в тот момент, когда это случилось.
     void maybeHintSubscriptionSwitch();
+
+    // Нашлась новая версия: зажигаем колокольчик и, если человек не запретил,
+    // один раз показываем системное уведомление.
+    void onUpdateFound(const QString &tag, const QString &notes);
+    void showUpdateCard();
     void runTour();
     // Туннель поднят, но трафик не идёт: предлагаем совместимый стек.
     void offerCompatibleTunnel();
@@ -78,6 +85,14 @@ private:
     FsntToast *m_toast = nullptr;
     QLabel *m_logo = nullptr;
     // Кнопки шапки держим не ради обработчиков, а как цели подсветки.
+    // Колокольчик появляется только когда есть что сказать: постоянный значок,
+    // который девять дней из десяти ничего не значит, глаз перестаёт замечать.
+    FsntIconButton *m_bell = nullptr;
+    QWidget *m_bellDot = nullptr;
+    Fsnt::UpdateWatcher *m_updates = nullptr;
+    QString m_updateTag;
+    QString m_updateNotes;
+
     QWidget *m_gear = nullptr;
     QWidget *m_logs = nullptr;
     QWidget *m_more = nullptr;

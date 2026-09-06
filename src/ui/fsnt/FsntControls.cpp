@@ -122,6 +122,40 @@ namespace {
                                   QPointF(c.x() + r * 0.66, c.y() + r * 0.66));
                 break;
 
+            case Fsnt::Glyph::Bell: {
+                // Колокол силуэтом, как шестерёнка рядом: обводкой он на 18 px
+                // получался проволочным и рядом с залитыми соседями выглядел
+                // недорисованным.
+                QPainterPath bell;
+                bell.moveTo(c.x() - r * 0.78, c.y() + r * 0.30);
+                bell.cubicTo(c.x() - r * 0.56, c.y() + r * 0.16,
+                             c.x() - r * 0.50, c.y() - r * 0.12,
+                             c.x() - r * 0.50, c.y() - r * 0.30);
+                bell.cubicTo(c.x() - r * 0.50, c.y() - r * 0.70,
+                             c.x() + r * 0.50, c.y() - r * 0.70,
+                             c.x() + r * 0.50, c.y() - r * 0.30);
+                bell.cubicTo(c.x() + r * 0.50, c.y() - r * 0.12,
+                             c.x() + r * 0.56, c.y() + r * 0.16,
+                             c.x() + r * 0.78, c.y() + r * 0.30);
+                bell.closeSubpath();
+
+                // Ушко сверху и язычок снизу рисуем отдельными фигурами: в одном
+                // контуре они дают перетяжки, которые на глаз читаются как грязь.
+                QPainterPath cap;
+                cap.addEllipse(QPointF(c.x(), c.y() - r * 0.72), r * 0.14, r * 0.14);
+
+                QPainterPath clapper;
+                clapper.moveTo(c.x() - r * 0.26, c.y() + r * 0.42);
+                clapper.arcTo(QRectF(c.x() - r * 0.26, c.y() + r * 0.16, r * 0.52, r * 0.52), 180, 180);
+                clapper.closeSubpath();
+
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(color);
+                painter->drawPath(bell.united(cap));
+                painter->drawPath(clapper);
+                break;
+            }
+
             case Fsnt::Glyph::More:
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(color);

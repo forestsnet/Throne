@@ -362,6 +362,7 @@ void FsntSettingsDialog::buildApplication(QVBoxLayout *column, QWidget *host) {
 
     m_autoRun = card.addToggle(tr("Launch at login"), AutoRun_IsEnabled());
     m_startMinimal = card.addToggle(tr("Start minimized to tray"), settings->start_minimal);
+    m_notifyUpdate = card.addToggle(tr("Notify about new versions"), settings->notify_update_system);
     card.addNote(tr("Language changes apply after restarting the application."));
 }
 
@@ -383,6 +384,7 @@ void FsntSettingsDialog::save() {
 #endif
     settings->language = m_language->currentData().toInt();
     settings->start_minimal = m_startMinimal->isChecked();
+    if (m_notifyUpdate != nullptr) settings->notify_update_system = m_notifyUpdate->isChecked();
     settings->remember_enable = m_autoConnect->isChecked();
     settings->inbound_address = m_allowLan->isChecked() ? "::" : "127.0.0.1";
     settings->remote_dns = m_remoteDns->currentData().toString();

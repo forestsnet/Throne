@@ -23,6 +23,7 @@ namespace Fsnt {
         Close,
         Logs,
         More,
+        Bell,
     };
 
     // Значок в виде QIcon — для мест, где виджет принимает только её

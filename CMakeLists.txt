@@ -360,6 +360,14 @@ set(PROJECT_SOURCES
         include/ui/fsnt/ConnectPanel.h
 
         src/ui/fsnt/PingProbe.cpp
+        src/ui/fsnt/UpdateWatcher.cpp
+
+        include/ui/fsnt/UpdateWatcher.hpp
+
+        src/ui/fsnt/DesktopNotice.cpp
+
+        include/ui/fsnt/DesktopNotice.hpp
+
         src/ui/fsnt/ServerListPanel.cpp
 
         include/ui/fsnt/ServerListPanel.h

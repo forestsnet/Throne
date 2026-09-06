@@ -49,6 +49,7 @@ namespace Configs {
             {"start_minimal",                 &start_minimal},
             {"onboarding_done",               &onboarding_done},
             {"hint_switch_subs",              &hint_switch_subs},
+            {"notify_update_system",          &notify_update_system},
             {"conflict_warning_disabled",     &conflict_warning_disabled},
             {"enable_ntp",                    &enable_ntp},
             {"enable_dns_server",             &enable_dns_server},
@@ -131,6 +132,7 @@ namespace Configs {
         stringMap = {
             {"user_agent2",                &user_agent},
             {"test_url",                   &test_latency_url},
+            {"update_seen_version",        &update_seen_version},
             {"inbound_address",            &inbound_address},
             {"log_level",                  &log_level},
             {"log_file_level",             &log_file_level},

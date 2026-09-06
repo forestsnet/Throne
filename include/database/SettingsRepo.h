@@ -74,6 +74,11 @@ namespace Configs {
         // Подсказку про переключение подписок показываем один раз — в тот
         // момент, когда их стало больше одной.
         bool hint_switch_subs = false;
+        // Системное уведомление о новой версии. Колокольчик в окне остаётся
+        // всегда — выключается именно всплывающее окно системы.
+        bool notify_update_system = true;
+        // Версия, о которой уже сказали: второй раз не всплываем.
+        QString update_seen_version = "";
         bool disable_tray = false;
         int test_concurrent = 10;
         bool disable_traffic_stats = false;

@@ -25,7 +25,10 @@
 #include "include/database/SettingsRepo.h"
 #include "include/global/Configs.hpp"
 #include "include/ui/fsnt/AddSubscriptionDialog.h"
+#include <QRegularExpression>
+#include <QSystemTrayIcon>
 #include "include/ui/fsnt/CoachMarks.h"
+#include "include/ui/fsnt/FsntPalette.hpp"
 #include "include/ui/fsnt/TrayMenu.h"
 #include "include/ui/fsnt/Transport.hpp"
 #include "include/ui/fsnt/DiagnosticsDialog.h"
@@ -33,6 +36,7 @@
 #include "include/ui/fsnt/ConnectPanel.h"
 #include "include/ui/mainwindow.h"
 #include "include/ui/fsnt/FsntSettingsDialog.h"
+#include "include/ui/fsnt/DesktopNotice.hpp"
 #include "include/ui/fsnt/FsntControls.h"
 #include "include/ui/fsnt/FsntLogDialog.h"
 #include "include/ui/fsnt/FsntTheme.hpp"
@@ -245,6 +249,20 @@ void FsntWindow::buildHeader(QVBoxLayout *root) {
 
     row->addStretch();
 
+    // Колокольчик: скрыт, пока обновления нет. Красную точку рисуем отдельным
+    // виджетом поверх кнопки — так значок остаётся обычным значком.
+    m_bell = new FsntIconButton(Fsnt::Glyph::Bell, header);
+    m_bell->setFixedSize(38, 38);
+    m_bell->setToolTip(tr("A new version is out"));
+    m_bell->hide();
+    m_bellDot = new QWidget(m_bell);
+    m_bellDot->setFixedSize(9, 9);
+    m_bellDot->move(25, 7);
+    m_bellDot->setStyleSheet(QStringLiteral("background:%1;border-radius:4px;border:2px solid %2;")
+                                 .arg(Fsnt::CurrentPalette().danger.name(), Fsnt::CurrentPalette().surface.name()));
+    connect(m_bell, &FsntIconButton::clicked, this, &FsntWindow::showUpdateCard);
+    row->addWidget(m_bell);
+
     auto *settings = new FsntIconButton(Fsnt::Glyph::Gear, header);
     m_gear = settings;
     settings->setFixedSize(38, 38);
@@ -335,6 +353,10 @@ void FsntWindow::buildPanels(QVBoxLayout *root) {
     // раз проверяем сами, иначе человек с двумя подписками увидит подсказку
     // только после следующего обновления.
     QTimer::singleShot(1200, this, [this] { maybeHintSubscriptionSwitch(); });
+
+    m_updates = new Fsnt::UpdateWatcher(this);
+    connect(m_updates, &Fsnt::UpdateWatcher::updateFound, this, &FsntWindow::onUpdateFound);
+    m_updates->start();
     connect(m_serverList, &ServerListPanel::addSubscriptionRequested,
             this, &FsntWindow::openAddSubscription);
 
@@ -404,6 +426,75 @@ void FsntWindow::refreshServerList() {
     if (m_serverList != nullptr) m_serverList->reloadGroups();
     if (m_subscriptionCard != nullptr) m_subscriptionCard->refresh();
     maybeHintSubscriptionSwitch();
+}
+
+void FsntWindow::onUpdateFound(const QString &tag, const QString &notes) {
+    m_updateTag = tag;
+    m_updateNotes = notes;
+    if (m_bell != nullptr) m_bell->show();
+
+    const auto &settings = Configs::dataManager->settingsRepo;
+    // Системным уведомлением дёргаем один раз на версию: человек и так увидит
+    // точку, когда откроет окно, а всплывать на каждой проверке — навязчиво.
+    if (settings->update_seen_version == tag) return;
+    settings->update_seen_version = tag;
+    settings->Save();
+
+    if (!settings->notify_update_system) return;
+
+#ifdef Q_OS_MACOS
+    // На маке системного пути нет: Qt шлёт баннер через NSUserNotificationCenter,
+    // которого в системе не осталось, — приложение даже не появляется в списке
+    // «Уведомления». Показываем свою карточку поверх всех окон.
+    auto *notice = Fsnt::DesktopNotice::Show(tr("FSNT Client %1 is out").arg(tag),
+                                             tr("Click here to update — it takes about a minute."));
+    connect(notice, &Fsnt::DesktopNotice::activated, this, [this] {
+        show();
+        raise();
+        activateWindow();
+        showUpdateCard();
+    });
+#else
+    if (auto *mw = GetMainWindow(); mw != nullptr && mw->trayIcon() != nullptr) {
+        mw->trayIcon()->showMessage(tr("FSNT Client %1 is out").arg(tag),
+                                    tr("Open the client and press the bell to update."),
+                                    QSystemTrayIcon::Information, 8000);
+    }
+#endif
+}
+
+void FsntWindow::showUpdateCard() {
+    if (m_updateTag.isEmpty()) return;
+
+    // Первые строки описания релиза: полный список изменений человеку здесь не
+    // нужен, для него есть ссылка.
+    QString summary;
+    for (const QString &line : m_updateNotes.split('\n')) {
+        const QString clean = QString(line).remove(QRegularExpression("^[#*\\-\\s]+")).trimmed();
+        if (clean.isEmpty()) continue;
+        summary += (summary.isEmpty() ? "" : "\n") + clean;
+        if (summary.count('\n') >= 2) break;
+    }
+
+    // Описание к релизу пишут не всегда; без него человеку полезнее знать, что
+    // именно сделает кнопка, чем ещё раз прочитать заголовок другими словами.
+    const QString body = summary.isEmpty()
+                             ? tr("You have %1 installed. Press Update and the client will download and install "
+                                  "the new version itself.")
+                                   .arg(QStringLiteral(NKR_VERSION))
+                             : summary;
+
+    const int answer = Fsnt::Choose(this, tr("Version %1 is out").arg(m_updateTag), body,
+                                    {tr("Update"), tr("What's new"), tr("Later")});
+    if (answer == 0) {
+        triggerAction("actionCheck_For_Update");
+    } else if (answer == 1) {
+        QDesktopServices::openUrl(QUrl(QStringLiteral("https://github.com/forestsnet/Throne/releases/latest")));
+    } else if (answer == 2) {
+        // «Позже» гасит колокольчик до следующей версии: напоминать про то же
+        // самое — ровно то, что раздражает в чужих программах.
+        if (m_bell != nullptr) m_bell->hide();
+    }
 }
 
 void FsntWindow::maybeHintSubscriptionSwitch() {

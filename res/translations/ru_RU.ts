@@ -6357,6 +6357,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Запускать свёрнутым в трей</translation>
     </message>
     <message>
+        <source>Notify about new versions</source>
+        <translation>Уведомлять о новых версиях</translation>
+    </message>
+    <message>
         <source>Language changes apply after restarting the application.</source>
         <translation>Смена языка применится после перезапуска приложения.</translation>
     </message>
@@ -6539,6 +6543,42 @@ Improves hole-punching reliability. Requires IPv4.</source>
 </context>
 <context>
     <name>FsntWindow</name>
+    <message>
+        <source>A new version is out</source>
+        <translation>Вышла новая версия</translation>
+    </message>
+    <message>
+        <source>FSNT Client %1 is out</source>
+        <translation>Вышел FSNT Client %1</translation>
+    </message>
+    <message>
+        <source>Open the client and press the bell to update.</source>
+        <translation>Откройте клиент и нажмите на колокольчик, чтобы обновиться.</translation>
+    </message>
+    <message>
+        <source>Click here to update — it takes about a minute.</source>
+        <translation>Нажмите, чтобы обновиться — это займёт около минуты.</translation>
+    </message>
+    <message>
+        <source>Version %1 is out</source>
+        <translation>Вышла версия %1</translation>
+    </message>
+    <message>
+        <source>You have %1 installed. Press Update and the client will download and install the new version itself.</source>
+        <translation>У вас установлена %1. Нажмите «Обновить» — клиент сам скачает и поставит новую версию.</translation>
+    </message>
+    <message>
+        <source>Update</source>
+        <translation>Обновить</translation>
+    </message>
+    <message>
+        <source>What's new</source>
+        <translation>Что нового</translation>
+    </message>
+    <message>
+        <source>Later</source>
+        <translation>Позже</translation>
+    </message>
     <message>
         <source>Diagnostics</source>
         <translation>Диагностика</translation>
