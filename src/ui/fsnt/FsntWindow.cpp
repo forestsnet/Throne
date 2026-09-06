@@ -329,6 +329,12 @@ void FsntWindow::buildPanels(QVBoxLayout *root) {
     m_subscriptionCard = new SubscriptionCard(sidePanel);
     m_sideLayout->addWidget(m_subscriptionCard);
 
+    connect(m_serverList, &ServerListPanel::groupsReloaded, this,
+            &FsntWindow::maybeHintSubscriptionSwitch);
+    // Список панель строит ещё в своём конструкторе — до этой подписки. Один
+    // раз проверяем сами, иначе человек с двумя подписками увидит подсказку
+    // только после следующего обновления.
+    QTimer::singleShot(1200, this, [this] { maybeHintSubscriptionSwitch(); });
     connect(m_serverList, &ServerListPanel::addSubscriptionRequested,
             this, &FsntWindow::openAddSubscription);
 
@@ -397,6 +403,36 @@ void FsntWindow::refreshConnectionState() {
 void FsntWindow::refreshServerList() {
     if (m_serverList != nullptr) m_serverList->reloadGroups();
     if (m_subscriptionCard != nullptr) m_subscriptionCard->refresh();
+    maybeHintSubscriptionSwitch();
+}
+
+void FsntWindow::maybeHintSubscriptionSwitch() {
+    const auto &settings = Configs::dataManager->settingsRepo;
+    if (settings->hint_switch_subs || m_serverList == nullptr) return;
+    // Пока идёт экскурсия, лезть со своей подсказкой некуда.
+    if (m_tour != nullptr && m_tour->isVisible()) return;
+
+    // Считаем подписки с серверами: пустая группа Default есть у всех, и по
+    // числу групп «вторая подписка» не отличить от чистой установки.
+    int withServers = 0;
+    for (const int gid : Configs::dataManager->groupsRepo->GetGroupsTabOrder()) {
+        const auto group = Configs::dataManager->groupsRepo->GetGroup(gid);
+        if (group && !group->Profiles().isEmpty()) ++withServers;
+    }
+    if (withServers < 2) return;
+
+    settings->hint_switch_subs = true;
+    settings->Save();
+
+    auto *hint = new Fsnt::CoachMarks(this);
+    connect(hint, &Fsnt::CoachMarks::finished, hint, &QObject::deleteLater);
+    hint->setSteps({Fsnt::CoachMarks::Step{
+        m_serverList->subscriptionSelector(), tr("Now you have two subscriptions"),
+        tr("Servers live separately in each one. This is where you switch between them: "
+           "pick a subscription and its own servers appear in the list below.")}});
+    // Список только что перестроился — дадим ему встать на место, иначе
+    // подсветка ляжет по старым координатам.
+    QTimer::singleShot(150, hint, [hint] { hint->start(); });
 }
 
 void FsntWindow::closeEvent(QCloseEvent *event) {

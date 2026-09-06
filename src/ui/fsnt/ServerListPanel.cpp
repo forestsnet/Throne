@@ -403,8 +403,9 @@ void ServerListPanel::reloadGroups() {
     if (m_groups->count() > 0) m_groups->setCurrentIndex(currentIndex);
 
     reloadServers();
-}
 
+    emit groupsReloaded();
+}
 void ServerListPanel::reloadServers() {
     // Замер обновляет список каждые две секунды — не теряем выбор и прокрутку.
     const int keepId = m_list->currentItem()
@@ -584,6 +585,8 @@ void ServerListPanel::finishMeasurement() {
 }
 
 QWidget *ServerListPanel::addSubscriptionButton() const { return m_addSub; }
+
+QWidget *ServerListPanel::subscriptionSelector() const { return m_groups; }
 
 QWidget *ServerListPanel::listArea() const {
     if (m_list != nullptr && m_list->isVisible()) return m_list;

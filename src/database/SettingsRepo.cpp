@@ -48,6 +48,7 @@ namespace Configs {
             {"sub_send_hwid",                 &sub_send_hwid},
             {"start_minimal",                 &start_minimal},
             {"onboarding_done",               &onboarding_done},
+            {"hint_switch_subs",              &hint_switch_subs},
             {"conflict_warning_disabled",     &conflict_warning_disabled},
             {"enable_ntp",                    &enable_ntp},
             {"enable_dns_server",             &enable_dns_server},

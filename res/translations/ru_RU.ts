@@ -6643,6 +6643,14 @@ Switch the tunnel to compatible mode and reconnect? It is a little slower, but i
         <source>Restart</source>
         <translation>Перезапустить</translation>
     </message>
+    <message>
+        <source>Now you have two subscriptions</source>
+        <translation>Теперь у вас две подписки</translation>
+    </message>
+    <message>
+        <source>Servers live separately in each one. This is where you switch between them: pick a subscription and its own servers appear in the list below.</source>
+        <translation>Серверы лежат в каждой отдельно. Здесь они и переключаются: выберите подписку — и ниже появятся её серверы.</translation>
+    </message>
 </context>
 <context>
     <name>GroupItem</name>
@@ -6851,8 +6859,8 @@ Switch the tunnel to compatible mode and reconnect? It is a little slower, but i
         <translation>Сброс и перезапуск</translation>
     </message>
     <message>
-        <source>Updating existing subscription for domain: %1</source>
-        <translation>Обновляется существующая подписка для домена: %1</translation>
+        <source>Updating existing subscription: %1</source>
+        <translation>Обновляется существующая подписка: %1</translation>
     </message>
     <message>
         <source>Program</source>

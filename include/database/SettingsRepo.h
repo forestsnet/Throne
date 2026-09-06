@@ -71,6 +71,9 @@ namespace Configs {
         // TLS, 3 запрос GET через туннель, 4 запрос HEAD. По умолчанию запрос:
         // он один меряет весь путь целиком, а не дорогу до сервера.
         int ping_kind = 3;
+        // Подсказку про переключение подписок показываем один раз — в тот
+        // момент, когда их стало больше одной.
+        bool hint_switch_subs = false;
         bool disable_tray = false;
         int test_concurrent = 10;
         bool disable_traffic_stats = false;

@@ -303,15 +303,17 @@ void MainWindow::handle_addsub(const QString &url, const QString &name) {
         return;
     }
 
-    // Если подписка на этот домен уже заведена, обновляем её, а не плодим дубль.
-    const QString host = QUrl(url).host();
-    if (!host.isEmpty()) {
+    // Ту же самую ссылку обновляем, а не заводим дублем. Сравниваем целиком:
+    // по одному домену жили две разные подписки одного провайдера — вторая
+    // молча затирала первую, и человек оставался без её серверов.
+    const QString sameAs = QUrl(url).toString(QUrl::StripTrailingSlash);
+    if (!sameAs.isEmpty()) {
         for (int gid : Configs::dataManager->groupsRepo->GetAllGroupIds()) {
             auto existing = Configs::dataManager->groupsRepo->GetGroup(gid);
             if (!existing || existing->url.isEmpty()) continue;
-            if (QUrl(existing->url).host() != host) continue;
+            if (QUrl(existing->url).toString(QUrl::StripTrailingSlash) != sameAs) continue;
 
-            MW_show_log(tr("Updating existing subscription for domain: %1").arg(host));
+            MW_show_log(tr("Updating existing subscription: %1").arg(existing->name));
             existing->url = url;
             existing->skip_auto_update = !autoUpdate;
             Configs::dataManager->groupsRepo->Save(existing);
