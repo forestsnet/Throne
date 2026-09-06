@@ -26,6 +26,8 @@ namespace Fsnt {
         Bell,
         Telegram,
         Globe,
+        Chat,
+        Person,
     };
 
     // Значок в виде QIcon — для мест, где виджет принимает только её

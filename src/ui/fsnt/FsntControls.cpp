@@ -182,6 +182,29 @@ namespace {
                 break;
             }
 
+            case Fsnt::Glyph::Chat: {
+                // Облачко с хвостиком: значок поддержки, когда она живёт не в
+                // Telegram и самолётик был бы враньём.
+                const QRectF bubble(c.x() - r * 0.86, c.y() - r * 0.76, r * 1.72, r * 1.32);
+                painter->drawRoundedRect(bubble, r * 0.34, r * 0.34);
+                painter->drawLine(QPointF(c.x() - r * 0.34, c.y() + r * 0.56),
+                                  QPointF(c.x() - r * 0.52, c.y() + r * 0.94));
+                painter->drawLine(QPointF(c.x() - r * 0.52, c.y() + r * 0.94),
+                                  QPointF(c.x() - r * 0.06, c.y() + r * 0.56));
+                break;
+            }
+
+            case Fsnt::Glyph::Person: {
+                // Голова и плечи: личный кабинет, если он открывается там же,
+                // где и поддержка, и шар с самолётиком уже заняты.
+                painter->drawEllipse(QPointF(c.x(), c.y() - r * 0.36), r * 0.34, r * 0.34);
+                QPainterPath shoulders;
+                shoulders.moveTo(c.x() - r * 0.74, c.y() + r * 0.86);
+                shoulders.arcTo(QRectF(c.x() - r * 0.74, c.y() + r * 0.06, r * 1.48, r * 1.6), 180, -180);
+                painter->drawPath(shoulders);
+                break;
+            }
+
             case Fsnt::Glyph::More:
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(color);

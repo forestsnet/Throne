@@ -193,22 +193,32 @@ void SubscriptionCard::refresh() {
     updateAnnounce();
 
     // Значок выбираем по адресу, а не по назначению ссылки: у одного
-    // провайдера поддержка живёт в Telegram, у другого — на сайте.
+    // провайдера поддержка живёт в Telegram, у другого — на сайте. Но две
+    // одинаковые кнопки рядом бесполезны, поэтому при совпадении вторая
+    // берёт значок по роли: облачко у поддержки, человек у личного кабинета.
     const auto isTelegram = [](const QString &url) {
         const QString host = QUrl(url).host();
         return url.startsWith("tg://") || host.endsWith("t.me") || host.endsWith("telegram.me") ||
                host.endsWith("telegram.org") || host.endsWith("telegram.dog");
     };
-    const auto applyLink = [&isTelegram](FsntIconButton *button, QString &store, const QString &url,
-                                         const QString &hint) {
+    const bool supportTg = isTelegram(policy.supportUrl);
+    const bool pageTg = isTelegram(policy.webPageUrl);
+    const bool collide = !policy.supportUrl.isEmpty() && !policy.webPageUrl.isEmpty() && supportTg == pageTg;
+
+    const auto applyLink = [](FsntIconButton *button, QString &store, const QString &url,
+                              Fsnt::Glyph glyph, const QString &hint) {
         store = url;
         const bool has = !url.isEmpty();
         button->setVisible(has);
         if (!has) return;
-        button->setGlyph(isTelegram(url) ? Fsnt::Glyph::Telegram : Fsnt::Glyph::Globe);
+        button->setGlyph(glyph);
         button->setToolTip(hint + "\n" + url);
     };
-    applyLink(m_supportLink, m_supportUrl, policy.supportUrl, tr("Support"));
-    applyLink(m_pageLink, m_pageUrl, policy.webPageUrl, tr("Subscription page"));
+    applyLink(m_supportLink, m_supportUrl, policy.supportUrl,
+              supportTg ? Fsnt::Glyph::Telegram : Fsnt::Glyph::Chat, tr("Support"));
+    applyLink(m_pageLink, m_pageUrl, policy.webPageUrl,
+              collide ? (pageTg ? Fsnt::Glyph::Person : Fsnt::Glyph::Globe)
+                      : (pageTg ? Fsnt::Glyph::Telegram : Fsnt::Glyph::Globe),
+              tr("Subscription page"));
 
 }
