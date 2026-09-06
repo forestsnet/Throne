@@ -180,6 +180,10 @@ signals:
 
 public slots:
 
+    // autoInstall: человек уже согласился в карточке обновления, поэтому
+    // ставим молча — скачиваем, ставим и перезапускаемся.
+    void CheckUpdate(bool autoInstall = false);
+
     void on_commitDataRequest();
 
     void on_menu_exit_triggered();
@@ -526,8 +530,6 @@ private:
     int m_vpnAuthRestartID = -1;
 
     bool set_system_dns(bool set, bool save_set = true);
-
-    void CheckUpdate();
 
     void OpenDashboard();
 

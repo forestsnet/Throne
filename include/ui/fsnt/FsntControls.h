@@ -40,8 +40,10 @@ namespace Fsnt {
 
     // Вопрос «да/нет» в оформлении простого режима. QMessageBox рисуется
     // стилем платформы и посреди клиентского окна выглядит чужим.
+    // rejectText задаёт левую кнопку: на вопрос «делать ли так» ответ «Отмена»
+    // звучит как «закрыть окно», а не как «нет».
     bool Confirm(QWidget *parent, const QString &title, const QString &text,
-                 const QString &acceptText);
+                 const QString &acceptText, const QString &rejectText = {});
 
     // Подтверждение подписки, пришедшей ссылкой throne://. Адрес показываем
     // целиком: по нему человек и опознаёт своего провайдера, а ссылка могла

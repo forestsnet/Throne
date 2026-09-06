@@ -474,10 +474,18 @@ void MainWindow::dialog_message_impl(MwMessage cmd, const QStringList &args) {
         break;
     case MwMessage::CoreStarted:
         Configs::IsAdmin(true);
-        if (settings->remember_enable && settings->remember_system_proxy) {
+        // Возвращение после обновления работает как «подключаться при запуске»,
+        // но ровно один раз — дальше снова решает настройка.
+        const bool resuming = settings->resume_after_update;
+        if (resuming) {
+            settings->resume_after_update = false;
+            settings->Save();
+        }
+        if ((settings->remember_enable || resuming) && settings->remember_system_proxy) {
             set_spmode_system_proxy(true, false);
         }
-        if ((settings->remember_enable && settings->remember_tun) || settings->flag_restart_tun_on) {
+        if (((settings->remember_enable || resuming) && settings->remember_tun) ||
+            settings->flag_restart_tun_on) {
             set_spmode_vpn(true, settings->flag_restart_tun_on);
             settings->flag_restart_tun_on = false;
         }

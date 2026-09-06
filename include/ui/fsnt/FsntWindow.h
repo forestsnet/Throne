@@ -87,6 +87,7 @@ private:
     void onConnectionChanged(bool connected, const QString &server);
     void onSubscriptionUpdated();
     void onUpdateFound(const QString &tag, const QString &notes);
+    void maybeAskAboutAutoUpdate();
     void showUpdateCard();
     void runTour();
     // Туннель поднят, но трафик не идёт: предлагаем совместимый стек.
@@ -103,6 +104,9 @@ private:
     FsntIconButton *m_bell = nullptr;
     QWidget *m_bellDot = nullptr;
     Fsnt::UpdateWatcher *m_updates = nullptr;
+    // Обновление уже запущено: проверка ходит каждые шесть часов, и второй
+    // заход не должен начинать скачивание заново.
+    bool m_updateStarted = false;
     QString m_updateTag;
     QString m_updateNotes;
 

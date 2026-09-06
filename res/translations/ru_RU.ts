@@ -6357,6 +6357,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Запускать свёрнутым в трей</translation>
     </message>
     <message>
+        <source>Install updates by itself</source>
+        <translation>Ставить обновления самостоятельно</translation>
+    </message>
+    <message>
         <source>Notifications</source>
         <translation>Уведомления</translation>
     </message>
@@ -6585,6 +6589,46 @@ Improves hole-punching reliability. Requires IPv4.</source>
     <message>
         <source>Open the client and press the bell to update.</source>
         <translation>Откройте клиент и нажмите на колокольчик, чтобы обновиться.</translation>
+    </message>
+    <message>
+        <source>Updating to %1</source>
+        <translation>Обновляемся до %1</translation>
+    </message>
+    <message>
+        <source>The client will restart and reconnect by itself.</source>
+        <translation>Клиент перезапустится и сам вернёт подключение.</translation>
+    </message>
+    <message>
+        <source>Updating to %1, the client will restart</source>
+        <translation>Обновляемся до %1, клиент перезапустится</translation>
+    </message>
+    <message>
+        <source>Update by itself?</source>
+        <translation>Обновляться самостоятельно?</translation>
+    </message>
+    <message>
+        <source>Update by itself</source>
+        <translation>Обновляться самому</translation>
+    </message>
+    <message>
+        <source>Not now</source>
+        <translation>Не надо</translation>
+    </message>
+    <message>
+        <source>The client can install new versions on its own: it downloads the update, restarts and brings the connection back to the same server.
+
+You can change this later in settings.</source>
+        <translation>Клиент умеет ставить новые версии сам: скачивает обновление, перезапускается и возвращает подключение к тому же серверу.
+
+Это можно поменять потом в настройках.</translation>
+    </message>
+    <message>
+        <source>You are now on %1. The client can install the next versions on its own: it downloads the update, restarts and brings the connection back to the same server.
+
+You can change this later in settings.</source>
+        <translation>Теперь у вас %1. Следующие версии клиент может ставить сам: скачает обновление, перезапустится и вернёт подключение к тому же серверу.
+
+Это можно поменять потом в настройках.</translation>
     </message>
     <message>
         <source>FSNT Client %1 is out — press the bell</source>
@@ -7793,6 +7837,10 @@ Then come back here — the connection will start by itself.</source>
         <translation>Открыть Терминал</translation>
     </message>
     <message>
+        <source>Downloading the update…</source>
+        <translation>Скачиваем обновление…</translation>
+    </message>
+    <message>
         <source>Waiting for the password in Terminal…</source>
         <translation>Ждём пароль в Терминале…</translation>
     </message>
@@ -7955,6 +8003,10 @@ Please try again.</source>
     <message>
         <source>Unable to capture screen</source>
         <translation>Невозможно захватить экран</translation>
+    </message>
+    <message>
+        <source>Administrator rights</source>
+        <translation>Права администратора</translation>
     </message>
     <message>
         <source>Please run Throne as admin</source>

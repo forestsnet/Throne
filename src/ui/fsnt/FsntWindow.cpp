@@ -2,6 +2,7 @@
 
 #include <QAction>
 #include <QApplication>
+#include <QDateTime>
 #include <QDesktopServices>
 #include <QDir>
 #include <QFile>
@@ -363,6 +364,7 @@ void FsntWindow::buildPanels(QVBoxLayout *root) {
     // Разрешение спрашиваем не сразу: на старте у человека и так полный экран
     // событий, а уведомления нужны не в первую минуту.
     QTimer::singleShot(30000, this, [] { Fsnt::PrimeNotifications(); });
+    QTimer::singleShot(2500, this, [this] { maybeAskAboutAutoUpdate(); });
 
     m_updates = new Fsnt::UpdateWatcher(this);
     connect(m_updates, &Fsnt::UpdateWatcher::updateFound, this, &FsntWindow::onUpdateFound);
@@ -438,6 +440,42 @@ void FsntWindow::refreshServerList() {
     maybeHintSubscriptionSwitch();
 }
 
+void FsntWindow::maybeAskAboutAutoUpdate() {
+    const auto &settings = Configs::dataManager->settingsRepo;
+    const QString current = QStringLiteral(NKR_VERSION);
+    if (current.isEmpty() || settings->last_run_version == current) return;
+
+    // Пока идёт экскурсия по окну, лезть со своим вопросом некуда: человек
+    // читает подсказку, а сверху падает модальное окно. Подождём и спросим,
+    // когда он закончит.
+    if ((m_tour != nullptr && m_tour->isVisible()) || !isActiveWindow()) {
+        QTimer::singleShot(20000, this, [this] { maybeAskAboutAutoUpdate(); });
+        return;
+    }
+
+    // Версия сменилась — значит человек только что поставил клиент или
+    // обновился. Спрашиваем один раз и запоминаем ответ; в дальнейшем это
+    // обычный переключатель в настройках.
+    const bool first = settings->last_run_version.isEmpty();
+    settings->last_run_version = current;
+    settings->Save();
+
+    if (settings->auto_update) return;   // уже разрешено, спрашивать не о чем
+
+    const bool agreed = Fsnt::Confirm(
+        this, tr("Update by itself?"),
+        first ? tr("The client can install new versions on its own: it downloads the update, "
+                   "restarts and brings the connection back to the same server.\n\n"
+                   "You can change this later in settings.")
+              : tr("You are now on %1. The client can install the next versions on its own: it "
+                   "downloads the update, restarts and brings the connection back to the same "
+                   "server.\n\nYou can change this later in settings.")
+                    .arg(current),
+        tr("Update by itself"), tr("Not now"));
+    settings->auto_update = agreed;
+    settings->Save();
+}
+
 void FsntWindow::showNotice(const QString &text, int milliseconds) {
     if (m_toast != nullptr) m_toast->show(text, milliseconds);
 }
@@ -498,10 +536,29 @@ void FsntWindow::onUpdateFound(const QString &tag, const QString &notes) {
     if (m_bell != nullptr) m_bell->show();
 
     const auto &settings = Configs::dataManager->settingsRepo;
-    // Системным уведомлением дёргаем один раз на версию: человек и так увидит
-    // точку, когда откроет окно, а всплывать на каждой проверке — навязчиво.
-    if (settings->update_seen_version == tag) return;
+
+    // Разрешили ставить самому — ставим. Молча уводить туннель нельзя: человек
+    // работает, и клиент сейчас перезапустится, поэтому предупреждаем.
+    if (settings->auto_update && !m_updateStarted) {
+        m_updateStarted = true;
+        announce(Fsnt::NotifyKind::Update, tr("Updating to %1").arg(tag),
+                 tr("The client will restart and reconnect by itself."),
+                 tr("Updating to %1, the client will restart").arg(tag));
+        if (auto *mw = GetMainWindow(); mw != nullptr) {
+            runOnNewThread([mw] { mw->CheckUpdate(true); });
+        }
+        return;
+    }
+    // Про одну и ту же версию напоминаем раз в три дня. Один-единственный раз
+    // мало: баннер легко пропустить, а красную точку в шапке замечают не все.
+    // Каждая проверка — много: это шесть напоминаний в сутки об одном и том же.
+    constexpr qint64 kRemindSeconds = 3 * 24 * 60 * 60;
+    const qint64 now = QDateTime::currentSecsSinceEpoch();
+    if (settings->update_seen_version == tag && now - settings->update_notified_at < kRemindSeconds) {
+        return;
+    }
     settings->update_seen_version = tag;
+    settings->update_notified_at = now;
     settings->Save();
 
     QPointer<FsntWindow> self = this;
@@ -542,8 +599,12 @@ void FsntWindow::showUpdateCard() {
     connect(card, &QObject::destroyed, this, [this] {
         if (m_bell != nullptr) m_bell->setActive(false);
     });
-    connect(card, &Fsnt::UpdatePopover::updateRequested, this, [this] {
-        triggerAction("actionCheck_For_Update");
+    connect(card, &Fsnt::UpdatePopover::updateRequested, this, [] {
+        // Согласие получено здесь: дальше клиент всё делает сам — скачивает,
+        // ставит, перезапускается и возвращает подключение.
+        if (auto *mw = GetMainWindow(); mw != nullptr) {
+            runOnNewThread([mw] { mw->CheckUpdate(true); });
+        }
     });
     connect(card, &Fsnt::UpdatePopover::notesRequested, this, [] {
         QDesktopServices::openUrl(QUrl(QStringLiteral("https://github.com/forestsnet/Throne/releases/latest")));

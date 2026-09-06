@@ -77,6 +77,16 @@ namespace Configs {
         // Системное уведомление о новой версии. Колокольчик в окне остаётся
         // всегда — выключается именно всплывающее окно системы.
         bool notify_update_system = true;
+        // Туннель был поднят, когда клиент ушёл обновляться: после перезапуска
+        // возвращаем и сервер, и режим, даже если «подключаться при запуске»
+        // выключено. Человек не просил его отключать — он просил обновиться.
+        bool resume_after_update = false;
+        // Ставить новые версии самому, без вопросов. Спрашиваем об этом один
+        // раз — при первом запуске новой версии.
+        bool auto_update = false;
+        // Версия, с которой клиент запускался в прошлый раз: по ней и видно,
+        // что версия сменилась.
+        QString last_run_version = "";
         bool notify_subscription = true;
         bool notify_connection = true;
         // Версия, о которой уже сказали: второй раз не всплываем.
@@ -174,6 +184,9 @@ namespace Configs {
         // Sign encodes enabled (negative = off), magnitude = interval minutes (ignored if < 30); *_last is epoch seconds.
         int sub_auto_update = 120;
         qint64 sub_auto_update_last = 0;
+        // Когда в последний раз сказали про новую версию: напоминаем не чаще
+        // раза в три дня, иначе уведомление превращается в фон.
+        qint64 update_notified_at = 0;
         bool sub_clear = true;
         bool sub_show_change_popup = true;
         bool sub_send_hwid = true;

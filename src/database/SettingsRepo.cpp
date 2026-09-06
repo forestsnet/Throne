@@ -50,6 +50,8 @@ namespace Configs {
             {"onboarding_done",               &onboarding_done},
             {"hint_switch_subs",              &hint_switch_subs},
             {"notify_update_system",          &notify_update_system},
+            {"resume_after_update",           &resume_after_update},
+            {"auto_update",                   &auto_update},
             {"notify_subscription",           &notify_subscription},
             {"notify_connection",             &notify_connection},
             {"conflict_warning_disabled",     &conflict_warning_disabled},
@@ -135,6 +137,7 @@ namespace Configs {
             {"user_agent2",                &user_agent},
             {"test_url",                   &test_latency_url},
             {"update_seen_version",        &update_seen_version},
+            {"last_run_version",           &last_run_version},
             {"inbound_address",            &inbound_address},
             {"log_level",                  &log_level},
             {"log_file_level",             &log_file_level},
@@ -266,6 +269,10 @@ namespace Configs {
                 route_auto_update_last = str.toLongLong();
                 continue;
             }
+            if (key == "update_notified_at") {
+                update_notified_at = str.toLongLong();
+                continue;
+            }
             if (auto boolVal = boolMap.find(key); boolVal != boolMap.end()) {
                 *boolVal.value() = str == "true" || str == "1";
                 continue;
@@ -334,6 +341,8 @@ namespace Configs {
             std::to_string(sub_auto_update_last));
         addPair(QStringLiteral("route_auto_update_last"),
             std::to_string(route_auto_update_last));
+        addPair(QStringLiteral("update_notified_at"),
+            std::to_string(update_notified_at));
 
         db.execBatchSettingsReplace(keyValues);
     }

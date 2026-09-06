@@ -17,6 +17,7 @@
 #include <QStyledItemDelegate>
 #include <QVariantAnimation>
 
+#include "include/global/Utils.hpp"
 #include "include/ui/fsnt/FsntPalette.hpp"
 #include "include/ui/fsnt/FsntTheme.hpp"
 
@@ -518,10 +519,10 @@ namespace Fsnt {
     }
 
     bool Confirm(QWidget *parent, const QString &title, const QString &text,
-                 const QString &acceptText) {
+                 const QString &acceptText, const QString &rejectText) {
         QDialog dialog(parent);
         dialog.setObjectName(QStringLiteral("fsntDialog"));
-        dialog.setWindowTitle(title);
+        dialog.setWindowTitle(software_name);
         dialog.setModal(true);
         dialog.setStyleSheet(BuildStyleSheet());
 
@@ -542,7 +543,7 @@ namespace Fsnt {
         layout->addWidget(body);
         layout->addSpacing(6);
 
-        auto *cancel = new QPushButton(QObject::tr("Cancel"), &dialog);
+        auto *cancel = new QPushButton(rejectText.isEmpty() ? QObject::tr("Cancel") : rejectText, &dialog);
         cancel->setObjectName(QStringLiteral("fsntGhost"));
         cancel->setCursor(Qt::PointingHandCursor);
         QObject::connect(cancel, &QPushButton::clicked, &dialog, &QDialog::reject);
@@ -642,7 +643,7 @@ namespace Fsnt {
     int Choose(QWidget *parent, const QString &title, const QString &text, const QStringList &actions) {
         QDialog dialog(parent);
         dialog.setObjectName(QStringLiteral("fsntDialog"));
-        dialog.setWindowTitle(title);
+        dialog.setWindowTitle(software_name);
         dialog.setModal(true);
         dialog.setStyleSheet(BuildStyleSheet());
         dialog.setMinimumWidth(460);
@@ -700,7 +701,7 @@ namespace Fsnt {
     void Notice(QWidget *parent, const QString &title, const QString &text) {
         QDialog dialog(parent);
         dialog.setObjectName(QStringLiteral("fsntDialog"));
-        dialog.setWindowTitle(title);
+        dialog.setWindowTitle(software_name);
         dialog.setModal(true);
         dialog.setStyleSheet(BuildStyleSheet());
 

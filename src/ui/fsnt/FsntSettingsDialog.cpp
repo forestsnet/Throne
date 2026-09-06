@@ -363,6 +363,7 @@ void FsntSettingsDialog::buildApplication(QVBoxLayout *column, QWidget *host) {
 
     m_autoRun = card.addToggle(tr("Launch at login"), AutoRun_IsEnabled());
     m_startMinimal = card.addToggle(tr("Start minimized to tray"), settings->start_minimal);
+    m_autoUpdate = card.addToggle(tr("Install updates by itself"), settings->auto_update);
     card.addNote(tr("Language changes apply after restarting the application."));
 }
 
@@ -395,6 +396,7 @@ void FsntSettingsDialog::save() {
 #endif
     settings->language = m_language->currentData().toInt();
     settings->start_minimal = m_startMinimal->isChecked();
+    if (m_autoUpdate != nullptr) settings->auto_update = m_autoUpdate->isChecked();
     if (m_notifyUpdate != nullptr) settings->notify_update_system = m_notifyUpdate->isChecked();
     if (m_notifySubscription != nullptr) settings->notify_subscription = m_notifySubscription->isChecked();
     if (m_notifyConnection != nullptr) settings->notify_connection = m_notifyConnection->isChecked();

@@ -283,7 +283,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         [=, this] {
             QMutexLocker lock(&coreProcessMutex);
             core_process = new Configs_sys::CoreProcess(core_path, socketFullName, coreDebugMode);
-            if (Configs::dataManager->settingsRepo->remember_enable &&
+            if ((Configs::dataManager->settingsRepo->remember_enable ||
+                 Configs::dataManager->settingsRepo->resume_after_update) &&
                 Configs::dataManager->settingsRepo->remember_id >= 0) {
                 core_process->start_profile_when_core_is_up =
                     Configs::dataManager->settingsRepo->remember_id;

@@ -172,9 +172,48 @@ void MainWindow::prepare_exit()
     qDebug() << "prepare exit done!";
 }
 
+namespace {
+#ifdef Q_OS_MACOS
+    // Обновлятор на маке заменяет весь .app целиком, а настройки по умолчанию
+    // лежат внутри него. После обновления от них не осталось бы и следа —
+    // ни подписок, ни серверов. Поэтому перед уходом переносим их туда, где
+    // новая версия их найдёт: тот же путь, куда клиент уходит сам, когда папка
+    // программы закрыта на запись.
+    void moveConfigOutOfBundle() {
+        const QDir configDir(QDir::currentPath());   // клиент работает в своём config
+        const QString appDir = QApplication::applicationDirPath();
+        if (!configDir.absolutePath().startsWith(appDir)) return;   // и так снаружи
+
+        const QDir userWd(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation));
+        const QString userConfig = userWd.absoluteFilePath("config");
+        QDir().mkpath(userConfig);
+
+        for (const QFileInfo &entry : configDir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot)) {
+            const QString target = userConfig + "/" + entry.fileName();
+            if (entry.isDir()) continue;   // логи и кэш новая версия наберёт заново
+            QFile::remove(target);
+            if (!QFile::copy(entry.absoluteFilePath(), target)) {
+                MW_show_log("[Update] WARNING: could not copy " + entry.fileName() + " out of the bundle");
+            }
+        }
+
+        // Метка говорит новой версии, что настройки этой установки живут здесь.
+        QFile marker(userWd.absoluteFilePath("config/.install-dir-unwritable"));
+        if (marker.open(QIODevice::WriteOnly)) {
+            marker.write(QDir(appDir).absolutePath().toUtf8());
+            marker.close();
+        }
+        MW_show_log("[Update] settings moved to " + userConfig);
+    }
+#endif
+}
+
 void MainWindow::on_menu_exit_triggered() {
     prepare_exit();
     if (exit_reason == ExitReason::RunUpdater) {
+#ifdef Q_OS_MACOS
+        moveConfigOutOfBundle();
+#endif
         QDir::setCurrent(QApplication::applicationDirPath());
         // Каталог обновления знает только приложение: на Windows он зависит от
         // flag_use_appdata. Передаём явно, чтобы обновлятор не угадывал.
@@ -230,9 +269,9 @@ void MainWindow::toggle_system_proxy() {
 
 namespace {
     // Спросить в оформлении простого режима, а в инженерном — как раньше.
-    bool askInOwnStyle(const QString &text, const QString &acceptText) {
+    bool askInOwnStyle(const QString &title, const QString &text, const QString &acceptText) {
         if (GetFacadeWindow() != nullptr) {
-            return Fsnt::Confirm(GetMessageBoxParent(), software_name, text, acceptText);
+            return Fsnt::Confirm(GetMessageBoxParent(), title, text, acceptText);
         }
         return QMessageBox::warning(GetMessageBoxParent(), software_name, text,
                                     QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes;
@@ -315,7 +354,7 @@ bool MainWindow::get_elevated_permissions(ExitReason reason) {
     // Кнопки QMessageBox приходят из перевода Qt, которого в сборке нет, и
     // человек видит английские Yes/No под русским вопросом. Своё окно решает
     // и это, и вид.
-    if (askInOwnStyle(tr("Please run Throne as admin"), tr("Restart"))) {
+    if (askInOwnStyle(tr("Administrator rights"), tr("Please run Throne as admin"), tr("Restart"))) {
         this->exit_reason = reason;
         on_menu_exit_triggered();
     }
@@ -331,7 +370,8 @@ bool MainWindow::get_elevated_permissions(ExitReason reason) {
     // человек соглашался на «дайте права», получал Терминал, а объяснение про
     // пароль приходило следом — за уже открытым окном, и там же обрывалось на
     // «попробуйте снова».
-    if (askInOwnStyle(tr("The core needs administrator rights for the tunnel.\n\n"
+    if (askInOwnStyle(tr("Administrator rights"),
+                      tr("The core needs administrator rights for the tunnel.\n\n"
                          "Terminal will open — a system window of macOS. Type the password you use to "
                          "log into this Mac and press Enter. While you type it, nothing appears on the "
                          "screen: that is how Terminal asks for passwords.\n\n"
@@ -766,6 +806,18 @@ void MainWindow::InstallUpdateAndRestart(const QString &version) {
         }
     }
 
+    // Запоминаем, куда возвращаться. Обычная память о последнем профиле
+    // работает только при включённом «подключаться при запуске», а обновление
+    // человек затевал не для того, чтобы остаться без туннеля.
+    const auto &settings = Configs::dataManager->settingsRepo;
+    if (settings->started_id >= 0) {
+        settings->remember_id = settings->started_id;
+        settings->remember_tun = settings->spmode_vpn;
+        settings->remember_system_proxy = settings->spmode_system_proxy;
+        settings->resume_after_update = true;
+        settings->Save();
+    }
+
     this->exit_reason = ExitReason::RunUpdater;
     MW_show_log("[Update] Closing application to start updater...");
     on_menu_exit_triggered();
@@ -799,7 +851,7 @@ void MainWindow::ReportPreviousUpdate() {
                           .arg(wanted, QString(NKR_VERSION), QDir(GetUpdateDirectory()).filePath("updater.log")));
 }
 
-void MainWindow::CheckUpdate() {
+void MainWindow::CheckUpdate(bool autoInstall) {
     QString search;
 #ifdef Q_OS_WIN
 #  ifdef Q_PROCESSOR_ARM_64
@@ -879,8 +931,13 @@ void MainWindow::CheckUpdate() {
         const QString updateBody = QObject::tr("Update found: %1\nRelease note:\n%2")
                                        .arg(assets_name, release_note);
         // 0 — ставить, 1 — открыть страницу релиза, -1 — ничего.
+        // Согласие уже получено карточкой обновления — второй раз спрашивать
+        // то же самое незачем.
         int picked = -1;
-        if (GetFacadeWindow() != nullptr) {
+        if (autoInstall) {
+            picked = 0;
+            showFacadeNotice(tr("Downloading the update…"), 120000);
+        } else if (GetFacadeWindow() != nullptr) {
             picked = Fsnt::Choose(GetMessageBoxParent(), updateTitle, updateBody,
                                   {QObject::tr("Update"), QObject::tr("Open in browser"), QObject::tr("Close")});
             if (picked == 2) picked = -1;
@@ -928,9 +985,11 @@ void MainWindow::CheckUpdate() {
                         const QString readyTitle = QObject::tr("Update");
                         const QString readyBody = QObject::tr("Update is ready, restart to install?");
                         const bool restartNow =
-                            GetFacadeWindow() != nullptr
-                                ? Fsnt::Confirm(GetMessageBoxParent(), readyTitle, readyBody, QObject::tr("Restart"))
-                                : QMessageBox::question(nullptr, readyTitle, readyBody) == QMessageBox::StandardButton::Yes;
+                            autoInstall
+                                ? true
+                                : (GetFacadeWindow() != nullptr
+                                       ? Fsnt::Confirm(GetMessageBoxParent(), readyTitle, readyBody, QObject::tr("Restart"))
+                                       : QMessageBox::question(nullptr, readyTitle, readyBody) == QMessageBox::StandardButton::Yes);
                         if (restartNow) {
                             InstallUpdateAndRestart(release_tag_name);
                         } else {
