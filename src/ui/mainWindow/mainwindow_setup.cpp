@@ -176,6 +176,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     UrlScheme_RegisterIfNeeded();
 
+    // С задержкой: окно к этому моменту уже на экране, и разговор про неудачное
+    // обновление не начинается раньше, чем человек его увидит.
+    setTimeout([this] { ReportPreviousUpdate(); }, this, 4000);
+
     // migrate old themes
     bool isNum;
     Configs::dataManager->settingsRepo->theme.toInt(&isNum);

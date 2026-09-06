@@ -253,7 +253,12 @@ private slots:
     // Обновление через собственный обновлятор форка
     QString GetUpdateDirectory();
     bool PrepareUpdateEnvironment();
-    void InstallUpdateAndRestart();
+    void InstallUpdateAndRestart(const QString &version = {});
+
+    // Разбор того, чем закончилось прошлое обновление: обновлятор работает уже
+    // без окна, и до этой проверки любая его осечка выглядела как «программа
+    // закрылась и ничего не произошло».
+    void ReportPreviousUpdate();
 
 public:
     // Форк: простому режиму нужен тот же значок, но со своим меню. Значок

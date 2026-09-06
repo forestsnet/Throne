@@ -7914,6 +7914,14 @@ Saved to:
         <source>The program folder is closed for writing, so the update cannot install itself. Download the new version from the release page and install it over the current one.</source>
         <translation>Папка программы закрыта на запись, поэтому обновление не может установить себя само. Скачайте новую версию со страницы релизов и установите поверх текущей.</translation>
     </message>
+    <message>
+        <source>The update to %1 did not install: the program is still %2. This usually means an antivirus stopped the updater. Download the new version from the release page and install it over the current one.
+
+Details: %3</source>
+        <translation>Обновление до %1 не установилось: программа по-прежнему %2. Чаще всего обновлятору мешает антивирус. Скачайте новую версию со страницы релизов и установите поверх текущей.
+
+Подробности: %3</translation>
+    </message>
 </context>
 <context>
     <name>OtpItem</name>

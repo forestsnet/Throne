@@ -8,6 +8,7 @@
 #include <QThread>
 #include <QDesktopServices>
 #include <QDir>
+#include <QRegularExpression>
 #include <QDirIterator>
 #include <QFile>
 #include <QFileInfo>
@@ -663,7 +664,7 @@ bool MainWindow::PrepareUpdateEnvironment() {
     return true;
 }
 
-void MainWindow::InstallUpdateAndRestart() {
+void MainWindow::InstallUpdateAndRestart(const QString &version) {
     MW_show_log("[Update] Starting update installation...");
 
 #ifdef Q_OS_WIN
@@ -699,9 +700,49 @@ void MainWindow::InstallUpdateAndRestart() {
     update_runner = updaterPath;
 #endif
 
+    // Оставляем метку с версией, которую ждём. Обновлятор работает уже без
+    // окна: если он умрёт молча — антивирус съел, PowerShell закрыт политикой,
+    // архив побился, — при следующем запуске метка останется, и мы об этом
+    // скажем, вместо того чтобы делать вид, что всё прошло.
+    if (!version.isEmpty()) {
+        QFile marker(QDir(GetUpdateDirectory()).filePath("pending-version"));
+        if (marker.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            marker.write(version.trimmed().toUtf8());
+            marker.close();
+        }
+    }
+
     this->exit_reason = ExitReason::RunUpdater;
     MW_show_log("[Update] Closing application to start updater...");
     on_menu_exit_triggered();
+}
+
+void MainWindow::ReportPreviousUpdate() {
+    const QString markerPath = QDir(GetUpdateDirectory()).filePath("pending-version");
+    QFile marker(markerPath);
+    if (!marker.exists()) return;
+
+    QString wanted;
+    if (marker.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        wanted = QString::fromUtf8(marker.readAll()).trimmed();
+        marker.close();
+    }
+    QFile::remove(markerPath);
+    if (wanted.isEmpty()) return;
+
+    // Сравниваем по цифрам: в метке лежит имя тега, оно может прийти с "v".
+    const QString wantedDigits = QString(wanted).remove(QRegularExpression("[^0-9.]"));
+    if (wantedDigits.isEmpty() || wantedDigits == QString(NKR_VERSION)) {
+        MW_show_log("[Update] Updated to " + QString(NKR_VERSION));
+        return;
+    }
+
+    MW_show_log("[Update] ERROR: expected " + wanted + " after the update, but this is " + QString(NKR_VERSION));
+    MessageBoxWarning(tr("Update"),
+                      tr("The update to %1 did not install: the program is still %2. This usually means "
+                         "an antivirus stopped the updater. Download the new version from the release "
+                         "page and install it over the current one.\n\nDetails: %3")
+                          .arg(wanted, QString(NKR_VERSION), QDir(GetUpdateDirectory()).filePath("updater.log")));
 }
 
 void MainWindow::CheckUpdate() {
@@ -824,7 +865,7 @@ void MainWindow::CheckUpdate() {
                         auto q = QMessageBox::question(nullptr, QObject::tr("Update"),
                                                        QObject::tr("Update is ready, restart to install?"));
                         if (q == QMessageBox::StandardButton::Yes) {
-                            InstallUpdateAndRestart();
+                            InstallUpdateAndRestart(release_tag_name);
                         } else {
                             MW_show_log("[Update] Installation postponed.");
                             MessageBoxInfo(tr("Update"), tr("Update is ready. The update will be installed on next application restart."));
