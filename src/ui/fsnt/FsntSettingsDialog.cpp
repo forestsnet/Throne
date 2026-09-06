@@ -24,6 +24,7 @@
 #include "include/sys/AutoRun.hpp"
 #include "include/ui/fsnt/FsntControls.h"
 #include "include/ui/fsnt/FsntTheme.hpp"
+#include "include/ui/fsnt/PingProbe.hpp"
 #include "include/ui/fsnt/SettingsCard.h"
 #include "include/ui/mainwindow.h"
 #include "include/ui/setting/ThemeManager.hpp"
@@ -299,6 +300,20 @@ void FsntSettingsDialog::buildApplication(QVBoxLayout *column, QWidget *host) {
     Fsnt::SettingsCard card(column, host, tr("Application"));
     const auto &settings = Configs::dataManager->settingsRepo;
 
+    m_pingKind = makeSelect(host);
+    for (const auto kind : {Fsnt::PingKind::RequestGet, Fsnt::PingKind::RequestHead,
+                            Fsnt::PingKind::Handshake, Fsnt::PingKind::Tcp, Fsnt::PingKind::Icmp}) {
+        m_pingKind->addItem(Fsnt::PingKindTitle(kind), Fsnt::PingKindToSetting(kind));
+    }
+    if (const int index = m_pingKind->findData(settings->ping_kind); index >= 0) {
+        m_pingKind->setCurrentIndex(index);
+    }
+    card.addControl(tr("Latency check"), m_pingKind);
+    auto *pingNote = card.addNote(Fsnt::PingKindHint(Fsnt::PingKindFromSetting(settings->ping_kind)));
+    connect(m_pingKind, &QComboBox::currentIndexChanged, this, [this, pingNote] {
+        pingNote->setText(Fsnt::PingKindHint(Fsnt::PingKindFromSetting(m_pingKind->currentData().toInt())));
+    });
+
     m_language = makeSelect(host);
     // Индексы совпадают со switch в main.cpp: 0 системный, 1 English, 2 中文, 3 فارسی, 4 русский.
     m_language->addItem(tr("System"), 0);
@@ -365,6 +380,8 @@ void FsntSettingsDialog::save() {
     // только величину и сохраняем прежний знак.
     const int minutes = m_subAutoUpdate->currentData().toInt();
     settings->sub_auto_update = settings->sub_auto_update < 0 ? -minutes : minutes;
+
+    if (m_pingKind != nullptr) settings->ping_kind = m_pingKind->currentData().toInt();
 
     // Пишем только при настоящей смене: значение в базе хранится в нижнем
     // регистре, а у пунктов списка он смешанный, и запись «как есть» меняла бы

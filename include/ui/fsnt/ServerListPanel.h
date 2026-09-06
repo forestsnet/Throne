@@ -56,6 +56,10 @@ public:
     // пока результаты приходят.
     void measureLatency();
 
+    // Останавливает начатый замер. Список из сотни серверов идёт долго, и
+    // человеку нужен способ передумать, не закрывая клиент.
+    void stopMeasurement();
+
 signals:
     void serverActivated(int profileId);
     // Пользователь выбрал строку. Одного клика достаточно: запуск остаётся
@@ -91,6 +95,10 @@ private:
     // вовсе, и крутить точки минуту бессмысленно.
     int m_measureIdlePolls = 0;
     void updateSubscription();
+    // Меню по правой кнопке на строке сервера: проверить его одного, и на
+    // выбор — чем именно проверять.
+    void showServerMenu(const QPoint &where);
+    void probeOne(int profileId, int kind);
 
 public:
     // Цели для экскурсии. Возвращаем QWidget*, потому что поднимать тип до

@@ -103,6 +103,8 @@ message TestReq {
   reserved "xray_outbound_dns_address";
   // See LoadConfigReq; empty leaves the Xray on the OS resolver, which a running TUN owns.
   optional string xray_outbound_dns_strategy = 14 [default = ""];
+  // HTTP-метод пробы. Пусто — GET, как было до появления выбора.
+  optional string method = 15 [default = ""];
 }
 
 message TestResp {

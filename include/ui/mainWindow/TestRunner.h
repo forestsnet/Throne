@@ -29,7 +29,9 @@ public:
     TestRunner& operator=(const TestRunner&) = delete;
 
     // `onFinished` fires on every exit path, so a caller may block on it.
-    void runUrlTests(const QList<int>& profileIDs, const std::function<void()>& onFinished = {});
+    // `method` пустой — берётся GET, как было до появления выбора способа.
+    void runUrlTests(const QList<int>& profileIDs, const std::function<void()>& onFinished = {},
+                     const QString& method = {});
 
     void runIpTests(const QList<int>& profileIDs);
 
@@ -59,6 +61,10 @@ private:
 
     void runLatencyGroup(LatencyKind kind, const QList<int>& requestedIDs,
                          const std::function<void()>& onFinished);
+
+    // Метод HTTP для текущего прогона: держится здесь, чтобы не тащить его
+    // сквозь всю цепочку вызовов до самой пробы.
+    QString urlMethod_;
 
     void runUrlProbe(const Target& target);
 

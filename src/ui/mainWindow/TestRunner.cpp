@@ -150,6 +150,7 @@ void TestRunner::runUrlProbe(const Target& target) {
     libcore::TestReq req;
     fillCommonTestReq(req, target);
     req.url = Configs::dataManager->settingsRepo->test_latency_url.toStdString();
+    if (!urlMethod_.isEmpty()) req.method = urlMethod_.toStdString();
     req.max_concurrency = Configs::dataManager->settingsRepo->test_concurrent;
     req.test_timeout_ms = Configs::dataManager->settingsRepo->url_test_timeout_ms;
 
@@ -281,7 +282,9 @@ void TestRunner::runIpProbe(const Target& target) {
     }
 }
 
-void TestRunner::runUrlTests(const QList<int>& profileIDs, const std::function<void()>& onFinished) {
+void TestRunner::runUrlTests(const QList<int>& profileIDs, const std::function<void()>& onFinished,
+                             const QString& method) {
+    urlMethod_ = method;
     runLatencyGroup(LatencyKind::Url, profileIDs, onFinished);
 }
 

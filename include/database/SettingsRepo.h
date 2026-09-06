@@ -64,8 +64,13 @@ namespace Configs {
         // Persisted settings.
         QString mainWindowGeometry;
         QString log_level = "info";
-        QString test_latency_url = "http://cp.cloudflare.com/";
+        // generate_204 отвечает пустым 204 и живёт ровно для таких проверок.
+        QString test_latency_url = "https://www.gstatic.com/generate_204";
         int url_test_timeout_ms = 3000;
+        // Чем меряем задержку: 0 ICMP, 1 TCP до порта из конфига, 2 рукопожатие
+        // TLS, 3 запрос GET через туннель, 4 запрос HEAD. По умолчанию запрос:
+        // он один меряет весь путь целиком, а не дорогу до сервера.
+        int ping_kind = 3;
         bool disable_tray = false;
         int test_concurrent = 10;
         bool disable_traffic_stats = false;

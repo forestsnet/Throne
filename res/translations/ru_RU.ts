@@ -6360,6 +6360,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <source>Language changes apply after restarting the application.</source>
         <translation>Смена языка применится после перезапуска приложения.</translation>
     </message>
+    <message>
+        <source>Latency check</source>
+        <translation>Проверка задержки</translation>
+    </message>
 </context>
 <context>
     <name>Fsnt::CoachMarks</name>
@@ -9097,6 +9101,54 @@ Release note:
         <source>Restart</source>
         <translation>Перезапустить</translation>
     </message>
+    <message>
+        <source>Ping (ICMP)</source>
+        <translation>Пинг (ICMP)</translation>
+    </message>
+    <message>
+        <source>Connection to the port</source>
+        <translation>Соединение с портом</translation>
+    </message>
+    <message>
+        <source>Handshake</source>
+        <translation>Рукопожатие</translation>
+    </message>
+    <message>
+        <source>Request (HEAD)</source>
+        <translation>Запрос (HEAD)</translation>
+    </message>
+    <message>
+        <source>Request (GET)</source>
+        <translation>Запрос (GET)</translation>
+    </message>
+    <message>
+        <source>Straight to the server, past the tunnel. Many servers drop these, so silence here does not mean the server is down.</source>
+        <translation>Напрямую до сервера, мимо туннеля. Многие серверы такие пакеты режут, поэтому молчание здесь не значит, что сервер лежит.</translation>
+    </message>
+    <message>
+        <source>Straight to the server port, past the tunnel. Shows whether the port answers at all.</source>
+        <translation>Напрямую до порта сервера, мимо туннеля. Показывает, отвечает ли порт вообще.</translation>
+    </message>
+    <message>
+        <source>Connection plus TLS handshake with the server. The closest thing to what starting a session costs.</source>
+        <translation>Соединение плюс рукопожатие TLS с сервером. Ближе всего к тому, во что обходится начало сессии.</translation>
+    </message>
+    <message>
+        <source>A real request through the tunnel: measures the whole path, the one you feel when a page opens.</source>
+        <translation>Настоящий запрос через туннель: меряет весь путь целиком — тот самый, который чувствуешь, открывая страницу.</translation>
+    </message>
+    <message>
+        <source>no answer</source>
+        <translation>нет ответа</translation>
+    </message>
+    <message>
+        <source>no port in the profile</source>
+        <translation>в профиле нет порта</translation>
+    </message>
+    <message>
+        <source>profile not found</source>
+        <translation>профиль не найден</translation>
+    </message>
 </context>
 <context>
     <name>QPlatformTheme</name>
@@ -9508,6 +9560,18 @@ Paste the link your provider gave you and the servers will appear here.</source>
     <message>
         <source>Measure latency</source>
         <translation>Замерить пинг</translation>
+    </message>
+    <message>
+        <source>Measurement stopped</source>
+        <translation>Замер остановлен</translation>
+    </message>
+    <message>
+        <source>Check (%1)</source>
+        <translation>Проверить: %1</translation>
+    </message>
+    <message>
+        <source>Check another way</source>
+        <translation>Проверить иначе</translation>
     </message>
 </context>
 <context>

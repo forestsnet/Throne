@@ -359,6 +359,7 @@ set(PROJECT_SOURCES
 
         include/ui/fsnt/ConnectPanel.h
 
+        src/ui/fsnt/PingProbe.cpp
         src/ui/fsnt/ServerListPanel.cpp
 
         include/ui/fsnt/ServerListPanel.h

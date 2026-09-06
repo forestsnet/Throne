@@ -40,6 +40,7 @@ private:
     QLabel *m_routeNote = nullptr;
     void updateRouteNote();
     FsntSelect *m_subAutoUpdate = nullptr;
+    FsntSelect *m_pingKind = nullptr;
     FsntSwitch *m_startMinimal = nullptr;
     FsntSwitch *m_autoConnect = nullptr;
     FsntSwitch *m_allowLan = nullptr;

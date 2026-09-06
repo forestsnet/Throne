@@ -20,17 +20,21 @@ type URLTestResult struct {
 	Error    error
 }
 
-func BatchURLTest(ctx context.Context, i *boxbox.Box, outboundTags []string, url string, maxConcurrency int, twice bool, timeout time.Duration) []*URLTestResult {
+func BatchURLTest(ctx context.Context, i *boxbox.Box, outboundTags []string, url string, method string, maxConcurrency int, twice bool, timeout time.Duration) []*URLTestResult {
 	if timeout <= 0 {
 		timeout = URLTestTimeout
+	}
+	// Пустой метод — GET: так проба вела себя до того, как метод стал выбором.
+	if method == "" {
+		method = http.MethodGet
 	}
 
 	results := runBatch(ctx, i, outboundTags, maxConcurrency, batchProbe[URLTestResult]{
 		run: func(ctx context.Context, tag string, outbound adapter.Outbound) *URLTestResult {
 			client := outboundHTTPClient(ctx, outbound, timeout)
-			duration, err := urlTest(ctx, client, url)
+			duration, err := urlTest(ctx, client, url, method)
 			if err == nil && twice {
-				duration, err = urlTest(ctx, client, url)
+				duration, err = urlTest(ctx, client, url, method)
 			}
 			return &URLTestResult{Duration: duration, Tag: tag, Error: err}
 		},
@@ -43,9 +47,9 @@ func BatchURLTest(ctx context.Context, i *boxbox.Box, outboundTags []string, url
 	return results
 }
 
-func urlTest(ctx context.Context, client *http.Client, url string) (time.Duration, error) {
+func urlTest(ctx context.Context, client *http.Client, url string, method string) (time.Duration, error) {
 	begin := time.Now()
-	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	req, err := http.NewRequestWithContext(ctx, method, url, nil)
 	if err != nil {
 		return 0, err
 	}

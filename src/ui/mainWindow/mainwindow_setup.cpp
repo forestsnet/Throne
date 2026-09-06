@@ -164,6 +164,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             handle_deeplink_impl(url);
         });
     };
+    MW_url_test_one = [=,this](int profileId, const QString &method) {
+        runOnUiThread([=,this] { testRunner->runUrlTests({profileId}, {}, method); });
+    };
     MW_import_files = [=,this](const QStringList &paths) {
         runOnUiThread([=,this]
         {

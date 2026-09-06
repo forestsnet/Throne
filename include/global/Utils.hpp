@@ -100,6 +100,10 @@ namespace MwArg {
 inline std::function<void(MwMessage, QStringList)> MW_dialog_message;
 // Set by MainWindow; marshals to the UI thread.
 inline std::function<void(QString)> MW_handle_deeplink;
+
+// Проба одного профиля запросом через туннель: так умеет только ядро, поэтому
+// вызов ставит MainWindow. method — "GET" или "HEAD".
+inline std::function<void(int /*profileId*/, QString /*method*/)> MW_url_test_one;
 // Подключение по ссылке throne://connect. Простое окно знает и выбранный
 // сервер, и режим транспорта, поэтому диплинк не повторяет этот выбор, а просит
 // окно сделать ровно то, что делает кнопка. В расширенном режиме колбэк пуст —

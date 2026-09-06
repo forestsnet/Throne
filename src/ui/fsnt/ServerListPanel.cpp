@@ -24,6 +24,8 @@
 #include "include/ui/fsnt/BusyButton.h"
 #include "include/ui/fsnt/FsntControls.h"
 #include "include/ui/fsnt/FsntPalette.hpp"
+#include <QMenu>
+#include "include/ui/fsnt/PingProbe.hpp"
 #include "include/ui/fsnt/FsntTheme.hpp"
 #include "include/configs/sub/ProviderPolicy.hpp"
 #include "include/ui/mainwindow.h"
@@ -144,6 +146,8 @@ ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
     });
     // Клик в правой зоне строки переключает избранное, не запуская сервер.
     m_list->viewport()->installEventFilter(this);
+    m_list->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(m_list, &QListWidget::customContextMenuRequested, this, &ServerListPanel::showServerMenu);
 
     m_latencyPoll = new QTimer(this);
     m_latencyPoll->setInterval(2000);
@@ -172,7 +176,12 @@ ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
         if (m_list != nullptr) m_list->viewport()->update();
     });
 
-    connect(m_ping, &QPushButton::clicked, this, &ServerListPanel::measureLatency);
+    connect(m_ping, &QPushButton::clicked, this, [this] {
+        // Пока идёт замер, та же кнопка его и обрывает: иначе на подписке в
+        // сотню серверов остаётся только ждать или убивать клиент.
+        if (m_ping->isBusy()) stopMeasurement();
+        else measureLatency();
+    });
     connect(m_tabAll, &QPushButton::clicked, this, [this] { setShowFavouritesOnly(false); });
     connect(m_tabFav, &QPushButton::clicked, this, [this] { setShowFavouritesOnly(true); });
     connect(m_list, &QListWidget::itemActivated, this, [this](QListWidgetItem *item) {
@@ -275,6 +284,61 @@ void ServerListPanel::measureLatency() {
         m_measureRepaint->start();
         reloadServers();
     }
+}
+
+void ServerListPanel::stopMeasurement() {
+    if (auto *mw = GetMainWindow()) {
+        if (auto *action = mw->findChild<QAction *>("menu_stop_testing")) action->trigger();
+    }
+    finishMeasurement();
+    emit notice(tr("Measurement stopped"));
+}
+
+void ServerListPanel::probeOne(const int profileId, const int kind) {
+    const auto probeKind = Fsnt::PingKindFromSetting(kind);
+    // Отметку ставим как при общем замере: строка покажет «думающие» точки,
+    // пока не придёт ответ.
+    m_measureStartedAt = QDateTime::currentSecsSinceEpoch();
+    m_latencyPollsLeft = 15;
+    m_measureIdlePolls = 0;
+    m_ping->setBusy(true);
+    m_latencyPoll->start();
+    m_measureRepaint->start();
+    reloadServers();
+
+    Fsnt::ProbeProfile(profileId, probeKind, [this](int ms, const QString &error) {
+        if (ms < 0 && !error.isEmpty()) emit notice(error);
+        reloadServers();
+    });
+}
+
+void ServerListPanel::showServerMenu(const QPoint &where) {
+    auto *item = m_list->itemAt(where);
+    if (item == nullptr) return;
+    const int profileId = item->data(ProfileIdRole).toInt();
+    if (profileId < 0) return;
+
+    QMenu menu(this);
+    auto *header = menu.addAction(item->text().split('\n').first());
+    header->setEnabled(false);
+    menu.addSeparator();
+
+    const auto defaultKind = Fsnt::PingKindFromSetting(Configs::dataManager->settingsRepo->ping_kind);
+    auto *check = menu.addAction(tr("Check (%1)").arg(Fsnt::PingKindTitle(defaultKind)));
+    connect(check, &QAction::triggered, this,
+            [this, profileId, defaultKind] { probeOne(profileId, Fsnt::PingKindToSetting(defaultKind)); });
+
+    auto *other = menu.addMenu(tr("Check another way"));
+    for (const auto kind : {Fsnt::PingKind::Icmp, Fsnt::PingKind::Tcp, Fsnt::PingKind::Handshake,
+                            Fsnt::PingKind::RequestGet, Fsnt::PingKind::RequestHead}) {
+        auto *action = other->addAction(Fsnt::PingKindTitle(kind));
+        action->setToolTip(Fsnt::PingKindHint(kind));
+        connect(action, &QAction::triggered, this,
+                [this, profileId, kind] { probeOne(profileId, Fsnt::PingKindToSetting(kind)); });
+    }
+    other->setToolTipsVisible(true);
+
+    menu.exec(m_list->viewport()->mapToGlobal(where));
 }
 
 void ServerListPanel::reloadGroups() {
