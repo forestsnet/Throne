@@ -281,6 +281,13 @@ void FsntSettingsDialog::buildSubscriptions(QVBoxLayout *column, QWidget *host) 
     }
     card.addControl(tr("Auto update"), m_subAutoUpdate);
 
+    // Провайдеры считают устройства по этому идентификатору. Без него панель
+    // не понимает, кто пришёл, и вместо серверов отдаёт заглушку — человек
+    // видит подписку без единого сервера и не понимает, почему.
+    m_sendHwid = card.addToggle(tr("Send device id"), settings->sub_send_hwid);
+    card.addNote(tr("Providers count devices by it. With it off a subscription may come back "
+                    "empty, and the reason will not be obvious."));
+
     connect(card.addAction(tr("Update all now")), &QPushButton::clicked, this,
             [] { Subscription::updater()->RefreshAll(); });
 
@@ -397,6 +404,7 @@ void FsntSettingsDialog::save() {
     settings->sub_auto_update = settings->sub_auto_update < 0 ? -minutes : minutes;
 
     if (m_pingKind != nullptr) settings->ping_kind = m_pingKind->currentData().toInt();
+    if (m_sendHwid != nullptr) settings->sub_send_hwid = m_sendHwid->isChecked();
     if (m_pingUrl != nullptr) {
         // Пустое поле означает «как было задумано», а не «проверять нечем».
         const QString url = m_pingUrl->text().trimmed();

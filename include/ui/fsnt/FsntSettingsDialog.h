@@ -41,6 +41,7 @@ private:
     QLabel *m_routeNote = nullptr;
     void updateRouteNote();
     FsntSelect *m_subAutoUpdate = nullptr;
+    FsntSwitch *m_sendHwid = nullptr;
     FsntSelect *m_pingKind = nullptr;
     QLineEdit *m_pingUrl = nullptr;
     FsntSwitch *m_startMinimal = nullptr;

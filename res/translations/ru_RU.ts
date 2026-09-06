@@ -6368,6 +6368,14 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <source>URL test address</source>
         <translation>Адрес для URL-теста</translation>
     </message>
+    <message>
+        <source>Send device id</source>
+        <translation>Отправлять идентификатор устройства</translation>
+    </message>
+    <message>
+        <source>Providers count devices by it. With it off a subscription may come back empty, and the reason will not be obvious.</source>
+        <translation>По нему провайдеры считают устройства. С выключенным подписка может прийти пустой, и причина будет неочевидна.</translation>
+    </message>
 </context>
 <context>
     <name>Fsnt::CoachMarks</name>
