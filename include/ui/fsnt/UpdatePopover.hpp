@@ -21,9 +21,6 @@ namespace Fsnt {
         void notesRequested();
         void postponed();
 
-    protected:
-        void paintEvent(QPaintEvent *event) override;
-
     private:
         QWidget *m_anchor = nullptr;
     };

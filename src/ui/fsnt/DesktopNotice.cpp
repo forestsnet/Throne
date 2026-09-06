@@ -104,11 +104,12 @@ namespace Fsnt {
 
         // Тень собираем слоями: окно прозрачное, системной тени у него нет, а без
         // тени карточка на светлых обоях сливается с фоном.
-        painter.setPen(Qt::NoPen);
-        for (int layer = kShadow; layer > 0; layer -= 3) {
-            QColor shade(0, 0, 0, 6);
-            painter.setBrush(shade);
-            painter.drawRoundedRect(card.adjusted(-layer, -layer + 2, layer, layer + 2), 18 + layer, 18 + layer);
+        painter.setBrush(Qt::NoBrush);
+        for (int layer = 1; layer <= kShadow; ++layer) {
+            const int alpha = 32 - layer * 2;
+            if (alpha <= 0) break;
+            painter.setPen(QPen(QColor(0, 0, 0, alpha), 1.0));
+            painter.drawRoundedRect(card.adjusted(-layer, -layer + 2, layer, layer + 2), 16 + layer, 16 + layer);
         }
 
         painter.setBrush(palette.surface);

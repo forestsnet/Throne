@@ -1,9 +1,10 @@
 #include "include/ui/fsnt/UpdatePopover.hpp"
 
+#include <QFrame>
+#include <QGraphicsDropShadowEffect>
 #include <QGuiApplication>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QPainter>
 #include <QPushButton>
 #include <QScreen>
 #include <QVBoxLayout>
@@ -22,22 +23,41 @@ namespace Fsnt {
     UpdatePopover::UpdatePopover(QWidget *anchor, const QString &title, const QString &text)
         : QWidget(anchor, Qt::Popup), m_anchor(anchor) {
         // Qt::Popup сам закрывается по щелчку мимо и по Esc — ровно то поведение,
-        // которого ждут от карточки под кнопкой.
+        // которого ждут от карточки под кнопкой. Системную тень гасим: macOS
+        // рисует её по прямоугольнику всего окна, вместе с прозрачными полями,
+        // и вокруг карточки появляется отчётливая тёмная кайма.
+        setWindowFlags(Qt::Popup | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
         setAttribute(Qt::WA_TranslucentBackground);
         setAttribute(Qt::WA_DeleteOnClose);
         setStyleSheet(Fsnt::BuildStyleSheet());
         setFixedWidth(kWidth + kShadow * 2);
 
-        auto *layout = new QVBoxLayout(this);
-        layout->setContentsMargins(kShadow + 18, kShadow + 16, kShadow + 18, kShadow + 16);
+        // Карточка живёт отдельным виджетом: настоящую размытую тень умеет только
+        // графический эффект, а нарисованные вручную кольца на тёмном фоне читаются
+        // как лишняя рамка вокруг окна.
+        auto *outer = new QVBoxLayout(this);
+        outer->setContentsMargins(kShadow, kShadow, kShadow, kShadow);
+
+        auto *card = new QFrame(this);
+        card->setObjectName(QStringLiteral("fsntPopoverCard"));
+        outer->addWidget(card);
+
+        auto *shadow = new QGraphicsDropShadowEffect(card);
+        shadow->setBlurRadius(34);
+        shadow->setOffset(0, 8);
+        shadow->setColor(QColor(0, 0, 0, Fsnt::CurrentPalette().dark ? 150 : 60));
+        card->setGraphicsEffect(shadow);
+
+        auto *layout = new QVBoxLayout(card);
+        layout->setContentsMargins(18, 16, 18, 16);
         layout->setSpacing(6);
 
-        auto *heading = new QLabel(title, this);
+        auto *heading = new QLabel(title, card);
         heading->setObjectName(QStringLiteral("fsntPopoverTitle"));
         heading->setWordWrap(true);
         layout->addWidget(heading);
 
-        auto *body = new QLabel(text, this);
+        auto *body = new QLabel(text, card);
         body->setObjectName(QStringLiteral("fsntDialogHint"));
         body->setWordWrap(true);
         layout->addWidget(body);
@@ -46,7 +66,7 @@ namespace Fsnt {
         auto *row = new QHBoxLayout;
         row->setSpacing(8);
 
-        auto *update = new QPushButton(tr("Update"), this);
+        auto *update = new QPushButton(tr("Update"), card);
         update->setObjectName(QStringLiteral("fsntPrimary"));
         update->setCursor(Qt::PointingHandCursor);
         connect(update, &QPushButton::clicked, this, [this] {
@@ -55,7 +75,7 @@ namespace Fsnt {
         });
         row->addWidget(update);
 
-        auto *later = new QPushButton(tr("Later"), this);
+        auto *later = new QPushButton(tr("Later"), card);
         later->setObjectName(QStringLiteral("fsntGhost"));
         later->setCursor(Qt::PointingHandCursor);
         connect(later, &QPushButton::clicked, this, [this] {
@@ -67,7 +87,7 @@ namespace Fsnt {
 
         // Ссылкой, а не третьей кнопкой: список изменений — дело добровольное,
         // и в ряду равных кнопок он тянул бы внимание наравне с «Обновить».
-        auto *notes = new QPushButton(tr("What's new"), this);
+        auto *notes = new QPushButton(tr("What's new"), card);
         notes->setObjectName(QStringLiteral("fsntLinkButton"));
         notes->setCursor(Qt::PointingHandCursor);
         notes->setFlat(true);
@@ -96,22 +116,4 @@ namespace Fsnt {
         show();
     }
 
-    void UpdatePopover::paintEvent(QPaintEvent *) {
-        const auto palette = Fsnt::CurrentPalette();
-        QPainter painter(this);
-        painter.setRenderHint(QPainter::Antialiasing);
-
-        const QRectF card(kShadow, kShadow, width() - kShadow * 2, height() - kShadow * 2);
-
-        painter.setPen(Qt::NoPen);
-        for (int layer = kShadow; layer > 0; layer -= 3) {
-            painter.setBrush(QColor(0, 0, 0, 7));
-            painter.drawRoundedRect(card.adjusted(-layer, -layer + 2, layer, layer + 2),
-                                    kRadius + layer, kRadius + layer);
-        }
-
-        painter.setBrush(palette.surface);
-        painter.setPen(QPen(palette.border, 1));
-        painter.drawRoundedRect(card, kRadius, kRadius);
-    }
 } // namespace Fsnt

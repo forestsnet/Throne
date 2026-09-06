@@ -277,6 +277,11 @@ namespace Fsnt {
             }
             QDialog#fsntDialog QLabel { color: @text; font-size: 13px; }
             QLabel#fsntDialogTitle { color: @text; font-size: 19px; font-weight: 600; }
+            QFrame#fsntPopoverCard {
+                background: @surface;
+                border: 1px solid @border;
+                border-radius: 16px;
+            }
             QLabel#fsntPopoverTitle { color: @text; font-size: 15px; font-weight: 600; }
             QPushButton#fsntLinkButton {
                 background: transparent;
