@@ -28,6 +28,11 @@ class FsntWindow : public QMainWindow {
 public:
     explicit FsntWindow(QWidget *parent = nullptr);
 
+public slots:
+    // Строка поверх окна. Зовётся и из MainWindow — там про простой режим
+    // знают только через QMetaObject, поэтому это слот, а не обычный метод.
+    void showNotice(const QString &text, int milliseconds);
+
 signals:
     // Строка журнала. Окно перехватывает MW_show_log один раз и раздаёт
     // сигналом: снимать перехват при закрытии диалога было бы легко забыть,

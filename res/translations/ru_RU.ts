@@ -7777,6 +7777,38 @@ Error: %1</source>
         <translation>Пожалуйста, предоставьте ядру права root.</translation>
     </message>
     <message>
+        <source>The core needs administrator rights for the tunnel.
+
+Terminal will open — a system window of macOS. Type the password you use to log into this Mac and press Enter. While you type it, nothing appears on the screen: that is how Terminal asks for passwords.
+
+Then come back here — the connection will start by itself.</source>
+        <translation>Для туннеля ядру нужны права администратора.
+
+Сейчас откроется Терминал — системное окно macOS. Введите там пароль, которым вы входите в этот Mac, и нажмите Enter. Пока вы его набираете, на экране ничего не появляется: так Терминал спрашивает пароли.
+
+Потом возвращайтесь сюда — подключение начнётся само.</translation>
+    </message>
+    <message>
+        <source>Open Terminal</source>
+        <translation>Открыть Терминал</translation>
+    </message>
+    <message>
+        <source>Waiting for the password in Terminal…</source>
+        <translation>Ждём пароль в Терминале…</translation>
+    </message>
+    <message>
+        <source>Rights granted, connecting</source>
+        <translation>Права получены, подключаем</translation>
+    </message>
+    <message>
+        <source>Core privileges granted</source>
+        <translation>Ядро получило права</translation>
+    </message>
+    <message>
+        <source>No password was entered in Terminal, the request was cancelled</source>
+        <translation>Пароль в Терминале так и не ввели, запрос отменён</translation>
+    </message>
+    <message>
         <source>Requesting permission</source>
         <translation>Запрос разрешения</translation>
     </message>

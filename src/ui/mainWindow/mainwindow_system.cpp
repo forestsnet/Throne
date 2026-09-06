@@ -239,6 +239,46 @@ namespace {
     }
 }
 
+void MainWindow::showFacadeNotice(const QString &text, int milliseconds) {
+    auto *facade = GetFacadeWindow();
+    if (facade == nullptr) return;
+    QMetaObject::invokeMethod(facade, "showNotice", Qt::QueuedConnection, Q_ARG(QString, text),
+                              Q_ARG(int, milliseconds));
+}
+
+void MainWindow::waitForCorePrivileges(ExitReason reason) {
+#ifdef Q_OS_MACOS
+    // Пароль вводят в чужом окне, и о результате нам никто не сообщит: смотрим
+    // на сам файл ядра. Как только на нём появился setuid — повторяем то, ради
+    // чего права и просили, чтобы человеку не пришлось искать кнопку заново.
+    auto *timer = new QTimer(this);
+    timer->setInterval(1000);
+    const QDateTime deadline = QDateTime::currentDateTime().addSecs(180);
+    connect(timer, &QTimer::timeout, this, [this, timer, deadline, reason] {
+        if (Configs::isSetuidSet(Configs::FindCoreRealPath().toStdString())) {
+            timer->stop();
+            timer->deleteLater();
+            MW_show_log(tr("Core privileges granted"));
+            showFacadeNotice(tr("Rights granted, connecting"), 6000);
+            if (reason == ExitReason::RestartWithDns) {
+                set_system_dns(true, true);
+            } else {
+                set_spmode_vpn(true, true);
+            }
+            return;
+        }
+        if (QDateTime::currentDateTime() > deadline) {
+            timer->stop();
+            timer->deleteLater();
+            MW_show_log(tr("No password was entered in Terminal, the request was cancelled"));
+        }
+    });
+    timer->start();
+#else
+    Q_UNUSED(reason)
+#endif
+}
+
 bool MainWindow::get_elevated_permissions(ExitReason reason) {
     if (Configs::dataManager->settingsRepo->disable_privilege_req)
     {
@@ -287,12 +327,22 @@ bool MainWindow::get_elevated_permissions(ExitReason reason) {
         StopVPNProcess();
         return true;
     }
-    if (askInOwnStyle(tr("Please give the core root privileges"), tr("Allow")))
+    // Рассказываем всё до того, как на экране появится чужое окно: раньше
+    // человек соглашался на «дайте права», получал Терминал, а объяснение про
+    // пароль приходило следом — за уже открытым окном, и там же обрывалось на
+    // «попробуйте снова».
+    if (askInOwnStyle(tr("The core needs administrator rights for the tunnel.\n\n"
+                         "Terminal will open — a system window of macOS. Type the password you use to "
+                         "log into this Mac and press Enter. While you type it, nothing appears on the "
+                         "screen: that is how Terminal asks for passwords.\n\n"
+                         "Then come back here — the connection will start by itself."),
+                      tr("Open Terminal")))
     {
         auto Command = QString("sudo chown root:wheel '%1' && sudo chmod u+s '%1'").arg(Configs::FindCoreRealPath());
         auto ret = Mac_Run_Command(Command);
         if (ret == 0) {
-            MessageBoxInfo(tr("Requesting permission"), tr("Please Enter your password in the opened terminal, then try again"));
+            showFacadeNotice(tr("Waiting for the password in Terminal…"), 120000);
+            waitForCorePrivileges(reason);
             return false;
         } else {
             MW_show_log(QString("Failed to run %1 with %2").arg(Command).arg(ret));

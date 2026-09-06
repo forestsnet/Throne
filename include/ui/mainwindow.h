@@ -133,6 +133,10 @@ public:
     void set_spmode_vpn(bool enable, bool save = true);
 
     bool get_elevated_permissions(ExitReason reason = ExitReason::RestartWithTun);
+    // Строка поверх окна простого режима; в инженерном ничего не делает.
+    void showFacadeNotice(const QString &text, int milliseconds = 5000);
+    // Ждёт, пока в открытом Терминале введут пароль, и продолжает начатое.
+    void waitForCorePrivileges(ExitReason reason);
 
     void start_select_mode(QObject *context, const std::function<void(int)> &callback);
 

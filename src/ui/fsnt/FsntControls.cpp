@@ -536,7 +536,9 @@ namespace Fsnt {
         auto *body = new QLabel(text, &dialog);
         body->setObjectName(QStringLiteral("fsntDialogHint"));
         body->setWordWrap(true);
-        body->setMinimumWidth(320);
+        // Короткому вопросу хватает узкого окна, а объяснение в несколько
+        // абзацев в колонке 320 px превращается в столбик.
+        body->setMinimumWidth(text.length() > 160 ? 420 : 320);
         layout->addWidget(body);
         layout->addSpacing(6);
 
