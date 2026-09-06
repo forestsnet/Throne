@@ -157,6 +157,31 @@ namespace {
                 break;
             }
 
+            case Fsnt::Glyph::Telegram: {
+                // Обводкой, а не заливкой: у залитого силуэта складка того же
+                // цвета, что и крыло, и самолётик читается сплошным пятном.
+                QPainterPath plane;
+                plane.moveTo(c.x() + r * 0.92, c.y() - r * 0.86);
+                plane.lineTo(c.x() + r * 0.22, c.y() + r * 0.92);
+                plane.lineTo(c.x() - r * 0.06, c.y() + r * 0.20);
+                plane.lineTo(c.x() - r * 0.92, c.y() - r * 0.14);
+                plane.closeSubpath();
+                painter->drawPath(plane);
+
+                // Складка: линия от носа к месту излома.
+                painter->drawLine(QPointF(c.x() + r * 0.92, c.y() - r * 0.86),
+                                  QPointF(c.x() - r * 0.06, c.y() + r * 0.20));
+                break;
+            }
+
+            case Fsnt::Glyph::Globe: {
+                painter->drawEllipse(c, r * 0.82, r * 0.82);
+                painter->drawLine(QPointF(c.x() - r * 0.82, c.y()), QPointF(c.x() + r * 0.82, c.y()));
+                // Меридиан: узкий эллипс поперёк, иначе шар читается как циферблат.
+                painter->drawEllipse(c, r * 0.36, r * 0.82);
+                break;
+            }
+
             case Fsnt::Glyph::More:
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(color);
@@ -454,6 +479,17 @@ void FsntIconButton::setFlat(const bool flat) {
     update();
 }
 
+void FsntIconButton::setGlyph(Fsnt::Glyph glyph) {
+    if (m_glyph == glyph) return;
+    m_glyph = glyph;
+    update();
+}
+
+void FsntIconButton::setGlyphInset(qreal inset) {
+    m_inset = inset;
+    update();
+}
+
 void FsntIconButton::setActive(bool active) {
     if (m_active == active) return;
     m_active = active;
@@ -478,7 +514,7 @@ void FsntIconButton::paintEvent(QPaintEvent *event) {
         painter.drawRoundedRect(rect(), Fsnt::kRowRadius, Fsnt::kRowRadius);
     }
 
-    const qreal inset = m_flat ? 9.0 : 10.0;
+    const qreal inset = m_inset >= 0.0 ? m_inset : (m_flat ? 9.0 : 10.0);
     paintGlyphImpl(&painter, m_glyph, QRectF(rect()).adjusted(inset, inset, -inset, -inset),
                m_hovered || m_active ? p.accent : p.textMuted);
 }

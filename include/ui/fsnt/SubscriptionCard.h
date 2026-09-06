@@ -4,6 +4,7 @@
 #include <QWidget>
 
 class QLabel;
+class FsntIconButton;
 class QProgressBar;
 
 // Карточка активной подписки: трафик, срок, сброс и ссылки поддержки.
@@ -34,5 +35,10 @@ private:
     QLabel *m_announce = nullptr;
     QLabel *m_announceMore = nullptr;
     QString m_announceFull;
-    QLabel *m_links = nullptr;
+    // Ссылки провайдера — значками: подпись «Поддержка · Страница подписки»
+    // занимала строку и всё равно не говорила, куда именно ведёт ссылка.
+    FsntIconButton *m_supportLink = nullptr;
+    FsntIconButton *m_pageLink = nullptr;
+    QString m_supportUrl;
+    QString m_pageUrl;
 };

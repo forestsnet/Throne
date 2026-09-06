@@ -24,6 +24,8 @@ namespace Fsnt {
         Logs,
         More,
         Bell,
+        Telegram,
+        Globe,
     };
 
     // Значок в виде QIcon — для мест, где виджет принимает только её
@@ -103,6 +105,12 @@ public:
     // Значок «нажат»: пока под ним открыта карточка, он остаётся подсвеченным,
     // иначе непонятно, откуда она взялась.
     void setActive(bool active);
+    // Значок меняется на ходу: у ссылки провайдера он зависит от того, куда
+    // она ведёт, а это известно только после обновления подписки.
+    void setGlyph(Fsnt::Glyph glyph);
+    // Отступ от края до значка. Кнопкам в шапке карточки нужен меньший, иначе
+    // на 24 px от значка остаётся шесть точек и он не читается.
+    void setGlyphInset(qreal inset);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -114,6 +122,7 @@ private:
     bool m_flat = false;
     bool m_hovered = false;
     bool m_active = false;
+    qreal m_inset = -1.0;   // -1 — как принято для этого вида кнопки
 };
 
 // Выпадающий список с собственной отрисовкой поля и списка.

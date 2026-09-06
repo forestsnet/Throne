@@ -40,6 +40,25 @@ SubscriptionCard::SubscriptionCard(QWidget *parent) : QWidget(parent) {
     m_expiry->setObjectName("fsntSubMeta");
     header->addWidget(m_expiry);
 
+    // Ссылки провайдера — значками в той же строке, что и название подписки:
+    // отдельной строкой внизу они забирали место у объявления провайдера и
+    // висели в пустоте. Самолётик ведёт в Telegram, шар — на сайт.
+    const auto makeLink = [this, header](const QString *url) {
+        auto *button = new FsntIconButton(Fsnt::Glyph::Globe, this);
+        button->setFlat(true);
+        button->setFixedSize(26, 26);
+        button->setGlyphInset(5.0);
+        button->setCursor(Qt::PointingHandCursor);
+        connect(button, &FsntIconButton::clicked, this, [url] {
+            if (!url->isEmpty()) QDesktopServices::openUrl(QUrl(*url));
+        });
+        header->addSpacing(2);
+        header->addWidget(button);
+        return button;
+    };
+    m_supportLink = makeLink(&m_supportUrl);
+    m_pageLink = makeLink(&m_pageUrl);
+
     layout->addLayout(header);
 
     m_bar = new QProgressBar(this);
@@ -72,13 +91,6 @@ SubscriptionCard::SubscriptionCard(QWidget *parent) : QWidget(parent) {
     });
     layout->addWidget(m_announceMore);
 
-    m_links = new QLabel(this);
-    m_links->setObjectName("fsntSubMeta");
-    m_links->setTextFormat(Qt::RichText);
-    m_links->setOpenExternalLinks(false);
-    connect(m_links, &QLabel::linkActivated, this,
-            [](const QString &url) { QDesktopServices::openUrl(QUrl(url)); });
-    layout->addWidget(m_links);
 
     refresh();
 }
@@ -180,13 +192,23 @@ void SubscriptionCard::refresh() {
     m_announceFull = policy.announce;
     updateAnnounce();
 
-    QStringList links;
-    if (!policy.supportUrl.isEmpty()) {
-        links << QString("<a href=\"%1\">%2</a>").arg(policy.supportUrl, tr("Support"));
-    }
-    if (!policy.webPageUrl.isEmpty()) {
-        links << QString("<a href=\"%1\">%2</a>").arg(policy.webPageUrl, tr("Subscription page"));
-    }
-    m_links->setText(links.join(" · "));
-    m_links->setVisible(!links.isEmpty());
+    // Значок выбираем по адресу, а не по назначению ссылки: у одного
+    // провайдера поддержка живёт в Telegram, у другого — на сайте.
+    const auto isTelegram = [](const QString &url) {
+        const QString host = QUrl(url).host();
+        return url.startsWith("tg://") || host.endsWith("t.me") || host.endsWith("telegram.me") ||
+               host.endsWith("telegram.org") || host.endsWith("telegram.dog");
+    };
+    const auto applyLink = [&isTelegram](FsntIconButton *button, QString &store, const QString &url,
+                                         const QString &hint) {
+        store = url;
+        const bool has = !url.isEmpty();
+        button->setVisible(has);
+        if (!has) return;
+        button->setGlyph(isTelegram(url) ? Fsnt::Glyph::Telegram : Fsnt::Glyph::Globe);
+        button->setToolTip(hint + "\n" + url);
+    };
+    applyLink(m_supportLink, m_supportUrl, policy.supportUrl, tr("Support"));
+    applyLink(m_pageLink, m_pageUrl, policy.webPageUrl, tr("Subscription page"));
+
 }
