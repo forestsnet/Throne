@@ -6357,8 +6357,24 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Запускать свёрнутым в трей</translation>
     </message>
     <message>
-        <source>Notify about new versions</source>
-        <translation>Уведомлять о новых версиях</translation>
+        <source>Notifications</source>
+        <translation>Уведомления</translation>
+    </message>
+    <message>
+        <source>New version of the client</source>
+        <translation>Новая версия клиента</translation>
+    </message>
+    <message>
+        <source>Subscription updated</source>
+        <translation>Подписка обновлена</translation>
+    </message>
+    <message>
+        <source>VPN turned on and off</source>
+        <translation>Включение и выключение VPN</translation>
+    </message>
+    <message>
+        <source>About the subscription and the tunnel we only tell you when the client window is not in front of you: while you are looking at it, you can see everything anyway.</source>
+        <translation>О подписке и туннеле сообщаем, только когда окно клиента не перед вами: пока вы в него смотрите, всё и так видно.</translation>
     </message>
     <message>
         <source>Language changes apply after restarting the application.</source>
@@ -6379,6 +6395,21 @@ Improves hole-punching reliability. Requires IPv4.</source>
     <message>
         <source>Providers count devices by it. With it off a subscription may come back empty, and the reason will not be obvious.</source>
         <translation>По нему провайдеры считают устройства. С выключенным подписка может прийти пустой, и причина будет неочевидна.</translation>
+    </message>
+</context>
+<context>
+    <name>Fsnt::UpdatePopover</name>
+    <message>
+        <source>Update</source>
+        <translation>Обновить</translation>
+    </message>
+    <message>
+        <source>Later</source>
+        <translation>Позже</translation>
+    </message>
+    <message>
+        <source>What's new</source>
+        <translation>Что нового</translation>
     </message>
 </context>
 <context>
@@ -6558,6 +6589,42 @@ Improves hole-punching reliability. Requires IPv4.</source>
     <message>
         <source>Click here to update — it takes about a minute.</source>
         <translation>Нажмите, чтобы обновиться — это займёт около минуты.</translation>
+    </message>
+    <message>
+        <source>VPN is on</source>
+        <translation>VPN включён</translation>
+    </message>
+    <message>
+        <source>VPN is off</source>
+        <translation>VPN выключен</translation>
+    </message>
+    <message>
+        <source>Traffic goes through %1.</source>
+        <translation>Трафик идёт через %1.</translation>
+    </message>
+    <message>
+        <source>Traffic goes through the tunnel.</source>
+        <translation>Трафик идёт через туннель.</translation>
+    </message>
+    <message>
+        <source>Traffic goes directly again.</source>
+        <translation>Трафик снова идёт напрямую.</translation>
+    </message>
+    <message>
+        <source>Subscription updated</source>
+        <translation>Подписка обновлена</translation>
+    </message>
+    <message numerus="yes">
+        <source>%n server(s) available.</source>
+        <translation>
+            <numerusform>Доступен %n сервер.</numerusform>
+            <numerusform>Доступно %n сервера.</numerusform>
+            <numerusform>Доступно %n серверов.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>The provider returned no servers.</source>
+        <translation>Провайдер не вернул ни одного сервера.</translation>
     </message>
     <message>
         <source>Version %1 is out</source>

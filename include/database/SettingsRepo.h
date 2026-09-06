@@ -77,6 +77,8 @@ namespace Configs {
         // Системное уведомление о новой версии. Колокольчик в окне остаётся
         // всегда — выключается именно всплывающее окно системы.
         bool notify_update_system = true;
+        bool notify_subscription = true;
+        bool notify_connection = true;
         // Версия, о которой уже сказали: второй раз не всплываем.
         QString update_seen_version = "";
         bool disable_tray = false;

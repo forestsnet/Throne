@@ -73,6 +73,8 @@ private:
 
     // Нашлась новая версия: зажигаем колокольчик и, если человек не запретил,
     // один раз показываем системное уведомление.
+    void onConnectionChanged(bool connected, const QString &server);
+    void onSubscriptionUpdated();
     void onUpdateFound(const QString &tag, const QString &notes);
     void showUpdateCard();
     void runTour();

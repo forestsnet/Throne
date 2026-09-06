@@ -36,6 +36,9 @@ signals:
     // Какой сервер пойдёт в дело. Список подсвечивает его, чтобы подпись под
     // кнопкой и выделенная строка всегда показывали одно и то же.
     void profileResolved(int profileId);
+    // Туннель поднялся или лёг. Панель и так опрашивает состояние; окну нужен
+    // сам переход, а не текущее значение.
+    void connectionChanged(bool connected, const QString &server);
 
 private:
     // Какой сервер запускать и выбран ли он пользователем.
@@ -61,6 +64,8 @@ private:
     QLabel *m_transport = nullptr;
     PowerButton *m_button = nullptr;
     QTimer *m_ticker = nullptr;
+    // -1 — состояние ещё не знаем: на старте уведомлять не о чем.
+    int m_lastConnected = -1;
     // Сторожевой таймер: ядро может не ответить, и кольцо крутилось бы вечно.
     QTimer *m_pendingGuard = nullptr;
     // Опрос настоящего состояния, пока идёт операция. Панель узнаёт о ядре

@@ -27,6 +27,7 @@ private:
     void buildSubscriptions(QVBoxLayout *column, QWidget *host);
     void buildDns(QVBoxLayout *column, QWidget *host);
     void buildApplication(QVBoxLayout *column, QWidget *host);
+    void buildNotifications(QVBoxLayout *column, QWidget *host);
 
     // Дёргает действие расширенного режима по имени. Так переиспользуются его
     // проверки — и код, который правит upstream, остаётся нетронутым.
@@ -46,6 +47,8 @@ private:
     QLineEdit *m_pingUrl = nullptr;
     FsntSwitch *m_startMinimal = nullptr;
     FsntSwitch *m_notifyUpdate = nullptr;
+    FsntSwitch *m_notifySubscription = nullptr;
+    FsntSwitch *m_notifyConnection = nullptr;
     FsntSwitch *m_autoConnect = nullptr;
     FsntSwitch *m_allowLan = nullptr;
     FsntSwitch *m_autoRun = nullptr;

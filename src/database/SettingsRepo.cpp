@@ -50,6 +50,8 @@ namespace Configs {
             {"onboarding_done",               &onboarding_done},
             {"hint_switch_subs",              &hint_switch_subs},
             {"notify_update_system",          &notify_update_system},
+            {"notify_subscription",           &notify_subscription},
+            {"notify_connection",             &notify_connection},
             {"conflict_warning_disabled",     &conflict_warning_disabled},
             {"enable_ntp",                    &enable_ntp},
             {"enable_dns_server",             &enable_dns_server},

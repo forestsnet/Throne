@@ -74,6 +74,7 @@ FsntSettingsDialog::FsntSettingsDialog(QWidget *parent) : QDialog(parent) {
     buildDns(column, host);
     buildSubscriptions(column, host);
     buildApplication(column, host);
+    buildNotifications(column, host);
     column->addStretch();
 
     scroll->setWidget(host);
@@ -362,8 +363,18 @@ void FsntSettingsDialog::buildApplication(QVBoxLayout *column, QWidget *host) {
 
     m_autoRun = card.addToggle(tr("Launch at login"), AutoRun_IsEnabled());
     m_startMinimal = card.addToggle(tr("Start minimized to tray"), settings->start_minimal);
-    m_notifyUpdate = card.addToggle(tr("Notify about new versions"), settings->notify_update_system);
     card.addNote(tr("Language changes apply after restarting the application."));
+}
+
+void FsntSettingsDialog::buildNotifications(QVBoxLayout *column, QWidget *host) {
+    Fsnt::SettingsCard card(column, host, tr("Notifications"));
+    const auto &settings = Configs::dataManager->settingsRepo;
+
+    m_notifyUpdate = card.addToggle(tr("New version of the client"), settings->notify_update_system);
+    m_notifySubscription = card.addToggle(tr("Subscription updated"), settings->notify_subscription);
+    m_notifyConnection = card.addToggle(tr("VPN turned on and off"), settings->notify_connection);
+    card.addNote(tr("About the subscription and the tunnel we only tell you when the client window "
+                    "is not in front of you: while you are looking at it, you can see everything anyway."));
 }
 
 void FsntSettingsDialog::save() {
@@ -385,6 +396,8 @@ void FsntSettingsDialog::save() {
     settings->language = m_language->currentData().toInt();
     settings->start_minimal = m_startMinimal->isChecked();
     if (m_notifyUpdate != nullptr) settings->notify_update_system = m_notifyUpdate->isChecked();
+    if (m_notifySubscription != nullptr) settings->notify_subscription = m_notifySubscription->isChecked();
+    if (m_notifyConnection != nullptr) settings->notify_connection = m_notifyConnection->isChecked();
     settings->remember_enable = m_autoConnect->isChecked();
     settings->inbound_address = m_allowLan->isChecked() ? "::" : "127.0.0.1";
     settings->remote_dns = m_remoteDns->currentData().toString();

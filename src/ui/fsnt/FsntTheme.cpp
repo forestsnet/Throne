@@ -277,6 +277,15 @@ namespace Fsnt {
             }
             QDialog#fsntDialog QLabel { color: @text; font-size: 13px; }
             QLabel#fsntDialogTitle { color: @text; font-size: 19px; font-weight: 600; }
+            QLabel#fsntPopoverTitle { color: @text; font-size: 15px; font-weight: 600; }
+            QPushButton#fsntLinkButton {
+                background: transparent;
+                border: none;
+                color: @accent;
+                font-size: 12px;
+                padding: 4px 2px;
+            }
+            QPushButton#fsntLinkButton:hover { text-decoration: underline; }
             QLabel#fsntDialogHint { color: @muted; font-size: 12px; }
 
             /* ---- экскурсия по интерфейсу ---- */

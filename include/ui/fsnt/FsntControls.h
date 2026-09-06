@@ -98,6 +98,9 @@ public:
     QSize sizeHint() const override;
     // Без рамки и подложки — для значков внутри шапки.
     void setFlat(bool flat);
+    // Значок «нажат»: пока под ним открыта карточка, он остаётся подсвеченным,
+    // иначе непонятно, откуда она взялась.
+    void setActive(bool active);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -108,6 +111,7 @@ private:
     Fsnt::Glyph m_glyph;
     bool m_flat = false;
     bool m_hovered = false;
+    bool m_active = false;
 };
 
 // Выпадающий список с собственной отрисовкой поля и списка.

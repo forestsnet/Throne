@@ -36,7 +36,8 @@
 #include "include/ui/fsnt/ConnectPanel.h"
 #include "include/ui/mainwindow.h"
 #include "include/ui/fsnt/FsntSettingsDialog.h"
-#include "include/ui/fsnt/DesktopNotice.hpp"
+#include "include/ui/fsnt/Notifier.hpp"
+#include "include/ui/fsnt/UpdatePopover.hpp"
 #include "include/ui/fsnt/FsntControls.h"
 #include "include/ui/fsnt/FsntLogDialog.h"
 #include "include/ui/fsnt/FsntTheme.hpp"
@@ -201,8 +202,12 @@ void FsntWindow::onCoreMessage(MwMessage cmd, const QStringList &args) {
             refreshConnectionState();
             if (m_probe != nullptr) m_probe->start();
             break;
-        case MwMessage::GroupsChanged:
         case MwMessage::SubscriptionFinished:
+            refreshServerList();
+            refreshConnectionState();
+            onSubscriptionUpdated();
+            break;
+        case MwMessage::GroupsChanged:
         case MwMessage::SubscriptionGroupChanged:
         case MwMessage::SubscriptionNewGroup:
             refreshServerList();
@@ -343,6 +348,7 @@ void FsntWindow::buildPanels(QVBoxLayout *root) {
     connect(m_serverList, &ServerListPanel::notice, this, [this](const QString &text) {
         if (m_toast != nullptr) m_toast->show(text);
     });
+    connect(m_connectPanel, &ConnectPanel::connectionChanged, this, &FsntWindow::onConnectionChanged);
 
     m_subscriptionCard = new SubscriptionCard(sidePanel);
     m_sideLayout->addWidget(m_subscriptionCard);
@@ -353,6 +359,10 @@ void FsntWindow::buildPanels(QVBoxLayout *root) {
     // раз проверяем сами, иначе человек с двумя подписками увидит подсказку
     // только после следующего обновления.
     QTimer::singleShot(1200, this, [this] { maybeHintSubscriptionSwitch(); });
+
+    // Разрешение спрашиваем не сразу: на старте у человека и так полный экран
+    // событий, а уведомления нужны не в первую минуту.
+    QTimer::singleShot(30000, this, [] { Fsnt::PrimeNotifications(); });
 
     m_updates = new Fsnt::UpdateWatcher(this);
     connect(m_updates, &Fsnt::UpdateWatcher::updateFound, this, &FsntWindow::onUpdateFound);
@@ -428,6 +438,48 @@ void FsntWindow::refreshServerList() {
     maybeHintSubscriptionSwitch();
 }
 
+void FsntWindow::onConnectionChanged(bool connected, const QString &server) {
+    // Пока человек смотрит в окно, он видит и кнопку, и таймер: баннер поверх
+    // собственного окна — лишний шум. Уведомляем того, кто ушёл в другие дела.
+    if (isActiveWindow()) return;
+
+    QPointer<FsntWindow> self = this;
+    const QString title = connected ? tr("VPN is on") : tr("VPN is off");
+    const QString body = connected && !server.isEmpty()
+                             ? tr("Traffic goes through %1.").arg(server)
+                             : (connected ? tr("Traffic goes through the tunnel.")
+                                          : tr("Traffic goes directly again."));
+    Fsnt::Notify(Fsnt::NotifyKind::Connection, title, body, [self] {
+        if (self.isNull()) return;
+        self->show();
+        self->raise();
+        self->activateWindow();
+    });
+}
+
+void FsntWindow::onSubscriptionUpdated() {
+    if (isActiveWindow()) return;
+
+    // Считаем серверы в подписках: человеку важно, что список не опустел, а не
+    // сколько строк переписалось внутри.
+    int servers = 0;
+    for (const int gid : Configs::dataManager->groupsRepo->GetGroupsTabOrder()) {
+        const auto group = Configs::dataManager->groupsRepo->GetGroup(gid);
+        if (group && !group->url.isEmpty()) servers += group->Profiles().size();
+    }
+
+    QPointer<FsntWindow> self = this;
+    Fsnt::Notify(Fsnt::NotifyKind::Subscription, tr("Subscription updated"),
+                 servers > 0 ? tr("%n server(s) available.", nullptr, servers)
+                             : tr("The provider returned no servers."),
+                 [self] {
+                     if (self.isNull()) return;
+                     self->show();
+                     self->raise();
+                     self->activateWindow();
+                 });
+}
+
 void FsntWindow::onUpdateFound(const QString &tag, const QString &notes) {
     m_updateTag = tag;
     m_updateNotes = notes;
@@ -440,31 +492,19 @@ void FsntWindow::onUpdateFound(const QString &tag, const QString &notes) {
     settings->update_seen_version = tag;
     settings->Save();
 
-    if (!settings->notify_update_system) return;
-
-#ifdef Q_OS_MACOS
-    // На маке системного пути нет: Qt шлёт баннер через NSUserNotificationCenter,
-    // которого в системе не осталось, — приложение даже не появляется в списке
-    // «Уведомления». Показываем свою карточку поверх всех окон.
-    auto *notice = Fsnt::DesktopNotice::Show(tr("FSNT Client %1 is out").arg(tag),
-                                             tr("Click here to update — it takes about a minute."));
-    connect(notice, &Fsnt::DesktopNotice::activated, this, [this] {
-        show();
-        raise();
-        activateWindow();
-        showUpdateCard();
-    });
-#else
-    if (auto *mw = GetMainWindow(); mw != nullptr && mw->trayIcon() != nullptr) {
-        mw->trayIcon()->showMessage(tr("FSNT Client %1 is out").arg(tag),
-                                    tr("Open the client and press the bell to update."),
-                                    QSystemTrayIcon::Information, 8000);
-    }
-#endif
+    QPointer<FsntWindow> self = this;
+    Fsnt::Notify(Fsnt::NotifyKind::Update, tr("FSNT Client %1 is out").arg(tag),
+                 tr("Click here to update — it takes about a minute."), [self] {
+                     if (self.isNull()) return;
+                     self->show();
+                     self->raise();
+                     self->activateWindow();
+                     self->showUpdateCard();
+                 });
 }
 
 void FsntWindow::showUpdateCard() {
-    if (m_updateTag.isEmpty()) return;
+    if (m_updateTag.isEmpty() || m_bell == nullptr) return;
 
     // Первые строки описания релиза: полный список изменений человеку здесь не
     // нужен, для него есть ссылка.
@@ -484,17 +524,23 @@ void FsntWindow::showUpdateCard() {
                                    .arg(QStringLiteral(NKR_VERSION))
                              : summary;
 
-    const int answer = Fsnt::Choose(this, tr("Version %1 is out").arg(m_updateTag), body,
-                                    {tr("Update"), tr("What's new"), tr("Later")});
-    if (answer == 0) {
+    auto *card = new Fsnt::UpdatePopover(m_bell, tr("Version %1 is out").arg(m_updateTag), body);
+    m_bell->setActive(true);
+    connect(card, &QObject::destroyed, this, [this] {
+        if (m_bell != nullptr) m_bell->setActive(false);
+    });
+    connect(card, &Fsnt::UpdatePopover::updateRequested, this, [this] {
         triggerAction("actionCheck_For_Update");
-    } else if (answer == 1) {
+    });
+    connect(card, &Fsnt::UpdatePopover::notesRequested, this, [] {
         QDesktopServices::openUrl(QUrl(QStringLiteral("https://github.com/forestsnet/Throne/releases/latest")));
-    } else if (answer == 2) {
+    });
+    connect(card, &Fsnt::UpdatePopover::postponed, this, [this] {
         // «Позже» гасит колокольчик до следующей версии: напоминать про то же
         // самое — ровно то, что раздражает в чужих программах.
         if (m_bell != nullptr) m_bell->hide();
-    }
+    });
+    card->popup();
 }
 
 void FsntWindow::maybeHintSubscriptionSwitch() {

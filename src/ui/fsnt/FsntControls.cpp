@@ -453,6 +453,12 @@ void FsntIconButton::setFlat(const bool flat) {
     update();
 }
 
+void FsntIconButton::setActive(bool active) {
+    if (m_active == active) return;
+    m_active = active;
+    update();
+}
+
 void FsntIconButton::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event)
     const Fsnt::Palette p = Fsnt::CurrentPalette();
@@ -462,8 +468,8 @@ void FsntIconButton::paintEvent(QPaintEvent *event) {
 
     if (!m_flat) {
         const QRectF frame = QRectF(rect()).adjusted(0.5, 0.5, -0.5, -0.5);
-        painter.setBrush(p.card);
-        painter.setPen(QPen(m_hovered ? p.accent : p.border, 1.0));
+        painter.setBrush(m_active ? p.accentSoft : p.card);
+        painter.setPen(QPen(m_hovered || m_active ? p.accent : p.border, 1.0));
         painter.drawRoundedRect(frame, Fsnt::kRowRadius, Fsnt::kRowRadius);
     } else if (m_hovered) {
         painter.setPen(Qt::NoPen);
@@ -473,7 +479,7 @@ void FsntIconButton::paintEvent(QPaintEvent *event) {
 
     const qreal inset = m_flat ? 9.0 : 10.0;
     paintGlyphImpl(&painter, m_glyph, QRectF(rect()).adjusted(inset, inset, -inset, -inset),
-               m_hovered ? p.accent : p.textMuted);
+               m_hovered || m_active ? p.accent : p.textMuted);
 }
 
 void FsntIconButton::enterEvent(QEnterEvent *event) {

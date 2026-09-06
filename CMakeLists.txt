@@ -368,6 +368,14 @@ set(PROJECT_SOURCES
 
         include/ui/fsnt/DesktopNotice.hpp
 
+        src/ui/fsnt/Notifier.cpp
+
+        include/ui/fsnt/Notifier.hpp
+
+        src/ui/fsnt/UpdatePopover.cpp
+
+        include/ui/fsnt/UpdatePopover.hpp
+
         src/ui/fsnt/ServerListPanel.cpp
 
         include/ui/fsnt/ServerListPanel.h

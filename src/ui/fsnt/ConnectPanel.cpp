@@ -250,10 +250,21 @@ void ConnectPanel::refresh() {
     }
 
     const Choice choice = resolveProfile();
+    QString serverName;
     if (const auto profile = Configs::dataManager->profilesRepo->GetProfile(choice.id)) {
-        m_server->setText(profile->outbound->DisplayName());
+        serverName = profile->outbound->DisplayName();
+        m_server->setText(serverName);
     } else {
         m_server->setText(tr("No server selected"));
+    }
+
+    // Первый refresh только запоминает состояние: запуск клиента с уже
+    // поднятым туннелем — не событие.
+    const int now = connected ? 1 : 0;
+    if (m_lastConnected != now) {
+        const bool first = m_lastConnected < 0;
+        m_lastConnected = now;
+        if (!first) emit connectionChanged(connected, serverName);
     }
 
     QString line = Configs::dataManager->settingsRepo->simple_transport == 0
