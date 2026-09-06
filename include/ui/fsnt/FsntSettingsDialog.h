@@ -4,6 +4,7 @@
 
 class FsntSwitch;
 class FsntSelect;
+class QLineEdit;
 class QLabel;
 class QVBoxLayout;
 
@@ -41,6 +42,7 @@ private:
     void updateRouteNote();
     FsntSelect *m_subAutoUpdate = nullptr;
     FsntSelect *m_pingKind = nullptr;
+    QLineEdit *m_pingUrl = nullptr;
     FsntSwitch *m_startMinimal = nullptr;
     FsntSwitch *m_autoConnect = nullptr;
     FsntSwitch *m_allowLan = nullptr;

@@ -7,6 +7,7 @@
 #include <QComboBox>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QLineEdit>
 #include <QPushButton>
 #include <QScrollArea>
 #include <QVBoxLayout>
@@ -309,10 +310,24 @@ void FsntSettingsDialog::buildApplication(QVBoxLayout *column, QWidget *host) {
         m_pingKind->setCurrentIndex(index);
     }
     card.addControl(tr("Latency check"), m_pingKind);
+
+    // Адрес нужен только URL-тесту: у остальных способов дорога идёт до самого
+    // сервера, и поле стояло бы там просто так.
+    m_pingUrl = new QLineEdit(host);
+    m_pingUrl->setObjectName(QStringLiteral("fsntInput"));
+    m_pingUrl->setText(settings->test_latency_url);
+    m_pingUrl->setPlaceholderText(QStringLiteral("https://www.gstatic.com/generate_204"));
+    auto *urlRow = card.addControl(tr("URL test address"), m_pingUrl);
+
     auto *pingNote = card.addNote(Fsnt::PingKindHint(Fsnt::PingKindFromSetting(settings->ping_kind)));
-    connect(m_pingKind, &QComboBox::currentIndexChanged, this, [this, pingNote] {
-        pingNote->setText(Fsnt::PingKindHint(Fsnt::PingKindFromSetting(m_pingKind->currentData().toInt())));
-    });
+    const auto syncPingRows = [this, pingNote, urlRow] {
+        const auto kind = Fsnt::PingKindFromSetting(m_pingKind->currentData().toInt());
+        pingNote->setText(Fsnt::PingKindHint(kind));
+        const bool needsUrl = kind == Fsnt::PingKind::RequestGet || kind == Fsnt::PingKind::RequestHead;
+        if (urlRow != nullptr) urlRow->setVisible(needsUrl);
+    };
+    connect(m_pingKind, &QComboBox::currentIndexChanged, this, syncPingRows);
+    syncPingRows();
 
     m_language = makeSelect(host);
     // Индексы совпадают со switch в main.cpp: 0 системный, 1 English, 2 中文, 3 فارسی, 4 русский.
@@ -382,6 +397,11 @@ void FsntSettingsDialog::save() {
     settings->sub_auto_update = settings->sub_auto_update < 0 ? -minutes : minutes;
 
     if (m_pingKind != nullptr) settings->ping_kind = m_pingKind->currentData().toInt();
+    if (m_pingUrl != nullptr) {
+        // Пустое поле означает «как было задумано», а не «проверять нечем».
+        const QString url = m_pingUrl->text().trimmed();
+        settings->test_latency_url = url.isEmpty() ? QStringLiteral("https://www.gstatic.com/generate_204") : url;
+    }
 
     // Пишем только при настоящей смене: значение в базе хранится в нижнем
     // регистре, а у пунктов списка он смешанный, и запись «как есть» меняла бы

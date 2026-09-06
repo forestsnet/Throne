@@ -78,6 +78,15 @@ namespace Configs
             return QString::number(server_port);
         }
 
+        // Имя, под которым идёт TLS-рукопожатие. У Reality это домен прикрытия,
+        // и без него проба стучится «не туда» и получает отказ.
+        virtual QString GetSni()
+        {
+            if (!HasTLS()) return {};
+            const auto tls = GetTLS();
+            return tls == nullptr ? QString() : tls->server_name;
+        }
+
         virtual QString DisplayAddress()
         {
             return ::DisplayAddress(server, server_port);

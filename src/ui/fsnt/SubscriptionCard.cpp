@@ -18,28 +18,10 @@
 #include "include/ui/fsnt/FsntTheme.hpp"
 
 namespace {
-    // Длину объявления задаёт провайдер, и она бывает любой: у одного строка, у
-    // другого десяток абзацев с инструкциями. Такой текст выдавливал карточку и
-    // ссылки за нижний край окна. Показываем начало, остальное — по ссылке.
-    constexpr int kAnnounceMaxChars = 240;
-    constexpr int kAnnounceMaxLines = 4;
-
-    bool announceIsLong(const QString &text) {
-        return text.size() > kAnnounceMaxChars || text.count('\n') >= kAnnounceMaxLines;
-    }
-
-    QString announceHead(const QString &text) {
-        QString head = text.left(kAnnounceMaxChars);
-        // Рвать слово посередине некрасиво, поэтому отступаем до пробела.
-        const int lastSpace = head.lastIndexOf(QRegularExpression("\\s"));
-        if (lastSpace > kAnnounceMaxChars / 2) head.truncate(lastSpace);
-        QStringList lines = head.split('\n');
-        if (lines.size() > kAnnounceMaxLines) {
-            lines = lines.mid(0, kAnnounceMaxLines);
-            head = lines.join('\n');
-        }
-        return head.trimmed() + QStringLiteral("…");
-    }
+    // Сколько места отдаём объявлению провайдера. Считаем в точках, а не в
+    // строках: у одного провайдера текст сплошной, у другого разбит на короткие
+    // строчки, и по их числу коробка выходила то пустой, то во весь экран.
+    constexpr int kAnnounceMaxHeight = 150;
 }
 
 SubscriptionCard::SubscriptionCard(QWidget *parent) : QWidget(parent) {
@@ -101,6 +83,51 @@ SubscriptionCard::SubscriptionCard(QWidget *parent) : QWidget(parent) {
     refresh();
 }
 
+void SubscriptionCard::resizeEvent(QResizeEvent *event) {
+    QWidget::resizeEvent(event);
+    updateAnnounce();
+}
+
+void SubscriptionCard::updateAnnounce() {
+    if (m_announce == nullptr) return;
+    if (m_announceFull.isEmpty()) {
+        m_announce->hide();
+        m_announceMore->hide();
+        return;
+    }
+    m_announce->show();
+
+    // Пока карточку не разложили, ширины ещё нет — берём ширину самой карточки
+    // за вычетом полей, иначе первый показ обрезал бы текст наугад.
+    const int width = qMax(160, m_announce->width() > 0 ? m_announce->width() : this->width() - 28);
+    const QFontMetrics metrics(m_announce->font());
+    const auto heightOf = [&](const QString &text) {
+        return metrics.boundingRect(QRect(0, 0, width, 10000), Qt::TextWordWrap, text).height();
+    };
+
+    if (heightOf(m_announceFull) <= kAnnounceMaxHeight) {
+        m_announce->setText(m_announceFull);
+        m_announceMore->hide();
+        return;
+    }
+
+    // Двоичным поиском — самый длинный кусок, который ещё влезает в отведённую
+    // высоту. Перебор по одному символу на длинном объявлении заметен глазу.
+    int low = 0;
+    int high = m_announceFull.size();
+    while (low < high) {
+        const int mid = (low + high + 1) / 2;
+        if (heightOf(m_announceFull.left(mid) + QStringLiteral("…")) <= kAnnounceMaxHeight) low = mid;
+        else high = mid - 1;
+    }
+    QString head = m_announceFull.left(low);
+    // Рвать слово посередине некрасиво, поэтому отступаем до пробела.
+    const int lastSpace = head.lastIndexOf(QRegularExpression(QStringLiteral("\\s")));
+    if (lastSpace > low / 2) head.truncate(lastSpace);
+    m_announce->setText(head.trimmed() + QStringLiteral("…"));
+    m_announceMore->show();
+}
+
 void SubscriptionCard::refresh() {
     const auto group = Configs::dataManager->groupsRepo->CurrentGroup();
     if (!group) {
@@ -148,15 +175,10 @@ void SubscriptionCard::refresh() {
         m_refill->setVisible(false);
     }
 
-    // Объявление провайдера: короткое показываем целиком, длинное — началом,
-    // а полностью оно открывается отдельным окном.
+    // Объявление провайдера: помещается — показываем целиком, не помещается —
+    // ровно столько, сколько влезает, остальное открывается окном.
     m_announceFull = policy.announce;
-    const bool hasAnnounce = !policy.announce.isEmpty();
-    const bool longAnnounce = hasAnnounce && announceIsLong(policy.announce);
-    m_announce->setText(longAnnounce ? announceHead(policy.announce) : policy.announce);
-    m_announce->setVisible(hasAnnounce);
-    m_announceMore->setText(QString("<a href=\"#\">%1</a>").arg(tr("Read in full")));
-    m_announceMore->setVisible(longAnnounce);
+    updateAnnounce();
 
     QStringList links;
     if (!policy.supportUrl.isEmpty()) {

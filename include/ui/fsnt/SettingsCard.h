@@ -21,7 +21,9 @@ namespace Fsnt {
         SettingsCard(QVBoxLayout *column, QWidget *host, const QString &title);
 
         // Строка с подписью слева и готовым контролом справа.
-        void addControl(const QString &label, QWidget *control);
+        // Возвращает строку целиком: её прячут, когда настройка к текущему
+        // выбору не относится.
+        QWidget *addControl(const QString &label, QWidget *control);
 
         // Переключатель: текст слева, тумблер справа.
         FsntSwitch *addToggle(const QString &label, bool checked);

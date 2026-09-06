@@ -133,13 +133,13 @@ namespace Fsnt {
 
     QString PingKindTitle(const PingKind kind) {
         switch (kind) {
-            case PingKind::Icmp: return QObject::tr("Ping (ICMP)");
-            case PingKind::Tcp: return QObject::tr("Connection to the port");
-            case PingKind::Handshake: return QObject::tr("Handshake");
-            case PingKind::RequestHead: return QObject::tr("Request (HEAD)");
+            case PingKind::Icmp: return QObject::tr("ICMP ping");
+            case PingKind::Tcp: return QObject::tr("TCP test");
+            case PingKind::Handshake: return QObject::tr("TLS handshake");
+            case PingKind::RequestHead: return QObject::tr("URL test (HEAD)");
             case PingKind::RequestGet: break;
         }
-        return QObject::tr("Request (GET)");
+        return QObject::tr("URL test (GET)");
     }
 
     QString PingKindHint(const PingKind kind) {
@@ -182,14 +182,7 @@ namespace Fsnt {
 
         const QString host = profile->outbound->GetAddress();
         const int port = profile->outbound->GetPort().toInt();
-        // SNI берём из TLS профиля: для Reality он и есть тот домен, которым
-        // сервер прикрывается, и рукопожатие идёт именно к нему.
-        QString sni;
-        if (profile->outbound->HasTLS()) {
-            if (const auto tls = profile->outbound->GetTLS(); tls != nullptr && tls->enabled) {
-                sni = tls->server_name;
-            }
-        }
+        const QString sni = profile->outbound->GetSni();
 
         runOnNewThread([=] {
             QString error;

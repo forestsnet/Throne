@@ -296,8 +296,8 @@ void ServerListPanel::stopMeasurement() {
 
 void ServerListPanel::probeOne(const int profileId, const int kind) {
     const auto probeKind = Fsnt::PingKindFromSetting(kind);
-    // Отметку ставим как при общем замере: строка покажет «думающие» точки,
-    // пока не придёт ответ.
+    m_probeTarget = profileId;
+    // Отметку ставим как при общем замере, но ждёт по ней только цель.
     m_measureStartedAt = QDateTime::currentSecsSinceEpoch();
     m_latencyPollsLeft = 15;
     m_measureIdlePolls = 0;
@@ -307,6 +307,9 @@ void ServerListPanel::probeOne(const int profileId, const int kind) {
     reloadServers();
 
     Fsnt::ProbeProfile(profileId, probeKind, [this](int ms, const QString &error) {
+        // Запрос считает ядро, и его ответ придёт опросом; остальные способы
+        // отвечают прямо здесь, и тогда ждать нечего.
+        if (ms != 0) finishMeasurement();
         if (ms < 0 && !error.isEmpty()) emit notice(error);
         reloadServers();
     });
@@ -423,8 +426,11 @@ void ServerListPanel::reloadServers() {
         item->setData(ProfileIdRole, profile->id);
         item->setData(LatencyRole, profile->latency);
         item->setData(FavoriteRole, favs.contains(profile->outbound->DisplayName()));
+        // При проверке одного сервера ждёт только он: иначе весь список
+        // начинал «думать», хотя проверяли одну строку.
+        const bool waiting = m_measureStartedAt > 0 && profile->latency_at < m_measureStartedAt;
         item->setData(MeasuringRole,
-                      m_measureStartedAt > 0 && profile->latency_at < m_measureStartedAt);
+                      m_probeTarget >= 0 ? (profile->id == m_probeTarget && waiting) : waiting);
 
         // Подпись строим здесь, а не в делегате: у делегата нет доступа к
         // профилю, только к ролям элемента.
@@ -546,6 +552,18 @@ void ServerListPanel::finishMeasurement() {
     m_measureRepaint->stop();
     m_ping->setBusy(false);
     m_measureStartedAt = 0;
+
+    if (m_probeTarget >= 0) {
+        const auto profile = Configs::dataManager->profilesRepo->GetProfile(m_probeTarget);
+        m_probeTarget = -1;
+        reloadServers();
+        if (profile != nullptr) {
+            emit notice(profile->latency > 0
+                            ? tr("%1: %2 ms").arg(profile->outbound->DisplayName()).arg(profile->latency)
+                            : tr("%1: no answer").arg(profile->outbound->DisplayName()));
+        }
+        return;
+    }
 
     int withLatency = 0;
     const int total = m_list->count();

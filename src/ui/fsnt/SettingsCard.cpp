@@ -57,7 +57,7 @@ namespace Fsnt {
         m_rows->addWidget(holder);
     }
 
-    void SettingsCard::addControl(const QString &label, QWidget *control) {
+    QWidget *SettingsCard::addControl(const QString &label, QWidget *control) {
         addSeparator();
         QHBoxLayout *box = nullptr;
         auto *row = makeRow(m_card, &box);
@@ -70,6 +70,7 @@ namespace Fsnt {
         control->setParent(row);
         box->addWidget(control);
         m_rows->addWidget(row);
+        return row;
     }
 
     FsntSwitch *SettingsCard::addToggle(const QString &label, const bool checked) {

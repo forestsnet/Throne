@@ -6364,6 +6364,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <source>Latency check</source>
         <translation>Проверка задержки</translation>
     </message>
+    <message>
+        <source>URL test address</source>
+        <translation>Адрес для URL-теста</translation>
+    </message>
 </context>
 <context>
     <name>Fsnt::CoachMarks</name>
@@ -9149,6 +9153,26 @@ Release note:
         <source>profile not found</source>
         <translation>профиль не найден</translation>
     </message>
+    <message>
+        <source>ICMP ping</source>
+        <translation>ICMP-пинг</translation>
+    </message>
+    <message>
+        <source>TCP test</source>
+        <translation>TCP-тест</translation>
+    </message>
+    <message>
+        <source>TLS handshake</source>
+        <translation>TLS-рукопожатие</translation>
+    </message>
+    <message>
+        <source>URL test (HEAD)</source>
+        <translation>URL-тест (HEAD)</translation>
+    </message>
+    <message>
+        <source>URL test (GET)</source>
+        <translation>URL-тест (GET)</translation>
+    </message>
 </context>
 <context>
     <name>QPlatformTheme</name>
@@ -9572,6 +9596,14 @@ Paste the link your provider gave you and the servers will appear here.</source>
     <message>
         <source>Check another way</source>
         <translation>Проверить иначе</translation>
+    </message>
+    <message>
+        <source>%1: %2 ms</source>
+        <translation>%1: %2 мс</translation>
+    </message>
+    <message>
+        <source>%1: no answer</source>
+        <translation>%1: нет ответа</translation>
     </message>
 </context>
 <context>
