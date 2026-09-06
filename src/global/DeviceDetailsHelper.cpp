@@ -3,6 +3,9 @@
 #include <QCryptographicHash>
 #include <QDir>
 #include <QRegularExpression>
+#include <QFileInfo>
+#include <QSettings>
+#include <QStandardPaths>
 #include <QString>
 #include <QSysInfo>
 #include <QFile>
@@ -155,25 +158,75 @@ namespace {
         return re.match(value).hasMatch();
     }
 
-    // Однажды выбранный идентификатор кладём рядом с настройками и больше не
-    // пересчитываем: переименование компьютера или смена железа не должны
-    // выглядеть для провайдера как новое устройство и съедать ещё один слот.
+    // Идентификатор хранится в системе, а не только рядом с настройками:
+    // на Windows это ветка реестра пользователя, на macOS — свой plist, на
+    // Linux — файл в ~/.config. Папку клиента человек сносит вместе с
+    // приложением, и тогда устройство выглядело бы для панели новым и занимало
+    // ещё один слот. Файл рядом с настройками остаётся вторым местом: если
+    // системную запись вычистит «чистильщик», идентификатор поднимется оттуда.
+    constexpr auto kHwidKey = "device/hwid";
+
+    // Не в папке программы: в переносном режиме это папка на флешке, а при
+    // обычной установке она уезжает вместе с приложением — идентификатор обязан
+    // пережить и то, и другое.
+    QString hwidFilePath() {
+        return QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation))
+            .filePath(QStringLiteral("device_id"));
+    }
+
+    // На Windows пишем прямо в свою ветку реестра: там идентификатору и место,
+    // и переустановка приложения его не трогает. На остальных системах опорой
+    // служит файл в пользовательских данных — он тоже переживает переустановку,
+    // а запись в общее хранилище настроек macOS иногда молча не доезжает.
+    QSettings systemStore() {
+#ifdef Q_OS_WIN
+        return QSettings(QStringLiteral("HKEY_CURRENT_USER\\Software\\FSNT\\Throne"),
+                         QSettings::NativeFormat);
+#else
+        return QSettings(QSettings::NativeFormat, QSettings::UserScope, QStringLiteral("FSNT"),
+                         QStringLiteral("Throne"));
+#endif
+    }
+
+    QString systemStoredHwid() {
+        QSettings store = systemStore();
+        return store.value(QLatin1String(kHwidKey)).toString().trimmed();
+    }
+
+    void rememberEverywhere(const QString &hwid) {
+        if (hwid.isEmpty()) return;
+        QSettings store = systemStore();
+        store.setValue(QLatin1String(kHwidKey), hwid);
+        store.sync();
+
+        QFile file(hwidFilePath());
+        QDir().mkpath(QFileInfo(file).absolutePath());
+        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            file.write(hwid.toUtf8());
+            file.close();
+        }
+    }
+
     QString rememberedHwid(const QString &primary, const QStringList &parts) {
-        const QString path = QDir(Configs::GetBasePath()).filePath("device_id");
-        QFile file(path);
+        if (const QString fromSystem = systemStoredHwid(); !fromSystem.isEmpty()) {
+            rememberEverywhere(fromSystem);   // на случай, если файл потеряли
+            return fromSystem;
+        }
+
+        QFile file(hwidFilePath());
         if (file.exists() && file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             const QString stored = QString::fromUtf8(file.readAll()).trimmed();
             file.close();
-            if (!stored.isEmpty()) return stored;
+            if (!stored.isEmpty()) {
+                rememberEverywhere(stored);
+                return stored;
+            }
         }
 
         // У кого система выдаёт свой идентификатор, тот остаётся со старым
         // значением: менять его на новое — это заново занять слот на панели.
         const QString chosen = looksLikeId(primary) ? primary : hwidFromParts(parts);
-        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            file.write(chosen.toUtf8());
-            file.close();
-        }
+        rememberEverywhere(chosen);
         return chosen;
     }
 
