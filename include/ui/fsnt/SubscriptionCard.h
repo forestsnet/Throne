@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QString>
 #include <QWidget>
 
 class QLabel;
@@ -22,5 +23,7 @@ private:
     QLabel *m_traffic = nullptr;
     QLabel *m_refill = nullptr;
     QLabel *m_announce = nullptr;
+    QLabel *m_announceMore = nullptr;
+    QString m_announceFull;
     QLabel *m_links = nullptr;
 };

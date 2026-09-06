@@ -177,15 +177,16 @@ void MainWindow::on_menu_exit_triggered() {
         QDir::setCurrent(QApplication::applicationDirPath());
         // Каталог обновления знает только приложение: на Windows он зависит от
         // flag_use_appdata. Передаём явно, чтобы обновлятор не угадывал.
-        const QStringList updaterArgs{GetUpdateDirectory()};
-#ifdef Q_OS_WIN
-        // Запускаем копию: сам updater.exe будет заменён в ходе обновления.
-        QFile::remove("./updater.old");
-        QFile::copy("./updater.exe", "./updater.old");
-        QProcess::startDetached("./updater.old", updaterArgs);
-#else
-        QProcess::startDetached("./updater", updaterArgs);
-#endif
+        // Второй аргумент — папка программы. Обновлятор старых версий его не
+        // знает и берёт свою собственную; для них копия и лежит рядом с
+        // программой, так что обе дороги ведут в одно место.
+        const QStringList updaterArgs{GetUpdateDirectory(), QApplication::applicationDirPath()};
+        const QString runner = update_runner.isEmpty()
+                                   ? QApplication::applicationDirPath() + "/updater"
+                                   : update_runner;
+        if (!QProcess::startDetached(runner, updaterArgs)) {
+            MW_show_log("[Update] ERROR: could not start the updater: " + runner);
+        }
     } else if (exit_reason == ExitReason::Restart || exit_reason == ExitReason::RestartWithTun || exit_reason == ExitReason::RestartWithDns) {
         QDir::setCurrent(QApplication::applicationDirPath());
 
@@ -676,6 +677,27 @@ void MainWindow::InstallUpdateAndRestart() {
         MessageBoxWarning(tr("Update"), tr("Updater not found! Please download update manually."));
         return;
     }
+
+    // Обновлятор заменяет и сам себя, поэтому запускаем копию. Копия ложится
+    // рядом с программой намеренно: обновлятор из установленной версии считает
+    // своей папкой ту, из которой запущен, и разложит файлы именно в неё.
+    // Заодно это и есть проверка на запись: если копия не легла, то и файлы
+    // программы заменить не выйдет — там Program Files или права урезаны.
+#ifdef Q_OS_WIN
+    update_runner = QApplication::applicationDirPath() + "/updater.old";
+    QFile::remove(update_runner);
+    if (!QFile::copy(updaterPath, update_runner)) {
+        update_runner.clear();
+        MW_show_log("[Update] ERROR: the install folder is not writable, cannot prepare the updater");
+        MessageBoxWarning(tr("Update"),
+                          tr("The program folder is closed for writing, so the update cannot install "
+                             "itself. Download the new version from the release page and install it "
+                             "over the current one."));
+        return;
+    }
+#else
+    update_runner = updaterPath;
+#endif
 
     this->exit_reason = ExitReason::RunUpdater;
     MW_show_log("[Update] Closing application to start updater...");

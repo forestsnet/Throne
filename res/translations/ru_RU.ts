@@ -7910,6 +7910,10 @@ Saved to:
         <source>Failed to create debug information archive</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>The program folder is closed for writing, so the update cannot install itself. Download the new version from the release page and install it over the current one.</source>
+        <translation>Папка программы закрыта на запись, поэтому обновление не может установить себя само. Скачайте новую версию со страницы релизов и установите поверх текущей.</translation>
+    </message>
 </context>
 <context>
     <name>OtpItem</name>
@@ -9565,6 +9569,14 @@ Paste the link your provider gave you and the servers will appear here.</source>
     <message>
         <source>Subscription page</source>
         <translation>Страница подписки</translation>
+    </message>
+    <message>
+        <source>Read in full</source>
+        <translation>Читать полностью</translation>
+    </message>
+    <message>
+        <source>Message from your provider</source>
+        <translation>Сообщение провайдера</translation>
     </message>
 </context>
 <context>

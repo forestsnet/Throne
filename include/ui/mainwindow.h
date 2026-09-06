@@ -296,6 +296,12 @@ private:
     QMutex mu_stopping;
     QMutex mu_exit;
     ExitReason exit_reason = ExitReason::None;
+
+    // Обновлятор готовим, пока окно ещё живо: копия лежит в каталоге обновления,
+    // а признак говорит, что папку установки без прав администратора не
+    // переписать. Раньше вся эта работа шла уже после закрытия окна, и любая
+    // осечка выглядела как «нажал да, программа закрылась, и всё».
+    QString update_runner;
     QMutex mu_download_update;
     QMutex mu_download_dashboard;
     class ConnectionsTableModel *connectionsModel = nullptr;

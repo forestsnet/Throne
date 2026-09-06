@@ -33,7 +33,11 @@ public:
         return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/Throne_update";
     }
 
+    // Папку программы передаёт приложение вторым аргументом. Своя собственная
+    // годится не всегда: копия обновлятора может лежать и не рядом с программой.
     static QString GetAppDir() {
+        const auto args = QCoreApplication::arguments();
+        if (args.size() > 2 && !args[2].trimmed().isEmpty()) return args[2];
         return QCoreApplication::applicationDirPath();
     }
 

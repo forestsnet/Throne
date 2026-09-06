@@ -5,6 +5,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QProgressBar>
+#include <QRegularExpression>
 #include <QUrl>
 #include <QVBoxLayout>
 
@@ -13,7 +14,33 @@
 #include "include/database/GroupsRepo.h"
 #include "include/global/Configs.hpp"
 #include "include/global/Utils.hpp"
+#include "include/ui/fsnt/FsntControls.h"
 #include "include/ui/fsnt/FsntTheme.hpp"
+
+namespace {
+    // Длину объявления задаёт провайдер, и она бывает любой: у одного строка, у
+    // другого десяток абзацев с инструкциями. Такой текст выдавливал карточку и
+    // ссылки за нижний край окна. Показываем начало, остальное — по ссылке.
+    constexpr int kAnnounceMaxChars = 240;
+    constexpr int kAnnounceMaxLines = 4;
+
+    bool announceIsLong(const QString &text) {
+        return text.size() > kAnnounceMaxChars || text.count('\n') >= kAnnounceMaxLines;
+    }
+
+    QString announceHead(const QString &text) {
+        QString head = text.left(kAnnounceMaxChars);
+        // Рвать слово посередине некрасиво, поэтому отступаем до пробела.
+        const int lastSpace = head.lastIndexOf(QRegularExpression("\\s"));
+        if (lastSpace > kAnnounceMaxChars / 2) head.truncate(lastSpace);
+        QStringList lines = head.split('\n');
+        if (lines.size() > kAnnounceMaxLines) {
+            lines = lines.mid(0, kAnnounceMaxLines);
+            head = lines.join('\n');
+        }
+        return head.trimmed() + QStringLiteral("…");
+    }
+}
 
 SubscriptionCard::SubscriptionCard(QWidget *parent) : QWidget(parent) {
     setObjectName("fsntSubscriptionCard");
@@ -52,6 +79,16 @@ SubscriptionCard::SubscriptionCard(QWidget *parent) : QWidget(parent) {
     m_announce->setObjectName("fsntAnnounce");
     m_announce->setWordWrap(true);
     layout->addWidget(m_announce);
+
+    m_announceMore = new QLabel(this);
+    m_announceMore->setObjectName("fsntSubMeta");
+    m_announceMore->setTextFormat(Qt::RichText);
+    m_announceMore->setOpenExternalLinks(false);
+    m_announceMore->setVisible(false);
+    connect(m_announceMore, &QLabel::linkActivated, this, [this] {
+        Fsnt::Notice(GetMessageBoxParent(), tr("Message from your provider"), m_announceFull);
+    });
+    layout->addWidget(m_announceMore);
 
     m_links = new QLabel(this);
     m_links->setObjectName("fsntSubMeta");
@@ -111,9 +148,15 @@ void SubscriptionCard::refresh() {
         m_refill->setVisible(false);
     }
 
-    // Объявление провайдера: показываем как есть, это его текст для клиента.
-    m_announce->setText(policy.announce);
-    m_announce->setVisible(!policy.announce.isEmpty());
+    // Объявление провайдера: короткое показываем целиком, длинное — началом,
+    // а полностью оно открывается отдельным окном.
+    m_announceFull = policy.announce;
+    const bool hasAnnounce = !policy.announce.isEmpty();
+    const bool longAnnounce = hasAnnounce && announceIsLong(policy.announce);
+    m_announce->setText(longAnnounce ? announceHead(policy.announce) : policy.announce);
+    m_announce->setVisible(hasAnnounce);
+    m_announceMore->setText(QString("<a href=\"#\">%1</a>").arg(tr("Read in full")));
+    m_announceMore->setVisible(longAnnounce);
 
     QStringList links;
     if (!policy.supportUrl.isEmpty()) {

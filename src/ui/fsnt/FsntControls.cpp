@@ -6,6 +6,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
+#include <QScrollArea>
 #include <QVBoxLayout>
 #include <QBrush>
 #include <QTransform>
@@ -28,6 +29,9 @@ namespace {
     constexpr int kCtlSelectHeight = 38;
     constexpr int kCtlSelectPadding = 12;
     constexpr int kCtlPopupRowHeight = 34;
+
+    // Выше этого сообщение прокручивается внутри окна, а не растит окно.
+    constexpr int kCtlNoticeMaxHeight = 340;
 
 
     constexpr int kCtlIconButtonSide = 36;
@@ -613,10 +617,25 @@ namespace Fsnt {
         body->setObjectName(QStringLiteral("fsntDialogHint"));
         body->setWordWrap(true);
         body->setMinimumWidth(340);
+        body->setAlignment(Qt::AlignTop | Qt::AlignLeft);
         // Технические строки от ядра приходят одной длинной фразой; дать их
         // выделить полезнее, чем заставлять переписывать с экрана.
         body->setTextInteractionFlags(Qt::TextSelectableByMouse);
-        layout->addWidget(body);
+
+        // Текст сюда приходит и от ядра, и от провайдера, и длину его никто не
+        // ограничивает. Без прокрутки такое окно вырастает выше экрана, и
+        // кнопка закрытия оказывается там, куда не дотянуться.
+        auto *scroll = new QScrollArea(&dialog);
+        scroll->setObjectName(QStringLiteral("fsntNoticeScroll"));
+        scroll->setWidget(body);
+        scroll->setWidgetResizable(true);
+        scroll->setFrameShape(QFrame::NoFrame);
+        scroll->setMaximumHeight(kCtlNoticeMaxHeight);
+        scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        scroll->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+        scroll->viewport()->setAutoFillBackground(false);
+        scroll->setStyleSheet(QStringLiteral("QScrollArea, QScrollArea > QWidget > QWidget { background: transparent; }"));
+        layout->addWidget(scroll);
         layout->addSpacing(6);
 
         auto *close = new QPushButton(QObject::tr("Close"), &dialog);
