@@ -357,7 +357,116 @@ void ServerListPanel::showSubscriptionMenu() {
     remove->setEnabled(Configs::dataManager->groupsRepo->GetAllGroupIds().size() > 1);
     connect(remove, &QAction::triggered, this, [this, gid] { deleteSubscription(gid); });
 
+    // Дубли и оптовое удаление: человеку, у которого их полтора десятка,
+    // ходить по одной — наказание.
+    const int duplicates = duplicateSubscriptions().size();
+    if (duplicates > 0) {
+        connect(menu.addAction(tr("Delete duplicates (%1)").arg(duplicates)), &QAction::triggered, this,
+                [this] { deleteDuplicateSubscriptions(); });
+    }
+    if (subscriptionCount() > 1) {
+        connect(menu.addAction(tr("Delete all subscriptions")), &QAction::triggered, this,
+                [this] { deleteAllSubscriptions(); });
+    }
+
     menu.exec(m_subMenu->mapToGlobal(QPoint(0, m_subMenu->height() + 4)));
+}
+
+int ServerListPanel::subscriptionCount() {
+    int count = 0;
+    for (const int gid : Configs::dataManager->groupsRepo->GetGroupsTabOrder()) {
+        const auto group = Configs::dataManager->groupsRepo->GetGroup(gid);
+        if (group != nullptr && !group->url.isEmpty()) ++count;
+    }
+    return count;
+}
+
+QList<int> ServerListPanel::duplicateSubscriptions() {
+    // Дубль — это вторая и следующие подписки с той же ссылкой. Оставляем ту,
+    // в которой больше серверов: она и есть удачная попытка.
+    QHash<QString, int> keep;
+    QList<int> extra;
+    for (const int gid : Configs::dataManager->groupsRepo->GetGroupsTabOrder()) {
+        const auto group = Configs::dataManager->groupsRepo->GetGroup(gid);
+        if (group == nullptr || group->url.isEmpty()) continue;
+        const QString key = QUrl(group->url.trimmed()).toString(QUrl::StripTrailingSlash);
+        const auto it = keep.find(key);
+        if (it == keep.end()) {
+            keep.insert(key, gid);
+            continue;
+        }
+        const auto kept = Configs::dataManager->groupsRepo->GetGroup(it.value());
+        const int keptSize = kept != nullptr ? kept->Profiles().size() : 0;
+        if (group->Profiles().size() > keptSize) {
+            extra << it.value();
+            it.value() = gid;
+        } else {
+            extra << gid;
+        }
+    }
+    return extra;
+}
+
+void ServerListPanel::removeGroups(const QList<int> &ids) {
+    auto &groupsRepo = Configs::dataManager->groupsRepo;
+    const int startedId = Configs::dataManager->settingsRepo->started_id;
+    const auto running = Configs::dataManager->profilesRepo->GetProfile(startedId);
+
+    int removed = 0;
+    int pinned = 0;
+    for (const int gid : ids) {
+        // Последнюю группу не трогаем: списку серверов нужно хоть что-то.
+        if (groupsRepo->GetAllGroupIds().size() <= 1) break;
+        if (Subscription::PolicyBlocksDeletion(gid)) {
+            ++pinned;
+            continue;
+        }
+        if (running != nullptr && running->gid == gid) {
+            if (auto *mw = GetMainWindow(); mw != nullptr) mw->profile_stop(false, true, false);
+        }
+        groupsRepo->DeleteGroup(gid);
+        ++removed;
+    }
+
+    if (removed > 0) {
+        MW_dialog_message(MwMessage::GroupsChanged, {});
+        reloadGroups();
+    }
+    if (pinned > 0) {
+        emit notice(tr("Deleted %n subscription(s); %1 pinned by the provider left in place", nullptr, removed)
+                        .arg(pinned));
+    } else {
+        emit notice(tr("Deleted %n subscription(s)", nullptr, removed));
+    }
+}
+
+void ServerListPanel::deleteDuplicateSubscriptions() {
+    const auto extra = duplicateSubscriptions();
+    if (extra.isEmpty()) return;
+    if (!Fsnt::Confirm(this, tr("Delete duplicates"),
+                       tr("%n subscription(s) repeat a link that is already added. Delete the extra ones?",
+                          nullptr, extra.size()),
+                       tr("Delete"))) {
+        return;
+    }
+    removeGroups(extra);
+}
+
+void ServerListPanel::deleteAllSubscriptions() {
+    QList<int> ids;
+    for (const int gid : Configs::dataManager->groupsRepo->GetGroupsTabOrder()) {
+        const auto group = Configs::dataManager->groupsRepo->GetGroup(gid);
+        if (group != nullptr && !group->url.isEmpty()) ids << gid;
+    }
+    if (ids.isEmpty()) return;
+    if (!Fsnt::Confirm(this, tr("Delete all subscriptions"),
+                       tr("Delete %n subscription(s) and all their servers? Links you will have to add "
+                          "again.",
+                          nullptr, ids.size()),
+                       tr("Delete all"))) {
+        return;
+    }
+    removeGroups(ids);
 }
 
 void ServerListPanel::deleteSubscription(int gid) {

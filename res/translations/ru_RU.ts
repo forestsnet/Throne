@@ -9819,6 +9819,54 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>Подписка удалена</translation>
     </message>
     <message>
+        <source>Delete duplicates (%1)</source>
+        <translation>Удалить дубликаты (%1)</translation>
+    </message>
+    <message>
+        <source>Delete duplicates</source>
+        <translation>Удалить дубликаты</translation>
+    </message>
+    <message numerus="yes">
+        <source>%n subscription(s) repeat a link that is already added. Delete the extra ones?</source>
+        <translation>
+            <numerusform>%n подписка повторяет уже добавленную ссылку. Удалить лишнюю?</numerusform>
+            <numerusform>%n подписки повторяют уже добавленные ссылки. Удалить лишние?</numerusform>
+            <numerusform>%n подписок повторяют уже добавленные ссылки. Удалить лишние?</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Delete all subscriptions</source>
+        <translation>Удалить все подписки</translation>
+    </message>
+    <message>
+        <source>Delete all</source>
+        <translation>Удалить все</translation>
+    </message>
+    <message numerus="yes">
+        <source>Delete %n subscription(s) and all their servers? Links you will have to add again.</source>
+        <translation>
+            <numerusform>Удалить %n подписку вместе со всеми её серверами? Ссылку придётся добавлять заново.</numerusform>
+            <numerusform>Удалить %n подписки вместе со всеми их серверами? Ссылки придётся добавлять заново.</numerusform>
+            <numerusform>Удалить %n подписок вместе со всеми их серверами? Ссылки придётся добавлять заново.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <source>Deleted %n subscription(s)</source>
+        <translation>
+            <numerusform>Удалена %n подписка</numerusform>
+            <numerusform>Удалено %n подписки</numerusform>
+            <numerusform>Удалено %n подписок</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <source>Deleted %n subscription(s); %1 pinned by the provider left in place</source>
+        <translation>
+            <numerusform>Удалена %n подписка; %1 закреплённых провайдером остались</numerusform>
+            <numerusform>Удалено %n подписки; %1 закреплённых провайдером остались</numerusform>
+            <numerusform>Удалено %n подписок; %1 закреплённых провайдером остались</numerusform>
+        </translation>
+    </message>
+    <message>
         <source>Add subscription</source>
         <translation>Добавить подписку</translation>
     </message>

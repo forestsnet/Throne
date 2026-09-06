@@ -104,6 +104,11 @@ private:
     void showServerMenu(const QPoint &where);
     void showSubscriptionMenu();
     void deleteSubscription(int gid);
+    void deleteDuplicateSubscriptions();
+    void deleteAllSubscriptions();
+    void removeGroups(const QList<int> &ids);
+    static int subscriptionCount();
+    static QList<int> duplicateSubscriptions();
     void probeOne(int profileId, int kind);
 
 public:
