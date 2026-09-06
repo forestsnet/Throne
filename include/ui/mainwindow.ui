@@ -745,6 +745,8 @@ QToolButton::menu-indicator {
     <property name="title">
      <string>Program</string>
     </property>
+    <addaction name="menu_simple_mode"/>
+    <addaction name="separator"/>
     <addaction name="actionHide_window"/>
     <addaction name="separator"/>
     <addaction name="menu_add_from_input"/>
@@ -950,7 +952,7 @@ QToolButton::menu-indicator {
   </action>
   <action name="menu_simple_mode">
    <property name="text">
-    <string>Simple mode</string>
+    <string>Switch to the simple interface</string>
    </property>
   </action>
   <action name="menu_profile_debug_info">

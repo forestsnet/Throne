@@ -7946,6 +7946,10 @@ Details: %3</source>
 
 Подробности: %3</translation>
     </message>
+    <message>
+        <source>Switch to the simple interface</source>
+        <translation>Переключиться в простой интерфейс</translation>
+    </message>
 </context>
 <context>
     <name>OtpItem</name>
