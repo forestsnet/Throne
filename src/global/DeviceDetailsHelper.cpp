@@ -1,8 +1,13 @@
 #include "include/global/DeviceDetailsHelper.hpp"
 
+#include <QCryptographicHash>
+#include <QDir>
+#include <QRegularExpression>
 #include <QString>
 #include <QSysInfo>
 #include <QFile>
+
+#include "include/global/Configs.hpp"
 #include <vector>   
 #include <string>
 
@@ -127,16 +132,64 @@ static QString winModel() {
 }
 #endif
 
+
+namespace {
+    // Идентификатор устройства панели видят в заголовке x-hwid и по нему считают
+    // устройства подписки. Панель ждёт опознаваемое значение: получив пустое или
+    // мусорное, она отвечает заглушкой «App not supported», и человек видит её
+    // вместо серверов, ничего не понимая. Раньше на Windows без MachineGuid мы
+    // слали "имя-компьютера-windows", а на Linux без machine-id — вообще ничего.
+    QString hwidFromParts(const QStringList &parts) {
+        const QByteArray device = QCryptographicHash::hash(parts.join('|').toUtf8(),
+                                                           QCryptographicHash::Sha256);
+        const QByteArray digest = QCryptographicHash::hash("fsnt-hwid-" + device.toHex(),
+                                                           QCryptographicHash::Sha256);
+        const QString hex = QString::fromLatin1(digest.toHex()).left(32).toUpper();
+        // Формат тот же, что у остальных клиентов: UUID 8-4-4-4-12.
+        return QStringLiteral("%1-%2-%3-%4-%5")
+            .arg(hex.mid(0, 8), hex.mid(8, 4), hex.mid(12, 4), hex.mid(16, 4), hex.mid(20, 12));
+    }
+
+    bool looksLikeId(const QString &value) {
+        static const QRegularExpression re(QStringLiteral("^[0-9a-fA-F-]{16,}$"));
+        return re.match(value).hasMatch();
+    }
+
+    // Однажды выбранный идентификатор кладём рядом с настройками и больше не
+    // пересчитываем: переименование компьютера или смена железа не должны
+    // выглядеть для провайдера как новое устройство и съедать ещё один слот.
+    QString rememberedHwid(const QString &primary, const QStringList &parts) {
+        const QString path = QDir(Configs::GetBasePath()).filePath("device_id");
+        QFile file(path);
+        if (file.exists() && file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            const QString stored = QString::fromUtf8(file.readAll()).trimmed();
+            file.close();
+            if (!stored.isEmpty()) return stored;
+        }
+
+        // У кого система выдаёт свой идентификатор, тот остаётся со старым
+        // значением: менять его на новое — это заново занять слот на панели.
+        const QString chosen = looksLikeId(primary) ? primary : hwidFromParts(parts);
+        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            file.write(chosen.toUtf8());
+            file.close();
+        }
+        return chosen;
+    }
+
+    QStringList hwidParts(const QString &machineId) {
+        return {machineId, QSysInfo::machineHostName(), QSysInfo::productType(),
+                QSysInfo::currentCpuArchitecture(), qEnvironmentVariable("USER", qEnvironmentVariable("USERNAME"))};
+    }
+}
+
 DeviceDetails GetDeviceDetails() {
     static const DeviceDetails details = []() {
         DeviceDetails d;
 
     #ifdef Q_OS_WIN
-        d.hwid = QSysInfo::machineUniqueId();
-        if (d.hwid.isEmpty()) {
-            auto productType = QSysInfo::productType().toUtf8();
-            d.hwid = QString("%1-%2").arg(QSysInfo::machineHostName(), QString::fromUtf8(productType));
-        }
+        const QString winMachineId = QString::fromUtf8(QSysInfo::machineUniqueId());
+        d.hwid = rememberedHwid(winMachineId, hwidParts(winMachineId));
 
         d.os = QStringLiteral("Windows");
 
@@ -162,17 +215,19 @@ DeviceDetails GetDeviceDetails() {
                 f2.close();
             }
         }
-        d.hwid = mid;
+        d.hwid = rememberedHwid(mid, hwidParts(mid));
         d.os = QStringLiteral("Linux");
         d.osVersion = QSysInfo::kernelVersion();
         d.model = QSysInfo::prettyProductName();
     #elif defined(Q_OS_MACOS)
-        d.hwid = QSysInfo::machineUniqueId();
+        const QString macMachineId = QString::fromUtf8(QSysInfo::machineUniqueId());
+        d.hwid = rememberedHwid(macMachineId, hwidParts(macMachineId));
         d.os = QStringLiteral("macOS");
         d.osVersion = QSysInfo::productVersion();
         d.model = QSysInfo::prettyProductName();
     #else
-        d.hwid = QSysInfo::machineUniqueId();
+        const QString otherMachineId = QString::fromUtf8(QSysInfo::machineUniqueId());
+        d.hwid = rememberedHwid(otherMachineId, hwidParts(otherMachineId));
         d.os = QSysInfo::productType();
         d.osVersion = QSysInfo::productVersion();
         d.model = QSysInfo::prettyProductName();
