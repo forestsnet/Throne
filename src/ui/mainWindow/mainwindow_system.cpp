@@ -181,7 +181,11 @@ void MainWindow::on_menu_exit_triggered() {
         // Второй аргумент — папка программы. Обновлятор старых версий его не
         // знает и берёт свою собственную; для них копия и лежит рядом с
         // программой, так что обе дороги ведут в одно место.
-        const QStringList updaterArgs{GetUpdateDirectory(), QApplication::applicationDirPath()};
+        // Третьим аргументом — свой PID: обновлятор должен дождаться именно нас,
+        // а не любого процесса с именем Throne. Рядом у людей стоят соседние
+        // копии, и по имени он ждал их до самого таймаута.
+        const QStringList updaterArgs{GetUpdateDirectory(), QApplication::applicationDirPath(),
+                                      QString::number(QCoreApplication::applicationPid())};
         const QString runner = update_runner.isEmpty()
                                    ? QApplication::applicationDirPath() + "/updater"
                                    : update_runner;
@@ -821,16 +825,25 @@ void MainWindow::CheckUpdate() {
     runOnUiThread([=,this] {
         // Форк: свой обновлятор умеет ставить обновление и при flag_use_appdata
         auto allow_updater = true;
-        QMessageBox box(QMessageBox::Question, QObject::tr("Update") + note_pre_release,
-                        QObject::tr("Update found: %1\nRelease note:\n%2").arg(assets_name, release_note));
-        QAbstractButton *btn1 = nullptr;
-        if (allow_updater) {
-            btn1 = box.addButton(QObject::tr("Update"), QMessageBox::AcceptRole);
+        const QString updateTitle = QObject::tr("Update") + note_pre_release;
+        const QString updateBody = QObject::tr("Update found: %1\nRelease note:\n%2")
+                                       .arg(assets_name, release_note);
+        // 0 — ставить, 1 — открыть страницу релиза, -1 — ничего.
+        int picked = -1;
+        if (GetFacadeWindow() != nullptr) {
+            picked = Fsnt::Choose(GetMessageBoxParent(), updateTitle, updateBody,
+                                  {QObject::tr("Update"), QObject::tr("Open in browser"), QObject::tr("Close")});
+            if (picked == 2) picked = -1;
+        } else {
+            QMessageBox box(QMessageBox::Question, updateTitle, updateBody);
+            QAbstractButton *btn1 = box.addButton(QObject::tr("Update"), QMessageBox::AcceptRole);
+            QAbstractButton *btn2 = box.addButton(QObject::tr("Open in browser"), QMessageBox::AcceptRole);
+            box.addButton(QObject::tr("Close"), QMessageBox::RejectRole);
+            box.exec();
+            if (box.clickedButton() == btn1) picked = 0;
+            else if (box.clickedButton() == btn2) picked = 1;
         }
-        QAbstractButton *btn2 = box.addButton(QObject::tr("Open in browser"), QMessageBox::AcceptRole);
-        box.addButton(QObject::tr("Close"), QMessageBox::RejectRole);
-        box.exec();
-        if (btn1 == box.clickedButton() && allow_updater) {
+        if (picked == 0 && allow_updater) {
             runOnNewThread([=,this] {
                 if (!mu_download_update.tryLock()) {
                     runOnUiThread([=,this](){
@@ -862,9 +875,13 @@ void MainWindow::CheckUpdate() {
                 mu_download_update.unlock();
                 runOnUiThread([=,this] {
                     if (errors.isEmpty()) {
-                        auto q = QMessageBox::question(nullptr, QObject::tr("Update"),
-                                                       QObject::tr("Update is ready, restart to install?"));
-                        if (q == QMessageBox::StandardButton::Yes) {
+                        const QString readyTitle = QObject::tr("Update");
+                        const QString readyBody = QObject::tr("Update is ready, restart to install?");
+                        const bool restartNow =
+                            GetFacadeWindow() != nullptr
+                                ? Fsnt::Confirm(GetMessageBoxParent(), readyTitle, readyBody, QObject::tr("Restart"))
+                                : QMessageBox::question(nullptr, readyTitle, readyBody) == QMessageBox::StandardButton::Yes;
+                        if (restartNow) {
                             InstallUpdateAndRestart(release_tag_name);
                         } else {
                             MW_show_log("[Update] Installation postponed.");
@@ -875,7 +892,7 @@ void MainWindow::CheckUpdate() {
                     }
                 });
             });
-        } else if (btn2 == box.clickedButton()) {
+        } else if (picked == 1) {
             QDesktopServices::openUrl(QUrl(release_url));
         }
     });

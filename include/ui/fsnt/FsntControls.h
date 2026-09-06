@@ -53,6 +53,10 @@ namespace Fsnt {
     // информационные окна простого режима: штатный QMessageBox приходит со
     // стилем системы и рядом с окном клиента выглядит чужой программой.
     void Notice(QWidget *parent, const QString &title, const QString &text);
+
+    // Вопрос с несколькими действиями: первое рисуется основным, остальные —
+    // тихими. Возвращает номер выбранного или -1, если окно просто закрыли.
+    int Choose(QWidget *parent, const QString &title, const QString &text, const QStringList &actions);
 } // namespace Fsnt
 
 // Современные замены штатным виджетам.

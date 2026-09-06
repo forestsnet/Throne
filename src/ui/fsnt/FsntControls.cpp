@@ -597,6 +597,64 @@ namespace Fsnt {
         return accepted;
     }
 
+    int Choose(QWidget *parent, const QString &title, const QString &text, const QStringList &actions) {
+        QDialog dialog(parent);
+        dialog.setObjectName(QStringLiteral("fsntDialog"));
+        dialog.setWindowTitle(title);
+        dialog.setModal(true);
+        dialog.setStyleSheet(BuildStyleSheet());
+        dialog.setMinimumWidth(460);
+
+        auto *layout = new QVBoxLayout(&dialog);
+        layout->setContentsMargins(24, 22, 24, 20);
+        layout->setSpacing(12);
+
+        auto *heading = new QLabel(title, &dialog);
+        heading->setObjectName(QStringLiteral("fsntDialogTitle"));
+        layout->addWidget(heading);
+
+        auto *body = new QLabel(text, &dialog);
+        body->setObjectName(QStringLiteral("fsntDialogHint"));
+        body->setWordWrap(true);
+        body->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+        body->setTextInteractionFlags(Qt::TextSelectableByMouse);
+
+        // Список изменений в релизе бывает длинным, поэтому текст прокручивается
+        // внутри окна, а не растит его во весь экран.
+        auto *scroll = new QScrollArea(&dialog);
+        scroll->setWidget(body);
+        scroll->setWidgetResizable(true);
+        scroll->setFrameShape(QFrame::NoFrame);
+        scroll->setMaximumHeight(kCtlNoticeMaxHeight);
+        scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        scroll->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+        scroll->viewport()->setAutoFillBackground(false);
+        scroll->setStyleSheet(QStringLiteral("QScrollArea, QScrollArea > QWidget > QWidget { background: transparent; }"));
+        layout->addWidget(scroll);
+        layout->addSpacing(4);
+
+        int chosen = -1;
+        auto *buttons = new QHBoxLayout;
+        buttons->addStretch();
+        // Идём с конца: основное действие стоит первым в списке, а на экране
+        // ему место справа, у большого пальца.
+        for (int i = actions.size() - 1; i >= 0; --i) {
+            auto *button = new QPushButton(actions.at(i), &dialog);
+            button->setObjectName(i == 0 ? QStringLiteral("fsntPrimary") : QStringLiteral("fsntGhost"));
+            button->setCursor(Qt::PointingHandCursor);
+            if (i == 0) button->setDefault(true);
+            QObject::connect(button, &QPushButton::clicked, &dialog, [&dialog, &chosen, i] {
+                chosen = i;
+                dialog.accept();
+            });
+            buttons->addWidget(button);
+        }
+        layout->addLayout(buttons);
+
+        dialog.exec();
+        return chosen;
+    }
+
     void Notice(QWidget *parent, const QString &title, const QString &text) {
         QDialog dialog(parent);
         dialog.setObjectName(QStringLiteral("fsntDialog"));

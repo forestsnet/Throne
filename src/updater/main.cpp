@@ -16,6 +16,13 @@
 #include <QDateTime>
 #include <QStandardPaths>
 
+#ifdef Q_OS_WIN
+#include <windows.h>
+#else
+#include <csignal>
+#include <cerrno>
+#endif
+
 #define THRONE_UPDATER_VERSION "1.0.0"
 
 class ThroneUpdater {
@@ -35,6 +42,41 @@ public:
 
     // Папку программы передаёт приложение вторым аргументом. Своя собственная
     // годится не всегда: копия обновлятора может лежать и не рядом с программой.
+    // Путь до .app: приложение живёт в Contents/MacOS внутри бандла, а
+    // обновляем мы бандл целиком. Раньше здесь поднимались на один шаг вверх и
+    // получали Contents — старый бандл сносился по этому пути, а новый ложился
+    // внутрь него как Contents/Contents. Установка после такого «обновления»
+    // переставала существовать.
+    static QString FindAppBundle(const QString& startPath) {
+        QString path = startPath;
+        while (!path.endsWith(".app") && path.contains('/')) {
+            path = path.left(path.lastIndexOf('/'));
+        }
+        return path.endsWith(".app") ? path : QString();
+    }
+
+    // PID приложения приходит третьим аргументом. Ждать по имени процесса
+    // нельзя: у людей рядом стоит несколько копий Throne (папки вида
+    // "Throne 1.2.6", "Throne 1.1.2"), и запущенная соседняя копия держит имя
+    // занятым вечно — обновлятор в такой ситуации всегда сдавался по таймауту.
+    static qint64 GetMainPid() {
+        const auto args = QCoreApplication::arguments();
+        if (args.size() > 3) return args[3].toLongLong();
+        return 0;
+    }
+
+    static bool IsPidRunning(qint64 pid) {
+#ifdef Q_OS_WIN
+        HANDLE handle = OpenProcess(SYNCHRONIZE, FALSE, static_cast<DWORD>(pid));
+        if (handle == nullptr) return false;
+        const bool alive = WaitForSingleObject(handle, 0) == WAIT_TIMEOUT;
+        CloseHandle(handle);
+        return alive;
+#else
+        return ::kill(static_cast<pid_t>(pid), 0) == 0 || errno == EPERM;
+#endif
+    }
+
     static QString GetAppDir() {
         const auto args = QCoreApplication::arguments();
         if (args.size() > 2 && !args[2].trimmed().isEmpty()) return args[2];
@@ -71,21 +113,28 @@ public:
 #endif
     }
 
-    static bool WaitForMainAppExit(int timeoutSeconds = 30) {
-        Log("Waiting for main application to exit...");
-        
+    static bool WaitForMainAppExit(int timeoutSeconds = 120) {
+        const qint64 pid = GetMainPid();
+        Log(pid > 0 ? QString("Waiting for main application (pid %1) to exit...").arg(pid)
+                    : QStringLiteral("Waiting for main application to exit..."));
+
         const QString processName = QStringLiteral("Throne");
+        auto stillRunning = [&] {
+            return pid > 0 ? IsPidRunning(pid) : IsProcessRunning(processName);
+        };
         int elapsed = 0;
-        
-        while (IsProcessRunning(processName) && elapsed < timeoutSeconds) {
+
+        while (stillRunning() && elapsed < timeoutSeconds) {
             QThread::msleep(500);
             elapsed++;
             if (elapsed % 4 == 0) {
-                Log(QString("Still waiting... (%1s/%2s)").arg(elapsed/2).arg(timeoutSeconds));
+                // Шаг цикла — полсекунды, поэтому и предел делим пополам:
+                // раньше в логе стояло "14s/30s", хотя ждали ровно 15 секунд.
+                Log(QString("Still waiting... (%1s/%2s)").arg(elapsed / 2).arg(timeoutSeconds / 2));
             }
         }
 
-        if (IsProcessRunning(processName)) {
+        if (stillRunning()) {
             Log("ERROR: Main application did not exit in time!");
             return false;
         }
@@ -184,9 +233,12 @@ public:
         return true;
 #else
         // На macOS обновляем весь .app bundle
-        QDir dir(appDir);
-        dir.cdUp(); // Переходим к Throne.app
-        QString appBundle = dir.absolutePath();
+        const QString appBundle = FindAppBundle(appDir);
+        if (appBundle.isEmpty()) {
+            Log(QString("ERROR: could not find the .app bundle above %1").arg(appDir));
+            return false;
+        }
+        Log(QString("App bundle: %1").arg(appBundle));
         
         // Ищем обновленный .app в распакованной папке
         QString actualUpdateDir = updateDir;
@@ -213,18 +265,32 @@ public:
         QString newAppBundle = actualUpdateDir + "/" + appBundles.first();
         Log(QString("Found new app bundle: %1").arg(newAppBundle));
         
-        // Удаляем старый bundle
-        QDir oldBundle(appBundle);
-        if (!oldBundle.removeRecursively()) {
-            Log("ERROR: Failed to remove old app bundle!");
-            return false;
-        }
-        
-        // Копируем новый bundle
-        if (!CopyDirectoryRecursively(newAppBundle, appBundle)) {
+        // Сначала собираем новый бандл рядом и только потом меняем местами:
+        // если копирование оборвётся на середине, у человека останется рабочая
+        // программа, а не половина от неё.
+        const QString stagedBundle = appBundle + ".new";
+        const QString retiredBundle = appBundle + ".old";
+        QDir(stagedBundle).removeRecursively();
+        QDir(retiredBundle).removeRecursively();
+
+        if (!CopyDirectoryRecursively(newAppBundle, stagedBundle)) {
             Log("ERROR: Failed to copy new app bundle!");
+            QDir(stagedBundle).removeRecursively();
             return false;
         }
+
+        if (!QDir().rename(appBundle, retiredBundle)) {
+            Log("ERROR: Failed to move the old app bundle aside!");
+            QDir(stagedBundle).removeRecursively();
+            return false;
+        }
+        if (!QDir().rename(stagedBundle, appBundle)) {
+            Log("ERROR: Failed to put the new app bundle in place, restoring the old one!");
+            QDir().rename(retiredBundle, appBundle);
+            QDir(stagedBundle).removeRecursively();
+            return false;
+        }
+        QDir(retiredBundle).removeRecursively();
         
         // Устанавливаем права на выполнение для macOS
         QString execPath = appBundle + "/Contents/MacOS/Throne";
@@ -251,10 +317,12 @@ public:
 #else
         
         // На macOS используем 'open' для запуска .app bundle
-        QDir dir(appPath);
-        dir.cdUp();
-        QString appBundle = dir.absolutePath();
-        
+        const QString appBundle = FindAppBundle(appPath);
+        if (appBundle.isEmpty()) {
+            Log(QString("ERROR: could not find the .app bundle above %1").arg(appPath));
+            return false;
+        }
+
         if (!QProcess::startDetached("open", QStringList() << appBundle)) {
             Log("ERROR: Failed to start application!");
             return false;
