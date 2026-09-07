@@ -317,6 +317,9 @@ jobs:
           ninja
           cd ..
           ./script/deploy_macos.sh
+          # Образ собираем здесь: упаковка релиза идёт на Linux, а hdiutil есть
+          # только на маке.
+          ./script/make_dmg.sh "$DEST/Throne.app" "$DEST/FSNT-Client.dmg"
       # ========================================================================================================= Deployments
       - name: Tar files
         shell: bash
@@ -440,6 +443,7 @@ jobs:
           mv darwin-arm64/Throne.app Throne/Throne.app
           mv Throne/Throne.app/Contents/MacOS/Throne.dSYM debug/Throne-${{ github.event.inputs.tag }}-macos-arm64.dSYM
           zip -9 --symlinks -r Throne-${{ github.event.inputs.tag }}-macos-arm64.zip Throne
+          mv darwin-arm64/FSNT-Client.dmg Throne-${{ github.event.inputs.tag }}-macos-arm64.dmg
           rm -rf darwin-arm64
           rm -rf Throne
           ####
@@ -447,6 +451,7 @@ jobs:
           mv darwin-amd64/Throne.app Throne/Throne.app
           mv Throne/Throne.app/Contents/MacOS/Throne.dSYM debug/Throne-${{ github.event.inputs.tag }}-macos-amd64.dSYM
           zip -9 --symlinks -r Throne-${{ github.event.inputs.tag }}-macos-amd64.zip Throne
+          mv darwin-amd64/FSNT-Client.dmg Throne-${{ github.event.inputs.tag }}-macos-amd64.dmg
           rm -rf darwin-amd64
           rm -rf Throne
           ####
@@ -454,6 +459,7 @@ jobs:
           mv darwinlegacy-amd64/Throne.app Throne/Throne.app
           mv Throne/Throne.app/Contents/MacOS/Throne.dSYM debug/Throne-${{ github.event.inputs.tag }}-macoslegacy-amd64.dSYM
           zip -9 --symlinks -r Throne-${{ github.event.inputs.tag }}-macoslegacy-amd64.zip Throne
+          mv darwinlegacy-amd64/FSNT-Client.dmg Throne-${{ github.event.inputs.tag }}-macoslegacy-amd64.dmg
           rm -rf darwinlegacy-amd64
           rm -rf Throne
           ####
