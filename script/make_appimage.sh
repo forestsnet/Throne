@@ -5,14 +5,22 @@
 # Использование: script/make_appimage.sh <каталог сборки> <итоговый .AppImage> [арх]
 set -e
 
-APPDIR="$1"
+SOURCE="$1"
 OUT="$2"
 ARCH="${3:-x86_64}"
 
-if [ ! -x "$APPDIR/Throne" ]; then
-    echo "no Throne binary in $APPDIR" >&2
+if [ ! -x "$SOURCE/Throne" ]; then
+    echo "no Throne binary in $SOURCE" >&2
     exit 1
 fi
+
+# Собираем из копии: в исходном каталоге лежат отладочные символы, они уезжают
+# в отдельный артефакт релиза, и удалять их оттуда нельзя. В образе же им не
+# место — это десятки мегабайт, которые никто не скачивает осознанно.
+APPDIR="$(mktemp -d)/AppDir"
+mkdir -p "$APPDIR"
+cp -a "$SOURCE/." "$APPDIR/"
+find "$APPDIR" -name '*.debug' -delete
 
 # AppRun запускает бинарник из корня AppDir: rpath у него '$ORIGIN/usr/lib',
 # то есть библиотеки он ищет относительно себя, а не относительно usr/bin.
@@ -44,4 +52,5 @@ chmod +x "$TOOL"
 # тоже приезжает образом.
 ARCH="$ARCH" "./$TOOL" --appimage-extract-and-run "$APPDIR" "$OUT"
 rm -f "$TOOL"
+rm -rf "$(dirname "$APPDIR")"
 echo "$OUT"
