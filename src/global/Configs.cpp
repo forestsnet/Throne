@@ -4,6 +4,8 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+
+#include "include/global/Logger.hpp"
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -46,7 +48,54 @@ namespace Configs {
         }
     }
 
+#ifdef Q_OS_LINUX
+    QString AppImageCoreDir() {
+        return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/core";
+    }
+
+    bool RunningFromAppImage() {
+        // AppImage выставляет эту переменную сам; ничего другого, по чему бы
+        // отличить запуск из образа, у нас нет.
+        return qEnvironmentVariableIsSet("APPIMAGE");
+    }
+
+    void PrepareAppImageCore() {
+        if (!RunningFromAppImage()) return;
+
+        // Образ примонтирован только для чтения и с nosuid: setuid на ядро
+        // внутри него поставить нельзя, а без setuid не поднять TUN. Поэтому
+        // ядро и его таблицы живут рядом с настройками, снаружи образа.
+        const QString target = AppImageCoreDir();
+        QDir().mkpath(target);
+
+        const QString source = QApplication::applicationDirPath();
+        for (const QString &name : {QStringLiteral("ThroneCore"), QStringLiteral("geoip.dat"),
+                                    QStringLiteral("geosite.dat")}) {
+            const QFileInfo from(source + "/" + name);
+            if (!from.exists()) continue;
+            const QFileInfo to(target + "/" + name);
+            // Тот же файл трогать незачем: после обновления образа размер или
+            // время меняются, и копия обновляется вместе с ним — но setuid при
+            // этом слетает, и права придётся выдать заново.
+            if (to.exists() && to.size() == from.size() && to.lastModified() >= from.lastModified()) continue;
+            QFile::remove(to.absoluteFilePath());
+            if (!QFile::copy(from.absoluteFilePath(), to.absoluteFilePath())) {
+                LOG_WARN(QString("could not place %1 next to the settings").arg(name));
+                continue;
+            }
+            if (name == QStringLiteral("ThroneCore")) {
+                QFile::setPermissions(to.absoluteFilePath(),
+                                      QFile::permissions(to.absoluteFilePath()) | QFileDevice::ExeOwner |
+                                          QFileDevice::ExeGroup | QFileDevice::ExeOther);
+            }
+        }
+    }
+#endif
+
     QString FindCoreRealPath() {
+#ifdef Q_OS_LINUX
+        if (RunningFromAppImage()) return AppImageCoreDir() + "/ThroneCore";
+#endif
         auto fn = QApplication::applicationDirPath() + "/ThroneCore";
 #ifdef Q_OS_WIN
         fn += ".exe";

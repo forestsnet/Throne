@@ -8025,6 +8025,14 @@ Please try again.</source>
         <translation>Невозможно захватить экран</translation>
     </message>
     <message>
+        <source>Version %1 is out. The client runs from an AppImage, so it cannot replace itself: download the new file and start it instead of this one.</source>
+        <translation>Вышла версия %1. Клиент запущен из AppImage и заменить себя не может: скачайте новый файл и запускайте его вместо этого.</translation>
+    </message>
+    <message>
+        <source>Download</source>
+        <translation>Скачать</translation>
+    </message>
+    <message>
         <source>Administrator rights</source>
         <translation>Права администратора</translation>
     </message>

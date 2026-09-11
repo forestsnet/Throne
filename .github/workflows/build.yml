@@ -293,6 +293,9 @@ jobs:
           ninja
           cd ..
           ./script/deploy_linux64.sh
+          # Один файл на все дистрибутивы: ни пакетов, ни установки. Имя
+          # архитектуры у матрицы и у AppImage совпадает — x86_64 и aarch64.
+          ./script/make_appimage.sh "$DEST" "$DEST/../FSNT-Client-${{ matrix.target }}.AppImage" "${{ matrix.target }}"
       - name: Linux Using System Qt - Generate MakeFile and Build
         shell: bash
         if: contains( matrix.platform, 'ubuntu' ) && matrix.qt_version == '6.2.0'

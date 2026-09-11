@@ -12,6 +12,13 @@ namespace Configs {
     void initDB(const std::string& dbPath);
 
     QString FindCoreRealPath();
+#ifdef Q_OS_LINUX
+    // Запущены ли мы из AppImage — в нём ядро лежит в образе только для чтения.
+    bool RunningFromAppImage();
+    // Кладёт ядро и его таблицы рядом с настройками, откуда их можно запускать
+    // с правами. Без вызова этой функции TUN в AppImage не поднимется.
+    void PrepareAppImageCore();
+#endif
 
     bool IsAdmin(bool forceRenew=false);
 

@@ -236,8 +236,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     runOnNewThread([=, this] {GetDeviceDetails(); });
 
-    auto core_path = QApplication::applicationDirPath() + "/";
-    core_path += "ThroneCore";
+#ifdef Q_OS_LINUX
+    // В AppImage ядро должно жить снаружи образа: там ему можно выдать права.
+    Configs::PrepareAppImageCore();
+#endif
+    auto core_path = Configs::FindCoreRealPath();
 
     // Проверяем при запуске без окна: показывать модальное окно поверх ещё не
     // построенного интерфейса рано, пользователь увидит объяснение при первой

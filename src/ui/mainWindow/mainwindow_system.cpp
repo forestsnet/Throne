@@ -7,6 +7,7 @@
 #include <QCoreApplication>
 #include <QThread>
 #include <QDesktopServices>
+#include <QSysInfo>
 #include <QDir>
 #include <QRegularExpression>
 #include <QDirIterator>
@@ -927,6 +928,28 @@ void MainWindow::CheckUpdate(bool autoInstall) {
     runOnUiThread([=,this] {
         // Форк: свой обновлятор умеет ставить обновление и при flag_use_appdata
         auto allow_updater = true;
+#ifdef Q_OS_LINUX
+        // AppImage — один файл, и заменить его распаковкой архива поверх нельзя:
+        // он примонтирован и доступен только для чтения. Отправляем человека за
+        // свежим образом — это ровно одно скачивание и перезапуск.
+        if (Configs::RunningFromAppImage()) {
+            const QString arch = QSysInfo::currentCpuArchitecture() == QStringLiteral("arm64")
+                                     ? QStringLiteral("aarch64")
+                                     : QStringLiteral("x86_64");
+            const QString link = QStringLiteral(
+                "https://github.com/forestsnet/Throne/releases/latest/download/FSNT-Client-%1.AppImage")
+                                     .arg(arch);
+            if (Fsnt::Confirm(GetMessageBoxParent(), QObject::tr("Update"),
+                              QObject::tr("Version %1 is out. The client runs from an AppImage, so it "
+                                          "cannot replace itself: download the new file and start it "
+                                          "instead of this one.")
+                                  .arg(release_tag_name),
+                              QObject::tr("Download"))) {
+                QDesktopServices::openUrl(QUrl(link));
+            }
+            return;
+        }
+#endif
         const QString updateTitle = QObject::tr("Update") + note_pre_release;
         const QString updateBody = QObject::tr("Update found: %1\nRelease note:\n%2")
                                        .arg(assets_name, release_note);
