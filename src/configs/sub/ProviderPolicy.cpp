@@ -1,5 +1,7 @@
 #include "include/configs/sub/ProviderPolicy.hpp"
+#include <QRegularExpression>
 
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QSet>
 
@@ -45,7 +47,43 @@ namespace Subscription {
             && refillDate == 0 && updateIntervalHours == 0
             && !tunEnable && !alwaysHwid && !autoUpdate && !dnsFromJson
             && !hideSettings && !hideUrl && !pin && !collapse && !pingOnOpen
-            && perAppProxyList.isEmpty() && unknown.isEmpty();
+            && perAppProxyList.isEmpty() && perAppBypassList.isEmpty() && unknown.isEmpty();
+    }
+
+    QStringList ParseAppList(const QString &raw) {
+        QString text = raw.trimmed();
+        if (text.isEmpty()) return {};
+
+        // Иногда список приезжает целиком в base64 — заголовки не любят запятых
+        // и кириллицы, и провайдеры перестраховываются.
+        if (!text.contains(',') && !text.contains(';') && !text.contains('\n') && !text.contains('.')) {
+            const auto decoded = QByteArray::fromBase64(text.toUtf8(), QByteArray::AbortOnBase64DecodingErrors);
+            if (!decoded.isEmpty()) text = QString::fromUtf8(decoded).trimmed();
+        }
+
+        // Бывает и JSON-массив: ["qbittorrent.exe", "utorrent.exe"].
+        if (text.startsWith('[')) {
+            const auto doc = QJsonDocument::fromJson(text.toUtf8());
+            if (doc.isArray()) {
+                QStringList apps;
+                for (const auto &value : doc.array()) {
+                    const QString app = value.toString().trimmed();
+                    if (!app.isEmpty()) apps << app;
+                }
+                return apps;
+            }
+        }
+
+        QStringList apps;
+        for (QString piece : text.split(QRegularExpression("[,;\r\n]"), Qt::SkipEmptyParts)) {
+            piece = piece.trimmed();
+            // Префикс из наших же правил маршрутизации — провайдер мог списать
+            // строку прямо из окна настроек.
+            if (piece.startsWith("processName:", Qt::CaseInsensitive)) piece = piece.mid(12).trimmed();
+            if (piece.isEmpty()) continue;
+            if (!apps.contains(piece, Qt::CaseInsensitive)) apps << piece;
+        }
+        return apps;
     }
 
     ProviderPolicy ParseProviderPolicy(const QList<QPair<QByteArray, QByteArray>> &headers) {
@@ -71,6 +109,7 @@ namespace Subscription {
             if (name == "profile-web-page-url")                 { p.webPageUrl = value; continue; }
             if (name == "providerid")                           { p.providerId = value; continue; }
             if (name == "per-app-proxy-list")                   { p.perAppProxyList = value; continue; }
+            if (name == "per-app-bypass-list")                  { p.perAppBypassList = value; continue; }
 
             if (name == "profile-update-interval") {
                 bool ok = false;
@@ -112,6 +151,7 @@ namespace Subscription {
         if (policy.refillDate != 0)            o["refillDate"] = policy.refillDate;
         if (policy.updateIntervalHours != 0)   o["updateIntervalHours"] = policy.updateIntervalHours;
         if (!policy.perAppProxyList.isEmpty()) o["perAppProxyList"] = policy.perAppProxyList;
+        if (!policy.perAppBypassList.isEmpty()) o["perAppBypassList"] = policy.perAppBypassList;
 
         putOpt(o, "tunEnable", policy.tunEnable);
         putOpt(o, "alwaysHwid", policy.alwaysHwid);
@@ -145,6 +185,7 @@ namespace Subscription {
         p.refillDate          = o.value("refillDate").toVariant().toLongLong();
         p.updateIntervalHours = o.value("updateIntervalHours").toInt(0);
         p.perAppProxyList     = o.value("perAppProxyList").toString();
+        p.perAppBypassList    = o.value("perAppBypassList").toString();
 
         p.tunEnable    = getOpt(o, "tunEnable");
         p.alwaysHwid   = getOpt(o, "alwaysHwid");

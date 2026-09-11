@@ -37,6 +37,41 @@ private slots:
         QCOMPARE(p.pin.value(), true);
     }
 
+    void appListAcceptsWhateverProvidersSend() {
+        // Запятые с пробелами — самый частый вид.
+        QCOMPARE(ParseAppList("qbittorrent.exe, utorrent.exe"),
+                 QStringList({"qbittorrent.exe", "utorrent.exe"}));
+        // Точка с запятой и переводы строк — тоже встречаются.
+        QCOMPARE(ParseAppList("a.exe;b.exe\nc.exe"), QStringList({"a.exe", "b.exe", "c.exe"}));
+        // Строку могли скопировать прямо из окна правил маршрутизации.
+        QCOMPARE(ParseAppList("processName:qbittorrent.exe"), QStringList({"qbittorrent.exe"}));
+        // JSON-массивом.
+        QCOMPARE(ParseAppList("[\"a.exe\", \"b.exe\"]"), QStringList({"a.exe", "b.exe"}));
+        // Повторы не нужны: правило маршрутизации одно.
+        QCOMPARE(ParseAppList("a.exe, A.EXE"), QStringList({"a.exe"}));
+        QVERIFY(ParseAppList("   ").isEmpty());
+    }
+
+    void appListSurvivesBase64() {
+        const auto encoded = QString::fromUtf8(QByteArray("qbittorrent.exe,utorrent.exe").toBase64());
+        QCOMPARE(ParseAppList(encoded), QStringList({"qbittorrent.exe", "utorrent.exe"}));
+    }
+
+    void appListsRideAlongWithThePolicy() {
+        const auto p = ParseProviderPolicy(H({
+            {"per-app-bypass-list", "qbittorrent.exe,utorrent.exe"},
+            {"per-app-proxy-list", "chrome.exe"},
+        }));
+        QVERIFY(!p.isEmpty());
+        QCOMPARE(ParseAppList(p.perAppBypassList).size(), 2);
+        QCOMPARE(ParseAppList(p.perAppProxyList), QStringList({"chrome.exe"}));
+
+        // Политика переживает сохранение в базу и обратное чтение.
+        const auto restored = DeserializeProviderPolicy(SerializeProviderPolicy(p));
+        QCOMPARE(restored.perAppBypassList, p.perAppBypassList);
+        QCOMPARE(restored.perAppProxyList, p.perAppProxyList);
+    }
+
     void headerNamesAreCaseInsensitive() {
         const auto p = ParseProviderPolicy(H({{"TUN-Enable", "true"}}));
         QCOMPARE(p.tunEnable.value(), true);

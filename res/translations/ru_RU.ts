@@ -2705,6 +2705,18 @@ Use a number followed by ns, us, ms, s, m, h or d.</source>
 <context>
     <name>DialogPerAppProxy</name>
     <message>
+        <source>Your provider routes these itself. %1</source>
+        <translation>Эти приложения провайдер ведёт сам. %1</translation>
+    </message>
+    <message>
+        <source>Past the VPN: %1</source>
+        <translation>Мимо VPN: %1</translation>
+    </message>
+    <message>
+        <source>Through the VPN: %1</source>
+        <translation>Через VPN: %1</translation>
+    </message>
+    <message>
         <source>Per-app proxy</source>
         <translation>Прокси по приложениям</translation>
     </message>

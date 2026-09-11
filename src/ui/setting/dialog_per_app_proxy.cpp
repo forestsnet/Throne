@@ -15,6 +15,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
+#include "include/configs/sub/ProviderPolicy.hpp"
 #include "include/database/RoutesRepo.h"
 #include "include/database/entities/RouteProfile.h"
 #include "include/global/Configs.hpp"
@@ -302,6 +303,27 @@ DialogPerAppProxy::DialogPerAppProxy(QWidget *parent) : QDialog(parent) {
     hint->setObjectName("fsntDialogHint");
     hint->setWordWrap(true);
     layout->addWidget(hint);
+
+    // Провайдер мог прислать свои списки приложений. Они не лежат в правилах
+    // профиля и в этом окне не редактируются — но человек должен понимать,
+    // почему торрент ходит мимо туннеля, хотя он такого не просил.
+    const auto &policy = Subscription::ActiveProviderPolicy();
+    const auto providerBypass = Subscription::ParseAppList(policy.perAppBypassList);
+    const auto providerProxy = Subscription::ParseAppList(policy.perAppProxyList);
+    if (!providerBypass.isEmpty() || !providerProxy.isEmpty()) {
+        QStringList lines;
+        if (!providerBypass.isEmpty()) {
+            lines << tr("Past the VPN: %1").arg(providerBypass.join(", "));
+        }
+        if (!providerProxy.isEmpty()) {
+            lines << tr("Through the VPN: %1").arg(providerProxy.join(", "));
+        }
+        auto *fromProvider = new QLabel(tr("Your provider routes these itself. %1")
+                                            .arg(lines.join(" · ")), this);
+        fromProvider->setObjectName("fsntDialogHint");
+        fromProvider->setWordWrap(true);
+        layout->addWidget(fromProvider);
+    }
 
     if (chain == nullptr) {
         auto *empty = new QLabel(tr("No routing profile is selected."), this);

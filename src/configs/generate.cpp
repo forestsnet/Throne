@@ -1966,6 +1966,30 @@ namespace Configs {
                                                   : routeChain->get_route_rules(false, routeDeps.outboundMap);
             if (ctx.l3Bridge) profileRules = withL3BridgeTwins(profileRules);
 
+            // Списки приложений от провайдера. Ставим их перед правилами
+            // пользователя: провайдеру нужно, чтобы торренты гарантированно шли
+            // мимо туннеля, иначе его блокируют вместе с клиентом.
+            QJsonArray providerAppRules;
+            if (!ctx.forTest) {
+                const auto &policy = Subscription::ActiveProviderPolicy();
+                const auto bypassApps = Subscription::ParseAppList(policy.perAppBypassList);
+                if (!bypassApps.isEmpty()) {
+                    providerAppRules.append(QJsonObject{
+                        {"action", "route"},
+                        {"process_name", QJsonArray::fromStringList(bypassApps)},
+                        {"outbound", tags::direct},
+                    });
+                }
+                const auto proxyApps = Subscription::ParseAppList(policy.perAppProxyList);
+                if (!proxyApps.isEmpty()) {
+                    providerAppRules.append(QJsonObject{
+                        {"action", "route"},
+                        {"process_name", QJsonArray::fromStringList(proxyApps)},
+                        {"outbound", tags::proxy},
+                    });
+                }
+            }
+
             QJsonObject extraCoreDirect;
             if (!ctx.result->extraCoreData->path.isEmpty())
             {
@@ -2050,6 +2074,7 @@ namespace Configs {
             appendIfSet(injected.dnsHijack);
             appendIfSet(injected.dnsInReject);
             appendIfSet(injected.redirectSniff);
+            for (const auto& r : providerAppRules) routeRules.append(r);
             for (const auto& r : profileRules) routeRules.append(r);
             for (const auto& r : vpnAuxRules) routeRules.append(r);
             for (const auto& r : l3BridgeFinalRules) routeRules.append(r);

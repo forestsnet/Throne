@@ -372,7 +372,7 @@ jobs:
             -DAPP_VERSION_PATCH="${APP_VERSION_PATCH}" \
             -DAPP_VERSION_BUILD="${APP_VERSION_BUILD}" \
             windows_installer.nsi
-          cp ThroneSetup.exe deployment/Throne-${{ github.event.inputs.tag }}-windows-universal-installer.exe
+          cp ThroneSetup.exe deployment/FSNT-Client-Setup.exe
           ####
           cd deployment
           mkdir debug
@@ -443,7 +443,7 @@ jobs:
           mv darwin-arm64/Throne.app Throne/Throne.app
           mv Throne/Throne.app/Contents/MacOS/Throne.dSYM debug/Throne-${{ github.event.inputs.tag }}-macos-arm64.dSYM
           zip -9 --symlinks -r Throne-${{ github.event.inputs.tag }}-macos-arm64.zip Throne
-          mv darwin-arm64/FSNT-Client.dmg Throne-${{ github.event.inputs.tag }}-macos-arm64.dmg
+          mv darwin-arm64/FSNT-Client.dmg FSNT-Client-macos-arm64.dmg
           rm -rf darwin-arm64
           rm -rf Throne
           ####
@@ -451,7 +451,7 @@ jobs:
           mv darwin-amd64/Throne.app Throne/Throne.app
           mv Throne/Throne.app/Contents/MacOS/Throne.dSYM debug/Throne-${{ github.event.inputs.tag }}-macos-amd64.dSYM
           zip -9 --symlinks -r Throne-${{ github.event.inputs.tag }}-macos-amd64.zip Throne
-          mv darwin-amd64/FSNT-Client.dmg Throne-${{ github.event.inputs.tag }}-macos-amd64.dmg
+          mv darwin-amd64/FSNT-Client.dmg FSNT-Client-macos-intel.dmg
           rm -rf darwin-amd64
           rm -rf Throne
           ####
@@ -459,7 +459,7 @@ jobs:
           mv darwinlegacy-amd64/Throne.app Throne/Throne.app
           mv Throne/Throne.app/Contents/MacOS/Throne.dSYM debug/Throne-${{ github.event.inputs.tag }}-macoslegacy-amd64.dSYM
           zip -9 --symlinks -r Throne-${{ github.event.inputs.tag }}-macoslegacy-amd64.zip Throne
-          mv darwinlegacy-amd64/FSNT-Client.dmg Throne-${{ github.event.inputs.tag }}-macoslegacy-amd64.dmg
+          mv darwinlegacy-amd64/FSNT-Client.dmg FSNT-Client-macos-intel-legacy.dmg
           rm -rf darwinlegacy-amd64
           rm -rf Throne
           ####

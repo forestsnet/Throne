@@ -34,13 +34,22 @@ namespace Subscription {
         std::optional<bool> collapse;     // subscriptions-collapse
         std::optional<bool> pingOnOpen;   // subscription-ping-onopen-enabled
 
-        QString perAppProxyList;          // per-app-proxy-list, формат не разбираем
+        // Списки приложений от провайдера. per-app-proxy-list — что вести через
+        // туннель, per-app-bypass-list — что пускать мимо: провайдеры так
+        // отсекают торренты, которые им запрещено пропускать.
+        QString perAppProxyList;          // per-app-proxy-list
+        QString perAppBypassList;         // per-app-bypass-list
         QJsonObject unknown;              // нераспознанные заголовки, чтобы не терять
 
         bool isEmpty() const;
     };
 
     ProviderPolicy ParseProviderPolicy(const QList<QPair<QByteArray, QByteArray>> &headers);
+
+    // Разбирает список приложений из заголовка. Провайдеры пишут их как придётся:
+    // через запятую, точку с запятой или по строкам, иногда с префиксом
+    // processName: и иногда целиком в base64 — принимаем всё это.
+    QStringList ParseAppList(const QString &raw);
     QString        SerializeProviderPolicy(const ProviderPolicy &policy);
     ProviderPolicy DeserializeProviderPolicy(const QString &json);
 
