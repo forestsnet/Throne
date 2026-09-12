@@ -4,9 +4,16 @@
 #include <QProcess>
 #include <QStandardPaths>
 
-int Linux_Run_Command(const QString &commandName, const QString &args) {
-    auto command = QString("pkexec %1 %2").arg(Linux_FindCapProgsExec(commandName)).arg(args);
-    return system(command.toStdString().c_str());
+int Linux_Run_Command(const QString &commandName, const QStringList &args) {
+    // Аргументами, а не строкой для оболочки: путь к ядру может содержать
+    // пробелы (домашний каталог, имя пользователя), и склеенная команда
+    // разъезжалась — pkexec получал половину пути и молча ничего не делал.
+    QProcess pkexec;
+    pkexec.start(QStringLiteral("pkexec"), QStringList{Linux_FindCapProgsExec(commandName)} + args);
+    if (!pkexec.waitForStarted(5000)) return -1;
+    // Ждём столько, сколько человек будет вводить пароль в окне polkit.
+    pkexec.waitForFinished(-1);
+    return pkexec.exitCode();
 }
 
 bool Linux_HavePkexec() {
