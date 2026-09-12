@@ -310,7 +310,7 @@ void MainWindow::waitForCorePrivileges(ExitReason reason) {
         if (QDateTime::currentDateTime() > deadline) {
             timer->stop();
             timer->deleteLater();
-            MW_show_log(tr("No password was entered in Terminal, the request was cancelled"));
+            MW_show_log(tr("No password was entered, the request was cancelled"));
         }
     });
     timer->start();
@@ -373,16 +373,19 @@ bool MainWindow::get_elevated_permissions(ExitReason reason) {
     // «попробуйте снова».
     if (askInOwnStyle(tr("Administrator rights"),
                       tr("The core needs administrator rights for the tunnel.\n\n"
-                         "Terminal will open — a system window of macOS. Type the password you use to "
-                         "log into this Mac and press Enter. While you type it, nothing appears on the "
-                         "screen: that is how Terminal asks for passwords.\n\n"
-                         "Then come back here — the connection will start by itself."),
-                      tr("Open Terminal")))
+                         "macOS will ask for your password in its own window — the same one you use to "
+                         "log into this Mac. After that the connection starts by itself."),
+                      tr("Continue")))
     {
-        auto Command = QString("sudo chown root:wheel '%1' && sudo chmod u+s '%1'").arg(Configs::FindCoreRealPath());
-        auto ret = Mac_Run_Command(Command);
+        // Путь берём в одинарные кавычки, а сами кавычки в нём — экранируем:
+        // папку приложения человек может назвать как угодно.
+        QString corePath = Configs::FindCoreRealPath();
+        corePath.replace("'", "'\\''");
+        auto Command = QString("chown root:wheel '%1' && chmod u+s '%1'").arg(corePath);
+        auto ret = Mac_Run_Command(Command, tr("FSNT Client is setting up the tunnel and needs "
+                                               "administrator rights."));
         if (ret == 0) {
-            showFacadeNotice(tr("Waiting for the password in Terminal…"), 120000);
+            showFacadeNotice(tr("Waiting for the password…"), 120000);
             waitForCorePrivileges(reason);
             return false;
         } else {

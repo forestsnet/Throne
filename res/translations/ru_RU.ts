@@ -130,6 +130,26 @@
 <context>
     <name>ConnectPanel</name>
     <message>
+        <source>The tunnel needs administrator rights</source>
+        <translation>Для туннеля нужны права администратора</translation>
+    </message>
+    <message>
+        <source>Full tunnel routes every program on the computer, and macOS gives that only with your password.
+
+You can try again — the password window will come back. Or connect through the system proxy: it works without any rights, browsers and most programs go through it, and the few that ignore proxy settings stay outside.</source>
+        <translation>Полный туннель ведёт через себя все программы компьютера, а такое macOS разрешает только по паролю.
+
+Можно попробовать ещё раз — окно с паролем вернётся. Либо подключиться через системный прокси: он работает вообще без прав, браузеры и большинство программ идут через него, а те немногие, что игнорируют настройки прокси, останутся снаружи.</translation>
+    </message>
+    <message>
+        <source>Ask for the password again</source>
+        <translation>Спросить пароль ещё раз</translation>
+    </message>
+    <message>
+        <source>Connect through the proxy</source>
+        <translation>Подключиться через прокси</translation>
+    </message>
+    <message>
         <source>Connected</source>
         <translation>Подключено</translation>
     </message>
@@ -7843,14 +7863,14 @@ Error: %1</source>
     <message>
         <source>The core needs administrator rights for the tunnel.
 
-Terminal will open — a system window of macOS. Type the password you use to log into this Mac and press Enter. While you type it, nothing appears on the screen: that is how Terminal asks for passwords.
-
-Then come back here — the connection will start by itself.</source>
+macOS will ask for your password in its own window — the same one you use to log into this Mac. After that the connection starts by itself.</source>
         <translation>Для туннеля ядру нужны права администратора.
 
-Сейчас откроется Терминал — системное окно macOS. Введите там пароль, которым вы входите в этот Mac, и нажмите Enter. Пока вы его набираете, на экране ничего не появляется: так Терминал спрашивает пароли.
-
-Потом возвращайтесь сюда — подключение начнётся само.</translation>
+macOS сама спросит пароль в своём окне — тот же, которым вы входите в этот Mac. После этого подключение начнётся само.</translation>
+    </message>
+    <message>
+        <source>Continue</source>
+        <translation>Продолжить</translation>
     </message>
     <message>
         <source>Open Terminal</source>
@@ -7861,8 +7881,8 @@ Then come back here — the connection will start by itself.</source>
         <translation>Скачиваем обновление…</translation>
     </message>
     <message>
-        <source>Waiting for the password in Terminal…</source>
-        <translation>Ждём пароль в Терминале…</translation>
+        <source>Waiting for the password…</source>
+        <translation>Ждём пароль…</translation>
     </message>
     <message>
         <source>Rights granted, connecting</source>
@@ -7873,8 +7893,8 @@ Then come back here — the connection will start by itself.</source>
         <translation>Ядро получило права</translation>
     </message>
     <message>
-        <source>No password was entered in Terminal, the request was cancelled</source>
-        <translation>Пароль в Терминале так и не ввели, запрос отменён</translation>
+        <source>No password was entered, the request was cancelled</source>
+        <translation>Пароль так и не ввели, запрос отменён</translation>
     </message>
     <message>
         <source>Requesting permission</source>
@@ -8035,6 +8055,10 @@ Please try again.</source>
     <message>
         <source>Administrator rights</source>
         <translation>Права администратора</translation>
+    </message>
+    <message>
+        <source>FSNT Client is setting up the tunnel and needs administrator rights.</source>
+        <translation>FSNT Client настраивает туннель, для этого нужны права администратора.</translation>
     </message>
     <message>
         <source>Please run Throne as admin</source>

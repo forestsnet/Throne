@@ -1,5 +1,7 @@
 #include "include/ui/fsnt/ConnectPanel.h"
 
+#include "include/ui/fsnt/FsntControls.h"
+
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPointer>
@@ -186,8 +188,41 @@ void ConnectPanel::onButtonClicked() {
 
     // Одна кнопка: режим клиент выбирает сам. По умолчанию TUN, но пользователь
     // может переключиться на системный прокси в настройках простого режима.
-    Fsnt::ApplyTransportMode();
+    if (!Fsnt::ApplyTransportMode()) {
+        // Прав на туннель не дали. Раньше клиент всё равно запускал профиль:
+        // трафик шёл напрямую, а на экране горело «Подключено».
+        endPending();
+        refresh();
+        offerWayWithoutRights(id);
+        return;
+    }
     mw->profile_start(id);
+}
+
+void ConnectPanel::offerWayWithoutRights(int profileId) {
+    // Тупик без выхода — худшее, что можно показать. Поэтому два пути: выдать
+    // права ещё раз (человек мог промахнуться паролем) или пойти через
+    // системный прокси — он работает без прав вообще, просто мимо него идут
+    // программы, которые прокси не спрашивают.
+    const int picked = Fsnt::Choose(
+        this, tr("The tunnel needs administrator rights"),
+        tr("Full tunnel routes every program on the computer, and macOS gives that only with your "
+           "password.\n\n"
+           "You can try again — the password window will come back. Or connect through the system "
+           "proxy: it works without any rights, browsers and most programs go through it, and the "
+           "few that ignore proxy settings stay outside."),
+        {tr("Ask for the password again"), tr("Connect through the proxy"), tr("Cancel")});
+
+    if (picked != 0 && picked != 1) return;
+    if (picked == 1) {
+        Configs::dataManager->settingsRepo->simple_transport = 1;
+        Configs::dataManager->settingsRepo->Save();
+    }
+
+    // Повторную попытку запускаем следующим тактом: сейчас мы внутри обработки
+    // нажатия, и вызывать её же рекурсивно — верный способ запутать состояние
+    // кнопки.
+    QTimer::singleShot(0, this, [this] { onButtonClicked(); });
 }
 
 void ConnectPanel::beginPending(const bool stopping, const QString &status) {

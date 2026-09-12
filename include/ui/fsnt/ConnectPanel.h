@@ -51,6 +51,8 @@ private:
     static Choice resolveProfile();
 
     void onButtonClicked();
+    // Что делать, когда прав на туннель не дали.
+    void offerWayWithoutRights(int profileId);
     void updateElapsed();
     void setStatus(const QString &text, const char *tone);
     // Начало и конец ожидания ответа ядра — в одном месте, чтобы сторожевой
