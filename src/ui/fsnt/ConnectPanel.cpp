@@ -193,6 +193,10 @@ void ConnectPanel::onButtonClicked() {
         // трафик шёл напрямую, а на экране горело «Подключено».
         endPending();
         refresh();
+        // Человек мог отправиться вводить пароль: тогда права появятся через
+        // несколько секунд, и подключение надо довести самим — он уже нажал
+        // кнопку и ждёт результата, а не второго захода.
+        MW_show_log("[Connect] tunnel mode refused: no administrator rights");
         offerWayWithoutRights(id);
         return;
     }
@@ -213,6 +217,7 @@ void ConnectPanel::offerWayWithoutRights(int profileId) {
            "few that ignore proxy settings stay outside."),
         {tr("Ask for the password again"), tr("Connect through the proxy"), tr("Cancel")});
 
+    MW_show_log(QString("[Connect] way without rights: picked %1").arg(picked));
     if (picked != 0 && picked != 1) return;
     if (picked == 1) {
         Configs::dataManager->settingsRepo->simple_transport = 1;

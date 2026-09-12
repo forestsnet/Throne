@@ -286,39 +286,6 @@ void MainWindow::showFacadeNotice(const QString &text, int milliseconds) {
                               Q_ARG(int, milliseconds));
 }
 
-void MainWindow::waitForCorePrivileges(ExitReason reason) {
-#ifdef Q_OS_MACOS
-    // Пароль вводят в чужом окне, и о результате нам никто не сообщит: смотрим
-    // на сам файл ядра. Как только на нём появился setuid — повторяем то, ради
-    // чего права и просили, чтобы человеку не пришлось искать кнопку заново.
-    auto *timer = new QTimer(this);
-    timer->setInterval(1000);
-    const QDateTime deadline = QDateTime::currentDateTime().addSecs(180);
-    connect(timer, &QTimer::timeout, this, [this, timer, deadline, reason] {
-        if (Configs::isSetuidSet(Configs::FindCoreRealPath().toStdString())) {
-            timer->stop();
-            timer->deleteLater();
-            MW_show_log(tr("Core privileges granted"));
-            showFacadeNotice(tr("Rights granted, connecting"), 6000);
-            if (reason == ExitReason::RestartWithDns) {
-                set_system_dns(true, true);
-            } else {
-                set_spmode_vpn(true, true);
-            }
-            return;
-        }
-        if (QDateTime::currentDateTime() > deadline) {
-            timer->stop();
-            timer->deleteLater();
-            MW_show_log(tr("No password was entered, the request was cancelled"));
-        }
-    });
-    timer->start();
-#else
-    Q_UNUSED(reason)
-#endif
-}
-
 bool MainWindow::get_elevated_permissions(ExitReason reason) {
     if (Configs::dataManager->settingsRepo->disable_privilege_req)
     {
@@ -383,9 +350,18 @@ bool MainWindow::get_elevated_permissions(ExitReason reason) {
         auto Command = QString("chown root:wheel '%1' && chmod u+s '%1'").arg(corePath);
         auto ret = Mac_Run_Command(Command, tr("FSNT Client is setting up the tunnel and needs "
                                                "administrator rights."));
+        // Окно пароля модальное: когда osascript вернулся, всё уже сделано.
+        // Раньше здесь возвращали false и уходили ждать прав в фоне — это
+        // осталось от Терминала, который работал сам по себе. С системным окном
+        // ожидание превращалось в кашу: поверх всплывало окно «прав нет», а
+        // следом политика провайдера просила пароль второй раз.
+        if (ret == 0 && Configs::isSetuidSet(Configs::FindCoreRealPath().toStdString())) {
+            MW_show_log(tr("Core privileges granted"));
+            StopVPNProcess();
+            return true;
+        }
         if (ret == 0) {
-            showFacadeNotice(tr("Waiting for the password…"), 120000);
-            waitForCorePrivileges(reason);
+            MW_show_log("[Rights] command finished but setuid is still missing");
             return false;
         } else {
             MW_show_log(QString("Failed to run %1 with %2").arg(Command).arg(ret));

@@ -226,6 +226,19 @@ void MainWindow::profile_start(int _id) {
         applyProviderPolicy(policyEnt->gid);
     }
 
+#ifndef Q_OS_LINUX
+    // Выбран полный туннель, а прав на него нет — дальше идти незачем. Ядро
+    // поднялось бы, трафик пошёл бы мимо туннеля, а окно показывало бы
+    // «Подключено»: ровно то, на что жаловались люди после отказа выдать права.
+    // Это сторож для запуска не по кнопке — автозапуск при старте клиента.
+    if (GetFacadeWindow() != nullptr && Configs::dataManager->settingsRepo->simple_transport == 0 &&
+        !Configs::dataManager->settingsRepo->spmode_vpn) {
+        MW_show_log(tr("The tunnel needs administrator rights, connection cancelled"));
+        showFacadeNotice(tr("The tunnel needs administrator rights, connection cancelled"), 8000);
+        return;
+    }
+#endif
+
 #ifdef Q_OS_LINUX
     if (Configs::dataManager->settingsRepo->enable_dns_server && Configs::dataManager->settingsRepo->dns_server_listen_port <= 1024) {
         if (!get_elevated_permissions()) {

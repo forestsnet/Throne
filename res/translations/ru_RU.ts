@@ -8057,6 +8057,10 @@ Please try again.</source>
         <translation>Права администратора</translation>
     </message>
     <message>
+        <source>The tunnel needs administrator rights, connection cancelled</source>
+        <translation>Для туннеля нужны права администратора, подключение отменено</translation>
+    </message>
+    <message>
         <source>FSNT Client is setting up the tunnel and needs administrator rights.</source>
         <translation>FSNT Client настраивает туннель, для этого нужны права администратора.</translation>
     </message>
