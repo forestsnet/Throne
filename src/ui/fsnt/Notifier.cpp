@@ -57,7 +57,7 @@ namespace Fsnt {
         Q_UNUSED(onActivated)
         auto *mw = GetMainWindow();
         if (mw == nullptr || mw->trayIcon() == nullptr) return;
-        mw->trayIcon()->showMessage(title, body, QSystemTrayIcon::Information, 8000);
+        mw->trayIcon()->showMessage(title, body, 8000);
 #endif
     }
 } // namespace Fsnt

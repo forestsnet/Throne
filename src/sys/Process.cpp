@@ -31,6 +31,8 @@ namespace {
         } else {
             LOG_WARN("cache.db is not writable and could not be removed: " + path);
         }
+    }
+
     // Must match egressForwardingMarker in core/internal/rpc/forwarding_windows.go.
     constexpr char kEgressForwardingMarker[] = "IPv4 forwarding is enabled on the Tun egress adapter: ";
 

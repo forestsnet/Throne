@@ -16,6 +16,9 @@ public:
     void setToolTip(const QString &text);
     void setContextMenu(QMenu *menu);
     void setVisible(bool visible);
+    // Всплывающее сообщение системы. На маке статус-бар свой, нативный, и
+    // уведомления идут мимо него — через UserNotifications (см. MacNotify).
+    void showMessage(const QString &title, const QString &body, int milliseconds = 8000);
     void hide() { setVisible(false); }
     bool isVisible() const;
 

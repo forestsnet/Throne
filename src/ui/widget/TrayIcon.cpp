@@ -12,4 +12,8 @@ void TrayIcon::setToolTip(const QString &text) { m_tray->setToolTip(text); }
 void TrayIcon::setContextMenu(QMenu *menu) { m_tray->setContextMenu(menu); }
 void TrayIcon::setVisible(bool visible) { m_tray->setVisible(visible); }
 bool TrayIcon::isVisible() const { return m_tray->isVisible(); }
+
+void TrayIcon::showMessage(const QString &title, const QString &body, int milliseconds) {
+    m_tray->showMessage(title, body, QSystemTrayIcon::Information, milliseconds);
+}
 #endif
