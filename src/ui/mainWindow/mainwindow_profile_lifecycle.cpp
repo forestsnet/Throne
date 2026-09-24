@@ -8,7 +8,7 @@
 #include "include/stats/autoselector/AutoSelectorMonitor.hpp"
 #include "include/configs/AutoSelectorPlan.h"
 #include "include/api/RPC.h"
-#include "include/ui/utils/MessageBoxTimer.h"
+#include "include/ui/utils/RestartPrompt.h"
 #include "include/ui/stats/dialog_endpoint_details.h"
 
 #include <QPushButton>
@@ -23,6 +23,7 @@
 #include "include/database/OtpProfilesRepo.h"
 #include "include/database/ProfilesRepo.h"
 #include "include/global/OtpPlaceholder.hpp"
+#include "include/global/RunningProfiles.hpp"
 #include "include/global/VpnCredentialOverride.hpp"
 #include "include/ui/profile/dialog_vpn_auth.h"
 
@@ -34,7 +35,6 @@
 using namespace API;
 
 void MainWindow::setup_rpc(QLocalSocket *socket) {
-    // The Client is never recreated, only its connection swapped, so workers never touch freed memory.
     defaultClient->Reconnect(socket);
 
     if (!rpc_started) {
@@ -96,7 +96,6 @@ int MainWindow::get_profile_to_start() {
 }
 
 bool MainWindow::handleXrayGeoAssetError(const QString& error, const QString& contextName) {
-    // Both "failed to open geoip.dat" and "failed to load code cn ...: EOF" arrive here.
     const bool refGeoip = error.contains("geoip.dat");
     const bool refGeosite = error.contains("geosite.dat");
     if (!refGeoip && !refGeosite) return false;
@@ -104,7 +103,6 @@ bool MainWindow::handleXrayGeoAssetError(const QString& error, const QString& co
     runOnUiThread([=, this] {
         if (m_xrayGeoAssetBusy) return;
         m_xrayGeoAssetBusy = true;
-        // Small delay so any in-flight UI teardown settles before the modal prompt appears.
         setTimeout([=, this] {
             const QString base = Configs::GetBasePath();
             const bool haveGeoip = QFile::exists(base + "/geoip.dat");
@@ -294,7 +292,7 @@ void MainWindow::profile_start(int _id) {
         MessageBoxWarning(tr("BuildConfig return error"), result->error);
         return;
     }
-    auto profile_start_stage2 = [=, this] {
+    auto profile_start_stage2 = [=, this](const QPointer<RestartPrompt> &restartPrompt) {
         libcore::LoadConfigReq req;
         req.core_config = QJsonObject2QString(result->coreConfig, true).toStdString();
         req.tun_ipv4_cidr = result->tunIPv4CIDR.toStdString();
@@ -303,13 +301,12 @@ void MainWindow::profile_start(int _id) {
         req.need_xray = !result->xrayConfig.isEmpty();
         for (const auto &full : result->xrayFullConfigs) req.xray_full_configs.push_back(full.toStdString());
         if (req.need_xray || !req.xray_full_configs.empty()) {
-            // Wired in the core, not the config: Xray resolves in-process through the box's dns-direct.
             req.xray_outbound_dns_strategy = Configs::getXrayOutboundDomainStrategy().toStdString();
             if (auto selector = ent->AutoSelector(); selector != nullptr) {
                 // The idle window must outlast the probe interval or the sidecar restarts every round.
                 req.xray_lazy_start = true;
                 req.xray_idle_seconds = std::max(120, selector->intervalSec * 2);
-                // 0 = resident: recycling would put an instance build in front of every failover.
+                // 0 = resident.
                 req.xray_full_idle_seconds = 0;
             }
         }
@@ -323,11 +320,12 @@ void MainWindow::profile_start(int _id) {
         }
         bool rpcOK;
         const QString error = defaultClient->Start(&rpcOK, req);
+        // Queued ahead of every dialog below, so none of them can be shown over the prompt.
+        runOnUiThread([restartPrompt] { if (restartPrompt) restartPrompt->dismiss(); });
         if (!rpcOK) {
             return false;
         }
         if (!error.isEmpty()) {
-            // Blocking to download here would trip the core's "no response" restart prompt.
             if (handleXrayGeoAssetError(error, ent->outbound->DisplayTypeAndName())) {
                 return false;
             }
@@ -401,21 +399,23 @@ void MainWindow::profile_start(int _id) {
         Configs::dataManager->settingsRepo->UpdateStartedId(ent->id);
         // Must land after the stop this start may have run first: that stop clears the map.
         Stats::SetVpnEndpointProfiles(result->vpnEndpointProfiles);
+        Configs::SetRunningProfiles(result->involvedProfiles);
         running = ent;
         if (Configs::dataManager->settingsRepo->spmode_system_proxy) set_system_proxy(true);
 
         const bool exitIsEndpoint = vpn_exit_endpoint(ent) != nullptr;
 
         runOnUiThread([=, this] {
+            clearRestartNeeded();
             start_vpn_challenge_poll();
             refresh_status();
             refresh_proxy_list({ent->id});
             refresh_auto_selector_view();
 
-            // "Only route advertised network" rejects this probe, so the corner carries tunnel state.
+            // "Only route advertised network" rejects this probe.
             if (exitIsEndpoint) return;
 
-            auto resp = NetworkRequestHelper::HttpGet("http://ip-api.com/json/", false, true);
+            auto resp = NetworkRequestHelper::HttpGet("http://ip-api.com/json/", true);
             if (resp.error.isEmpty()) {
                 QJsonDocument doc = QJsonDocument::fromJson(resp.data);
                 if (doc.isObject()) {
@@ -455,10 +455,8 @@ void MainWindow::profile_start(int _id) {
         return;
     }
 
-    const auto restartMsgbox = new QMessageBox(QMessageBox::Question, software_name, tr("If there is no response for a long time, it is recommended to restart the software."),
-                                         QMessageBox::Yes | QMessageBox::No, this);
-    connect(restartMsgbox, &QMessageBox::accepted, this, [=,this] { MW_dialog_message(MwMessage::RestartProgram, {}); });
-    const auto restartMsgboxTimer = new MessageBoxTimer(this, restartMsgbox, 10000);
+    const QPointer<RestartPrompt> restartPrompt =
+        new RestartPrompt(this, tr("If there is no response for a long time, it is recommended to restart the software."), 10000);
 
     runOnUiThread([this] {
         m_profileConnecting = true;
@@ -472,14 +470,12 @@ void MainWindow::profile_start(int _id) {
             mu_stopping.unlock();
         }
         MW_show_log(">>>>>>>> " + tr("Starting profile %1").arg(ent->outbound->DisplayTypeAndName()));
-        if (!profile_start_stage2()) {
+        if (!profile_start_stage2(restartPrompt)) {
             MW_show_log("<<<<<<<< " + tr("Failed to start profile %1").arg(ent->outbound->DisplayTypeAndName()));
         }
         mu_starting.unlock();
         runOnUiThread([=, this] {
-            restartMsgboxTimer->cancel();
-            restartMsgboxTimer->deleteLater();
-            restartMsgbox->deleteLater();
+            if (restartPrompt) restartPrompt->dismiss();
             m_profileConnecting = false;
             refresh_startstop_button();
         });
@@ -496,7 +492,7 @@ void MainWindow::profile_stop(bool crash, bool block, bool manual) {
     }
     const auto id = running->id;
 
-    auto profile_stop_stage2 = [=,this] {
+    auto profile_stop_stage2 = [=,this](const QPointer<RestartPrompt> &restartPrompt) {
         if (testRunner->isTestingCurrent()) {
             bool ok;
             defaultClient->StopTests(&ok);
@@ -505,6 +501,7 @@ void MainWindow::profile_stop(bool crash, bool block, bool manual) {
         if (!crash) {
             bool rpcOK;
             const QString error = defaultClient->Stop(&rpcOK);
+            runOnUiThread([restartPrompt] { if (restartPrompt) restartPrompt->dismiss(); });
             if (rpcOK && !error.isEmpty()) {
                 runOnUiThread([=,this] { MessageBoxWarning(tr("Stop return error"), error); });
                 return false;
@@ -540,14 +537,10 @@ void MainWindow::profile_stop(bool crash, bool block, bool manual) {
         Stats::trafficLooper->PersistTraffic();
         Stats::trafficStatsManager->Flush();
 
-        // runOnUiThread is a no-op before qApp exists, so the teardown must not chase these.
-        QMessageBox* restartMsgbox = nullptr;
-        MessageBoxTimer* restartMsgboxTimer = nullptr;
-        runOnUiThread([=, this, &restartMsgbox, &restartMsgboxTimer] {
-            restartMsgbox = new QMessageBox(QMessageBox::Question, software_name, tr("If there is no response for a long time, it is recommended to restart the software."),
-                             QMessageBox::Yes | QMessageBox::No, this);
-            connect(restartMsgbox, &QMessageBox::accepted, this, [=, this] { MW_dialog_message(MwMessage::RestartProgram, {}); });
-            restartMsgboxTimer = new MessageBoxTimer(this, restartMsgbox, 5000);
+        // runOnUiThread is a no-op before qApp exists, so the teardown must not chase this.
+        QPointer<RestartPrompt> restartPrompt;
+        runOnUiThread([this, &restartPrompt] {
+            restartPrompt = new RestartPrompt(this, tr("If there is no response for a long time, it is recommended to restart the software."), 5000);
         }, true);
 
         // Snapshot: `running` is cleared below and a racing start can reassign it.
@@ -555,21 +548,20 @@ void MainWindow::profile_stop(bool crash, bool block, bool manual) {
         if (stopping != nullptr) {
             MW_show_log(">>>>>>>> " + tr("Stopping profile %1").arg(stopping->outbound->DisplayTypeAndName()));
         }
-        if (!profile_stop_stage2()) {
+        if (!profile_stop_stage2(restartPrompt)) {
             MW_show_log("<<<<<<<< " + tr("Failed to stop, please restart the program."));
         }
 
         if (manual) Configs::dataManager->settingsRepo->UpdateStartedId(Configs::NoProfileId);
+        // Cleared here too: a restart prompt armed before the UI-thread teardown would have no id to start.
+        Configs::ClearRunningProfiles();
         running = nullptr;
 
-        runOnUiThread([=, this, &restartMsgboxTimer, &restartMsgbox] {
-            if (restartMsgboxTimer != nullptr) {
-                restartMsgboxTimer->cancel();
-                restartMsgboxTimer->deleteLater();
-            }
-            if (restartMsgbox != nullptr) restartMsgbox->deleteLater();
+        runOnUiThread([=, this, &restartPrompt] {
+            if (restartPrompt) restartPrompt->dismiss();
 
             m_profileDisconnecting = false;
+            clearRestartNeeded();
             // profile_start() stops the old run first, so only a stop outside a restart is the user's.
             const bool restartingForAuth = manual && id == m_vpnAuthRestartID;
             m_vpnAuthRestartID = -1;
@@ -586,7 +578,6 @@ void MainWindow::profile_stop(bool crash, bool block, bool manual) {
 void MainWindow::start_vpn_challenge_poll() {
     if (m_vpnChallengeTimer == nullptr) {
         m_vpnChallengeTimer = new QTimer(this);
-        // Servers park a challenge on a short timer, so the prompt has to reach the user well inside it.
         m_vpnChallengeTimer->setInterval(2000);
         connect(m_vpnChallengeTimer, &QTimer::timeout, this, [this] { poll_vpn_challenges(); });
     }
@@ -598,6 +589,7 @@ void MainWindow::stop_vpn_challenge_poll() {
     if (m_vpnChallengeTimer != nullptr) m_vpnChallengeTimer->stop();
     reset_vpn_endpoint_tracking();
     Stats::SetVpnEndpointProfiles({});
+    Configs::ClearRunningProfiles();
     if (m_vpnAuthDialog != nullptr) m_vpnAuthDialog->close();
 }
 
@@ -696,7 +688,6 @@ namespace {
         return (field.name + QChar(' ') + field.label).toLower();
     }
 
-    // A secret labelled this way is the token, not the account password.
     bool vpnFieldLooksLikeToken(const VpnAuthField &field) {
         static const QStringList hints = {QStringLiteral("token"),        QStringLiteral("otp"),
                                           QStringLiteral("passcode"),     QStringLiteral("one-time"),
@@ -714,7 +705,6 @@ namespace {
                haystack.contains(QStringLiteral("account"));
     }
 
-    // All or nothing: a half-filled form is submitted and refused, where bailing out still prompts.
     bool buildVpnFormAnswer(const VpnAuthChallenge &challenge, const Configs::openconnect *ocon,
                             const QString &user, const QString &pass, const QString &code,
                             QMap<QString, QString> *out) {
@@ -727,8 +717,7 @@ namespace {
                 if (entry == nullptr || entry->promote) continue;
                 const bool byKey = !entry->submission_key.isEmpty() &&
                                    entry->submission_key == field.submissionKey;
-                // A field reaches a challenge only when the core matched no entry, so a name match
-                // can only be the one the build withheld for carrying an {otp}.
+                // A field reaches a challenge only when the core matched no entry, so a name match can only be the withheld {otp} entry.
                 const bool byName = entry->submission_key.isEmpty() && !entry->name.isEmpty() &&
                                     entry->name == field.name &&
                                     entry->value.contains(Configs::kOtpPlaceholder);
@@ -831,8 +820,7 @@ bool MainWindow::auto_answer_vpn_challenge(const VpnAuthChallenge &challenge) {
 
     if (!challenge.error.isEmpty()) {
         if (m_vpnOtpRejects.value(challenge.endpointTag) >= kMaxVpnOtpRejects) return false;
-        // The server just refused these digits and the core is parked on the challenge anyway, so
-        // hold it until the window rolls rather than spend a retry on a replay.
+        // The same digits were just refused; hold until the TOTP window rolls instead of replaying.
         if (otpProfile->type == OTP::Type::TOTP &&
             otpProfile->CurrentCode() == m_vpnOtpLastCode.value(challenge.endpointTag)) {
             return true;
@@ -844,7 +832,6 @@ bool MainWindow::auto_answer_vpn_challenge(const VpnAuthChallenge &challenge) {
 
     // Settle the shape before minting: resolving a HOTP code spends a counter step.
     if (ovpn != nullptr) {
-        // "message" and "open-url" need a human.
         if (challenge.kind != QStringLiteral("secret") && !credentialsKind) return false;
         if (credentialsKind && creds.username.isEmpty() && creds.password.isEmpty()) return false;
     } else if (challenge.kind != QStringLiteral("form")) {
@@ -909,7 +896,6 @@ bool MainWindow::auto_restart_for_vpn_auth(const QString &endpointTag, int profi
         if (ocon->password_authentication_disabled) return false;
         otpID = ocon->otp_profile_id;
     }
-    // Static credentials come back just as wrong; only a code worth reminting earns a restart.
     if (otpID < 0) return false;
     if (m_vpnAutoRestarts.value(profileID) >= kMaxVpnAutoRestarts) return false;
 
@@ -929,7 +915,6 @@ bool MainWindow::auto_restart_for_vpn_auth(const QString &endpointTag, int profi
 
 void MainWindow::show_vpn_challenge(const VpnAuthChallenge &challenge) {
     if (challenge.id.isEmpty()) return;
-    // One prompt at a time; whatever else is waiting comes back on the next poll.
     if (m_vpnAuthDialog != nullptr) return;
 
     const auto key = challenge.endpointTag + QChar(0x1F) + challenge.id;
@@ -986,7 +971,6 @@ void MainWindow::show_vpn_auth_failure(const QString &endpointTag, const QString
     connect(dialog, &QDialog::accepted, this, [=, this] {
         if (running == nullptr || running->id != runningID) return;
         Configs::SetVpnCredentialOverride(profileID, {dialog->enteredUsername(), dialog->enteredPassword()});
-        // The stop half of this restart must not take the override back down with it.
         m_vpnAuthRestartID = runningID;
         profile_start(runningID);
     });

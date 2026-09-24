@@ -1,4 +1,4 @@
-# Throne (Formerly Nekoray)
+# Throne
 
 Qt based Desktop cross-platform GUI proxy utility, empowered by [Sing-box](https://github.com/SagerNet/sing-box)
 
@@ -41,8 +41,10 @@ curl -fsSL https://raw.githubusercontent.com/throneproj/Throne/dev/script/instal
 - ShadowTLS
 - Wireguard
 - AmneziaWG
+- MASQUE
 - SSH
 - Xray VLESS
+- OpenVPN/OpenConnect
 - Custom Outbound (Both Sing-box and Xray)
 - Custom Config (Both Sing-box and Xray)
 - Chaining outbounds

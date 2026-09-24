@@ -13,7 +13,7 @@
 #include <memory>
 
 #ifndef Q_MOC_RUN
-#include <core/server/gen/libcore.pb.h>
+#include <core/gen/libcore.pb.h>
 #endif
 
 #include "include/database/entities/Profile.h"
@@ -32,6 +32,9 @@ public:
     // `method` пустой — берётся GET, как было до появления выбора способа.
     void runUrlTests(const QList<int>& profileIDs, const std::function<void()>& onFinished = {},
                      const QString& method = {});
+
+    // Waits out a running session instead of refusing it; returns at once and is safe from any thread.
+    void queueUrlTests(const QList<int>& profileIDs, const std::function<void()>& onFinished);
 
     void runIpTests(const QList<int>& profileIDs);
 
@@ -60,7 +63,7 @@ private:
     };
 
     void runLatencyGroup(LatencyKind kind, const QList<int>& requestedIDs,
-                         const std::function<void()>& onFinished);
+                         const std::function<void()>& onFinished, bool waitForSession = false);
 
     // Метод HTTP для текущего прогона: держится здесь, чтобы не тащить его
     // сквозь всю цепочку вызовов до самой пробы.
@@ -72,7 +75,6 @@ private:
 
     void runSpeedProbe(const Target& target);
 
-    // `vpnConnected` is empty on the progress poll; only the final pass has verdicts.
     void applyUrlResult(const std::shared_ptr<Configs::Profile>& ent, const libcore::URLTestResp& res,
                         const QHash<QString, bool>* vpnConnected = nullptr);
 
@@ -80,8 +82,6 @@ private:
 
     QString contextName(int entID) const;
 
-    // A poll's batch can end while its query is in flight, so `gen` is re-checked
-    // after every query and the result dropped if the batch it belongs to is gone.
     bool staleGen(quint64 gen) const { return sessionGen_.load() != gen; }
 
     void pollSpeedTest(const QMap<QString, int>& tag2entID, bool testCurrent, quint64 gen);

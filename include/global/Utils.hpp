@@ -36,23 +36,6 @@ inline osType getOS()
     return unknown;
 }
 
-inline QString getOSString() {
-    auto os = getOS();
-    if (os == Linux) {
-        return "Linux";
-    }
-    if (os == Darwin) {
-        return "Darwin";
-    }
-    if (os == Windows) {
-        return "Windows";
-    }
-    if (os == unknown) {
-        return "Unknown";
-    }
-    return "Unknown";
-}
-
 inline QString software_name;
 inline QString software_core_name;
 
@@ -68,7 +51,7 @@ enum class MwMessage {
     RestartProgram,
     Raise,
     UpdateShortcuts,
-    ProfileChanged,       // arg MwArg::RestartProxy when the saved profile is running
+    ProfileChanged,       // arg MwArg::RestartProxy when the saved profile is part of the running config
     GroupsChanged,
     SubscriptionFinished, // arg MwArg::Quiet skips the import-count line
     SubscriptionNewGroup,

@@ -15,6 +15,7 @@
 #include "include/configs/outbounds/socks.h"
 #include "include/configs/outbounds/http.h"
 #include "include/configs/outbounds/hysteria.h"
+#include "include/configs/outbounds/masque.h"
 #include "include/configs/outbounds/shadowsocks.h"
 #include "include/configs/outbounds/ssh.h"
 #include "include/configs/outbounds/trojan.h"
@@ -64,6 +65,11 @@ namespace Configs {
 
         // Always set latency through here: it also stamps latency_at.
         void SetLatency(int ms);
+
+        // Untested profiles are neither; a kLatencyConnectOnly tunnel counts as working.
+        [[nodiscard]] bool IsWorking() const { return latency > 0 || latency == kLatencyConnectOnly; }
+
+        [[nodiscard]] bool IsUnavailable() const { return latency < 0 && latency != kLatencyConnectOnly; }
 
         [[nodiscard]] QString DisplayTestResult() const;
 
@@ -146,6 +152,10 @@ namespace Configs {
 
         [[nodiscard]] Configs::wireguard *Wireguard() const {
             return dynamic_cast<Configs::wireguard *>(outbound.get());
+        };
+
+        [[nodiscard]] Configs::masque *Masque() const {
+            return dynamic_cast<Configs::masque *>(outbound.get());
         };
 
         [[nodiscard]] Configs::openvpn *OpenVPN() const {

@@ -3,7 +3,7 @@
 #include <QMainWindow>
 #include <include/global/HTTPRequestHelper.hpp>
 #ifndef Q_MOC_RUN
-#include <core/server/gen/libcore.pb.h>
+#include <core/gen/libcore.pb.h>
 #endif
 
 #include "include/global/Configs.hpp"
@@ -18,7 +18,7 @@
 
 #include <optional>
 #include <QKeyEvent>
-#include <QSystemTrayIcon>
+#include "include/ui/widget/TrayIcon.hpp"
 #include <QPointer>
 #include <QTimer>
 #include <QElapsedTimer>
@@ -52,6 +52,10 @@
 
 namespace Configs_sys {
     class CoreProcess;
+}
+
+namespace Configs {
+    enum simpleAction : int;
 }
 
 class TrayProfileSelector;
@@ -161,10 +165,14 @@ public:
 
     void RestartCore();
 
-    // Takes a whole poll snapshot in the lister's order; row N is always its Nth entry. UI thread only.
+    // Whole poll snapshot in the lister's order, never a delta. UI thread only.
     void UpdateConnectionList(const QList<Stats::ConnectionMetadata>& connections);
 
     void UpdateDataView(bool force = false);
+
+    void noteRestartNeeded(const QString& reason);
+
+    void clearRestartNeeded();
 
     void refresh_auto_selector_view();
 
@@ -277,7 +285,7 @@ private:
     ProfilesTableModel *profilesTableModel = nullptr;
 
     ProfilesFilterProxyModel *profilesFilterModel = nullptr;
-    QSystemTrayIcon *tray;
+    TrayIcon *tray;
     QMenu *trayMenu = nullptr;
     QPointer<TrayProfileSelector> traySelector;
     void openTraySelector(bool routing);
@@ -299,6 +307,7 @@ private:
     bool m_profileConnecting = false;
     bool m_profileDisconnecting = false;
     bool m_xrayGeoAssetBusy = false;
+    bool m_ruleSetUpdateBusy = false;
     QString traffic_update_cache;
     qint64 last_test_time = 0;
     int proxy_last_order = -1;
@@ -315,15 +324,20 @@ private:
     QString update_runner;
     QMutex mu_download_update;
     QMutex mu_download_dashboard;
-    class ConnectionsTableModel *connectionsModel = nullptr;
-    class ConnectionsFilterProxyModel *connectionsFilterModel = nullptr;
-    class ConnectionCloseDelegate *connectionCloseDelegate = nullptr;
+    class ConnectionsTreeModel *connectionsModel = nullptr;
+    class ConnectionsTreeFilterProxyModel *connectionsFilterModel = nullptr;
     class ConnectionsFilterHeader *connectionFilterHeader = nullptr;
+    QHash<QString, bool> m_processExpanded; // per-process choices; the rest follow m_processesExpandedByDefault
+    bool m_processesExpandedByDefault = true;
     QTimer *connectionFilterDebounce = nullptr;
+    QToolButton *connectionExpandButton = nullptr;
     QToolButton *connectionCloseAllButton = nullptr;
     QIcon connectionCloseIcon;
+    QIcon connectionExpandIcon;
+    QIcon connectionCollapseIcon;
     int toolTipID;
     SpeedWidget *speedChartWidget;
+    class RuntimeStatsWidget *runtimeStatsWidget = nullptr;
     std::atomic<qint64> lastUpdatedMs = QDateTime::currentMSecsSinceEpoch();
     DataViewHtmlGenerator dataViewHtmlGenerator_;
 
@@ -406,7 +420,6 @@ private:
 
     void import_or_handle_deeplink(const QString &text);
 
-    // A pasted url asks whether it is a subscription or a proxy link; everything else is imported as is.
     void import_text(const QString &text);
 
     void refresh_proxy_list_column_size();
@@ -520,7 +533,6 @@ private:
     QHash<QString, QString> m_vpnOtpLastCode;
     QHash<QString, int> m_vpnOtpRejects;
     QSet<QString> m_vpnChallengeAnswering;
-    // Like m_vpnAuthPrompted, these outlive the restart they count; nothing else would end it.
     QHash<int, int> m_vpnAutoRestarts;
     qint64 m_vpnAutoRestartAt = 0;
     // Survives the restart the recovery itself triggers, so a rejected retry cannot loop.
@@ -529,6 +541,8 @@ private:
 
     bool set_system_dns(bool set, bool save_set = true);
 
+    void showHijackDeprecationNotice();
+
     void OpenDashboard();
 
     void SeedDashboard();
@@ -536,6 +550,12 @@ private:
     void setupConnectionList();
 
     void setupConnectionSortMenu();
+
+    void onConnectionContextMenu(const QPoint &pos);
+
+    QString routeRuleAppendBlocker() const;
+
+    bool addRuleToCurrentRoute(const QString &rawRule, Configs::simpleAction action);
 
     void setupConnectionFilter();
 
@@ -547,12 +567,19 @@ private:
 
     void syncConnectionSourceColumn();
 
-    // Rows are rewritten on every poll, so ids are read at click time, never captured.
+    void syncConnectionExpansion();
+
+    void setConnectionGroupsExpanded(bool expanded);
+
+    bool connectionGroupsExpanded() const;
+
+    void syncConnectionExpandButton();
+
     void closeConnections(const QStringList &ids);
 
     QStringList listedConnectionIds() const;
 
-    void refreshConnectionCloseIcons();
+    void refreshConnectionIcons();
 
     friend class TestRunner;
 

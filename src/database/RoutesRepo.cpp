@@ -24,6 +24,7 @@ namespace Configs {
                 auto_update INTEGER NOT NULL DEFAULT 0,
                 remote_last_update INTEGER NOT NULL DEFAULT 0,
                 endpoint_profile_ids TEXT NOT NULL DEFAULT '[]',
+                inner_hop_endpoint_ids TEXT NOT NULL DEFAULT '[]',
                 created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
                 updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
             )
@@ -44,6 +45,8 @@ namespace Configs {
             db.exec("ALTER TABLE route_profiles ADD COLUMN remote_last_update INTEGER NOT NULL DEFAULT 0");
         if (!routeProfilesColumnExists("endpoint_profile_ids"))
             db.exec("ALTER TABLE route_profiles ADD COLUMN endpoint_profile_ids TEXT NOT NULL DEFAULT '[]'");
+        if (!routeProfilesColumnExists("inner_hop_endpoint_ids"))
+            db.exec("ALTER TABLE route_profiles ADD COLUMN inner_hop_endpoint_ids TEXT NOT NULL DEFAULT '[]'");
 
         db.exec(R"(
             CREATE TABLE IF NOT EXISTS route_rules (
@@ -85,6 +88,7 @@ namespace Configs {
                 wifi_bssid_json TEXT,
                 tls_spoof TEXT,
                 tls_spoof_method TEXT,
+                package_name_json TEXT,
                 PRIMARY KEY (route_profile_id, rule_order),
                 FOREIGN KEY(route_profile_id) REFERENCES route_profiles(id) ON DELETE CASCADE
             )
@@ -97,6 +101,8 @@ namespace Configs {
             db.exec("ALTER TABLE route_rules ADD COLUMN tls_spoof TEXT");
         if (!routeRulesColumnExists("tls_spoof_method"))
             db.exec("ALTER TABLE route_rules ADD COLUMN tls_spoof_method TEXT");
+        if (!routeRulesColumnExists("package_name_json"))
+            db.exec("ALTER TABLE route_rules ADD COLUMN package_name_json TEXT");
     }
 
     bool RoutesRepo::routeRulesColumnExists(const char* columnName) const {
@@ -141,6 +147,7 @@ namespace Configs {
         json["process_name"] = QListStr2QJsonArray(rule->process_name);
         json["process_path"] = QListStr2QJsonArray(rule->process_path);
         json["process_path_regex"] = QListStr2QJsonArray(rule->process_path_regex);
+        json["package_name"] = QListStr2QJsonArray(rule->package_name);
         json["wifi_ssid"] = QListStr2QJsonArray(rule->wifi_ssid);
         json["wifi_bssid"] = QListStr2QJsonArray(rule->wifi_bssid);
         json["rule_set"] = QListStr2QJsonArray(rule->rule_set);
@@ -184,6 +191,7 @@ namespace Configs {
         rule->process_name = QJsonArray2QListString(json["process_name"].toArray());
         rule->process_path = QJsonArray2QListString(json["process_path"].toArray());
         rule->process_path_regex = QJsonArray2QListString(json["process_path_regex"].toArray());
+        rule->package_name = QJsonArray2QListString(json["package_name"].toArray());
         rule->wifi_ssid = QJsonArray2QListString(json["wifi_ssid"].toArray());
         rule->wifi_bssid = QJsonArray2QListString(json["wifi_bssid"].toArray());
         rule->rule_set = QJsonArray2QListString(json["rule_set"].toArray());
@@ -221,6 +229,10 @@ namespace Configs {
         for (const int endpointID : routeProfile->endpointProfileIDs) endpointsArray.append(endpointID);
         json["endpointProfileIDs"] = endpointsArray;
 
+        QJsonArray innerHopsArray;
+        for (const int endpointID : routeProfile->innerHopEndpointIDs) innerHopsArray.append(endpointID);
+        json["innerHopEndpointIDs"] = innerHopsArray;
+
         QJsonArray rulesArray;
         for (const auto& rule : routeProfile->Rules) {
             rulesArray.append(routeRuleToJson(rule.get()));
@@ -245,6 +257,9 @@ namespace Configs {
         routeProfile->remoteLastUpdate = static_cast<qint64>(json["remoteLastUpdate"].toDouble());
         for (const auto& endpointValue : json["endpointProfileIDs"].toArray()) {
             if (endpointValue.isDouble()) routeProfile->endpointProfileIDs.append(endpointValue.toInt());
+        }
+        for (const auto& endpointValue : json["innerHopEndpointIDs"].toArray()) {
+            if (endpointValue.isDouble()) routeProfile->innerHopEndpointIDs.append(endpointValue.toInt());
         }
 
         if (json.contains("rules") && json["rules"].isArray()) {
@@ -276,10 +291,15 @@ namespace Configs {
         for (const int endpointID : routeProfile->endpointProfileIDs) endpointsArray.append(endpointID);
         const QString endpointsJson = QString::fromUtf8(QJsonDocument(endpointsArray).toJson(QJsonDocument::Compact));
 
+        QJsonArray innerHopsArray;
+        for (const int endpointID : routeProfile->innerHopEndpointIDs) innerHopsArray.append(endpointID);
+        const QString innerHopsJson = QString::fromUtf8(QJsonDocument(innerHopsArray).toJson(QJsonDocument::Compact));
+
         db.execThrow(R"(
             INSERT INTO route_profiles (id, name, default_outbound_id, is_raw, raw_route, prevent_modifications,
-                is_remote, remote_url, auto_update, remote_last_update, endpoint_profile_ids)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                is_remote, remote_url, auto_update, remote_last_update, endpoint_profile_ids,
+                inner_hop_endpoint_ids)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
                 name = excluded.name, default_outbound_id = excluded.default_outbound_id,
                 is_raw = excluded.is_raw, raw_route = excluded.raw_route,
@@ -287,6 +307,7 @@ namespace Configs {
                 is_remote = excluded.is_remote, remote_url = excluded.remote_url,
                 auto_update = excluded.auto_update, remote_last_update = excluded.remote_last_update,
                 endpoint_profile_ids = excluded.endpoint_profile_ids,
+                inner_hop_endpoint_ids = excluded.inner_hop_endpoint_ids,
                 updated_at = strftime('%s', 'now')
         )",
             id,
@@ -299,7 +320,8 @@ namespace Configs {
             routeProfile->remoteURL.toStdString(),
             routeProfile->autoUpdate ? 1 : 0,
             static_cast<long long>(routeProfile->remoteLastUpdate),
-            endpointsJson.toStdString()
+            endpointsJson.toStdString(),
+            innerHopsJson.toStdString()
         );
 
         db.execThrow("DELETE FROM route_rules WHERE route_profile_id = ?", id);
@@ -324,7 +346,8 @@ namespace Configs {
             QJsonArray sniffersArray = QListStr2QJsonArray(rule->sniffers);
             QJsonArray wifiSsidArray = QListStr2QJsonArray(rule->wifi_ssid);
             QJsonArray wifiBssidArray = QListStr2QJsonArray(rule->wifi_bssid);
-            
+            QJsonArray packageNameArray = QListStr2QJsonArray(rule->package_name);
+
             QString inboundJson = QString::fromUtf8(QJsonDocument(inboundArray).toJson(QJsonDocument::Compact));
             QString domainJson = QString::fromUtf8(QJsonDocument(domainArray).toJson(QJsonDocument::Compact));
             QString domainSuffixJson = QString::fromUtf8(QJsonDocument(domainSuffixArray).toJson(QJsonDocument::Compact));
@@ -343,7 +366,8 @@ namespace Configs {
             QString sniffersJson = QString::fromUtf8(QJsonDocument(sniffersArray).toJson(QJsonDocument::Compact));
             QString wifiSsidJson = QString::fromUtf8(QJsonDocument(wifiSsidArray).toJson(QJsonDocument::Compact));
             QString wifiBssidJson = QString::fromUtf8(QJsonDocument(wifiBssidArray).toJson(QJsonDocument::Compact));
-            
+            QString packageNameJson = QString::fromUtf8(QJsonDocument(packageNameArray).toJson(QJsonDocument::Compact));
+
             db.execThrow(R"(
                 INSERT INTO route_rules
                 (route_profile_id, rule_order, name, type, ip_version, network, protocol,
@@ -353,8 +377,8 @@ namespace Configs {
                  process_name_json, process_path_json, process_path_regex_json, rule_set_json,
                  invert, outbound_id, action, reject_method, no_drop,
                  override_address, override_port, sniffers_json, sniff_override_dest, strategy,
-                 wifi_ssid_json, wifi_bssid_json, tls_spoof, tls_spoof_method)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 wifi_ssid_json, wifi_bssid_json, tls_spoof, tls_spoof_method, package_name_json)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             )",
                 id,
                 ruleOrder++,
@@ -393,7 +417,8 @@ namespace Configs {
                 wifiSsidJson.toStdString(),
                 wifiBssidJson.toStdString(),
                 rule->tls_spoof.toStdString(),
-                rule->tls_spoof_method.toStdString()
+                rule->tls_spoof_method.toStdString(),
+                packageNameJson.toStdString()
             );
         }
     }
@@ -441,6 +466,7 @@ namespace Configs {
         ruleJson["wifi_bssid"] = parseJsonArray(stmt.getColumn(baseCol + 33).getText());
         ruleJson["tls_spoof"] = QString::fromStdString(stmt.getColumn(baseCol + 34).getText());
         ruleJson["tls_spoof_method"] = QString::fromStdString(stmt.getColumn(baseCol + 35).getText());
+        ruleJson["package_name"] = parseJsonArray(stmt.getColumn(baseCol + 36).getText());
         return ruleJson;
     }
 
@@ -458,6 +484,8 @@ namespace Configs {
         json["remoteLastUpdate"] = static_cast<double>(stmt.getColumn(9).getInt64());
         const auto endpointsDoc = QJsonDocument::fromJson(QString::fromStdString(stmt.getColumn(10).getText()).toUtf8());
         json["endpointProfileIDs"] = endpointsDoc.isArray() ? endpointsDoc.array() : QJsonArray();
+        const auto innerHopsDoc = QJsonDocument::fromJson(QString::fromStdString(stmt.getColumn(11).getText()).toUtf8());
+        json["innerHopEndpointIDs"] = innerHopsDoc.isArray() ? innerHopsDoc.array() : QJsonArray();
         json["rules"] = QJsonArray();
         return routeProfileFromJson(json);
     }
@@ -477,7 +505,7 @@ namespace Configs {
             "process_name_json, process_path_json, process_path_regex_json, rule_set_json, "
             "invert, outbound_id, action, reject_method, no_drop, "
             "override_address, override_port, sniffers_json, sniff_override_dest, strategy, "
-            "wifi_ssid_json, wifi_bssid_json, tls_spoof, tls_spoof_method "
+            "wifi_ssid_json, wifi_bssid_json, tls_spoof, tls_spoof_method, package_name_json "
             "FROM route_rules WHERE route_profile_id IN (" + idList.toStdString() + ") ORDER BY route_profile_id, rule_order";
         auto rulesQuery = db.query(sql);
         if (!rulesQuery) return;
@@ -493,7 +521,8 @@ namespace Configs {
     std::shared_ptr<RouteProfile> RoutesRepo::loadFromDatabase(int id) const {
         auto profileQuery = db.query(R"(
             SELECT id, name, default_outbound_id, is_raw, raw_route, prevent_modifications,
-                   is_remote, remote_url, auto_update, remote_last_update, endpoint_profile_ids
+                   is_remote, remote_url, auto_update, remote_last_update, endpoint_profile_ids,
+                   inner_hop_endpoint_ids
             FROM route_profiles WHERE id = ?
         )", id);
         if (!profileQuery || !profileQuery->executeStep()) {
@@ -510,7 +539,7 @@ namespace Configs {
                    process_name_json, process_path_json, process_path_regex_json, rule_set_json,
                    invert, outbound_id, action, reject_method, no_drop,
                    override_address, override_port, sniffers_json, sniff_override_dest, strategy,
-                   wifi_ssid_json, wifi_bssid_json, tls_spoof, tls_spoof_method
+                   wifi_ssid_json, wifi_bssid_json, tls_spoof, tls_spoof_method, package_name_json
             FROM route_rules WHERE route_profile_id = ? ORDER BY rule_order
         )", id);
         if (rulesQuery) {
@@ -604,7 +633,7 @@ namespace Configs {
         QList<int> idsInOrder;
         QSet<int> cachedProfiles;
 
-        auto profileQuery = db.query("SELECT id, name, default_outbound_id, is_raw, raw_route, prevent_modifications, is_remote, remote_url, auto_update, remote_last_update, endpoint_profile_ids FROM route_profiles ORDER BY id");
+        auto profileQuery = db.query("SELECT id, name, default_outbound_id, is_raw, raw_route, prevent_modifications, is_remote, remote_url, auto_update, remote_last_update, endpoint_profile_ids, inner_hop_endpoint_ids FROM route_profiles ORDER BY id");
         if (!profileQuery) return routeProfiles;
 
         QMutexLocker locker(&mutex);

@@ -58,10 +58,13 @@ private:
 
     void show_dns_object_editor();
 
+    void generate_warp_config();
+
     struct DnsAdvancedDraft {
         int cache_capacity;
         bool disable_cache;
         bool disable_expire;
+        bool persist_cache;
         bool reverse_mapping;
         bool optimistic;
         QString optimistic_timeout;

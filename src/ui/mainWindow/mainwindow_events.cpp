@@ -35,8 +35,6 @@ void MainWindow::changeEvent(QEvent *event) {
     const QEvent::Type type = event->type();
 
     if (type == QEvent::FontChange) {
-        applyLogBrowserFont();
-
         // QStyleSheetStyle caches font metrics and ignores FontChange; toggling the stylesheet repolishes.
         auto refreshStylesheetCache = [](QWidget *w) {
             const QString ss = w->styleSheet();
@@ -48,14 +46,13 @@ void MainWindow::changeEvent(QEvent *event) {
         for (QWidget *w : allChildren) {
             refreshStylesheetCache(w);
         }
-        // Tab chrome lives in the app sheet now (ThemeManager owns it), and the loop above only
-        // reaches widget-level ones, so the tab bars would keep their stale metrics without this.
-        // Re-setting the same sheet only repolishes; clearing it first would run setStyle() and
-        // refill Qt's per-class platform font table over the font we are reacting to (#1829).
+        // Never clear the app sheet first: that runs setStyle() and refills Qt's per-class font table over the new font (#1829).
         const QString appSheet = qApp->styleSheet();
         if (!appSheet.isEmpty()) {
             qApp->setStyleSheet(appSheet);
         }
+        // After the repolish: with no font rule, QStyleSheetStyle resets a setFont() font to the parent's.
+        applyLogBrowserFont();
 
         // Qt skips setFont when unchanged, so bump the point size to force a real FontChange.
         auto forceFontReapply = [](QWidget *w) {
@@ -69,14 +66,13 @@ void MainWindow::changeEvent(QEvent *event) {
         };
         forceFontReapply(ui->profilesTableView);
 
-        // Redo the widths now that the stylesheet caches above are clean.
         applyTopBarMetrics();
     }
     if (type == QEvent::FontChange ||
         type == QEvent::PaletteChange ||
         type == QEvent::StyleChange) {
         scheduleProxyListRefresh();
-        refreshConnectionCloseIcons();
+        refreshConnectionIcons();
     }
     if (type == QEvent::WindowStateChange) {
         syncConnectionViewState();

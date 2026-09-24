@@ -272,8 +272,12 @@ void SetFacadeWindow(QWidget *w) { g_facadeWindow = w; }
 QWidget *GetFacadeWindow() { return g_facadeWindow.data(); }
 
 QWidget *GetMessageBoxParent() {
-    auto activeWindow = QApplication::activeWindow();
-    if (activeWindow != nullptr) return activeWindow;
+    auto parent = QApplication::activeWindow();
+    // A child box dies with its parent box, even while it is still running on the caller's stack.
+    while (qobject_cast<QMessageBox *>(parent) != nullptr) {
+        parent = parent->parentWidget() != nullptr ? parent->parentWidget()->window() : nullptr;
+    }
+    if (parent != nullptr) return parent;
     // Простой режим: MainWindow спрятан, и без этой ветки родителя не было
     // вовсе. Модальное окно вставало за простым, то переставало отвечать на
     // клики, а вопрос оставался неотвеченным — и вызвавшая его операция
@@ -310,6 +314,8 @@ void ShowPassiveWarning(const QString &title, const QString &text) {
         return;
     }
     box = new QMessageBox(QMessageBox::Warning, title, text, QMessageBox::Ok, GetMessageBoxParent());
+    // Callers embed foreign text (adapter names, SQLite messages); AutoText would render a tag-like one as HTML.
+    box->setTextFormat(Qt::PlainText);
     box->setAttribute(Qt::WA_DeleteOnClose);
     box->setWindowModality(Qt::NonModal);
     box->show();

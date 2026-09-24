@@ -38,6 +38,9 @@
             <property name="text">
              <string>Default Domain Strategy</string>
             </property>
+            <property name="buddy">
+             <cstring>default_domain_strategy</cstring>
+            </property>
            </widget>
           </item>
           <item row="1" column="1">
@@ -59,6 +62,9 @@
             <property name="text">
              <string>Remote Rule-set Mirror</string>
             </property>
+            <property name="buddy">
+             <cstring>ruleset_mirror</cstring>
+            </property>
            </widget>
           </item>
           <item row="1" column="0">
@@ -69,12 +75,18 @@
             <property name="text">
              <string>Resolve Domain Strategy</string>
             </property>
+            <property name="buddy">
+             <cstring>domainStrategyCombo</cstring>
+            </property>
            </widget>
           </item>
           <item row="3" column="0">
            <widget class="QLabel" name="route_prof_l">
             <property name="text">
              <string>Routing Profile</string>
+            </property>
+            <property name="buddy">
+             <cstring>route_prof</cstring>
             </property>
            </widget>
           </item>
@@ -123,6 +135,19 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_7">
        <item>
+        <widget class="QLabel" name="hijack_deprecated">
+         <property name="colorRole" stdset="0">
+          <string notr="true">danger</string>
+         </property>
+         <property name="text">
+          <string>Hijack is deprecated and will be removed in the next release. Tun mode covers the same use case.</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QGroupBox" name="hijack_box">
          <property name="title">
           <string>DNS Server</string>
@@ -147,6 +172,9 @@
             <property name="text">
              <string>Listen Port</string>
             </property>
+            <property name="buddy">
+             <cstring>dnshijack_listenport</cstring>
+            </property>
            </widget>
           </item>
           <item row="3" column="1">
@@ -157,6 +185,9 @@
             <property name="text">
              <string>IPv4 Response</string>
             </property>
+            <property name="buddy">
+             <cstring>dnshijack_v4resp</cstring>
+            </property>
            </widget>
           </item>
           <item row="4" column="1">
@@ -166,6 +197,9 @@
            <widget class="QLabel" name="dnshijack_v6resp_l">
             <property name="text">
              <string>IPv6 Response</string>
+            </property>
+            <property name="buddy">
+             <cstring>dnshijack_v6resp</cstring>
             </property>
            </widget>
           </item>
@@ -212,6 +246,9 @@
             <property name="text">
              <string>Listen Port</string>
             </property>
+            <property name="buddy">
+             <cstring>redirect_listenport</cstring>
+            </property>
            </widget>
           </item>
           <item row="0" column="0">
@@ -228,6 +265,9 @@
            <widget class="QLabel" name="redirect_listenaddr_l">
             <property name="text">
              <string>Listen Address</string>
+            </property>
+            <property name="buddy">
+             <cstring>redirect_listenaddr</cstring>
             </property>
            </widget>
           </item>
@@ -255,67 +295,273 @@
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QLabel" name="label_7">
+           <widget class="QLabel" name="warp_mode_l">
+            <property name="toolTip">
+             <string>WireGuard runs over UDP. MASQUE tunnels over HTTP/3 or HTTP/2 and passes networks that block WireGuard.</string>
+            </property>
             <property name="text">
-             <string>Endpoint</string>
+             <string>Mode</string>
+            </property>
+            <property name="buddy">
+             <cstring>warp_mode</cstring>
             </property>
            </widget>
           </item>
           <item row="1" column="1">
+           <widget class="QComboBox" name="warp_mode">
+            <property name="toolTip">
+             <string>WireGuard runs over UDP. MASQUE tunnels over HTTP/3 or HTTP/2 and passes networks that block WireGuard.</string>
+            </property>
+            <item>
+             <property name="text">
+              <string notr="true">WireGuard</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string notr="true">MASQUE</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="warp_wg_box">
+         <property name="title">
+          <string notr="true">WireGuard</string>
+         </property>
+         <layout class="QFormLayout" name="warp_wg_form">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Endpoint</string>
+            </property>
+            <property name="buddy">
+             <cstring>warp_ep</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
            <widget class="QLineEdit" name="warp_ep"/>
           </item>
-          <item row="2" column="0">
+          <item row="1" column="0">
            <widget class="QLabel" name="label_4">
             <property name="text">
              <string>Private Key</string>
             </property>
+            <property name="buddy">
+             <cstring>warp_private_key</cstring>
+            </property>
            </widget>
           </item>
-          <item row="2" column="1">
+          <item row="1" column="1">
            <widget class="QLineEdit" name="warp_private_key"/>
           </item>
-          <item row="3" column="0">
+          <item row="2" column="0">
            <widget class="QLabel" name="label_5">
             <property name="text">
              <string>Public Key</string>
             </property>
+            <property name="buddy">
+             <cstring>warp_public_key</cstring>
+            </property>
            </widget>
           </item>
-          <item row="3" column="1">
+          <item row="2" column="1">
            <widget class="QLineEdit" name="warp_public_key"/>
           </item>
-          <item row="7" column="1">
-           <widget class="QPushButton" name="warp_autogen">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gets a new config from cloudflare API&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>Generate Warp Config</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="1">
-           <widget class="QLineEdit" name="warp_reserved"/>
-          </item>
-          <item row="5" column="0">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Reserved</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
+          <item row="3" column="0">
            <widget class="QLabel" name="label_12">
             <property name="text">
              <string>Interface Addresses</string>
             </property>
+            <property name="buddy">
+             <cstring>warp_ifc_addrs</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLineEdit" name="warp_ifc_addrs"/>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Reserved</string>
+            </property>
+            <property name="buddy">
+             <cstring>warp_reserved</cstring>
+            </property>
            </widget>
           </item>
           <item row="4" column="1">
-           <widget class="QLineEdit" name="warp_ifc_addrs"/>
+           <widget class="QLineEdit" name="warp_reserved"/>
           </item>
          </layout>
         </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="warp_masque_box">
+         <property name="title">
+          <string notr="true">MASQUE</string>
+         </property>
+         <layout class="QFormLayout" name="warp_masque_form">
+          <item row="0" column="0">
+           <widget class="QLabel" name="warp_masque_ep_l">
+            <property name="text">
+             <string>Endpoint</string>
+            </property>
+            <property name="buddy">
+             <cstring>warp_masque_ep</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="warp_masque_ep"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="warp_masque_private_key_l">
+            <property name="text">
+             <string>Private Key</string>
+            </property>
+            <property name="buddy">
+             <cstring>warp_masque_private_key</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="warp_masque_private_key"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="warp_masque_peer_public_key_l">
+            <property name="toolTip">
+             <string>Base64 DER of the server's public key. When set, it pins the server certificate.</string>
+            </property>
+            <property name="text">
+             <string>Peer Public Key</string>
+            </property>
+            <property name="buddy">
+             <cstring>warp_masque_peer_public_key</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="warp_masque_peer_public_key"/>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="warp_masque_ifc_addrs_l">
+            <property name="text">
+             <string>Interface Addresses</string>
+            </property>
+            <property name="buddy">
+             <cstring>warp_masque_ifc_addrs</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLineEdit" name="warp_masque_ifc_addrs"/>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="warp_masque_sni_l">
+            <property name="text">
+             <string notr="true">SNI</string>
+            </property>
+            <property name="buddy">
+             <cstring>warp_masque_sni</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLineEdit" name="warp_masque_sni"/>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="warp_masque_http_mode_l">
+            <property name="toolTip">
+             <string>HTTP/3 runs over UDP; HTTP/2 runs over TLS on TCP and works where UDP is blocked.</string>
+            </property>
+            <property name="text">
+             <string>HTTP Version</string>
+            </property>
+            <property name="buddy">
+             <cstring>warp_masque_http_mode</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QComboBox" name="warp_masque_http_mode">
+            <property name="toolTip">
+             <string>HTTP/3 runs over UDP; HTTP/2 runs over TLS on TCP and works where UDP is blocked.</string>
+            </property>
+            <item>
+             <property name="text">
+              <string>HTTP/3 (fallback to HTTP/2)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>HTTP/3 only</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string notr="true">HTTP/2</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="warp_autogen_row">
+         <item>
+          <widget class="QPushButton" name="warp_autogen">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gets a new config from cloudflare API&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>Generate Warp Config</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="warp_api_hosts_btn">
+           <property name="toolTip">
+            <string>Cloudflare API domains to try, in order, when generating a WARP config</string>
+           </property>
+           <property name="text">
+            <string>Registration Domains…</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="warp_autogen_spacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="warp_bottom_spacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>
@@ -337,6 +583,9 @@
             </property>
             <property name="text">
              <string>Local Override</string>
+            </property>
+            <property name="buddy">
+             <cstring>local_override</cstring>
             </property>
            </widget>
           </item>
@@ -400,7 +649,7 @@
              <string>Remote DNS</string>
             </property>
             <property name="buddy">
-             <cstring>widget</cstring>
+             <cstring>remote_dns</cstring>
             </property>
            </widget>
           </item>
@@ -473,6 +722,9 @@ For more information, see the document &quot;Configuration/DNS&quot;.</string>
             <property name="text">
              <string>Direct DNS</string>
             </property>
+            <property name="buddy">
+             <cstring>direct_dns</cstring>
+            </property>
            </widget>
           </item>
           <item row="1" column="3">
@@ -526,6 +778,9 @@ For more information, see the document &quot;Configuration/DNS&quot;.</string>
            <widget class="QLabel" name="dns_final_out_l">
             <property name="text">
              <string>Default DNS server</string>
+            </property>
+            <property name="buddy">
+             <cstring>dns_final_out</cstring>
             </property>
            </widget>
           </item>

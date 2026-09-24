@@ -27,6 +27,8 @@ namespace Configs {
     int getOutboundID(const QString& name) {
         if (name == "proxy") return -1;
         if (name == "direct") return -2;
+        if (name == "block") return blockID;
+        if (name == "warp-bypass") return warpBypassID;
         if (const auto &profile = Configs::dataManager->profilesRepo->GetProfileByName(name)) return profile->id;
 
         return INVALID_ID;
@@ -179,10 +181,18 @@ namespace Configs {
         autoUpdate = other.autoUpdate;
         remoteLastUpdate = other.remoteLastUpdate;
         endpointProfileIDs = other.endpointProfileIDs;
+        innerHopEndpointIDs = other.innerHopEndpointIDs;
     }
 
     static void appendWarning(QString* warnings, const QString& msg) {
         if (warnings) warnings->append(msg + "\n");
+    }
+
+    // toString() is "" for a number, and the writer emits ports, ip_version and override_port as numbers.
+    static QString jsonScalarText(const QJsonValue& val) {
+        if (!val.isDouble()) return val.toString();
+        const qint64 whole = val.toInteger();
+        return static_cast<double>(whole) == val.toDouble() ? QString::number(whole) : QString::number(val.toDouble());
     }
 
     // name/type are schema-only keys: skipped here, applied by the caller.
@@ -210,9 +220,11 @@ namespace Configs {
                     }
                 }
             } else if (val.isArray()) {
-                rule->set_field_value(key, QJsonArray2QListString(val.toArray()));
-            } else if (val.isString()) {
-                rule->set_field_value(key, {val.toString()});
+                QStringList items;
+                for (const auto& item: val.toArray()) items << jsonScalarText(item);
+                rule->set_field_value(key, items);
+            } else if (val.isString() || val.isDouble()) {
+                rule->set_field_value(key, {jsonScalarText(val)});
             } else if (val.isBool()) {
                 rule->set_field_value(key, {val.toBool() ? "true":"false"});
             }
@@ -253,7 +265,7 @@ namespace Configs {
     }
 
     // A chain also carries its hops in `list` order, so hops[i] describes config["list"][i].
-    static QJsonObject routeProfileEndpointToJson(int id, QString* warnings) {
+    static QJsonObject routeProfileEndpointToJson(int id, bool innerHops, QString* warnings) {
         const auto ent = Configs::dataManager->profilesRepo->GetProfile(id);
         if (ent == nullptr || ent->outbound == nullptr) {
             appendWarning(warnings, QString("endpoint profile id %1 no longer exists, not shared").arg(id));
@@ -288,14 +300,15 @@ namespace Configs {
                 hopArr.append(QJsonObject{{"id", hop->id}, {"config", routeProfileStrippedConfig(hop)}});
             }
             entry["hops"] = hopArr;
+            if (innerHops) entry["inner_hops"] = true;
         }
         return entry;
     }
 
-    static QJsonArray routeProfileEndpointsToJson(const QList<int>& ids, QString* warnings) {
+    static QJsonArray routeProfileEndpointsToJson(const QList<int>& ids, const QList<int>& innerHopIDs, QString* warnings) {
         QJsonArray arr;
         for (const int id: ids) {
-            if (auto entry = routeProfileEndpointToJson(id, warnings); !entry.isEmpty()) arr.append(entry);
+            if (auto entry = routeProfileEndpointToJson(id, innerHopIDs.contains(id), warnings); !entry.isEmpty()) arr.append(entry);
         }
         return arr;
     }
@@ -339,7 +352,7 @@ namespace Configs {
         return ent->id;
     }
 
-    static int routeProfileAdoptEndpoint(const QJsonObject& entry, QString* warnings) {
+    static int routeProfileAdoptEndpoint(const QJsonObject& entry, QString* warnings, QMap<int, int>* outHopMap = nullptr) {
         QMap<int, int> hopMap;
         for (const auto& item: entry.value("hops").toArray()) {
             const QJsonObject hop = item.toObject();
@@ -351,23 +364,28 @@ namespace Configs {
             }
             hopMap[original] = local;
         }
+        if (outHopMap != nullptr) *outHopMap = hopMap;
         return routeProfileAdoptConfig(entry.value("config").toObject(), warnings, &hopMap);
     }
 
-    // *idMap is original id -> local id, so the paired rules can be remapped.
-    static QList<int> routeProfileEndpointsFromJson(const QJsonArray& arr, QString* warnings, bool materialize, QMap<int, int>* idMap) {
+    // *idMap is original id -> local id, hops included, so the paired rules can be remapped.
+    static QList<int> routeProfileEndpointsFromJson(const QJsonArray& arr, QString* warnings, bool materialize,
+                                                   QMap<int, int>* idMap, QList<int>* innerHopIDs) {
         QList<int> ids;
         for (const auto& item: arr) {
             int originalID = INVALID_ID;
             int localID = -1;
+            bool innerHops = false;
+            QMap<int, int> hopMap;
             if (item.isDouble()) {
                 originalID = item.toInt(INVALID_ID);
                 localID = originalID;
             } else if (item.isObject()) {
                 const QJsonObject entry = item.toObject();
                 originalID = entry.value("id").toInt(INVALID_ID);
+                innerHops = entry.value("inner_hops").toBool();
                 if (!materialize) continue;
-                if (originalID != INVALID_ID) localID = routeProfileAdoptEndpoint(entry, warnings);
+                if (originalID != INVALID_ID) localID = routeProfileAdoptEndpoint(entry, warnings, &hopMap);
             }
             if (originalID == INVALID_ID || localID < 0 || ids.contains(localID)) continue;
             const auto profile = Configs::dataManager->profilesRepo->GetProfile(localID);
@@ -376,7 +394,11 @@ namespace Configs {
                 continue;
             }
             ids << localID;
-            if (idMap) (*idMap)[originalID] = localID;
+            if (innerHops && innerHopIDs != nullptr) *innerHopIDs << localID;
+            if (idMap) {
+                (*idMap)[originalID] = localID;
+                for (auto it = hopMap.cbegin(); it != hopMap.cend(); ++it) (*idMap)[it.key()] = it.value();
+            }
         }
         return ids;
     }
@@ -388,7 +410,7 @@ namespace Configs {
         root["name"] = name;
         QJsonArray endpointsArr;
         if (!endpointProfileIDs.isEmpty()) {
-            endpointsArr = routeProfileEndpointsToJson(endpointProfileIDs, warnings);
+            endpointsArr = routeProfileEndpointsToJson(endpointProfileIDs, innerHopEndpointIDs, warnings);
             if (!endpointsArr.isEmpty()) root["endpoints"] = endpointsArr;
         }
         if (isRaw) {
@@ -408,7 +430,13 @@ namespace Configs {
         }
         root["default_outbound"] = outboundIDToString(defaultOutboundID);
         QSet<int> sharedEndpoints;
-        for (const auto& entry: endpointsArr) sharedEndpoints << entry.toObject().value("id").toInt(INVALID_ID);
+        for (const auto& entry: endpointsArr) {
+            const QJsonObject obj = entry.toObject();
+            sharedEndpoints << obj.value("id").toInt(INVALID_ID);
+            // The inner hops travel with the entry, so their rules may travel too.
+            if (!obj.value("inner_hops").toBool()) continue;
+            for (const auto& hop: obj.value("hops").toArray()) sharedEndpoints << hop.toObject().value("id").toInt(INVALID_ID);
+        }
         QJsonArray rulesArr;
         for (const auto& rule: Rules) {
             if (rule->type != custom && rule->isEmpty()) continue;
@@ -472,7 +500,7 @@ namespace Configs {
                 profile->isRaw = true;
                 profile->name = root.value("name").toString();
                 profile->preventModifications = root.value("prevent_modifications").toBool();
-                profile->endpointProfileIDs = routeProfileEndpointsFromJson(root.value("endpoints").toArray(), warnings, materializeEndpoints, nullptr);
+                profile->endpointProfileIDs = routeProfileEndpointsFromJson(root.value("endpoints").toArray(), warnings, materializeEndpoints, nullptr, &profile->innerHopEndpointIDs);
                 QJsonObject routeObj = root.value("route").toObject();
                 routeObj = remapRawOutboundsByName(routeObj, root.value("outbound_names").toObject(), warnings);
                 profile->rawRoute = QJsonObject2QString(routeObj, false);
@@ -483,7 +511,7 @@ namespace Configs {
             profile->name = root.value("name").toString();
             profile->defaultOutboundID = stringToOutboundID(root.value("default_outbound").toString());
             QMap<int, int> endpointIDMap;
-            profile->endpointProfileIDs = routeProfileEndpointsFromJson(root.value("endpoints").toArray(), warnings, materializeEndpoints, &endpointIDMap);
+            profile->endpointProfileIDs = routeProfileEndpointsFromJson(root.value("endpoints").toArray(), warnings, materializeEndpoints, &endpointIDMap, &profile->innerHopEndpointIDs);
             int fallbackNum = 1;
             for (const auto& v: root.value("rules").toArray()) {
                 if (!v.isObject()) continue;
@@ -610,18 +638,32 @@ namespace Configs {
         return rule;
     }
 
+    QList<int> RouteProfile::endpointRuleTargets() const {
+        QList<int> targets;
+        for (const int id: endpointProfileIDs) {
+            if (targets.contains(id)) continue;
+            targets << id;
+            if (!innerHopEndpointIDs.contains(id)) continue;
+            for (const int hopID: AuxEndpointInnerHops(id)) {
+                if (!targets.contains(hopID)) targets << hopID;
+            }
+        }
+        return targets;
+    }
+
     void RouteProfile::SyncEndpointRules() {
         if (isRaw) return;
+        const auto targets = endpointRuleTargets();
         QList<std::shared_ptr<RouteRule>> kept;
         QSet<int> paired;
         for (const auto& rule: Rules) {
             if (rule->type == endpointPreferredBy) {
-                if (!endpointProfileIDs.contains(rule->outboundID) || paired.contains(rule->outboundID)) continue;
+                if (!targets.contains(rule->outboundID) || paired.contains(rule->outboundID)) continue;
                 paired << rule->outboundID;
             }
             kept << rule;
         }
-        for (const int id: endpointProfileIDs) {
+        for (const int id: targets) {
             if (!paired.contains(id)) kept << MakeEndpointRule(id);
         }
         Rules = kept;
@@ -861,6 +903,31 @@ namespace Configs {
         Rules = newRules;
     }
 
+    bool RouteProfile::AppendSimpleRule(const QString& rawRule, simpleAction action) {
+        const QString raw = rawRule.trimmed();
+        if (raw.isEmpty()) return false;
+
+        auto type = get_rule_type(raw, action);
+        if (type == custom) return false;
+
+        auto rule = get_simple_rule_by_type(type);
+        const bool isNewRule = rule == nullptr;
+        if (isNewRule) {
+            for (auto &item : get_simple_rules()) {
+                if (item->type == type) {
+                    rule = item;
+                    break;
+                }
+            }
+        }
+        if (!rule) return false;
+
+        if (!add_simple_rule(raw, rule, type)) return false;
+        // Published only once the value stuck, so a rejected line needs no FilterEmptyRules() sweep to undo it.
+        if (isNewRule) Rules.append(rule);
+        return true;
+    }
+
     bool RouteProfile::add_simple_rule(const QString& content, const std::shared_ptr<RouteRule>& rule, ruleType type)
     {
         if (type == simpleAddressProxy || type == simpleAddressBypass || type == simpleAddressBlock || type == simpleAddressWarpBypass) return add_simple_address_rule(content, rule);
@@ -872,6 +939,7 @@ namespace Configs {
         auto colonIdx = content.indexOf(':');
         if (colonIdx == -1) return false;
         const QString address = content.mid(colonIdx+1).trimmed();
+        if (address.isEmpty()) return false;
         const QString subType = content.left(colonIdx).trimmed();
         if (subType == "domain") {
             if (!rule->domain.contains(address)) rule->domain.append(address);
@@ -901,6 +969,7 @@ namespace Configs {
         if (!content.contains(":")) return false;
         const QString prefix = content.first(content.indexOf(':')).trimmed();
         const QString address = content.section(':', 1).trimmed();
+        if (address.isEmpty()) return false;
         if (prefix == "processPath")
         {
             if (!rule->process_path.contains(address)) rule->process_path.append(address);

@@ -14,6 +14,11 @@ namespace Configs
 {
     inline QStringList vPacketEncoding = {"", "packetaddr", "xudp"};
 
+    // openvpn/openconnect main profile: ignore the pushed resolvers, use them for the names they claim, or also for every remote query.
+    inline constexpr auto kTunnelDnsNone = "none";
+    inline constexpr auto kTunnelDnsPrefer = "prefer";
+    inline constexpr auto kTunnelDnsStrict = "strict";
+
     // Ordered worst-to-best; the ordering is relied on when sorting by security.
     enum class SecurityLevel {
         Unknown = 0,
@@ -129,6 +134,8 @@ namespace Configs
         virtual bool HasTLS() { return false; }
 
         virtual bool MustTLS() { return false; }
+
+        virtual bool LimitedTLS() { return false; }
 
         virtual bool HasQUIC() { return false; }
 

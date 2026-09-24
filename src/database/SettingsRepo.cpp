@@ -79,16 +79,19 @@ namespace Configs {
             {"log_enable_exclude",            &log_enable_exclude},
             {"log_auto_scroll",               &log_auto_scroll},
             {"enable_warp",                   &enable_warp},
+            {"warp_tos_accepted",             &warp_tos_accepted},
             {"enable_dns_routing",            &enable_dns_routing},
             {"inbound_auth",                  &inbound_auth},
             {"allow_stopping_active_profile", &allow_stopping_active_profile},
             {"disable_mixed_inbound",         &disable_mixed_inbound},
             {"url_scheme_auto_register",      &url_scheme_auto_register},
+            {"file_assoc_auto_register",      &file_assoc_auto_register},
             {"system_proxy_enabled",          &remember_system_proxy},
             {"tun_mode_enabled",              &remember_tun},
             {"reset_proxy_on_disable_sp", &reset_proxy_on_disable_sp},
             {"dns_disable_cache", &dns_disable_cache},
             {"dns_disable_expire", &dns_disable_expire},
+            {"dns_persist_cache", &dns_persist_cache},
             {"dns_reverse_mapping", &dns_reverse_mapping},
             {"disable_private_range_bypass", &disable_private_range_bypass},
             {"dns_optimistic", &dns_optimistic},
@@ -131,6 +134,7 @@ namespace Configs {
             {"dns_cache_capacity", &dns_cache_capacity},
             {"h2_max_concurrent_streams", &h2_max_concurrent_streams},
             {"quic_initial_packet_size", &quic_initial_packet_size},
+            {"warp_masque_http_mode",  &warp_masque_http_mode},
         };
 
         stringMap = {
@@ -138,6 +142,7 @@ namespace Configs {
             {"test_url",                   &test_latency_url},
             {"update_seen_version",        &update_seen_version},
             {"last_run_version",           &last_run_version},
+            {"direct_test_url",            &direct_test_url},
             {"inbound_address",            &inbound_address},
             {"log_level",                  &log_level},
             {"log_file_level",             &log_file_level},
@@ -197,9 +202,15 @@ namespace Configs {
             {"warp_private_key",           &warp_private_key},
             {"warp_public_key",            &warp_public_key},
             {"warp_ep",                    &warp_ep},
+            {"warp_mode",                  &warp_mode},
+            {"warp_masque_private_key",    &warp_masque_private_key},
+            {"warp_masque_peer_public_key", &warp_masque_peer_public_key},
+            {"warp_masque_ep",             &warp_masque_ep},
+            {"warp_masque_sni",            &warp_masque_sni},
             {"inbound_user",               &inbound_user},
             {"inbound_pass",               &inbound_pass},
             {"url_scheme_mirror",          &url_scheme_mirror},
+            {"file_assoc_mirror",          &file_assoc_mirror},
         };
 
         stringListMap = {
@@ -212,10 +223,14 @@ namespace Configs {
             {"log_exclude_regex",        &log_exclude_regex},
             {"warp_ifc_addrs",           &warp_ifc_addrs},
             {"vpn_private_ranges",       &vpn_private_ranges},
+            {"xray_geoip_url_history",   &xray_geoip_url_history},
+            {"xray_geosite_url_history", &xray_geosite_url_history},
             {"dial_bind_ifc_history",    &dial_bind_interface_history},
             {"dial_inet4_bind_history",  &dial_inet4_bind_address_history},
             {"dial_inet6_bind_history",  &dial_inet6_bind_address_history},
             {"warp_reserved", &warp_reserved},
+            {"warp_masque_ifc_addrs", &warp_masque_ifc_addrs},
+            {"warp_api_hosts", &warp_api_hosts},
         };
     }
 
