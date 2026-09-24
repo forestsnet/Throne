@@ -26,11 +26,14 @@ if [[ "$TARGET" == *.app ]]; then
     ditto -c -k --keepParent "$TARGET" "$UPLOAD"
 fi
 
+# Очередь Apple — не наша: первые заявки нового участника она перемалывает
+# часами, дальше обычно минуты. Получасового запаса не хватило даже на первую,
+# поэтому ждём столько, сколько задача вообще может себе позволить.
 xcrun notarytool submit "$UPLOAD" \
     --key "$KEY" \
     --key-id "$MACOS_NOTARY_KEY_ID" \
     --issuer "$MACOS_NOTARY_ISSUER" \
-    --wait --timeout 30m
+    --wait --timeout 2h
 
 # Талон кладём рядом с приложением. Без него первый запуск идёт за проверкой к
 # Apple по сети, а у наших людей она до Apple добирается не всегда.
