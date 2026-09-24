@@ -1,5 +1,6 @@
 #include "include/sys/macos/MacNotify.hpp"
 
+#import <AppKit/AppKit.h>
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 
@@ -61,21 +62,34 @@ namespace {
     // отпустишь — щелчки по баннеру перестанут доходить.
     ThroneNotificationDelegate *g_delegate = nil;
 
+    // Готов ли UserNotifications вообще с нами разговаривать.
+    //
+    // Первый же вызов currentNotificationCenter спрашивает у LaunchServices
+    // запись о нашем бандле, и пока её нет — приложение только что скопировали,
+    // запустили из образа, регистрация идёт в фоне — Apple бросает
+    // NSInternalInconsistencyException прямо внутри dispatch_once. Поймать его
+    // нельзя: размотка идёт через кадры libdispatch и заканчивается abort(),
+    // то есть падением всего клиента. Значит до вызова надо убедиться, что
+    // запись уже есть: bundleIdentifier у NSRunningApplication берётся как раз
+    // из LaunchServices и пустует ровно в том случае, когда вызов убил бы нас.
+    bool notificationsUsable() {
+        if (NSClassFromString(@"UNUserNotificationCenter") == nil) return false;
+        if ([NSBundle mainBundle].bundleIdentifier.length == 0) return false;
+        if ([NSRunningApplication currentApplication].bundleIdentifier.length == 0) return false;
+        return true;
+    }
+
     UNUserNotificationCenter *notificationCenter() {
-        if (NSClassFromString(@"UNUserNotificationCenter") == nil) return nil;
-        // Приложение без подписи и без записи в LaunchServices роняет здесь
-        // исключение, а не возвращает nil.
-        @try {
-            UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-            if (center != nil && g_delegate == nil) {
-                g_delegate = [[ThroneNotificationDelegate alloc] init];
-                center.delegate = g_delegate;
-            }
-            return center;
-        } @catch (NSException *exception) {
-            NSLog(@"UNUserNotificationCenter unavailable: %@", exception.reason);
+        if (!notificationsUsable()) {
+            NSLog(@"UserNotifications is not ready for this process yet");
             return nil;
         }
+        UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+        if (center != nil && g_delegate == nil) {
+            g_delegate = [[ThroneNotificationDelegate alloc] init];
+            center.delegate = g_delegate;
+        }
+        return center;
     }
 
     // Всё по значению: блок уходит в чужую очередь и переживает вызывающий код.
@@ -103,9 +117,9 @@ namespace {
 }
 
 namespace MacNotify {
-    void Prime() {
+    bool Prime() {
         UNUserNotificationCenter *center = notificationCenter();
-        if (center == nil) return;
+        if (center == nil) return false;
         [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
             if (settings.authorizationStatus != UNAuthorizationStatusNotDetermined) return;
             [center requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound)
@@ -114,6 +128,7 @@ namespace MacNotify {
                                       Q_UNUSED(error)
                                   }];
         }];
+        return true;
     }
 
     void Post(const QString &title, const QString &body,

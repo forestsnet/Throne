@@ -1,6 +1,7 @@
 #include "include/ui/fsnt/Notifier.hpp"
 
 #include <QCoreApplication>
+#include <QTimer>
 #include <QSystemTrayIcon>
 
 #include "include/global/Configs.hpp"
@@ -31,7 +32,11 @@ namespace Fsnt {
             !NotifyEnabled(NotifyKind::Connection)) {
             return;
         }
-        MacNotify::Prime();
+        if (!MacNotify::Prime()) {
+            // Бандл ещё не зарегистрирован системой — это бывает сразу после
+            // копирования приложения. Спросим разрешение чуть позже.
+            QTimer::singleShot(120000, qApp, [] { MacNotify::Prime(); });
+        }
 #endif
     }
 
