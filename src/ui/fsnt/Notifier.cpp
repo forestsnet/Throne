@@ -7,6 +7,9 @@
 #include "include/global/Configs.hpp"
 #include "include/ui/fsnt/DesktopNotice.hpp"
 #include "include/ui/mainwindow.h"
+// Явно: mainwindow.h тянет значок только в полном виде класса, а в unity-блоке
+// первым может оказаться файл с mainwindow_interface.h.
+#include "include/ui/widget/TrayIcon.hpp"
 
 #ifdef Q_OS_MACOS
 #include "include/sys/macos/MacNotify.hpp"

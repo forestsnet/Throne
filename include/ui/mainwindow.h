@@ -180,6 +180,11 @@ public:
 
     void setDownloadReport(const DownloadProgressReport& report, bool show);
 
+    // Форк: простому режиму нужен тот же значок, но со своим меню. Значок
+    // создаётся без родителя, поэтому findChild его не находит. Объявление
+    // стоит до #ifndef MW_INTERFACE: урезанному виду класса оно тоже нужно.
+    [[nodiscard]] class TrayIcon *trayIcon() const;
+
 signals:
 
     void profile_selected(int id);
@@ -273,11 +278,6 @@ private slots:
     // без окна, и до этой проверки любая его осечка выглядела как «программа
     // закрылась и ничего не произошло».
     void ReportPreviousUpdate();
-
-public:
-    // Форк: простому режиму нужен тот же значок, но со своим меню. Значок
-    // создаётся без родителя, поэтому findChild его не находит.
-    [[nodiscard]] TrayIcon *trayIcon() const { return tray; }
 
 private:
     Ui::MainWindow *ui;

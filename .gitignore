@@ -87,4 +87,4 @@ CMakeLists.txt.user*
 out
 /libs
 srslist.h
-.claude
+.claudebuild-unity/

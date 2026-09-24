@@ -1299,3 +1299,7 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
+
+TrayIcon *MainWindow::trayIcon() const {
+    return tray;
+}
