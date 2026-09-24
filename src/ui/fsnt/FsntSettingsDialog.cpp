@@ -136,9 +136,12 @@ void FsntSettingsDialog::buildConnection(QVBoxLayout *column, QWidget *host) {
     // маршрутизацию: и профиль маршрутов, и выбор приложений — это она же.
     // Режим подключения и автозапуск остаются: пользователь должен видеть,
     // что происходит. Ограничение снимается остановкой профиля.
+    // Пункт остаётся на месте и когда им распоряжается провайдер: раньше он
+    // просто исчезал при подключении и возвращался после отключения, и человек
+    // искал пропавшую кнопку, вместо того чтобы прочитать объяснение.
     const bool providerManagesRouting = Subscription::PolicyHidesSettings();
 
-    if (!providerManagesRouting) {
+    {
         // Сначала готовые схемы, потом всё, что пользователь собрал сам в
         // расширенном режиме. Данные пункта: ключ пресета либо id профиля,
         // поэтому храним оба вида в QVariant и различаем по типу.
@@ -179,21 +182,24 @@ void FsntSettingsDialog::buildConnection(QVBoxLayout *column, QWidget *host) {
         connect(m_route, &QComboBox::currentIndexChanged, this,
                 &FsntSettingsDialog::updateRouteNote);
         updateRouteNote();
+        m_route->setEnabled(!providerManagesRouting);
     }
 
     m_autoConnect = card.addToggle(tr("Reconnect on start"), settings->remember_enable);
     m_allowLan = card.addToggle(tr("Allow local network access"),
                                 QStringList{"::", "0.0.0.0"}.contains(settings->inbound_address));
 
-    if (!providerManagesRouting) {
-        connect(card.addAction(tr("Choose apps to route")), &QPushButton::clicked, this, [this] {
+    auto *chooseApps = card.addAction(tr("Choose apps to route"));
+    chooseApps->setEnabled(!providerManagesRouting);
+    if (providerManagesRouting) {
+        card.addNote(tr("Routing is managed by your provider while this subscription is "
+                        "connected. Disconnect to change it."));
+    } else {
+        connect(chooseApps, &QPushButton::clicked, this, [this] {
             auto *dialog = new DialogPerAppProxy(this);
             dialog->setAttribute(Qt::WA_DeleteOnClose);
             dialog->exec();
         });
-    } else {
-        card.addNote(tr("Routing is managed by your provider while this subscription is "
-                        "connected. Disconnect to change it."));
     }
 }
 
@@ -405,8 +411,9 @@ void FsntSettingsDialog::save() {
     settings->remote_dns = m_remoteDns->currentData().toString();
     settings->direct_dns = m_directDns->currentData().toString();
 
-    // m_route отсутствует, когда маршрутизацией управляет провайдер.
-    if (m_route != nullptr && m_route->currentIndex() >= 0) {
+    // Заблокирован — значит маршрутизацией распоряжается провайдер: показываем,
+    // что выбрано, но ничего не переписываем.
+    if (m_route != nullptr && m_route->isEnabled() && m_route->currentIndex() >= 0) {
         const QVariant chosen = m_route->currentData();
         // Профиль пресета создаём только когда его действительно выбрали: иначе
         // база обрастала бы схемами, которых пользователь не просил.

@@ -168,13 +168,51 @@ namespace Configs {
         return profile->Rules.size() <= 1 && !profile->isRaw && !profile->isRemote;
     }
 
+    namespace {
+        bool isPerAppRule(int type) {
+            switch (type) {
+                case simpleProcessNameProxy:
+                case simpleProcessNameBypass:
+                case simpleProcessNameBlock:
+                case simpleProcessNameWarpBypass:
+                case simpleProcessPathProxy:
+                case simpleProcessPathBypass:
+                case simpleProcessPathBlock:
+                case simpleProcessPathWarpBypass:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    }
+
     int EnsureRoutePreset(const QString &key) {
         const QString name = RoutePresetProfileName(key);
         if (name.isEmpty()) return INVALID_ID;
 
         for (const auto &existing : dataManager->routesRepo->GetAllRouteProfiles()) {
             if (existing == nullptr || existing->name != name) continue;
+
+            // Раздельное туннелирование человек настраивает сам, и живёт оно
+            // в тех же правилах, что и схема маршрутизации. Шаблон пресета их
+            // не знает и начинается с Rules.clear(), поэтому простое сохранение
+            // настроек стирало выбранные приложения: игра снова уходила в
+            // туннель, а переключатели показывали значения по умолчанию.
+            QList<std::shared_ptr<RouteRule>> perApp;
+            for (const auto &rule : existing->Rules) {
+                if (rule != nullptr && isPerAppRule(rule->type)) perApp << rule;
+            }
+
             fillPreset(key, *existing);
+
+            // Возвращаем сразу после служебных правил: явно выбранное
+            // приложение должно выигрывать у общих списков пресета, иначе
+            // «эта игра напрямую» проиграет строке «игры через VPN».
+            const int insertAt = qMin(2, static_cast<int>(existing->Rules.size()));
+            for (int i = 0; i < perApp.size(); ++i) {
+                existing->Rules.insert(insertAt + i, perApp[i]);
+            }
+
             dataManager->routesRepo->Save(existing);
             return existing->id;
         }
