@@ -111,11 +111,42 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Could not open the subscription. Most likely it is blocked by %1 — such programs rewrite network packets, and the provider&apos;s site stops answering. Close it and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not open the subscription. Check the link, and if it opens in a browser — look for an anti-censorship tool or antivirus that filters traffic on this computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Enter a link first.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Fetching the subscription…</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>CoachMarks</name>
+    <message>
+        <source>Skip</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Back</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>STEP %1 OF %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Got it</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -148,6 +179,28 @@
     <message>
         <source>Connecting</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The tunnel needs administrator rights</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Full tunnel routes every program on the computer, and macOS gives that only with your password.
+
+You can try again — the password window will come back. Or connect through the system proxy: it works without any rights, browsers and most programs go through it, and the few that ignore proxy settings stay outside.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ask for the password again</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connect through the proxy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished">لغو کردن</translation>
     </message>
     <message>
         <source>Connected</source>
@@ -2697,6 +2750,18 @@ Use a number followed by ns, us, ms, s, m, h or d.</source>
     </message>
     <message>
         <source>Choose how each application is routed. The choice is stored as processName rules in the current routing profile.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Past the VPN: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Through the VPN: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your provider routes these itself. %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6147,6 +6212,41 @@ Improves hole-punching reliability. Requires IPv4.</source>
     </message>
 </context>
 <context>
+    <name>FsntDiagnosticsDialog</name>
+    <message>
+        <source>Diagnostics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The client checks itself and says what to fix. Everything here runs on this computer; nothing is sent anywhere.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>checking…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run again</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished">بستن</translation>
+    </message>
+    <message>
+        <source>Found %1 problem(s). Fix the topmost one first: the checks run from cause to effect, and the rest are often its consequences.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No breakage found, but %1 thing(s) are worth a look.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Everything checks out. If something still does not work, build a support report from the menu and send it over.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>FsntLogDialog</name>
     <message>
         <source>Logs</source>
@@ -6208,6 +6308,26 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Compatible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fast</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tunnel mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If the client says connected but no site opens, switch to Compatible. The fast mode hands packets to Windows, where antivirus software, DPI-bypass tools and leftovers of other VPNs intercept them.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Custom: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Routing</source>
         <translation type="unfinished">مسیریابی</translation>
     </message>
@@ -6225,6 +6345,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
     </message>
     <message>
         <source>Routing is managed by your provider while this subscription is connected. Disconnect to change it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A profile you built yourself in advanced mode.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6280,6 +6404,14 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Send device id</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Providers count devices by it. With it off a subscription may come back empty, and the reason will not be obvious.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Update all now</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6294,6 +6426,14 @@ Improves hole-punching reliability. Requires IPv4.</source>
     <message>
         <source>Application</source>
         <translation type="unfinished">برنامه</translation>
+    </message>
+    <message>
+        <source>Latency check</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>URL test address</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>System</source>
@@ -6324,7 +6464,31 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Install updates by itself</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Language changes apply after restarting the application.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Notifications</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New version of the client</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Subscription updated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>VPN turned on and off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>About the subscription and the tunnel we only tell you when the client window is not in front of you: while you are looking at it, you can see everything anyway.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -6343,8 +6507,52 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation type="unfinished">تنظیمات</translation>
     </message>
     <message>
+        <source>Start with a subscription</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Many providers put an Add button right on your subscription page: it opens the client and fills everything in. If yours does not, press this plus and paste the link by hand.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your servers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Servers appear here once the subscription loads. The number on the right is the ping: the lower it is, the faster the server answers.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>One button</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Press it to send your traffic through the tunnel, press it again to stop. With no server picked, the fastest one is chosen for you.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connection mode, DNS and the apps that go through the tunnel. Everything here has a working default, so you do not have to touch it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Logs</source>
         <translation type="unfinished">گزارش‌ها</translation>
+    </message>
+    <message>
+        <source>A live log. If something goes wrong, open it and copy the last lines into your message to support.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Everything else</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>App updates, a support report and the config folder. Closing the window only hides it to the tray: the tunnel keeps running.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A new version is out</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>More</source>
@@ -6371,7 +6579,123 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Diagnostics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>How to use the app</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Advanced mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Update by itself?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The client can install new versions on its own: it downloads the update, restarts and brings the connection back to the same server.
+
+You can change this later in settings.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You are now on %1. The client can install the next versions on its own: it downloads the update, restarts and brings the connection back to the same server.
+
+You can change this later in settings.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Update by itself</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not now</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>VPN is on</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>VPN is off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Traffic goes through %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Traffic goes through the tunnel.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Traffic goes directly again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n server(s) available.</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>The provider returned no servers.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Subscription updated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Updating to %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The client will restart and reconnect by itself.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Updating to %1, the client will restart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FSNT Client %1 is out</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click here to update — it takes about a minute.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FSNT Client %1 is out — press the bell</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You have %1 installed. Press Update and the client will download and install the new version itself.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Version %1 is out</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Now you have two subscriptions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Servers live separately in each one. This is where you switch between them: pick a subscription and its own servers appear in the list below.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connected, but nothing opens</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The tunnel is up, but no traffic goes through it. Usually another program on this computer intercepts network packets: an antivirus, a DPI-bypass tool or what another VPN left behind.
+
+Switch the tunnel to compatible mode and reconnect? It is a little slower, but it does not depend on them.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6626,6 +6950,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>بازنشانی ترافیک</translation>
     </message>
     <message>
+        <source>Switch to the simple interface</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Scan QR Code</source>
         <translation>کد QR را اسکن کنید</translation>
     </message>
@@ -6758,6 +7086,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Deeplink %1: no profile to start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Add subscription</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6820,7 +7152,7 @@ URL: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Updating existing subscription for domain: %1</source>
+        <source>Updating existing subscription: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -7200,12 +7532,44 @@ URL: %2</source>
         <translation>لطفاً به هسته دسترسی ریشه بدهید</translation>
     </message>
     <message>
-        <source>Requesting permission</source>
-        <translation>درخواست دسترسی</translation>
+        <source>No internet since the last session</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Please Enter your password in the opened terminal, then try again</source>
-        <translation>لطفاً گذرواژه خود را در ترمینال بازشده وارد کنید و دوباره امتحان کنید</translation>
+        <source>The previous session ended without cleaning up: the system DNS still points at the core, which is no longer running. Until it is put back, nothing resolves — VPN or not.
+
+Putting it back needs administrator rights.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restart as administrator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Administrator rights</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The core needs administrator rights for the tunnel.
+
+macOS will ask for your password in its own window — the same one you use to log into this Mac. After that the connection starts by itself.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Continue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FSNT Client is setting up the tunnel and needs administrator rights.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Core privileges granted</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>The application will restart in the simple interface. Continue?</source>
@@ -7225,6 +7589,20 @@ URL: %2</source>
     </message>
     <message>
         <source>The dashboard is not installed yet. Download it now?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The program folder is closed for writing, so the update cannot install itself. Download the new version from the release page and install it over the current one.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The update to %1 did not install: the program is still %2. This usually means an antivirus stopped the updater. Download the new version from the release page and install it over the current one.
+
+Details: %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Downloading the update…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -7405,6 +7783,10 @@ Antivirus software often deletes it as a false positive. Add the application fol
     </message>
     <message>
         <source>Отмена</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The tunnel needs administrator rights, connection cancelled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -7628,98 +8010,6 @@ Saved to:
     </message>
     <message>
         <source>[Auto selector] Every running profile stopped working — rebuilding from the next best candidates.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>OnboardingDialog</name>
-    <message>
-        <source>Continue</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The provider did not answer. Check the link and your connection.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Private and fast access to the internet.
-Setup takes about a minute.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Get started</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add your subscription</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Paste the link your provider gave you. The server list will fill in automatically.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Paste from clipboard</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The clipboard is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>I&apos;ll do it later</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>How should traffic be routed?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>You can change this later in settings.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Everything through the tunnel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>All apps. Needs administrator rights once.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Browsers only</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>System proxy. No extra rights needed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>All set</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Pick a server on the left and press the power button.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Launch FSNT Client at login</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start using</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter a link, or skip this step.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Adding…</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fetching the subscription…</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -7981,6 +8271,14 @@ Deleted %5 Profiles:
         <translation type="unfinished">بدون بروزرسانی جدید</translation>
     </message>
     <message>
+        <source>Version %1 is out. The client runs from an AppImage, so it cannot replace itself: download the new file and start it instead of this one.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Update found: %1
 Release note:
 %2</source>
@@ -7999,6 +8297,10 @@ Release note:
     <message>
         <source>Update is ready, restart to install?</source>
         <translation type="unfinished">به روز رسانی آماده است، برای نصب مجدد راه اندازی شود؟</translation>
+    </message>
+    <message>
+        <source>Restart</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Select</source>
@@ -8398,7 +8700,33 @@ Release note:
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Subscription settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Link</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Copy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n server(s), updated %1</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Update automatically</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -8723,6 +9051,222 @@ Release note:
     </message>
     <message>
         <source>Local</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>no answer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>no port in the profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ICMP ping</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TCP test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TLS handshake</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>URL test (HEAD)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>URL test (GET)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Straight to the server, past the tunnel. Many servers drop these, so silence here does not mean the server is down.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Straight to the server port, past the tunnel. Shows whether the port answers at all.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connection plus TLS handshake with the server. The closest thing to what starting a session costs.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A real request through the tunnel: measures the whole path, the one you feel when a page opens.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>profile not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Core files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The core executable is missing. Antivirus software often quarantines it without asking.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Download again</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>System DNS</source>
+        <translation type="unfinished">دی‌ان‌اس سیستم</translation>
+    </message>
+    <message>
+        <source>The previous session left the system DNS pointing at the core, which is no longer running. Nothing resolves until it is put back, VPN or not.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restore</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Subscription</source>
+        <translation type="unfinished">اشتراک</translation>
+    </message>
+    <message>
+        <source>No servers in the current subscription. Add the link your provider gave you, or refresh the subscription.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Administrator rights</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Only needed for the full tunnel.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The full tunnel needs administrator rights to create its network adapter. Restart the client as administrator.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Conflicting programs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Running: %1. Other VPN clients and traffic filters intercept packets before they reach the tunnel.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The core is not running. Press the power button.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not connected. Press the power button.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connection mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connect first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Full tunnel is selected, but the tunnel mode is not active.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply</source>
+        <translation type="unfinished">به‌کار بردن</translation>
+    </message>
+    <message>
+        <source>System proxy is selected, but Windows has it switched off, so traffic bypasses the VPN.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Turn on</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>System proxy is selected, but it is not active.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tunnel adapter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not used in proxy mode.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The tunnel adapter was not created. Usually this is missing administrator rights or an antivirus blocking the driver.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Traffic through the tunnel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The tunnel is up, but nothing passes through it. The fast tunnel mode gives packets to Windows, where another program&apos;s filter takes them.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Switch to compatible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The tunnel is up, but nothing passes through it: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>System clock</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No answer to compare against.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not read server time.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The clock is off by %1 minutes. Certificate checks fail and connections break during the handshake. Turn on automatic time in Windows settings.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OK</source>
+        <translation type="unfinished">تایید</translation>
+    </message>
+    <message>
+        <source>Check</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Problem</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Skipped</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add subscription</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This link came from outside the app. Check the address: it is what gives the client your servers.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Keep this subscription updated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -9056,6 +9600,49 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
 </context>
 <context>
+    <name>RoutePresets</name>
+    <message>
+        <source>Everything through the VPN</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Every app and every site goes through the tunnel. The safest choice and the one to pick if you are not sure; the local network still works.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Except domestic sites</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Russian sites and addresses go directly, everything else through the tunnel. Banking and government sites keep working and stay fast.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Blocked sites only</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Only what is blocked goes through the tunnel, the rest directly. The fastest option, but a site missing from the list will not be unblocked.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Games and Discord</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Steam, Epic, Riot, Battle.net, PlayStation, Xbox, Roblox and Discord go through the tunnel, everything else directly. Pick a nearby server: game traffic now goes through it, and distance turns into ping.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Games, video and social</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The same plus YouTube, Twitch, Instagram, WhatsApp, Telegram, TikTok and ChatGPT. Banking and government sites stay direct, so they keep working.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ServerItemDelegate</name>
     <message>
         <source>ms</source>
@@ -9081,6 +9668,10 @@ Remove that endpoint from this routing profile as well?</source>
         <translation type="unfinished">اشتراک را به روز کنید</translation>
     </message>
     <message>
+        <source>Subscription</source>
+        <translation type="unfinished">اشتراک</translation>
+    </message>
+    <message>
         <source>Search</source>
         <translation type="unfinished"></translation>
     </message>
@@ -9097,12 +9688,104 @@ Remove that endpoint from this routing profile as well?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Measurement stopped</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy link</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Link copied</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Subscription settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete subscription</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete duplicates (%1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete all subscriptions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>Deleted %n subscription(s); %1 pinned by the provider left in place</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <source>Deleted %n subscription(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Delete duplicates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n subscription(s) repeat a link that is already added. Delete the extra ones?</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="unfinished">از بین بردن</translation>
+    </message>
+    <message numerus="yes">
+        <source>Delete %n subscription(s) and all their servers? Links you will have to add again.</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Delete all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The provider pinned this subscription: it cannot be removed while its server is running.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete «%1» along with its servers?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Subscription deleted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Check (%1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Check another way</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>This subscription has no servers yet. Refresh it or add another one.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>No subscription yet.
 Paste the link your provider gave you and the servers will appear here.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: %2 ms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: no answer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -9171,6 +9854,10 @@ Paste the link your provider gave you and the servers will appear here.</source>
 <context>
     <name>SubscriptionCard</name>
     <message>
+        <source>Message from your provider</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>until %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -9215,6 +9902,49 @@ Paste the link your provider gave you and the servers will appear here.</source>
     </message>
     <message>
         <source>Upload</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TrayMenu</name>
+    <message>
+        <source>Disconnect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open FSNT Client</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished">تنظیمات</translation>
+    </message>
+    <message>
+        <source>Quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>FSNT Client — %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Server</source>
+        <translation type="unfinished">سرور</translation>
+    </message>
+    <message>
+        <source>%1 — %2 ms</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -9280,6 +10010,21 @@ Paste the link your provider gave you and the servers will appear here.</source>
     </message>
     <message>
         <source>Page %1/%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>UpdatePopover</name>
+    <message>
+        <source>Update</source>
+        <translation type="unfinished">بروزرسانی</translation>
+    </message>
+    <message>
+        <source>Later</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>What&apos;s new</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

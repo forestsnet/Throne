@@ -286,6 +286,51 @@ void MainWindow::showFacadeNotice(const QString &text, int milliseconds) {
                               Q_ARG(int, milliseconds));
 }
 
+// Системный DNS подменяет ядро, и снимает подмену тоже оно — при остановке
+// профиля или в prepare_exit. Стоит сеансу оборваться иначе (ядро убито, упало,
+// приложение закрыли жёстко), и подмена остаётся в системе: резолвер смотрит в
+// порт, за которым уже никого нет, и интернета нет вообще — ни через VPN, ни
+// мимо. Сам человек это не свяжет: в клиенте такой кнопки не было, а помогало
+// только «подключить — отключить», потому что это единственный путь, который
+// заново поднимает ядро и доводит откат до конца.
+bool MainWindow::RestoreStaleSystemDns(bool quiet) {
+    auto &settings = Configs::dataManager->settingsRepo;
+    if (!settings->system_dns_set) return true;
+
+#ifndef Q_OS_WIN
+    // Подмена живёт только в Windows-ядре: на остальных системах RPC отвечает
+    // Unimplemented, и флаг в базе означает лишь протухшую запись.
+    settings->system_dns_set = false;
+    settings->Save();
+    return true;
+#else
+    if (!settings->core_running || API::defaultClient == nullptr) return false;
+
+    bool rpcOK = false;
+    const auto error = API::defaultClient->SetSystemDNS(&rpcOK, true);
+    if (rpcOK) {
+        settings->system_dns_set = false;
+        settings->Save();
+        LOG_INFO("system DNS left over from the previous session was restored");
+        refresh_status();
+        return true;
+    }
+
+    LOG_WARN("failed to restore the leftover system DNS: " + error);
+    if (quiet) return false;
+    if (askInOwnStyle(tr("No internet since the last session"),
+                      tr("The previous session ended without cleaning up: the system DNS still "
+                         "points at the core, which is no longer running. Until it is put back, "
+                         "nothing resolves — VPN or not.\n\n"
+                         "Putting it back needs administrator rights."),
+                      tr("Restart as administrator"))) {
+        this->exit_reason = ExitReason::RestartWithDns;
+        on_menu_exit_triggered();
+    }
+    return false;
+#endif
+}
+
 bool MainWindow::get_elevated_permissions(ExitReason reason) {
     if (Configs::dataManager->settingsRepo->disable_privilege_req)
     {

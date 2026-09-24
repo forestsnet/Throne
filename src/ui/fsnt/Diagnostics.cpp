@@ -75,6 +75,23 @@ namespace Fsnt {
             }};
 
         checks << Check{
+            QObject::tr("System DNS"), [] {
+                const auto &s = Configs::dataManager->settingsRepo;
+                if (!s->system_dns_set) return diagOk();
+                // Подмену ставит и снимает ядро. Пока профиль работает — всё
+                // на месте; если же ничего не подключено, значит прошлый сеанс
+                // не убрал за собой, и резолвер сейчас смотрит в мёртвый порт.
+                if (diagTunnelRunning()) return diagOk();
+                return diagFailed(
+                    QObject::tr("The previous session left the system DNS pointing at the core, "
+                                "which is no longer running. Nothing resolves until it is put "
+                                "back, VPN or not."),
+                    QObject::tr("Restore"), [] {
+                        if (auto *m = GetMainWindow(); m != nullptr) m->RestoreStaleSystemDns(false);
+                    });
+            }};
+
+        checks << Check{
             QObject::tr("Subscription"), [] {
                 const auto group = Configs::dataManager->groupsRepo->CurrentGroup();
                 if (group && !group->Profiles().isEmpty()) return diagOk();
@@ -154,12 +171,21 @@ namespace Fsnt {
                 if (s->simple_transport != 0) return diagSkipped(QObject::tr("Not used in proxy mode."));
                 if (!diagTunnelRunning()) return diagSkipped(QObject::tr("Connect first."));
 
+                // По имени искать нельзя: genTunName() отдаёт "throne-tun" только
+                // в Windows и Linux, а macOS имя не принимает вовсе и называет
+                // интерфейс utunN. Адрес туннеля один и тот же везде — это и
+                // единственный признак, работающий на всех системах.
+                const auto tunAddress = s->vpn_tun_ipv4_cidr.section('/', 0, 0).trimmed();
                 for (const auto &iface : QNetworkInterface::allInterfaces()) {
-                    if (!iface.humanReadableName().contains(QStringLiteral("throne"),
-                                                            Qt::CaseInsensitive)) {
-                        continue;
+                    if (!iface.flags().testFlag(QNetworkInterface::IsUp)) continue;
+                    if (iface.humanReadableName().contains(QStringLiteral("throne"),
+                                                           Qt::CaseInsensitive)) {
+                        return diagOk();
                     }
-                    if (iface.flags().testFlag(QNetworkInterface::IsUp)) return diagOk();
+                    if (tunAddress.isEmpty()) continue;
+                    for (const auto &entry : iface.addressEntries()) {
+                        if (entry.ip().toString() == tunAddress) return diagOk();
+                    }
                 }
                 return diagFailed(QObject::tr("The tunnel adapter was not created. Usually this is "
                                           "missing administrator rights or an antivirus blocking "

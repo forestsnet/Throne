@@ -79,7 +79,7 @@
 <context>
     <name>AddSubscriptionDialog</name>
     <message>
-        <source>Could not open the subscription. Most likely it is blocked by %1 — such programs rewrite network packets, and the provider's site stops answering. Close it and try again.</source>
+        <source>Could not open the subscription. Most likely it is blocked by %1 — such programs rewrite network packets, and the provider&apos;s site stops answering. Close it and try again.</source>
         <translation>Не удалось открыть подписку. Скорее всего мешает %1 — такие программы правят сетевые пакеты, и сайт провайдера перестаёт отвечать. Закройте её и попробуйте снова.</translation>
     </message>
     <message>
@@ -128,6 +128,29 @@
     </message>
 </context>
 <context>
+    <name>CoachMarks</name>
+    <message>
+        <source>Skip</source>
+        <translation type="unfinished">Пропустить</translation>
+    </message>
+    <message>
+        <source>Back</source>
+        <translation type="unfinished">Назад</translation>
+    </message>
+    <message>
+        <source>STEP %1 OF %2</source>
+        <translation type="unfinished">ШАГ %1 ИЗ %2</translation>
+    </message>
+    <message>
+        <source>Got it</source>
+        <translation type="unfinished">Понятно</translation>
+    </message>
+    <message>
+        <source>Next</source>
+        <translation type="unfinished">Дальше</translation>
+    </message>
+</context>
+<context>
     <name>ConnectPanel</name>
     <message>
         <source>The tunnel needs administrator rights</source>
@@ -148,6 +171,10 @@ You can try again — the password window will come back. Or connect through the
     <message>
         <source>Connect through the proxy</source>
         <translation>Подключиться через прокси</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished">Отмена</translation>
     </message>
     <message>
         <source>Connected</source>
@@ -6196,6 +6223,41 @@ Improves hole-punching reliability. Requires IPv4.</source>
     </message>
 </context>
 <context>
+    <name>FsntDiagnosticsDialog</name>
+    <message>
+        <source>Diagnostics</source>
+        <translation>Диагностика</translation>
+    </message>
+    <message>
+        <source>The client checks itself and says what to fix. Everything here runs on this computer; nothing is sent anywhere.</source>
+        <translation>Клиент проверяет себя сам и говорит, что чинить. Всё это выполняется на вашем компьютере, никуда ничего не отправляется.</translation>
+    </message>
+    <message>
+        <source>checking…</source>
+        <translation>проверяю…</translation>
+    </message>
+    <message>
+        <source>Run again</source>
+        <translation>Проверить заново</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>Закрыть</translation>
+    </message>
+    <message>
+        <source>Found %1 problem(s). Fix the topmost one first: the checks run from cause to effect, and the rest are often its consequences.</source>
+        <translation>Найдено проблем: %1. Начните с верхней: проверки идут от причины к следствию, и остальные часто её последствия.</translation>
+    </message>
+    <message>
+        <source>No breakage found, but %1 thing(s) are worth a look.</source>
+        <translation>Поломок нет, но стоит взглянуть: %1.</translation>
+    </message>
+    <message>
+        <source>Everything checks out. If something still does not work, build a support report from the menu and send it over.</source>
+        <translation>Всё в порядке. Если что-то всё равно не работает — соберите отчёт для поддержки из меню и пришлите его.</translation>
+    </message>
+</context>
+<context>
     <name>FsntLogDialog</name>
     <message>
         <source>Logs</source>
@@ -6442,181 +6504,6 @@ Improves hole-punching reliability. Requires IPv4.</source>
     </message>
 </context>
 <context>
-    <name>Fsnt::UpdatePopover</name>
-    <message>
-        <source>Update</source>
-        <translation>Обновить</translation>
-    </message>
-    <message>
-        <source>Later</source>
-        <translation>Позже</translation>
-    </message>
-    <message>
-        <source>What's new</source>
-        <translation>Что нового</translation>
-    </message>
-</context>
-<context>
-    <name>Fsnt::CoachMarks</name>
-    <message>
-        <source>Skip</source>
-        <translation>Пропустить</translation>
-    </message>
-    <message>
-        <source>Back</source>
-        <translation>Назад</translation>
-    </message>
-    <message>
-        <source>STEP %1 OF %2</source>
-        <translation>ШАГ %1 ИЗ %2</translation>
-    </message>
-    <message>
-        <source>Got it</source>
-        <translation>Понятно</translation>
-    </message>
-    <message>
-        <source>Next</source>
-        <translation>Дальше</translation>
-    </message>
-</context>
-<context>
-    <name>RoutePresets</name>
-    <message>
-        <source>Games and Discord</source>
-        <translation>Игры и Discord</translation>
-    </message>
-    <message>
-        <source>Steam, Epic, Riot, Battle.net, PlayStation, Xbox, Roblox and Discord go through the tunnel, everything else directly. Pick a nearby server: game traffic now goes through it, and distance turns into ping.</source>
-        <translation>Steam, Epic, Riot, Battle.net, PlayStation, Xbox, Roblox и Discord идут через туннель, остальное — напрямую. Берите сервер поближе: игровой трафик теперь идёт через него, и расстояние превращается в пинг.</translation>
-    </message>
-    <message>
-        <source>Games, video and social</source>
-        <translation>Игры, видео и соцсети</translation>
-    </message>
-    <message>
-        <source>The same plus YouTube, Twitch, Instagram, WhatsApp, Telegram, TikTok and ChatGPT. Banking and government sites stay direct, so they keep working.</source>
-        <translation>То же плюс YouTube, Twitch, Instagram, WhatsApp, Telegram, TikTok и ChatGPT. Банки и госуслуги остаются напрямую и продолжают работать.</translation>
-    </message>
-    <message>
-        <source>Everything through the VPN</source>
-        <translation>Всё через VPN</translation>
-    </message>
-    <message>
-        <source>Every app and every site goes through the tunnel. The safest choice and the one to pick if you are not sure; the local network still works.</source>
-        <translation>Все приложения и все сайты идут через туннель. Самый надёжный вариант и тот, что стоит выбрать, если не уверены; локальная сеть при этом работает.</translation>
-    </message>
-    <message>
-        <source>Except domestic sites</source>
-        <translation>Кроме российских сайтов</translation>
-    </message>
-    <message>
-        <source>Russian sites and addresses go directly, everything else through the tunnel. Banking and government sites keep working and stay fast.</source>
-        <translation>Российские сайты и адреса идут напрямую, остальное — через туннель. Банки и госуслуги продолжают работать и не теряют в скорости.</translation>
-    </message>
-    <message>
-        <source>Blocked sites only</source>
-        <translation>Только заблокированное</translation>
-    </message>
-    <message>
-        <source>Only what is blocked goes through the tunnel, the rest directly. The fastest option, but a site missing from the list will not be unblocked.</source>
-        <translation>Через туннель идёт только заблокированное, остальное напрямую. Самый быстрый вариант, но сайт, которого нет в списке, не откроется.</translation>
-    </message>
-</context>
-<context>
-    <name>Fsnt::TrayMenu</name>
-    <message>
-        <source>Connect</source>
-        <translation>Подключить</translation>
-    </message>
-    <message>
-        <source>Disconnect</source>
-        <translation>Отключить</translation>
-    </message>
-    <message>
-        <source>Connected</source>
-        <translation>Подключено</translation>
-    </message>
-    <message>
-        <source>Not connected</source>
-        <translation>Отключено</translation>
-    </message>
-    <message>
-        <source>Server</source>
-        <translation>Сервер</translation>
-    </message>
-    <message>
-        <source>Open FSNT Client</source>
-        <translation>Открыть FSNT Client</translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation>Настройки</translation>
-    </message>
-    <message>
-        <source>Quit</source>
-        <translation>Выход</translation>
-    </message>
-    <message>
-        <source>%1 — %2 ms</source>
-        <translation>%1 — %2 мс</translation>
-    </message>
-    <message>
-        <source>FSNT Client — %1</source>
-        <translation>FSNT Client — %1</translation>
-    </message>
-</context>
-<context>
-    <name>FsntDiagnosticsDialog</name>
-    <message>
-        <source>Diagnostics</source>
-        <translation>Диагностика</translation>
-    </message>
-    <message>
-        <source>The client checks itself and says what to fix. Everything here runs on this computer; nothing is sent anywhere.</source>
-        <translation>Клиент проверяет себя сам и говорит, что чинить. Всё это выполняется на вашем компьютере, никуда ничего не отправляется.</translation>
-    </message>
-    <message>
-        <source>checking…</source>
-        <translation>проверяю…</translation>
-    </message>
-    <message>
-        <source>Run again</source>
-        <translation>Проверить заново</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation>Закрыть</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>Норма</translation>
-    </message>
-    <message>
-        <source>Check</source>
-        <translation>Внимание</translation>
-    </message>
-    <message>
-        <source>Problem</source>
-        <translation>Проблема</translation>
-    </message>
-    <message>
-        <source>Skipped</source>
-        <translation>Не нужно</translation>
-    </message>
-    <message>
-        <source>Found %1 problem(s). Fix the topmost one first: the checks run from cause to effect, and the rest are often its consequences.</source>
-        <translation>Найдено проблем: %1. Начните с верхней: проверки идут от причины к следствию, и остальные часто её последствия.</translation>
-    </message>
-    <message>
-        <source>No breakage found, but %1 thing(s) are worth a look.</source>
-        <translation>Поломок нет, но стоит взглянуть: %1.</translation>
-    </message>
-    <message>
-        <source>Everything checks out. If something still does not work, build a support report from the menu and send it over.</source>
-        <translation>Всё в порядке. Если что-то всё равно не работает — соберите отчёт для поддержки из меню и пришлите его.</translation>
-    </message>
-</context>
-<context>
     <name>FsntWindow</name>
     <message>
         <source>A new version is out</source>
@@ -6625,10 +6512,6 @@ Improves hole-punching reliability. Requires IPv4.</source>
     <message>
         <source>FSNT Client %1 is out</source>
         <translation>Вышел FSNT Client %1</translation>
-    </message>
-    <message>
-        <source>Open the client and press the bell to update.</source>
-        <translation>Откройте клиент и нажмите на колокольчик, чтобы обновиться.</translation>
     </message>
     <message>
         <source>Updating to %1</source>
@@ -6721,18 +6604,6 @@ You can change this later in settings.</source>
     <message>
         <source>You have %1 installed. Press Update and the client will download and install the new version itself.</source>
         <translation>У вас установлена %1. Нажмите «Обновить» — клиент сам скачает и поставит новую версию.</translation>
-    </message>
-    <message>
-        <source>Update</source>
-        <translation>Обновить</translation>
-    </message>
-    <message>
-        <source>What's new</source>
-        <translation>Что нового</translation>
-    </message>
-    <message>
-        <source>Later</source>
-        <translation>Позже</translation>
     </message>
     <message>
         <source>Diagnostics</source>
@@ -7012,6 +6883,26 @@ Switch the tunnel to compatible mode and reconnect? It is a little slower, but i
     <message>
         <source>Update / Github</source>
         <translation>Обновление / Github</translation>
+    </message>
+    <message>
+        <source>No internet since the last session</source>
+        <translation>Интернета нет с прошлого сеанса</translation>
+    </message>
+    <message>
+        <source>The previous session ended without cleaning up: the system DNS still points at the core, which is no longer running. Until it is put back, nothing resolves — VPN or not.
+
+Putting it back needs administrator rights.</source>
+        <translation>Прошлый сеанс завершился, не убрав за собой: системный DNS до сих пор направлен на ядро, которого больше нет. Пока это не вернуть, не открывается ничего — ни через VPN, ни мимо.
+
+Чтобы вернуть, нужны права администратора.</translation>
+    </message>
+    <message>
+        <source>Restart as administrator</source>
+        <translation>Перезапустить от администратора</translation>
+    </message>
+    <message>
+        <source>Restart</source>
+        <translation type="unfinished">Перезапустить</translation>
     </message>
     <message>
         <source>The sing-box API is disabled. Set a listen port in Preferences &gt; Basic Settings &gt; Core.</source>
@@ -7873,36 +7764,12 @@ macOS сама спросит пароль в своём окне — тот ж�
         <translation>Продолжить</translation>
     </message>
     <message>
-        <source>Open Terminal</source>
-        <translation>Открыть Терминал</translation>
-    </message>
-    <message>
         <source>Downloading the update…</source>
         <translation>Скачиваем обновление…</translation>
     </message>
     <message>
-        <source>Waiting for the password…</source>
-        <translation>Ждём пароль…</translation>
-    </message>
-    <message>
-        <source>Rights granted, connecting</source>
-        <translation>Права получены, подключаем</translation>
-    </message>
-    <message>
         <source>Core privileges granted</source>
         <translation>Ядро получило права</translation>
-    </message>
-    <message>
-        <source>No password was entered, the request was cancelled</source>
-        <translation>Пароль так и не ввели, запрос отменён</translation>
-    </message>
-    <message>
-        <source>Requesting permission</source>
-        <translation>Запрос разрешения</translation>
-    </message>
-    <message>
-        <source>Please Enter your password in the opened terminal, then try again</source>
-        <translation>Введите пароль в открывшемся терминале и повторите попытку.</translation>
     </message>
     <message>
         <source>Settings</source>
@@ -8043,14 +7910,6 @@ Please try again.</source>
     <message>
         <source>Unable to capture screen</source>
         <translation>Невозможно захватить экран</translation>
-    </message>
-    <message>
-        <source>Version %1 is out. The client runs from an AppImage, so it cannot replace itself: download the new file and start it instead of this one.</source>
-        <translation>Вышла версия %1. Клиент запущен из AppImage и заменить себя не может: скачайте новый файл и запускайте его вместо этого.</translation>
-    </message>
-    <message>
-        <source>Download</source>
-        <translation>Скачать</translation>
     </message>
     <message>
         <source>Administrator rights</source>
@@ -8372,6 +8231,18 @@ Details: %3</source>
         <translation>Скачать заново</translation>
     </message>
     <message>
+        <source>System DNS</source>
+        <translation type="unfinished">Системный DNS</translation>
+    </message>
+    <message>
+        <source>The previous session left the system DNS pointing at the core, which is no longer running. Nothing resolves until it is put back, VPN or not.</source>
+        <translation>Прошлый сеанс оставил системный DNS направленным на ядро, которого больше нет. Пока это не вернуть, не открывается ничего — ни через VPN, ни мимо.</translation>
+    </message>
+    <message>
+        <source>Restore</source>
+        <translation type="unfinished">Восстановить</translation>
+    </message>
+    <message>
         <source>No servers in the current subscription. Add the link your provider gave you, or refresh the subscription.</source>
         <translation>В текущей подписке нет серверов. Добавьте ссылку от провайдера или обновите подписку.</translation>
     </message>
@@ -8440,7 +8311,7 @@ Details: %3</source>
         <translation>Трафик через туннель</translation>
     </message>
     <message>
-        <source>The tunnel is up, but nothing passes through it. The fast tunnel mode gives packets to Windows, where another program's filter takes them.</source>
+        <source>The tunnel is up, but nothing passes through it. The fast tunnel mode gives packets to Windows, where another program&apos;s filter takes them.</source>
         <translation>Туннель поднят, но через него ничего не проходит. Быстрый режим отдаёт пакеты Windows, где их забирает фильтр другой программы.</translation>
     </message>
     <message>
@@ -8643,6 +8514,14 @@ Deleted %5 Profiles:
         <translation>Обновлений нет</translation>
     </message>
     <message>
+        <source>Version %1 is out. The client runs from an AppImage, so it cannot replace itself: download the new file and start it instead of this one.</source>
+        <translation type="unfinished">Вышла версия %1. Клиент запущен из AppImage и заменить себя не может: скачайте новый файл и запускайте его вместо этого.</translation>
+    </message>
+    <message>
+        <source>Download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Update found: %1
 Release note:
 %2</source>
@@ -8827,10 +8706,6 @@ Release note:
     <message>
         <source>Xray full config cannot be combined with the group&apos;s proxies</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>never</source>
-        <translation>никогда</translation>
     </message>
     <message>
         <source>%1s ago</source>
@@ -9293,10 +9168,6 @@ Release note:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Copy</source>
-        <translation type="unfinished">Копировать</translation>
-    </message>
-    <message>
         <source>Connected</source>
         <translation type="unfinished">Подключено</translation>
     </message>
@@ -9405,32 +9276,8 @@ Release note:
         <translation>Добавить</translation>
     </message>
     <message>
-        <source>Allow</source>
-        <translation>Разрешить</translation>
-    </message>
-    <message>
         <source>Restart</source>
         <translation>Перезапустить</translation>
-    </message>
-    <message>
-        <source>Ping (ICMP)</source>
-        <translation>Пинг (ICMP)</translation>
-    </message>
-    <message>
-        <source>Connection to the port</source>
-        <translation>Соединение с портом</translation>
-    </message>
-    <message>
-        <source>Handshake</source>
-        <translation>Рукопожатие</translation>
-    </message>
-    <message>
-        <source>Request (HEAD)</source>
-        <translation>Запрос (HEAD)</translation>
-    </message>
-    <message>
-        <source>Request (GET)</source>
-        <translation>Запрос (GET)</translation>
     </message>
     <message>
         <source>Straight to the server, past the tunnel. Many servers drop these, so silence here does not mean the server is down.</source>
@@ -9814,6 +9661,49 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
 </context>
 <context>
+    <name>RoutePresets</name>
+    <message>
+        <source>Games and Discord</source>
+        <translation>Игры и Discord</translation>
+    </message>
+    <message>
+        <source>Steam, Epic, Riot, Battle.net, PlayStation, Xbox, Roblox and Discord go through the tunnel, everything else directly. Pick a nearby server: game traffic now goes through it, and distance turns into ping.</source>
+        <translation>Steam, Epic, Riot, Battle.net, PlayStation, Xbox, Roblox и Discord идут через туннель, остальное — напрямую. Берите сервер поближе: игровой трафик теперь идёт через него, и расстояние превращается в пинг.</translation>
+    </message>
+    <message>
+        <source>Games, video and social</source>
+        <translation>Игры, видео и соцсети</translation>
+    </message>
+    <message>
+        <source>The same plus YouTube, Twitch, Instagram, WhatsApp, Telegram, TikTok and ChatGPT. Banking and government sites stay direct, so they keep working.</source>
+        <translation>То же плюс YouTube, Twitch, Instagram, WhatsApp, Telegram, TikTok и ChatGPT. Банки и госуслуги остаются напрямую и продолжают работать.</translation>
+    </message>
+    <message>
+        <source>Everything through the VPN</source>
+        <translation>Всё через VPN</translation>
+    </message>
+    <message>
+        <source>Every app and every site goes through the tunnel. The safest choice and the one to pick if you are not sure; the local network still works.</source>
+        <translation>Все приложения и все сайты идут через туннель. Самый надёжный вариант и тот, что стоит выбрать, если не уверены; локальная сеть при этом работает.</translation>
+    </message>
+    <message>
+        <source>Except domestic sites</source>
+        <translation>Кроме российских сайтов</translation>
+    </message>
+    <message>
+        <source>Russian sites and addresses go directly, everything else through the tunnel. Banking and government sites keep working and stay fast.</source>
+        <translation>Российские сайты и адреса идут напрямую, остальное — через туннель. Банки и госуслуги продолжают работать и не теряют в скорости.</translation>
+    </message>
+    <message>
+        <source>Blocked sites only</source>
+        <translation>Только заблокированное</translation>
+    </message>
+    <message>
+        <source>Only what is blocked goes through the tunnel, the rest directly. The fastest option, but a site missing from the list will not be unblocked.</source>
+        <translation>Через туннель идёт только заблокированное, остальное напрямую. Самый быстрый вариант, но сайт, которого нет в списке, не откроется.</translation>
+    </message>
+</context>
+<context>
     <name>ServerItemDelegate</name>
     <message>
         <source>ms</source>
@@ -10066,10 +9956,6 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Страница подписки</translation>
     </message>
     <message>
-        <source>Read in full</source>
-        <translation>Читать полностью</translation>
-    </message>
-    <message>
         <source>Message from your provider</source>
         <translation>Сообщение провайдера</translation>
     </message>
@@ -10087,6 +9973,49 @@ Paste the link your provider gave you and the servers will appear here.</source>
     <message>
         <source>No traffic recorded for this period</source>
         <translation>Нет данных о трафике за этот период</translation>
+    </message>
+</context>
+<context>
+    <name>TrayMenu</name>
+    <message>
+        <source>Disconnect</source>
+        <translation type="unfinished">Отключить</translation>
+    </message>
+    <message>
+        <source>Connect</source>
+        <translation type="unfinished">Подключить</translation>
+    </message>
+    <message>
+        <source>Open FSNT Client</source>
+        <translation type="unfinished">Открыть FSNT Client</translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished">Настройки</translation>
+    </message>
+    <message>
+        <source>Quit</source>
+        <translation type="unfinished">Выход</translation>
+    </message>
+    <message>
+        <source>Connected</source>
+        <translation type="unfinished">Подключено</translation>
+    </message>
+    <message>
+        <source>Not connected</source>
+        <translation type="unfinished">Отключено</translation>
+    </message>
+    <message>
+        <source>FSNT Client — %1</source>
+        <translation type="unfinished">FSNT Client — %1</translation>
+    </message>
+    <message>
+        <source>Server</source>
+        <translation type="unfinished">Сервер</translation>
+    </message>
+    <message>
+        <source>%1 — %2 ms</source>
+        <translation type="unfinished">%1 — %2 мс</translation>
     </message>
 </context>
 <context>
@@ -10152,6 +10081,21 @@ Paste the link your provider gave you and the servers will appear here.</source>
     <message>
         <source>Page %1/%2</source>
         <translation>Страница %1/%2</translation>
+    </message>
+</context>
+<context>
+    <name>UpdatePopover</name>
+    <message>
+        <source>Update</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Later</source>
+        <translation type="unfinished">Позже</translation>
+    </message>
+    <message>
+        <source>What&apos;s new</source>
+        <translation type="unfinished">Что нового</translation>
     </message>
 </context>
 </TS>

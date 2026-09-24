@@ -279,6 +279,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         Configs::dataManager->settingsRepo->core_running = true;
         LOG_INFO(QString("elevated: %1").arg(Configs::IsAdmin() ? "yes" : "no"));
         MW_dialog_message(MwMessage::CoreStarted, {Int2String(profileId)});
+        // Ядро снова на связи — самое время вернуть системный DNS, если прошлый
+        // сеанс оборвался, не убрав за собой. Через очередь: обработчику
+        // подключения нельзя вставать на синхронный RPC. Когда следом сам
+        // поднимается профиль, молчим: DNS он поставит заново, а о своих бедах
+        // расскажет сам.
+        const bool autoStarting = profileId >= 0;
+        QMetaObject::invokeMethod(
+            this, [this, autoStarting] { RestoreStaleSystemDns(autoStarting); },
+            Qt::QueuedConnection);
     });
 
     auto socketFullName = core_server->fullServerName();
@@ -1264,3 +1273,6 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
+QSystemTrayIcon *MainWindow::trayIcon() const {
+    return tray;
+}

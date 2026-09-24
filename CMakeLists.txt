@@ -713,7 +713,10 @@ set_target_properties(Throne PROPERTIES
         WIN32_EXECUTABLE TRUE
 )
 
-if (WIN32 AND MSVC)
+# Unity-сборка живёт только на MSVC, поэтому её ловушки — одинаковые имена в
+# анонимных пространствах и зависимость от порядка включений — на других
+# платформах не всплывают. -DNKR_FORCE_UNITY=ON повторяет её локально.
+if ((WIN32 AND MSVC) OR NKR_FORCE_UNITY)
     set_target_properties(Throne PROPERTIES UNITY_BUILD ON)
 endif ()
 set_property(SOURCE "3rdparty/SQLiteCpp/src/sqlite3.c" PROPERTY SKIP_UNITY_BUILD_INCLUSION ON)
