@@ -309,9 +309,21 @@ jobs:
           ninja
           cd ..
           ./script/deploy_linux64_system_qt.sh
+      - name: macOS - Import signing certificate
+        shell: bash
+        if: contains( matrix.platform, 'macos' )
+        env:
+          MACOS_CERT_P12: ${{ secrets.MACOS_CERT_P12 }}
+          MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+        run: ./script/import_macos_cert.sh
       - name: macOS - Generate MakeFile and Build
         shell: bash
         if: contains( matrix.platform, 'macos' )
+        env:
+          MACOS_SIGN_IDENTITY: ${{ secrets.MACOS_SIGN_IDENTITY }}
+          MACOS_NOTARY_KEY: ${{ secrets.MACOS_NOTARY_KEY }}
+          MACOS_NOTARY_KEY_ID: ${{ secrets.MACOS_NOTARY_KEY_ID }}
+          MACOS_NOTARY_ISSUER: ${{ secrets.MACOS_NOTARY_ISSUER }}
         run: |
           mkdir build
           cd build
@@ -320,9 +332,14 @@ jobs:
           ninja
           cd ..
           ./script/deploy_macos.sh
+          # Приложение заверяем до образа: талон должен лежать внутри бандла, а
+          # не только на образе, иначе вытащенная в Программы копия на первом
+          # запуске идёт за проверкой к Apple по сети.
+          ./script/notarize_macos.sh "$DEST/Throne.app"
           # Образ собираем здесь: упаковка релиза идёт на Linux, а hdiutil есть
           # только на маке.
           ./script/make_dmg.sh "$DEST/Throne.app" "$DEST/FSNT-Client.dmg"
+          ./script/notarize_macos.sh "$DEST/FSNT-Client.dmg"
       # ========================================================================================================= Deployments
       - name: Tar files
         shell: bash
@@ -444,7 +461,7 @@ jobs:
           ####
           mkdir Throne
           mv darwin-arm64/Throne.app Throne/Throne.app
-          mv Throne/Throne.app/Contents/MacOS/Throne.dSYM debug/Throne-${{ github.event.inputs.tag }}-macos-arm64.dSYM
+          mv darwin-arm64/Throne.dSYM debug/Throne-${{ github.event.inputs.tag }}-macos-arm64.dSYM
           zip -9 --symlinks -r Throne-${{ github.event.inputs.tag }}-macos-arm64.zip Throne
           mv darwin-arm64/FSNT-Client.dmg FSNT-Client-macos-arm64.dmg
           rm -rf darwin-arm64
@@ -452,7 +469,7 @@ jobs:
           ####
           mkdir Throne
           mv darwin-amd64/Throne.app Throne/Throne.app
-          mv Throne/Throne.app/Contents/MacOS/Throne.dSYM debug/Throne-${{ github.event.inputs.tag }}-macos-amd64.dSYM
+          mv darwin-amd64/Throne.dSYM debug/Throne-${{ github.event.inputs.tag }}-macos-amd64.dSYM
           zip -9 --symlinks -r Throne-${{ github.event.inputs.tag }}-macos-amd64.zip Throne
           mv darwin-amd64/FSNT-Client.dmg FSNT-Client-macos-intel.dmg
           rm -rf darwin-amd64
@@ -460,7 +477,7 @@ jobs:
           ####
           mkdir Throne
           mv darwinlegacy-amd64/Throne.app Throne/Throne.app
-          mv Throne/Throne.app/Contents/MacOS/Throne.dSYM debug/Throne-${{ github.event.inputs.tag }}-macoslegacy-amd64.dSYM
+          mv darwinlegacy-amd64/Throne.dSYM debug/Throne-${{ github.event.inputs.tag }}-macoslegacy-amd64.dSYM
           zip -9 --symlinks -r Throne-${{ github.event.inputs.tag }}-macoslegacy-amd64.zip Throne
           mv darwinlegacy-amd64/FSNT-Client.dmg FSNT-Client-macos-intel-legacy.dmg
           rm -rf darwinlegacy-amd64

@@ -31,9 +31,15 @@ else
   echo "Warning: Qt updater not found at $GITHUB_WORKSPACE/build/updater"
 fi
 
-codesign --force --deep --sign - $GITHUB_WORKSPACE/build/Throne.app
-
 dsymutil $GITHUB_WORKSPACE/build/Throne.app/Contents/MacOS/Throne
 strip -S $GITHUB_WORKSPACE/build/Throne.app/Contents/MacOS/Throne
+
+# Символы кладём рядом с бандлом, а не внутрь него. Всё, что лежит внутри,
+# попадает под печать подписи, а потом его оттуда достают — и образ, и упаковка
+# релиза, — после чего подпись недействительна.
+mv $GITHUB_WORKSPACE/build/Throne.app/Contents/MacOS/Throne.dSYM $DEST/Throne.dSYM
+
+# Подпись — последнее действие над бандлом: strip после неё сорвал бы печать.
+"$(dirname "$0")/sign_macos.sh" $GITHUB_WORKSPACE/build/Throne.app
 
 mv $GITHUB_WORKSPACE/build/Throne.app $DEST

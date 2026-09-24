@@ -25,11 +25,14 @@ trap 'rm -rf "$STAGING"' EXIT
 
 # Имя внутри образа фиксировано: позиции значков лежат в .DS_Store и привязаны
 # к именам, а человеку в окне понятнее «FSNT Client», чем «Throne».
-cp -R "$APP" "$STAGING/FSNT Client.app"
-# Отладочные символы в образ не кладём: они удваивают его вес и людям не нужны.
-rm -rf "$STAGING/FSNT Client.app/Contents/MacOS/"*.dSYM
-# Расширение в имени человеку ничего не даёт, а подпись под значком удлиняет.
-SetFile -a E "$STAGING/FSNT Client.app" 2>/dev/null || true
+# ditto, а не cp: он переносит расширенные атрибуты и жёсткие ссылки бандла,
+# без которых подпись приезжает битой. Символы из бандла вынул deploy_macos.sh:
+# удалять что-либо из подписанного бандла нельзя, это срывает печать.
+ditto "$APP" "$STAGING/FSNT Client.app"
+# Скрывать расширение через SetFile нельзя: он вешает на бандл com.apple.FinderInfo,
+# а подпись такого не терпит — codesign сообщает «resource fork, Finder information,
+# or similar detritus not allowed», и образ уезжает с сорванной печатью. Finder и
+# так прячет .app при настройках по умолчанию.
 ln -s /Applications "$STAGING/Applications"
 
 mkdir -p "$STAGING/.background"
