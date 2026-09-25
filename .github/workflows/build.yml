@@ -8,6 +8,10 @@ on:
       publish:
         description: "r for normal release, p for prerelease, leave empty to not publish anything"
         required: false
+      notarize:
+        description: "yes to notarize the macOS build, no to ship it signed only"
+        required: false
+        default: "yes"
 jobs:
   build-go:
     permissions:
@@ -321,6 +325,7 @@ jobs:
         if: contains( matrix.platform, 'macos' )
         env:
           MACOS_SIGN_IDENTITY: ${{ secrets.MACOS_SIGN_IDENTITY }}
+          MACOS_NOTARIZE: ${{ github.event.inputs.notarize }}
           MACOS_NOTARY_KEY: ${{ secrets.MACOS_NOTARY_KEY }}
           MACOS_NOTARY_KEY_ID: ${{ secrets.MACOS_NOTARY_KEY_ID }}
           MACOS_NOTARY_ISSUER: ${{ secrets.MACOS_NOTARY_ISSUER }}

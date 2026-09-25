@@ -7,6 +7,11 @@ set -euo pipefail
 
 TARGET="$1"
 
+if [[ "${MACOS_NOTARIZE:-yes}" != "yes" ]]; then
+    echo "notarization turned off for this run, skipping $TARGET"
+    exit 0
+fi
+
 if [[ -z "${MACOS_NOTARY_KEY:-}" ]]; then
     echo "notarization key not provided, skipping $TARGET"
     exit 0
