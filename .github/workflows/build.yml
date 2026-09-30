@@ -12,6 +12,10 @@ on:
         description: "yes to notarize the macOS build, no to ship it signed only"
         required: false
         default: "yes"
+      sign:
+        description: "yes to sign the macOS build with the Developer ID, no for the ad-hoc signature"
+        required: false
+        default: "no"
 jobs:
   build-go:
     permissions:
@@ -324,7 +328,7 @@ jobs:
         shell: bash
         if: contains( matrix.platform, 'macos' )
         env:
-          MACOS_SIGN_IDENTITY: ${{ secrets.MACOS_SIGN_IDENTITY }}
+          MACOS_SIGN_IDENTITY: ${{ github.event.inputs.sign == 'yes' && secrets.MACOS_SIGN_IDENTITY || '' }}
           MACOS_NOTARIZE: ${{ github.event.inputs.notarize }}
           MACOS_NOTARY_KEY: ${{ secrets.MACOS_NOTARY_KEY }}
           MACOS_NOTARY_KEY_ID: ${{ secrets.MACOS_NOTARY_KEY_ID }}
