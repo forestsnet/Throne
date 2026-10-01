@@ -218,6 +218,15 @@ namespace Configs {
         QString remote_dns = "https://9.9.9.9/dns-query";
         bool remote_dns_disable_ipv6 = false;
         QString direct_dns = "https://9.9.9.9/dns-query";
+        // Подбор рабочего прямого DNS. Он разрешает имя нашего же сервера, и
+        // когда провайдер режет выбранный транспорт, человек остаётся без
+        // интернета вообще: туннель уже забрал маршруты, а подключаться некуда.
+        bool direct_dns_auto = true;
+        // То, что человек вписал сам. Пробуется раньше каталога.
+        QStringList dns_custom_servers = {};
+        // Чем подбор закончился в прошлый раз: подсказка в настройках и в
+        // диагностике, сама настройка от этого не меняется.
+        QString direct_dns_effective = "";
         bool direct_dns_disable_ipv6 = false;
         int dns_cache_capacity = 65536;
         bool dns_disable_cache = false;

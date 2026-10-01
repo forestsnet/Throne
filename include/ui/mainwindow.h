@@ -120,7 +120,13 @@ public:
 
     void update_traffic_graph(int proxyDl, int proxyUp, int directDl, int directUp);
 
-    void profile_start(int _id = -1);
+    // dnsChecked: подбор прямого DNS уже отработал. Он асинхронный, поэтому
+    // запуск профиля проходит здесь дважды — второй раз уже с готовым ответом.
+    void profile_start(int _id = -1, bool dnsChecked = false);
+
+    // false — подбор пошёл, запуск продолжится сам по его завершении.
+    // Объявление, как и соседние, стоит до #ifndef MW_INTERFACE.
+    bool maybeSelectDirectDns(int profileId);
 
     void profile_stop(bool crash = false, bool block = false, bool manual = false);
 

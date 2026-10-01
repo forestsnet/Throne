@@ -18,6 +18,7 @@
 #include <QRegularExpression>
 
 #include "include/configs/generate.h"
+#include "include/global/DnsAutoSelect.hpp"
 #include "include/configs/common/xrayStreamSetting.h"
 #include "include/database/GroupsRepo.h"
 #include "include/database/OtpProfilesRepo.h"
@@ -211,11 +212,58 @@ void MainWindow::applyProviderPolicy(int gid) {
     m_applyingProviderPolicy = false;
 }
 
-void MainWindow::profile_start(int _id) {
+bool MainWindow::maybeSelectDirectDns(int profileId) {
+    auto &settings = Configs::dataManager->settingsRepo;
+    if (!settings->direct_dns_auto) return true;
+    if (settings->use_dns_object) return true; // секцией DNS распоряжается сам человек
+
+    auto *select = new Configs::DnsAutoSelect(this);
+    connect(select, &Configs::DnsAutoSelect::Selected, this,
+            [this, profileId, select](const QString &address, bool fellBack) {
+                select->deleteLater();
+                auto &s = Configs::dataManager->settingsRepo;
+
+                if (address.isEmpty()) {
+                    const auto text = tr("No DNS server answered, so the address of the VPN server "
+                                         "cannot be resolved. Check the connection or set another "
+                                         "DNS in the settings.");
+                    MW_show_log(text);
+                    // В режиме туннеля это не просто отказ подключиться: туннель
+                    // забрал бы маршруты и оставил машину без сети совсем.
+                    if (s->spmode_vpn) {
+                        showFacadeNotice(text, 12000);
+                        refresh_status();
+                        return;
+                    }
+                    // Без туннеля терять нечего — пробуем как есть.
+                    profile_start(profileId, true);
+                    return;
+                }
+
+                if (s->direct_dns_effective != address) {
+                    s->direct_dns_effective = address;
+                    s->Save();
+                }
+                if (fellBack) {
+                    MW_show_log(tr("Direct DNS %1 did not answer, using %2")
+                                    .arg(s->direct_dns, address));
+                }
+                profile_start(profileId, true);
+            });
+    select->Start(settings->direct_dns);
+    return false;
+}
+
+void MainWindow::profile_start(int _id, bool dnsChecked) {
     if (Configs::dataManager->settingsRepo->prepare_exit) return;
 
     // Ядро могли удалить в любой момент, а не только до запуска приложения.
     if (!EnsureCorePresent()) return;
+
+    // Прямой DNS разрешает имя нашего же сервера. Проверяем до всего
+    // остального: если он молчит, поднимать туннель нельзя — маршруты уйдут
+    // ему, подключиться будет некуда, и машина останется вообще без сети.
+    if (!dnsChecked && !maybeSelectDirectDns(_id)) return;
 
     // Проверяем конфликтующие процессы только если включен VPN режим.
     // Сам диалог живёт в mainwindow_conflicts.cpp: он модальный и держит запуск,

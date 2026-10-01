@@ -840,7 +840,14 @@ namespace Configs {
                 }
             }
 
-            auto directDnsObj = buildDnsObj(ctx, settings.direct_dns);
+            // Подбор мог выбрать не то, что записано в настройках: заданный
+            // сервер молчал, и ядру надо отдать тот, который отвечает, иначе
+            // имя нашего же сервера разрешать нечем.
+            const auto directDnsAddress =
+                (settings.direct_dns_auto && !settings.direct_dns_effective.isEmpty())
+                    ? settings.direct_dns_effective
+                    : settings.direct_dns;
+            auto directDnsObj = buildDnsObj(ctx, directDnsAddress);
             directDnsObj["tag"] = tags::dnsDirect;
             directDnsObj["domain_resolver"] = tags::dnsLocal;
             servers.append(directDnsObj);

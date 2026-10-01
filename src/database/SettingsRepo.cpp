@@ -73,6 +73,7 @@ namespace Configs {
             {"follow_status_in_taskbar",           &follow_status_in_taskbar},
             {"xray_mux_default_on",           &xray_mux_default_on},
             {"use_dns_object",                &use_dns_object},
+            {"direct_dns_auto",               &direct_dns_auto},
             {"skip_delete_confirmation",      &skip_delete_confirmation},
             {"show_config_security",          &show_config_security},
             {"log_enable_include",            &log_enable_include},
@@ -187,6 +188,7 @@ namespace Configs {
             {"xray_geosite_url",           &xray_geosite_url},
             {"remote_dns",                 &remote_dns},
             {"direct_dns",                 &direct_dns},
+            {"direct_dns_effective",          &direct_dns_effective},
             {"dns_object",                 &dns_object},
             {"dns_optimistic_timeout",     &dns_optimistic_timeout},
             {"dns_query_timeout",          &dns_query_timeout},
@@ -203,6 +205,7 @@ namespace Configs {
         };
 
         stringListMap = {
+            {"dns_custom_servers",       &dns_custom_servers},
             {"dns_server_rules",         &dns_server_rules},
             {"dns_predefined_rules",     &dns_predefined_rules},
             {"extra_core_paths",         &extraCorePaths},
