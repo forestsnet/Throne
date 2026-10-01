@@ -585,8 +585,10 @@ set(PROJECT_SOURCES
         include/configs/generate.h
         src/configs/generate.cpp
 
+        src/configs/DnsAddress.cpp
         src/configs/XrayDnsStrip.cpp
 
+        include/configs/DnsAddress.hpp
         include/configs/XrayDnsStrip.hpp
         include/configs/common/utils.h
         src/configs/common/utils.cpp

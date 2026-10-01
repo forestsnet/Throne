@@ -1,3 +1,5 @@
+#include "include/configs/DnsAddress.hpp"
+#include "include/global/Logger.hpp"
 #include "include/configs/XrayDnsStrip.hpp"
 #include "include/configs/generate.h"
 #include "include/configs/sub/ProviderPolicy.hpp"
@@ -710,7 +712,15 @@ namespace Configs {
         // ---------------------------------------------------------------- dns
 
         QJsonObject buildDnsObj(BuildContext &ctx, QString address) {
-            if (address.startsWith("local")) {
+            const auto parsed = ParseDnsAddress(address);
+            if (!parsed.valid) {
+                // Не роняем сборку конфига из-за опечатки: ядро всё равно
+                // попробует, а человек увидит причину в журнале и в настройках.
+                LOG_WARN(QString("DNS address %1 is not understood: %2").arg(address, parsed.error));
+                return {{"type", "udp"}, {"server", address}};
+            }
+
+            if (parsed.isLocal()) {
                 if (ctx.tunEnabled && ctx.isResolvedUsed) {
                     return {{"type", "underlying"}};
                 }
@@ -722,59 +732,19 @@ namespace Configs {
                 }
                 return {{"type", "local"}};
             }
-            if (address.startsWith("dhcp://")) {
-                auto ifcName = address.replace("dhcp://", "");
-                if (ifcName == "auto") ifcName = "";
+            if (parsed.isDhcp()) {
                 return {
                     {"type", "dhcp"},
-                    {"interface", ifcName},
+                    {"interface", parsed.interfaceName},
                 };
             }
-            QString addr = address;
-            int port = -1;
-            QString type = "udp";
-            QString path = "";
-            if (address.startsWith("tcp://")) {
-                type = "tcp";
-                addr = addr.replace("tcp://", "");
-            }
-            if (address.startsWith("tls://")) {
-                type = "tls";
-                addr = addr.replace("tls://", "");
-            }
-            if (address.startsWith("quic://")) {
-                type = "quic";
-                addr = addr.replace("quic://", "");
-            }
-            if (address.startsWith("https://")) {
-                type = "https";
-                addr = addr.replace("https://", "");
-                auto slashIndex = addr.indexOf("/");
-                if (slashIndex != -1) {
-                    path = addr.mid(slashIndex);
-                    addr = addr.left(slashIndex);
-                }
-            }
-            if (address.startsWith("h3://")) {
-                type = "h3";
-                addr = addr.replace("h3://", "");
-                auto slashIndex = addr.indexOf("/");
-                if (slashIndex != -1) {
-                    path = addr.mid(slashIndex);
-                    addr = addr.left(slashIndex);
-                }
-            }
-            if (addr.contains(":")) {
-                auto spl = addr.split(":");
-                addr = spl[0];
-                port = spl[1].toInt();
-            }
+
             QJsonObject res = {
-                {"type", type},
-                {"server", addr},
+                {"type", parsed.type},
+                {"server", parsed.server},
             };
-            if (port != -1) res["server_port"] = port;
-            if (!path.isEmpty()) res["path"] = path;
+            if (parsed.port != -1) res["server_port"] = parsed.port;
+            if (!parsed.path.isEmpty()) res["path"] = parsed.path;
             return res;
         }
 

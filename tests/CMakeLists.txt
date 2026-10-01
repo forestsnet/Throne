@@ -38,3 +38,12 @@ target_include_directories(XrayDnsStripTest PRIVATE ${CMAKE_SOURCE_DIR})
 target_link_libraries(XrayDnsStripTest PRIVATE Qt6::Test)
 
 add_test(NAME XrayDnsStripTest COMMAND XrayDnsStripTest)
+
+qt_add_executable(DnsAddressTest
+        DnsAddressTest.cpp
+        ../src/configs/DnsAddress.cpp
+)
+target_include_directories(DnsAddressTest PRIVATE ${CMAKE_SOURCE_DIR})
+target_link_libraries(DnsAddressTest PRIVATE Qt6::Test)
+
+add_test(NAME DnsAddressTest COMMAND DnsAddressTest)
