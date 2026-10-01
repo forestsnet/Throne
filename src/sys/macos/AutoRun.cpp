@@ -5,7 +5,7 @@
 #include <QDir>
 #include "include/global/Configs.hpp"
 
-void AutoRun_SetEnabled(bool enable) {
+bool AutoRun_SetEnabled(bool enable) {
     // From https://github.com/nextcloud/desktop/blob/master/src/common/utility_mac.cpp
     QString filePath = QDir(QCoreApplication::applicationDirPath() + QLatin1String("/../..")).absolutePath();
     CFStringRef folderCFStr = CFStringCreateWithCString(0, filePath.toUtf8().data(), kCFStringEncodingUTF8);
@@ -45,6 +45,9 @@ void AutoRun_SetEnabled(bool enable) {
 
     CFRelease(folderCFStr);
     CFRelease(urlRef);
+
+    // LSSharedFileList ничего не сообщает об отказе, поэтому смотрим на итог.
+    return AutoRun_IsEnabled() == enable;
 }
 
 bool AutoRun_IsEnabled() {

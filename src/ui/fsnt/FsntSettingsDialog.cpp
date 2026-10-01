@@ -450,7 +450,11 @@ void FsntSettingsDialog::save() {
 
     // Автозапуск живёт не в базе, а в системе, и пишется отдельно.
     if (m_autoRun->isChecked() != AutoRun_IsEnabled()) {
-        AutoRun_SetEnabled(m_autoRun->isChecked());
+        if (!AutoRun_SetEnabled(m_autoRun->isChecked())) {
+            MessageBoxWarning(software_name,
+                              tr("Could not change the autostart entry. The system refused it: "
+                                 "on Windows this is usually the elevation prompt being dismissed."));
+        }
     }
 
     // Транспорт задаётся режимами ядра, а не одной настройкой. Раньше здесь

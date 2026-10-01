@@ -876,8 +876,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         Configs::dataManager->settingsRepo->Save();
     });
     connect(ui->actionStart_with_system, &QAction::triggered, this, [=,this](bool checked) {
-        AutoRun_SetEnabled(checked);
-        ui->actionStart_with_system->setChecked(checked);
+        const bool done = AutoRun_SetEnabled(checked);
+        ui->actionStart_with_system->setChecked(done ? checked : AutoRun_IsEnabled());
+        if (!done) {
+            MessageBoxWarning(software_name,
+                              tr("Could not change the autostart entry. The system refused it: "
+                                 "on Windows this is usually the elevation prompt being dismissed."));
+        }
     });
     connect(ui->actionAllow_LAN, &QAction::triggered, this, [=,this](bool checked) {
         Configs::dataManager->settingsRepo->inbound_address = checked ? "::" : "127.0.0.1";

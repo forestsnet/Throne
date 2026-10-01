@@ -3,6 +3,7 @@
 #include <QCryptographicHash>
 #include <QDir>
 #include "include/global/Configs.hpp"
+#include "include/global/Logger.hpp"
 #include <QProcess>
 #include <QRegularExpression>
 #include <QSettings>
@@ -25,7 +26,7 @@ QString getCurrentUser() {
     return domain + "\\" + user;
 }
 
-void enable_autorun() {
+bool enable_autorun() {
     QString taskName = GetTaskName();
     QString exePath = QDir::toNativeSeparators(QCoreApplication::applicationFilePath());
     QString userId = getCurrentUser();
@@ -72,6 +73,9 @@ void enable_autorun() {
         "  <Actions Context=\"Author\">\n"
         "    <Exec>\n"
         "      <Command>\"%3\"</Command>\n"
+        // Старый автозапуск через реестр поднимал клиент свёрнутым; с переездом
+        // в планировщик это потерялось, и окно стало лезть на экран при каждом входе.
+        "      <Arguments>-tray</Arguments>\n"
         "    </Exec>\n"
         "  </Actions>\n"
         "</Task>"
@@ -79,24 +83,36 @@ void enable_autorun() {
 
     QString xmlFilePath = QDir::toNativeSeparators(QDir::tempPath() + "\\Throne_Task.xml");
     QFile xmlFile(xmlFilePath);
-    if (xmlFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+    if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        LOG_WARN("autorun: cannot write the task description to " + xmlFilePath);
+        return false;
+    }
+    {
         QTextStream out(&xmlFile);
         out.setEncoding(QStringConverter::Utf16);
         out.setGenerateByteOrderMark(true);
         out << xmlContent;
-        xmlFile.close();
     }
+    xmlFile.close();
 
+    // Без кавычек вокруг пути. QProcess передаёт аргументы программе напрямую,
+    // не через оболочку, и дописанные руками кавычки доезжали до schtasks
+    // частью имени файла — тот не находил XML и отказывал. Повышение прав не
+    // спасало: WinCommander оборачивает в кавычки каждый аргумент сам, и путь
+    // приезжал обёрнутым дважды. Автозапуск на Windows не мог встать вообще.
     QStringList args;
-    args << "/create" << "/tn" << taskName << "/xml" << "\"" + xmlFilePath + "\"" << "/f";
+    args << "/create" << "/tn" << taskName << "/xml" << xmlFilePath << "/f";
 
     QProcess process;
     process.start("schtasks.exe", args);
     process.waitForFinished();
 
     if (process.exitStatus() != QProcess::NormalExit || process.exitCode() != 0) {
+        LOG_WARN("autorun: schtasks /create failed (" + QString::fromLocal8Bit(process.readAllStandardError()).trimmed() + "), retrying elevated");
         WinCommander::runProcessElevated("schtasks.exe", args, "", 0, true);
     }
+    QFile::remove(xmlFilePath);
+    return true;
 }
 
 void disable_autorun() {
@@ -114,12 +130,15 @@ void disable_autorun() {
     }
 }
 
-void AutoRun_SetEnabled(bool enable) {
+bool AutoRun_SetEnabled(bool enable) {
     if (enable) {
-        enable_autorun();
+        if (!enable_autorun()) return false;
     } else {
         disable_autorun();
     }
+    // Планировщик мог отказать молча, а повышение прав — не состояться, если
+    // человек закрыл запрос. Верим не коду возврата, а тому, что видно потом.
+    return AutoRun_IsEnabled() == enable;
 }
 
 bool AutoRun_IsEnabled() {

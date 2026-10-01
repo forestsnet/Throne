@@ -24,7 +24,7 @@ QString getUserAutostartDir_private() {
     return config;
 }
 
-void AutoRun_SetEnabled(bool enable) {
+bool AutoRun_SetEnabled(bool enable) {
     // From https://github.com/nextcloud/desktop/blob/master/src/common/utility_unix.cpp
     QString appName = QCoreApplication::applicationName();
     QString userAutoStartPath = getUserAutostartDir_private();
@@ -45,13 +45,13 @@ void AutoRun_SetEnabled(bool enable) {
 
     if (enable) {
         if (!QDir().exists(userAutoStartPath) && !QDir().mkpath(userAutoStartPath)) {
-            return;
+            return false;
         }
 
         QFile iniFile(desktopFileLocation);
 
         if (!iniFile.open(QIODevice::WriteOnly)) {
-            return;
+            return false;
         }
 
         QTextStream ts(&iniFile);
@@ -71,6 +71,7 @@ void AutoRun_SetEnabled(bool enable) {
     } else {
         QFile::remove(desktopFileLocation);
     }
+    return QFile::exists(desktopFileLocation) == enable;
 }
 
 bool AutoRun_IsEnabled() {
