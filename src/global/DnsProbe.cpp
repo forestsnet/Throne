@@ -19,7 +19,7 @@ namespace Configs {
         // вопросов в журналах и нигде не блокируется.
         const auto kProbeName = QStringLiteral("example.com");
 
-        constexpr quint16 kDefaultPort(const QString &type) {
+        quint16 kDefaultPort(const QString &type) {
             return type == QLatin1String("tls") ? 853 : 53;
         }
 
