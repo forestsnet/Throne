@@ -47,3 +47,14 @@ target_include_directories(DnsAddressTest PRIVATE ${CMAKE_SOURCE_DIR})
 target_link_libraries(DnsAddressTest PRIVATE Qt6::Test)
 
 add_test(NAME DnsAddressTest COMMAND DnsAddressTest)
+
+qt_add_executable(DnsProbeTest
+        DnsProbeTest.cpp
+        ../include/global/DnsProbe.hpp
+        ../src/global/DnsProbe.cpp
+        ../src/configs/DnsAddress.cpp
+)
+target_include_directories(DnsProbeTest PRIVATE ${CMAKE_SOURCE_DIR})
+target_link_libraries(DnsProbeTest PRIVATE Qt6::Test Qt6::Network)
+
+add_test(NAME DnsProbeTest COMMAND DnsProbeTest)
