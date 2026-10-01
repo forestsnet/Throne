@@ -6,6 +6,7 @@
 #include <QAction>
 #include <QComboBox>
 #include <QHBoxLayout>
+#include <QInputDialog>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
@@ -17,6 +18,8 @@
 #include "include/configs/sub/GroupUpdater.hpp"
 #include "include/configs/sub/ProviderPolicy.hpp"
 #include "include/database/GroupsRepo.h"
+#include "include/configs/DnsAddress.hpp"
+#include "include/configs/DnsCatalog.hpp"
 #include "include/configs/RoutePresets.hpp"
 #include "include/ui/fsnt/Transport.hpp"
 #include "include/database/RoutesRepo.h"
@@ -233,12 +236,44 @@ namespace {
         {"Yandex",               "tls://77.88.8.8"},
     };
 
-    // Заполняет список и выбирает текущее значение. Своё значение из
-    // расширенного режима не теряем: добавляем его отдельным пунктом.
-    void fillDns(FsntSelect *box, const QString &current) {
-        for (const auto &[label, value] : kDnsPresets) {
-            box->addItem(QString::fromUtf8(label), QString::fromUtf8(value));
+    // Как показать транспорт человеку. Схему в чистом виде показывать незачем:
+    // «DoT» понятнее, чем «tls://», а разница между ними — ровно та, из-за
+    // которой у людей и отваливается резолв.
+    QString dnsTransportLabel(const QString &address) {
+        const auto parsed = Configs::ParseDnsAddress(address);
+        if (!parsed.valid) return {};
+        if (parsed.isLocal()) return QObject::tr("System resolver");
+        if (parsed.type == QLatin1String("tls")) return QStringLiteral("DoT");
+        if (parsed.type == QLatin1String("https") || parsed.type == QLatin1String("h3")) return QStringLiteral("DoH");
+        return parsed.type.toUpper();
+    }
+
+    // Заполняет список из каталога и своих адресов. Текущее значение не теряем,
+    // даже если оно пришло из расширенного режима или от провайдера.
+    void fillDns(FsntSelect *box, const QString &current, bool direct) {
+        const auto add = [box](const QString &label, const QString &value) {
+            for (int i = 0; i < box->count(); ++i) {
+                if (box->itemData(i).toString() == value) return;
+            }
+            box->addItem(label, value);
+        };
+
+        for (const auto &entry : Configs::DnsCatalog()) {
+            if (direct && !entry.forDirect) continue;
+            if (!direct && !entry.forRemote) continue;
+            for (const auto &address : entry.addresses) {
+                if (entry.isSystem()) {
+                    add(QObject::tr("System resolver"), address);
+                    continue;
+                }
+                add(QStringLiteral("%1 — %2").arg(entry.title, dnsTransportLabel(address)), address);
+            }
         }
+        for (const auto &own : Configs::dataManager->settingsRepo->dns_custom_servers) {
+            if (own.trimmed().isEmpty()) continue;
+            add(QObject::tr("Mine: %1").arg(own.trimmed()), own.trimmed());
+        }
+
         for (int i = 0; i < box->count(); ++i) {
             if (box->itemData(i).toString() == current) {
                 box->setCurrentIndex(i);
@@ -255,15 +290,59 @@ void FsntSettingsDialog::buildDns(QVBoxLayout *column, QWidget *host) {
     const auto &settings = Configs::dataManager->settingsRepo;
 
     m_remoteDns = makeSelect(host);
-    fillDns(m_remoteDns, settings->remote_dns);
+    fillDns(m_remoteDns, settings->remote_dns, false);
     card.addControl(tr("Through the VPN"), m_remoteDns);
 
     m_directDns = makeSelect(host);
-    fillDns(m_directDns, settings->direct_dns);
+    fillDns(m_directDns, settings->direct_dns, true);
     card.addControl(tr("Direct traffic"), m_directDns);
 
+    m_dnsAuto = card.addToggle(tr("Switch automatically when it stops answering"),
+                               settings->direct_dns_auto);
+
+    auto *addOwn = card.addAction(tr("Add your own server"));
+    connect(addOwn, &QPushButton::clicked, this, [this, host] {
+        bool accepted = false;
+        const auto entered = QInputDialog::getText(
+            this, tr("Add your own server"),
+            tr("Address, for example 1.1.1.1, tls://dns.google or "
+               "https://dns.google/dns-query:"),
+            QLineEdit::Normal, {}, &accepted).trimmed();
+        if (!accepted || entered.isEmpty()) return;
+
+        const auto parsed = Configs::ParseDnsAddress(entered);
+        if (!parsed.valid) {
+            // Раньше адрес сохранялся любой, а ошибка всплывала много позже —
+            // отсутствием интернета, без всякой связи с тем, что человек вписал.
+            MessageBoxWarning(tr("Address not understood"), parsed.error);
+            return;
+        }
+
+        auto &s = Configs::dataManager->settingsRepo;
+        if (!s->dns_custom_servers.contains(entered)) {
+            s->dns_custom_servers << entered;
+            s->Save();
+        }
+        for (auto *box : {m_remoteDns, m_directDns}) {
+            const auto keep = box->currentData().toString();
+            box->clear();
+            fillDns(box, keep, box == m_directDns);
+        }
+        for (int i = 0; i < m_directDns->count(); ++i) {
+            if (m_directDns->itemData(i).toString() == entered) m_directDns->setCurrentIndex(i);
+        }
+        Q_UNUSED(host)
+    });
+
     card.addNote(tr("The first resolves names for tunnelled traffic, the second for "
-                    "everything that goes direct."));
+                    "everything that goes direct. The direct one has to work before the "
+                    "tunnel is up, so a provider that blocks DoT or DoH leaves nothing to "
+                    "connect with — that is what the automatic switch is for."));
+
+    if (settings->direct_dns_auto && !settings->direct_dns_effective.isEmpty()
+        && settings->direct_dns_effective != settings->direct_dns) {
+        card.addNote(tr("Last connection actually used %1.").arg(settings->direct_dns_effective));
+    }
 }
 
 void FsntSettingsDialog::buildSubscriptions(QVBoxLayout *column, QWidget *host) {
@@ -410,6 +489,10 @@ void FsntSettingsDialog::save() {
     settings->inbound_address = m_allowLan->isChecked() ? "::" : "127.0.0.1";
     settings->remote_dns = m_remoteDns->currentData().toString();
     settings->direct_dns = m_directDns->currentData().toString();
+    settings->direct_dns_auto = m_dnsAuto->isChecked();
+    // Выбор руками отменяет прошлый подбор: иначе клиент продолжит ходить на
+    // сервер, который человек только что заменил.
+    settings->direct_dns_effective.clear();
 
     // Заблокирован — значит маршрутизацией распоряжается провайдер: показываем,
     // что выбрано, но ничего не переписываем.

@@ -6363,10 +6363,6 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Прямой трафик</translation>
     </message>
     <message>
-        <source>The first resolves names for tunnelled traffic, the second for everything that goes direct.</source>
-        <translation>Первый разрешает имена для трафика в туннеле, второй — для всего, что идёт напрямую.</translation>
-    </message>
-    <message>
         <source>Subscriptions</source>
         <translation>Подписки</translation>
     </message>
@@ -6439,6 +6435,30 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Выбрать приложения</translation>
     </message>
     <message>
+        <source>Switch automatically when it stops answering</source>
+        <translation>Переключать самому, когда перестаёт отвечать</translation>
+    </message>
+    <message>
+        <source>Add your own server</source>
+        <translation>Добавить свой сервер</translation>
+    </message>
+    <message>
+        <source>Address, for example 1.1.1.1, tls://dns.google or https://dns.google/dns-query:</source>
+        <translation>Адрес, например 1.1.1.1, tls://dns.google или https://dns.google/dns-query:</translation>
+    </message>
+    <message>
+        <source>Address not understood</source>
+        <translation>Адрес не понят</translation>
+    </message>
+    <message>
+        <source>The first resolves names for tunnelled traffic, the second for everything that goes direct. The direct one has to work before the tunnel is up, so a provider that blocks DoT or DoH leaves nothing to connect with — that is what the automatic switch is for.</source>
+        <translation>Первый разрешает имена для трафика в туннеле, второй — для всего, что идёт напрямую. Прямой обязан работать ещё до поднятия туннеля, поэтому у провайдера, который режет DoT или DoH, подключаться становится нечем — ради этого и нужен автоматический подбор.</translation>
+    </message>
+    <message>
+        <source>Last connection actually used %1.</source>
+        <translation>В прошлый раз подключение шло через %1.</translation>
+    </message>
+    <message>
         <source>Dark</source>
         <translation>Тёмная</translation>
     </message>
@@ -6481,6 +6501,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
     <message>
         <source>About the subscription and the tunnel we only tell you when the client window is not in front of you: while you are looking at it, you can see everything anyway.</source>
         <translation>О подписке и туннеле сообщаем, только когда окно клиента не перед вами: пока вы в него смотрите, всё и так видно.</translation>
+    </message>
+    <message>
+        <source>Could not change the autostart entry. The system refused it: on Windows this is usually the elevation prompt being dismissed.</source>
+        <translation>Не удалось изменить автозапуск: система отказала. В Windows так обычно выглядит закрытый запрос прав администратора.</translation>
     </message>
     <message>
         <source>Language changes apply after restarting the application.</source>
@@ -7716,6 +7740,10 @@ Error: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Could not change the autostart entry. The system refused it: on Windows this is usually the elevation prompt being dismissed.</source>
+        <translation>Не удалось изменить автозапуск: система отказала. В Windows так обычно выглядит закрытый запрос прав администратора.</translation>
+    </message>
+    <message>
         <source> Test result(s) copied to clipboard!</source>
         <translation>Результаты теста скопированы в буфер обмена!</translation>
     </message>
@@ -7830,6 +7858,14 @@ Please try again.</source>
         <translation>Гео-файлы были успешно загружены.
 
 Пожалуйста, попробуйте еще раз.</translation>
+    </message>
+    <message>
+        <source>No DNS server answered, so the address of the VPN server cannot be resolved. Check the connection or set another DNS in the settings.</source>
+        <translation>Ни один сервер DNS не ответил, адрес сервера VPN определить нечем. Проверьте соединение или укажите другой DNS в настройках.</translation>
+    </message>
+    <message>
+        <source>Direct DNS %1 did not answer, using %2</source>
+        <translation>Прямой DNS %1 не ответил, используется %2</translation>
     </message>
     <message>
         <source>BuildConfig return error</source>
@@ -8241,6 +8277,30 @@ Details: %3</source>
     <message>
         <source>Restore</source>
         <translation type="unfinished">Восстановить</translation>
+    </message>
+    <message>
+        <source>Direct DNS</source>
+        <translation type="unfinished">DNS для прямых запросов</translation>
+    </message>
+    <message>
+        <source>Set by hand in the DNS object.</source>
+        <translation>Задан вручную в объекте DNS.</translation>
+    </message>
+    <message>
+        <source>%1 does not answer (%2). Names of the VPN servers are resolved through it, so nothing can connect until it does.</source>
+        <translation>%1 не отвечает (%2). Через него разрешаются имена серверов VPN, поэтому подключиться не получится, пока он молчит.</translation>
+    </message>
+    <message>
+        <source>Find a working one</source>
+        <translation>Подобрать рабочий</translation>
+    </message>
+    <message>
+        <source>No DNS server answered.</source>
+        <translation>Ни один сервер DNS не ответил.</translation>
+    </message>
+    <message>
+        <source>Direct DNS switched to %1</source>
+        <translation>Прямой DNS переключён на %1</translation>
     </message>
     <message>
         <source>No servers in the current subscription. Add the link your provider gave you, or refresh the subscription.</source>
@@ -9252,6 +9312,14 @@ Release note:
         <translation type="unfinished">Отмена</translation>
     </message>
     <message>
+        <source>System resolver</source>
+        <translation>Системный резолвер</translation>
+    </message>
+    <message>
+        <source>Mine: %1</source>
+        <translation>Свой: %1</translation>
+    </message>
+    <message>
         <source>Custom: %1</source>
         <translation>Свой: %1</translation>
     </message>
@@ -10087,7 +10155,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
     <name>UpdatePopover</name>
     <message>
         <source>Update</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Обновление</translation>
     </message>
     <message>
         <source>Later</source>

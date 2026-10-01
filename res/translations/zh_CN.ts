@@ -6371,7 +6371,27 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The first resolves names for tunnelled traffic, the second for everything that goes direct.</source>
+        <source>Switch automatically when it stops answering</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add your own server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Address, for example 1.1.1.1, tls://dns.google or https://dns.google/dns-query:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Address not understood</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The first resolves names for tunnelled traffic, the second for everything that goes direct. The direct one has to work before the tunnel is up, so a provider that blocks DoT or DoH leaves nothing to connect with — that is what the automatic switch is for.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Last connection actually used %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6496,6 +6516,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
     </message>
     <message>
         <source>About the subscription and the tunnel we only tell you when the client window is not in front of you: while you are looking at it, you can see everything anyway.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not change the autostart entry. The system refused it: on Windows this is usually the elevation prompt being dismissed.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -7339,6 +7363,14 @@ Download them now?</source>
         <translation>Geo 资源已安装</translation>
     </message>
     <message>
+        <source>No DNS server answered, so the address of the VPN server cannot be resolved. Check the connection or set another DNS in the settings.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Direct DNS %1 did not answer, using %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>The tunnel needs administrator rights, connection cancelled</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7512,6 +7544,10 @@ Download them now?</source>
     </message>
     <message>
         <source>OTP Codes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not change the autostart entry. The system refused it: on Windows this is usually the elevation prompt being dismissed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -9071,6 +9107,14 @@ Release note:
         <translation type="unfinished">取消</translation>
     </message>
     <message>
+        <source>System resolver</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mine: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Custom: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -9149,6 +9193,30 @@ Release note:
     <message>
         <source>Restore</source>
         <translation type="unfinished">恢复</translation>
+    </message>
+    <message>
+        <source>Direct DNS</source>
+        <translation type="unfinished">直连 DNS</translation>
+    </message>
+    <message>
+        <source>Set by hand in the DNS object.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 does not answer (%2). Names of the VPN servers are resolved through it, so nothing can connect until it does.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find a working one</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No DNS server answered.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Direct DNS switched to %1</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Subscription</source>

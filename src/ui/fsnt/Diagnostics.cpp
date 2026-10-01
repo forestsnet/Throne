@@ -4,6 +4,7 @@
 #include <QDateTime>
 #include <QFile>
 #include <QLocale>
+#include <QEventLoop>
 #include <QNetworkInterface>
 #include <QSettings>
 
@@ -11,6 +12,8 @@
 #include "include/global/Configs.hpp"
 #include "include/global/HTTPRequestHelper.hpp"
 #include "include/global/Utils.hpp"
+#include "include/global/DnsAutoSelect.hpp"
+#include "include/global/DnsProbe.hpp"
 #include "include/ui/fsnt/Transport.hpp"
 #include "include/ui/mainwindow.h"
 
@@ -88,6 +91,56 @@ namespace Fsnt {
                                 "back, VPN or not."),
                     QObject::tr("Restore"), [] {
                         if (auto *m = GetMainWindow(); m != nullptr) m->RestoreStaleSystemDns(false);
+                    });
+            }};
+
+        checks << Check{
+            QObject::tr("Direct DNS"), [] {
+                const auto &s = Configs::dataManager->settingsRepo;
+                if (s->use_dns_object) return diagSkipped(QObject::tr("Set by hand in the DNS object."));
+
+                const auto address = (s->direct_dns_auto && !s->direct_dns_effective.isEmpty())
+                                         ? s->direct_dns_effective
+                                         : s->direct_dns;
+
+                // Проба синхронная: проверка и так крутится в рабочем потоке,
+                // а свой цикл событий здесь проще, чем тащить асинхронность
+                // через весь контракт проверок.
+                QEventLoop loop;
+                Configs::DnsProbe probe;
+                QList<Configs::DnsProbeResult> results;
+                QObject::connect(&probe, &Configs::DnsProbe::Finished, &loop,
+                                 [&](const QList<Configs::DnsProbeResult> &r) {
+                                     results = r;
+                                     loop.quit();
+                                 });
+                probe.Start({address}, 3000);
+                loop.exec();
+
+                if (!results.isEmpty() && results.first().ok) return diagOk();
+
+                const auto why = results.isEmpty() ? QObject::tr("no answer") : results.first().error;
+                // Это причина, а не следствие: пока имя сервера не разрешается,
+                // подключаться некуда, и всё остальное ниже будет красным зря.
+                return diagFailed(
+                    QObject::tr("%1 does not answer (%2). Names of the VPN servers are resolved "
+                                "through it, so nothing can connect until it does.")
+                        .arg(address, why),
+                    QObject::tr("Find a working one"), [] {
+                        auto *select = new Configs::DnsAutoSelect(GetMainWindow());
+                        QObject::connect(select, &Configs::DnsAutoSelect::Selected, select,
+                                         [select](const QString &found, bool) {
+                                             select->deleteLater();
+                                             auto &st = Configs::dataManager->settingsRepo;
+                                             if (found.isEmpty()) {
+                                                 MW_show_log(QObject::tr("No DNS server answered."));
+                                                 return;
+                                             }
+                                             st->direct_dns_effective = found;
+                                             st->Save();
+                                             MW_show_log(QObject::tr("Direct DNS switched to %1").arg(found));
+                                         });
+                        select->Start(Configs::dataManager->settingsRepo->direct_dns);
                     });
             }};
 

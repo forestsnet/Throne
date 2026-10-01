@@ -56,4 +56,5 @@ private:
     FsntSelect *m_theme = nullptr;
     FsntSelect *m_remoteDns = nullptr;
     FsntSelect *m_directDns = nullptr;
+    FsntSwitch *m_dnsAuto = nullptr;
 };
