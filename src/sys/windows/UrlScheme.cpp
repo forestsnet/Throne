@@ -12,7 +12,16 @@
 static const QString kClasses = "HKEY_CURRENT_USER\\Software\\Classes";
 static const QString kProgId = "Throne.Config";
 
-static const QStringList kConfigExtensions = {".json", ".conf", ".yaml", ".yml", ".ini", ".txt"};
+static const QStringList kConfigExtensions = {".json", ".conf", ".yaml", ".yml"};
+
+// Раньше сюда входили .txt и .ini. Запись сама по себе добавочная — чужой
+// умолчательной программы она не трогает, — но в списке «Открыть с помощью»
+// для текстового файла появлялся VPN-клиент, и человеку достаточно было один
+// раз ткнуть в него в окне «Чем открыть», чтобы Windows прописала UserChoice и
+// все .txt начали открываться в нём. Со стороны это выглядит как «пропал
+// блокнот». Расширения общего назначения клиенту не принадлежат, поэтому
+// запись снимается у всех, у кого она успела появиться.
+static const QStringList kRetiredExtensions = {".txt", ".ini"};
 
 static QString openCommand() {
     return "\"" + QDir::toNativeSeparators(QApplication::applicationFilePath()) + "\" \"%1\"";
@@ -29,7 +38,7 @@ static QStringList commandKeys() {
 }
 
 QString UrlScheme_DesiredState() {
-    return "v2|" + openCommand();
+    return "v3|" + openCommand();
 }
 
 bool UrlScheme_IsCurrent() {
@@ -69,6 +78,13 @@ void UrlScheme_Apply() {
         app.setValue("SupportedTypes/" + ext, "");
     }
 
+    for (const QString &ext : kRetiredExtensions) {
+        QSettings assoc(kClasses + "\\" + ext + "\\OpenWithProgids", QSettings::NativeFormat);
+        assoc.remove(kProgId);
+        assoc.sync();
+        app.remove("SupportedTypes/" + ext);
+    }
+
     // QSettings only reaches the registry on sync, so flush before SHChangeNotify.
     scheme.sync();
     progId.sync();
@@ -85,7 +101,7 @@ void UrlScheme_Remove() {
     classes.sync();
 
     // Only our own progid goes; the extension's default was never ours to touch.
-    for (const QString &ext : kConfigExtensions) {
+    for (const QString &ext : kConfigExtensions + kRetiredExtensions) {
         QSettings assoc(kClasses + "\\" + ext + "\\OpenWithProgids", QSettings::NativeFormat);
         assoc.remove(kProgId);
         assoc.sync();
