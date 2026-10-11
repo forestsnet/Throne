@@ -23,6 +23,7 @@
 #include "include/global/Configs.hpp"
 #include "include/global/HTTPRequestHelper.hpp"
 #include "include/global/Logger.hpp"
+#include <QSettings>
 #include "include/ui/fsnt/UiMode.hpp"
 #include "include/sys/Process.hpp"
 #include "include/ui/mainWindow/MainWindowInternal.h"
@@ -415,6 +416,31 @@ bool MainWindow::get_elevated_permissions(ExitReason reason) {
     }
 #endif
     return false;
+}
+
+void MainWindow::ClearStaleSystemProxy() {
+#ifdef Q_OS_WIN
+    auto &settings = Configs::dataManager->settingsRepo;
+    if (settings->spmode_system_proxy) return;                      // держим его мы, и сейчас
+    if (settings->core_running && settings->started_id >= 0) return;
+
+    // Снимается он только в prepare_exit. Сеанс оборвался иначе — ядро убито,
+    // упало, приложение закрыли жёстко, — и в системе остаётся прокси на
+    // мёртвый локальный порт. Через WinINET это бьёт не только по браузеру:
+    // туда же ходят установщики, обновляторы и всё офисное.
+    QSettings ie("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings",
+                 QSettings::NativeFormat);
+    if (ie.value("ProxyEnable", 0).toInt() == 0) return;
+
+    const auto current = ie.value("ProxyServer").toString();
+    // Только свой: у человека может стоять и чужой локальный прокси.
+    const auto ours = QString(":%1").arg(settings->inbound_socks_port);
+    if (!current.contains(ours)) return;
+
+    ClearSystemProxy();
+    LOG_INFO("system proxy left over from the previous session was cleared: " + current);
+    MW_show_log(tr("Cleared the system proxy left over from the previous session"));
+#endif
 }
 
 void MainWindow::set_system_proxy(bool enable) {

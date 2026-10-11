@@ -174,6 +174,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         });
     };
 
+    ClearStaleSystemProxy();
     AutoRun_FixTaskIfNeeded();
     AutoRun_MigrateIfNeeded();
 

@@ -7639,6 +7639,10 @@ macOS will ask for your password in its own window — the same one you use to l
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Cleared the system proxy left over from the previous session</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>The application will restart in the simple interface. Continue?</source>
         <translation type="unfinished"></translation>
     </message>

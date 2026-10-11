@@ -6929,6 +6929,10 @@ Putting it back needs administrator rights.</source>
         <translation type="unfinished">Перезапустить</translation>
     </message>
     <message>
+        <source>Cleared the system proxy left over from the previous session</source>
+        <translation>Снят системный прокси, оставшийся от прошлого сеанса</translation>
+    </message>
+    <message>
         <source>The sing-box API is disabled. Set a listen port in Preferences &gt; Basic Settings &gt; Core.</source>
         <translation type="unfinished"></translation>
     </message>

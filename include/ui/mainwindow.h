@@ -190,6 +190,11 @@ public:
     // метода не увидит.
     bool RestoreStaleSystemDns(bool quiet);
 
+    // Снимает системный прокси, оставшийся от оборвавшегося сеанса. На Windows
+    // он ставится через WinINET, то есть в те же «Свойства обозревателя»,
+    // откуда его берут Internet Explorer и всё, что ходит через WinINET.
+    void ClearStaleSystemProxy();
+
 signals:
 
     void profile_selected(int id);
