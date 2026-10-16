@@ -420,6 +420,43 @@ bool MainWindow::get_elevated_permissions(ExitReason reason) {
     return false;
 }
 
+#ifdef Q_OS_WIN
+#include <windows.h>
+#include <wininet.h>
+
+namespace {
+    const auto kInternetSettings =
+        QStringLiteral("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings");
+
+    // Прежние настройки одной строкой: включён ли прокси, его адрес и адрес
+    // сценария автонастройки.
+    QString captureWindowsProxy() {
+        QSettings ie(kInternetSettings, QSettings::NativeFormat);
+        return QStringLiteral("%1|%2|%3")
+            .arg(ie.value("ProxyEnable", 0).toInt())
+            .arg(ie.value("ProxyServer").toString(), ie.value("AutoConfigURL").toString());
+    }
+
+    void restoreWindowsProxy(const QString &saved) {
+        const auto parts = saved.split('|');
+        if (parts.size() < 3) return;
+        const bool wasOn = parts[0].toInt() != 0;
+        const auto server = parts[1];
+        const auto pac = parts[2];
+        if (!wasOn && server.isEmpty() && pac.isEmpty()) return; // возвращать нечего
+
+        QSettings ie(kInternetSettings, QSettings::NativeFormat);
+        ie.setValue("ProxyEnable", wasOn ? 1 : 0);
+        if (server.isEmpty()) ie.remove("ProxyServer"); else ie.setValue("ProxyServer", server);
+        if (pac.isEmpty()) ie.remove("AutoConfigURL"); else ie.setValue("AutoConfigURL", pac);
+        ie.sync();
+        InternetSetOption(nullptr, INTERNET_OPTION_SETTINGS_CHANGED, nullptr, 0);
+        InternetSetOption(nullptr, INTERNET_OPTION_REFRESH, nullptr, 0);
+        LOG_INFO("previous system proxy settings restored");
+    }
+} // namespace
+#endif
+
 void MainWindow::ClearStaleSystemProxy() {
     auto &settings = Configs::dataManager->settingsRepo;
     if (settings->spmode_system_proxy) return;                      // держим его мы, и сейчас
@@ -518,42 +555,6 @@ void MainWindow::ClearStaleSystemDnsTunnel() {
 #endif
 }
 
-#ifdef Q_OS_WIN
-#include <windows.h>
-#include <wininet.h>
-
-namespace {
-    const auto kInternetSettings =
-        QStringLiteral("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings");
-
-    // Прежние настройки одной строкой: включён ли прокси, его адрес и адрес
-    // сценария автонастройки.
-    QString captureWindowsProxy() {
-        QSettings ie(kInternetSettings, QSettings::NativeFormat);
-        return QStringLiteral("%1|%2|%3")
-            .arg(ie.value("ProxyEnable", 0).toInt())
-            .arg(ie.value("ProxyServer").toString(), ie.value("AutoConfigURL").toString());
-    }
-
-    void restoreWindowsProxy(const QString &saved) {
-        const auto parts = saved.split('|');
-        if (parts.size() < 3) return;
-        const bool wasOn = parts[0].toInt() != 0;
-        const auto server = parts[1];
-        const auto pac = parts[2];
-        if (!wasOn && server.isEmpty() && pac.isEmpty()) return; // возвращать нечего
-
-        QSettings ie(kInternetSettings, QSettings::NativeFormat);
-        ie.setValue("ProxyEnable", wasOn ? 1 : 0);
-        if (server.isEmpty()) ie.remove("ProxyServer"); else ie.setValue("ProxyServer", server);
-        if (pac.isEmpty()) ie.remove("AutoConfigURL"); else ie.setValue("AutoConfigURL", pac);
-        ie.sync();
-        InternetSetOption(nullptr, INTERNET_OPTION_SETTINGS_CHANGED, nullptr, 0);
-        InternetSetOption(nullptr, INTERNET_OPTION_REFRESH, nullptr, 0);
-        LOG_INFO("previous system proxy settings restored");
-    }
-} // namespace
-#endif
 
 void MainWindow::set_system_proxy(bool enable) {
     if (enable) {
