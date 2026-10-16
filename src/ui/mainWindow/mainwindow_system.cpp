@@ -528,7 +528,10 @@ void MainWindow::on_menu_simple_mode_triggered() {
 void MainWindow::RestartCore() {
     runOnThread([=, this]
     {
-        profile_stop(true, true, true);
+        // crash=false: это наш собственный перезапуск, а не падение, и ядру
+        // надо дать снять туннель. С crash=true шаг с RPC Stop пропускался, и
+        // перезапуск оставлял в системе маршруты и подменённый DNS.
+        profile_stop(false, true, true);
         core_process->Kill();
     }, DS_cores);
 }

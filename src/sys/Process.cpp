@@ -44,23 +44,26 @@ namespace Configs_sys {
             return;
         }
 
-        qDebug() << "Sending kill signal to core process...";
-        kill();
-
-        // Ждём с таймаутом
-        if (!waitForFinished(2000)) {
-            qDebug() << "Core process did not stop gracefully, forcing terminate...";
-            terminate();
-
-            // Ещё одна попытка
-            if (!waitForFinished(1000)) {
-                qDebug() << "[Warning] Core process may still be running";
-            } else {
-                qDebug() << "Core process terminated successfully";
-            }
-        } else {
-            qDebug() << "Core process stopped gracefully";
+        // Порядок здесь был обратный: сначала kill(), то есть SIGKILL, и лишь
+        // потом terminate() — под видом «принудительного» шага. SIGKILL
+        // перехватить нельзя, поэтому ядро никогда не получало возможности
+        // снять туннель, его маршруты, подменённый системный DNS и дочерние
+        // процессы. Всё это оставалось в системе, а человек — без сети.
+#ifndef Q_OS_WIN
+        qDebug() << "Asking the core to exit";
+        terminate();
+        if (waitForFinished(8000)) {
+            qDebug() << "Core exited on request";
+            return;
         }
+        qWarning() << "Core did not exit on request, killing it";
+#else
+        // В Windows terminate() шлёт WM_CLOSE, а у консольного ядра окон нет —
+        // ждать его бессмысленно. Там за откат отвечает RPC Stop, который
+        // вызывается до этого места.
+#endif
+        kill();
+        if (!waitForFinished(2000)) qWarning() << "Core process may still be running";
     }
 
     CoreProcess::CoreProcess(const QString &core_path, const QString &socketName, bool debugMode)

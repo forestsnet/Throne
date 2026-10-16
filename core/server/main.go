@@ -1,18 +1,22 @@
 package main
 
 import (
+	"ThroneCore/gen"
 	"ThroneCore/internal/boxmain"
 	"ThroneCore/ipc"
 	"ThroneCore/parentcheck"
+	"context"
 	"fmt"
 	"github.com/xtls/xray-core/core"
 	"log"
 	"net"
 	"os"
+	"os/signal"
 	"runtime"
 	runtimeDebug "runtime/debug"
 	"runtime/metrics"
 	"runtime/pprof"
+	"strings"
 	"syscall"
 	"time"
 
@@ -92,16 +96,26 @@ func RunCore() {
 		}
 		if runtime.GOOS == "windows" {
 			state, err := parent.Wait()
-			log.Fatalln("parent exited:", state, err)
+			shutdown(fmt.Sprintln("parent exited:", state, err))
 		} else {
 			for {
 				time.Sleep(time.Second * 10)
 				err = parent.Signal(syscall.Signal(0))
 				if err != nil {
-					log.Fatalln("parent exited:", err)
+					shutdown(fmt.Sprintln("parent exited:", err))
 				}
 			}
 		}
+	}()
+
+	// Сигналы ловим на весь срок жизни, а не только на время создания службы.
+	// Без этого SIGTERM убивал ядро по умолчанию, то есть ровно так же, как
+	// SIGKILL: туннель, маршруты и системный DNS оставались в системе.
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		sig := <-signals
+		shutdown(fmt.Sprintln("got signal:", sig))
 	}()
 
 	boxmain.DisableColor()
@@ -122,6 +136,29 @@ func RunCore() {
 
 	fmt.Println("Core Has Successfully Connected to Throne!")
 	runDispatch(conn)
+}
+
+// Выход с откатом. log.Fatalln звал os.Exit, а тот не выполняет ни отложенных
+// вызовов, ни чего-либо ещё: туннель, его маршруты, подменённый системный DNS и
+// дочерние процессы оставались в системе. Человек при этом остаётся без сети и
+// связать это с давно закрытым клиентом не может.
+func shutdown(reason string) {
+	log.Println("shutting down:", strings.TrimSpace(reason))
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		if _, err := globalServer.Stop(context.Background(), &gen.EmptyReq{}); err != nil {
+			log.Println("teardown failed:", err)
+		}
+	}()
+	// Ограничение по времени: зависший откат не должен держать ядро вечно,
+	// иначе вместо следа в системе получим вечный процесс.
+	select {
+	case <-done:
+	case <-time.After(10 * time.Second):
+		log.Println("teardown timed out")
+	}
+	os.Exit(1)
 }
 
 func main() {
