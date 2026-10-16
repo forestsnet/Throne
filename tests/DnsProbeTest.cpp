@@ -65,6 +65,22 @@ private slots:
         QVERIFY(DnsProbe::Fastest(allDead).isEmpty());
     }
 
+    // Проба завершается по таймауту, а следом приходит ошибка сокета. Раньше
+    // на этом клиент падал: состояние удалялось дважды. Сигнал должен прийти
+    // ровно один раз.
+    void unreachableServerFinishesExactlyOnce() {
+        DnsProbe probe;
+        QSignalSpy spy(&probe, &DnsProbe::Finished);
+        // TEST-NET-1 по RFC 5737: не маршрутизируется ниоткуда.
+        probe.Start({"tls://192.0.2.1", "https://192.0.2.1/dns-query", "udp://192.0.2.1"}, 300);
+        QVERIFY(spy.wait(5000));
+        QTest::qWait(1500); // доживаем до запоздалых ошибок сокетов
+        QCOMPARE(spy.count(), 1);
+        const auto results = spy.first().first().value<QList<DnsProbeResult>>();
+        QCOMPARE(results.size(), 3);
+        for (const auto &result : results) QVERIFY(!result.ok);
+    }
+
     void badAddressFailsWithoutNetwork() {
         DnsProbe probe;
         QSignalSpy spy(&probe, &DnsProbe::Finished);

@@ -1,6 +1,8 @@
 #include "include/global/DnsProbe.hpp"
 
 #include <QElapsedTimer>
+
+#include <memory>
 #include <QHostInfo>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -131,13 +133,25 @@ namespace Configs {
         auto *timer = new QTimer(this);
         timer->setSingleShot(true);
         timer->setInterval(timeoutMs);
-        auto *clock = new QElapsedTimer;
-        clock->start();
-        const auto elapsed = [clock] { return static_cast<int>(clock->elapsed()); };
-        const auto done = [this, index, timer, clock](bool ok, int ms, const QString &err) {
+
+        // Завершиться проба может не один раз: таймаут срабатывает, а следом
+        // приходит ошибка сокета или finished у уже прерванного запроса. Раньше
+        // состояние лежало в сыром указателе и каждое завершение его удаляло —
+        // второе освобождало уже освобождённое, и клиент падал. Падал ровно
+        // там, где эти гонки и живут: на недоступном сервере.
+        struct ProbeState {
+            QElapsedTimer clock;
+            bool finished = false;
+        };
+        auto state = std::make_shared<ProbeState>();
+        state->clock.start();
+
+        const auto elapsed = [state] { return static_cast<int>(state->clock.elapsed()); };
+        const auto done = [this, index, timer, state](bool ok, int ms, const QString &err) {
+            if (state->finished) return;
+            state->finished = true;
             timer->stop();
             timer->deleteLater();
-            delete clock;
             complete(index, ok, ms, err);
         };
 
@@ -192,15 +206,19 @@ namespace Configs {
             auto *reply = manager->post(request, query);
             connect(timer, &QTimer::timeout, reply, &QNetworkReply::abort);
             connect(reply, &QNetworkReply::finished, this, [reply, manager, done, elapsed, id] {
-                const auto payload = reply->readAll();
                 const auto networkError = reply->error();
                 const auto errorText = reply->errorString();
-                reply->deleteLater();
-                manager->deleteLater();
                 if (networkError != QNetworkReply::NoError) {
+                    // Читать прерванный ответ нельзя: Qt пишет в журнал
+                    // «device not open», а полезного там всё равно ничего нет.
+                    reply->deleteLater();
+                    manager->deleteLater();
                     done(false, -1, errorText);
                     return;
                 }
+                const auto payload = reply->readAll();
+                reply->deleteLater();
+                manager->deleteLater();
                 QString error;
                 const bool ok = IsDnsResponseFor(payload, id, &error);
                 done(ok, elapsed(), error);
@@ -219,8 +237,7 @@ namespace Configs {
         const bool encrypted = parsed.type != QLatin1String("tcp");
         QTcpSocket *socket = encrypted ? new QSslSocket(this) : new QTcpSocket(this);
         connect(timer, &QTimer::timeout, socket, &QObject::deleteLater);
-        auto *buffer = new QByteArray;
-        connect(socket, &QObject::destroyed, this, [buffer] { delete buffer; });
+        auto buffer = std::make_shared<QByteArray>();
         connect(socket, &QTcpSocket::readyRead, this, [socket, buffer, done, elapsed, id] {
             buffer->append(socket->readAll());
             if (buffer->size() < 2) return;
