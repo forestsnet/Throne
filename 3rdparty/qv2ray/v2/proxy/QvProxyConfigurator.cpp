@@ -409,14 +409,29 @@ namespace Qv2ray::components::proxy {
             // for GNOME:
             {
                 actions << ProcessArgument{"gsettings", {"set", "org.gnome.system.proxy", "mode", "none"}};
+                // Сбрасывался только режим, а адрес и порт оставались записаны
+                // навсегда. Человек потом включал системный прокси сам — и
+                // попадал на наш давно закрытый локальный порт, без единой
+                // подсказки, откуда это взялось.
+                for (const auto &schema : {"http", "https", "ftp", "socks"}) {
+                    actions << ProcessArgument{"gsettings", {"reset", QString("org.gnome.system.proxy.%1").arg(schema), "host"}};
+                    actions << ProcessArgument{"gsettings", {"reset", QString("org.gnome.system.proxy.%1").arg(schema), "port"}};
+                }
             }
 
             // for KDE:
             if (isKDE) {
-                actions << ProcessArgument{qEnvironmentVariable("KDE_SESSION_VERSION") == "5" ? "kwriteconfig5" : qEnvironmentVariable("KDE_SESSION_VERSION") == "6" ? "kwriteconfig6" : "kwriteconfig",
+                const QString kwrite = qEnvironmentVariable("KDE_SESSION_VERSION") == "5" ? "kwriteconfig5" : qEnvironmentVariable("KDE_SESSION_VERSION") == "6" ? "kwriteconfig6" : "kwriteconfig";
+                actions << ProcessArgument{kwrite,
                                            {"--file", configRoot + "/kioslaverc", //
                                             "--group", "Proxy Settings",          //
                                             "--key", "ProxyType", "0"}};
+                for (const auto &key : {"httpProxy", "httpsProxy", "ftpProxy", "socksProxy"}) {
+                    actions << ProcessArgument{kwrite,
+                                               {"--file", configRoot + "/kioslaverc", //
+                                                "--group", "Proxy Settings",          //
+                                                "--key", key, "--delete"}};
+                }
             }
         }
 

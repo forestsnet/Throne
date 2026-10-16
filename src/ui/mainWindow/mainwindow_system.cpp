@@ -432,6 +432,12 @@ void MainWindow::ClearStaleSystemProxy() {
         if (change.kind != QLatin1String("system-proxy")) continue;
         ClearSystemProxy();
         Configs::SystemStateJournal::Forget(change.kind);
+#ifdef Q_OS_WIN
+        for (const auto &saved : Configs::SystemStateJournal::Leftovers()) {
+            if (saved.kind == QLatin1String("system-proxy-previous")) restoreWindowsProxy(saved.detail);
+        }
+        Configs::SystemStateJournal::Forget(QStringLiteral("system-proxy-previous"));
+#endif
         LOG_INFO("system proxy left over from the previous session was cleared: " + change.detail);
         MW_show_log(tr("Cleared the system proxy left over from the previous session"));
         return;
@@ -512,6 +518,43 @@ void MainWindow::ClearStaleSystemDnsTunnel() {
 #endif
 }
 
+#ifdef Q_OS_WIN
+#include <windows.h>
+#include <wininet.h>
+
+namespace {
+    const auto kInternetSettings =
+        QStringLiteral("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings");
+
+    // Прежние настройки одной строкой: включён ли прокси, его адрес и адрес
+    // сценария автонастройки.
+    QString captureWindowsProxy() {
+        QSettings ie(kInternetSettings, QSettings::NativeFormat);
+        return QStringLiteral("%1|%2|%3")
+            .arg(ie.value("ProxyEnable", 0).toInt())
+            .arg(ie.value("ProxyServer").toString(), ie.value("AutoConfigURL").toString());
+    }
+
+    void restoreWindowsProxy(const QString &saved) {
+        const auto parts = saved.split('|');
+        if (parts.size() < 3) return;
+        const bool wasOn = parts[0].toInt() != 0;
+        const auto server = parts[1];
+        const auto pac = parts[2];
+        if (!wasOn && server.isEmpty() && pac.isEmpty()) return; // возвращать нечего
+
+        QSettings ie(kInternetSettings, QSettings::NativeFormat);
+        ie.setValue("ProxyEnable", wasOn ? 1 : 0);
+        if (server.isEmpty()) ie.remove("ProxyServer"); else ie.setValue("ProxyServer", server);
+        if (pac.isEmpty()) ie.remove("AutoConfigURL"); else ie.setValue("AutoConfigURL", pac);
+        ie.sync();
+        InternetSetOption(nullptr, INTERNET_OPTION_SETTINGS_CHANGED, nullptr, 0);
+        InternetSetOption(nullptr, INTERNET_OPTION_REFRESH, nullptr, 0);
+        LOG_INFO("previous system proxy settings restored");
+    }
+} // namespace
+#endif
+
 void MainWindow::set_system_proxy(bool enable) {
     if (enable) {
         auto socks_port = Configs::dataManager->settingsRepo->inbound_socks_port;
@@ -520,10 +563,22 @@ void MainWindow::set_system_proxy(bool enable) {
         Configs::SystemStateJournal::Record(
             QStringLiteral("system-proxy"),
             QStringLiteral("%1:%2").arg(Configs::dataManager->settingsRepo->inbound_address).arg(socks_port));
+#ifdef Q_OS_WIN
+        // Своё мы снимем, но до сих пор заодно стиралось и чужое: откат ставил
+        // «прямое подключение», а не возвращал то, что было. У человека со
+        // своим прокси или сценарием автонастройки они просто исчезали.
+        Configs::SystemStateJournal::Record(QStringLiteral("system-proxy-previous"), captureWindowsProxy());
+#endif
         SetSystemProxy(socks_port, socks_port, Configs::dataManager->settingsRepo->proxy_scheme);
     } else {
         ClearSystemProxy();
         Configs::SystemStateJournal::Forget(QStringLiteral("system-proxy"));
+#ifdef Q_OS_WIN
+        for (const auto &change : Configs::SystemStateJournal::Leftovers()) {
+            if (change.kind == QLatin1String("system-proxy-previous")) restoreWindowsProxy(change.detail);
+        }
+        Configs::SystemStateJournal::Forget(QStringLiteral("system-proxy-previous"));
+#endif
     }
 }
 
