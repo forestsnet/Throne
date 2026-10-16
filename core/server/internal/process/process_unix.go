@@ -4,6 +4,7 @@ package process
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"os/exec"
 	"os/user"
@@ -17,8 +18,14 @@ func startChild(path string, args []string, noOut bool) (running, error) {
 	if err := applyPrivilegeDrop(cmd); err != nil {
 		return nil, err
 	}
+	applyDeathSignal(cmd)
 	return startCmd(cmd)
 }
+
+// Дочерний процесс (openvpn, openconnect и подобные) поднимает собственный
+// туннель и собственные маршруты, а убирается только в Stop. Переживи он смерть
+// ядра — останется сиротой вместе со своим туннелем, и выключить его человеку
+// будет уже нечем. На Linux ядро само пришлёт ему сигнал следом за нами.
 
 // Under setuid-root the real uid still identifies the launching user; SysProcAttr.Credential setuids in the child before exec, race-free.
 func applyPrivilegeDrop(cmd *exec.Cmd) error {
@@ -99,6 +106,34 @@ func makeConfigReadable(f *os.File) error {
 	return f.Chmod(0o600)
 }
 
+// Каталоги с конфигами удаляются в Stop. Сеанс, не доживший до Stop, оставляет
+// их в /tmp во владении root, и за месяцы их набирается заметно. Сносим те,
+// чей процесс уже мёртв: чужое работающее ядро при этом не трогаем.
+func SweepStaleConfigDirs() {
+	entries, err := os.ReadDir("/tmp")
+	if err != nil {
+		return
+	}
+	for _, entry := range entries {
+		if !entry.IsDir() || !strings.HasPrefix(entry.Name(), "throne-extra-") {
+			continue
+		}
+		rest := strings.TrimPrefix(entry.Name(), "throne-extra-")
+		dash := strings.Index(rest, "-")
+		if dash <= 0 {
+			continue // старое имя без PID: трогать не берёмся
+		}
+		pid, err := strconv.Atoi(rest[:dash])
+		if err != nil || pid == os.Getpid() {
+			continue
+		}
+		if proc, err := os.FindProcess(pid); err == nil && proc.Signal(syscall.Signal(0)) == nil {
+			continue // процесс жив, каталог его
+		}
+		_ = os.RemoveAll("/tmp/" + entry.Name())
+	}
+}
+
 // When elevated, $TMPDIR is attacker-controlled: use a root-owned 0711 directory in sticky /tmp, which no unprivileged user can swap or list.
 func createSecureConfigFile() (*os.File, string, error) {
 	if os.Geteuid() != 0 {
@@ -109,7 +144,9 @@ func createSecureConfigFile() (*os.File, string, error) {
 		return f, f.Name(), nil
 	}
 
-	dir, err := os.MkdirTemp("/tmp", "throne-extra-")
+	// PID в имени, чтобы подметание при следующем запуске отличало наш мусор
+	// от каталога живого соседнего ядра.
+	dir, err := os.MkdirTemp("/tmp", fmt.Sprintf("throne-extra-%d-", os.Getpid()))
 	if err != nil {
 		return nil, "", err
 	}

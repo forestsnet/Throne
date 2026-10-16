@@ -3,6 +3,7 @@ package main
 import (
 	"ThroneCore/gen"
 	"ThroneCore/internal/boxmain"
+	"ThroneCore/internal/process"
 	"ThroneCore/ipc"
 	"ThroneCore/parentcheck"
 	"context"
@@ -88,6 +89,7 @@ func RunCore() {
 	debug = os.Getenv("THRONE_CORE_DEBUG") == "1"
 
 	parentcheck.CheckParentProcess()
+	process.SweepStaleConfigDirs()
 
 	go func() {
 		parent, err := os.FindProcess(parentcheck.ParentPID)
