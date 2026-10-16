@@ -58,3 +58,12 @@ target_include_directories(DnsProbeTest PRIVATE ${CMAKE_SOURCE_DIR})
 target_link_libraries(DnsProbeTest PRIVATE Qt6::Test Qt6::Network)
 
 add_test(NAME DnsProbeTest COMMAND DnsProbeTest)
+
+qt_add_executable(SystemStateJournalTest
+        SystemStateJournalTest.cpp
+        ../src/global/SystemStateJournal.cpp
+)
+target_include_directories(SystemStateJournalTest PRIVATE ${CMAKE_SOURCE_DIR})
+target_link_libraries(SystemStateJournalTest PRIVATE Qt6::Test)
+
+add_test(NAME SystemStateJournalTest COMMAND SystemStateJournalTest)

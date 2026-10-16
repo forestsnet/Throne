@@ -588,12 +588,14 @@ set(PROJECT_SOURCES
         src/configs/DnsAddress.cpp
         src/configs/DnsCatalog.cpp
         src/global/DnsProbe.cpp
+        src/global/SystemStateJournal.cpp
         src/global/DnsAutoSelect.cpp
         src/configs/XrayDnsStrip.cpp
 
         include/configs/DnsAddress.hpp
         include/configs/DnsCatalog.hpp
         include/global/DnsProbe.hpp
+        include/global/SystemStateJournal.hpp
         include/global/DnsAutoSelect.hpp
         include/configs/XrayDnsStrip.hpp
         include/configs/common/utils.h
