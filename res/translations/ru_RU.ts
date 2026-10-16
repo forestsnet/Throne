@@ -6933,6 +6933,10 @@ Putting it back needs administrator rights.</source>
         <translation>Снят системный прокси, оставшийся от прошлого сеанса</translation>
     </message>
     <message>
+        <source>Restored the system DNS left over from the previous session</source>
+        <translation>Восстановлен системный DNS, оставшийся от прошлого сеанса</translation>
+    </message>
+    <message>
         <source>The sing-box API is disabled. Set a listen port in Preferences &gt; Basic Settings &gt; Core.</source>
         <translation type="unfinished"></translation>
     </message>

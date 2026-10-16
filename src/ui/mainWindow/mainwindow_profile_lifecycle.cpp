@@ -19,6 +19,7 @@
 
 #include "include/configs/generate.h"
 #include "include/global/DnsAutoSelect.hpp"
+#include "include/global/SystemStateJournal.hpp"
 #include "include/configs/common/xrayStreamSetting.h"
 #include "include/database/GroupsRepo.h"
 #include "include/database/OtpProfilesRepo.h"
@@ -264,6 +265,17 @@ void MainWindow::profile_start(int _id, bool dnsChecked) {
     // остального: если он молчит, поднимать туннель нельзя — маршруты уйдут
     // ему, подключиться будет некуда, и машина останется вообще без сети.
     if (!dnsChecked && !maybeSelectDirectDns(_id)) return;
+
+#ifdef Q_OS_MACOS
+    // Под туннелем ядро само подменяет системный DNS на адрес внутри tun.
+    // Записываем это за него: иначе после обрыва сеанса о подмене не узнает
+    // никто, а резолвер останется смотреть в исчезнувший интерфейс.
+    if (Configs::dataManager->settingsRepo->spmode_vpn) {
+        Configs::SystemStateJournal::Record(
+            QStringLiteral("system-dns-tunnel"),
+            Configs::dataManager->settingsRepo->vpn_tun_ipv4_cidr.section('/', 0, 0).trimmed());
+    }
+#endif
 
     // Проверяем конфликтующие процессы только если включен VPN режим.
     // Сам диалог живёт в mainwindow_conflicts.cpp: он модальный и держит запуск,
@@ -561,6 +573,8 @@ void MainWindow::profile_stop(bool crash, bool block, bool manual) {
             }
         }
         if (Configs::dataManager->settingsRepo->spmode_system_proxy) set_system_proxy(false);
+        // Ядро сняло подмену в Stop — запись больше не нужна.
+        Configs::SystemStateJournal::Forget(QStringLiteral("system-dns-tunnel"));
         return true;
     };
 

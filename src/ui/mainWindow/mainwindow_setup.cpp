@@ -14,6 +14,7 @@
 #include "include/stats/autoselector/AutoSelectorMonitor.hpp"
 #include "include/ui/stats/dialog_auto_selector.h"
 #include "include/sys/Process.hpp"
+#include "include/global/SystemStateJournal.hpp"
 #include "include/sys/AutoRun.hpp"
 #include "include/sys/UrlScheme.hpp"
 #include "include/ui/setting/dialog_per_app_proxy.h"
@@ -174,7 +175,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         });
     };
 
+    Configs::SystemStateJournal::Init(Configs::GetBasePath());
     ClearStaleSystemProxy();
+    ClearStaleSystemDnsTunnel();
     AutoRun_FixTaskIfNeeded();
     AutoRun_MigrateIfNeeded();
 

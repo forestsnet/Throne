@@ -195,6 +195,9 @@ public:
     // откуда его берут Internet Explorer и всё, что ходит через WinINET.
     void ClearStaleSystemProxy();
 
+    // То же для системного DNS, подменённого ядром под туннель на macOS.
+    void ClearStaleSystemDnsTunnel();
+
 signals:
 
     void profile_selected(int id);

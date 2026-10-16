@@ -23,6 +23,8 @@
 #include "include/global/Configs.hpp"
 #include "include/global/HTTPRequestHelper.hpp"
 #include "include/global/Logger.hpp"
+#include "include/global/SystemStateJournal.hpp"
+#include <QProcess>
 #include <QSettings>
 #include "include/ui/fsnt/UiMode.hpp"
 #include "include/sys/Process.hpp"
@@ -419,10 +421,25 @@ bool MainWindow::get_elevated_permissions(ExitReason reason) {
 }
 
 void MainWindow::ClearStaleSystemProxy() {
-#ifdef Q_OS_WIN
     auto &settings = Configs::dataManager->settingsRepo;
     if (settings->spmode_system_proxy) return;                      // держим его мы, и сейчас
     if (settings->core_running && settings->started_id >= 0) return;
+
+    // Журнал знает точно, а не угадывает: запись осталась — значит прошлый
+    // сеанс включил прокси и не дожил до отката. Работает на всех системах,
+    // в отличие от разбора реестра ниже.
+    for (const auto &change : Configs::SystemStateJournal::Leftovers()) {
+        if (change.kind != QLatin1String("system-proxy")) continue;
+        ClearSystemProxy();
+        Configs::SystemStateJournal::Forget(change.kind);
+        LOG_INFO("system proxy left over from the previous session was cleared: " + change.detail);
+        MW_show_log(tr("Cleared the system proxy left over from the previous session"));
+        return;
+    }
+
+#ifdef Q_OS_WIN
+    // Запасной путь для тех, кто обновился с версии без журнала: там записи
+    // неоткуда взяться, а прокси в системе вполне может висеть.
 
     // Снимается он только в prepare_exit. Сеанс оборвался иначе — ядро убито,
     // упало, приложение закрыли жёстко, — и в системе остаётся прокси на
@@ -443,12 +460,70 @@ void MainWindow::ClearStaleSystemProxy() {
 #endif
 }
 
+#ifdef Q_OS_MACOS
+namespace {
+    // Снимает подменённый DNS у тех сетевых служб, где он указывает внутрь
+    // нашего туннеля. Прав на это не нужно: networksetup проводит изменение
+    // через configd, root требуется только для резервной копии plist.
+    int clearDnsPointingAtTun(const QString &tunAddress) {
+        QProcess list;
+        list.start("/usr/sbin/networksetup", {"-listallnetworkservices"});
+        list.waitForFinished(5000);
+        int cleared = 0;
+        const auto services = QString::fromUtf8(list.readAllStandardOutput()).split('\n');
+        for (const auto &raw : services) {
+            const auto service = raw.trimmed();
+            // Первая строка — заголовок, звёздочкой помечены отключённые службы.
+            if (service.isEmpty() || service.startsWith('*') || service.contains("denotes that")) continue;
+
+            QProcess current;
+            current.start("/usr/sbin/networksetup", {"-getdnsservers", service});
+            current.waitForFinished(5000);
+            if (!QString::fromUtf8(current.readAllStandardOutput()).contains(tunAddress)) continue;
+
+            QProcess reset;
+            reset.start("/usr/sbin/networksetup", {"-setdnsservers", service, "empty"});
+            reset.waitForFinished(5000);
+            LOG_INFO("system DNS of \"" + service + "\" pointed into a tunnel that is gone, reset");
+            ++cleared;
+        }
+        return cleared;
+    }
+} // namespace
+#endif
+
+void MainWindow::ClearStaleSystemDnsTunnel() {
+#ifdef Q_OS_MACOS
+    // На macOS системный DNS подменяет само ядро при каждом запуске туннеля, и
+    // снимает подмену только в Stop. Не дожил сеанс до Stop — резолвер смотрит
+    // внутрь исчезнувшего интерфейса, и не работает ничего: ни через VPN, ни
+    // мимо. В базе следа нет, флаг system_dns_set на маке никем не ставится,
+    // поэтому знать об этом может только журнал.
+    for (const auto &change : Configs::SystemStateJournal::Leftovers()) {
+        if (change.kind != QLatin1String("system-dns-tunnel")) continue;
+        const auto address = change.detail;
+        if (address.isEmpty()) continue;
+        if (clearDnsPointingAtTun(address) > 0) {
+            MW_show_log(tr("Restored the system DNS left over from the previous session"));
+        }
+        Configs::SystemStateJournal::Forget(change.kind);
+        return;
+    }
+#endif
+}
+
 void MainWindow::set_system_proxy(bool enable) {
     if (enable) {
         auto socks_port = Configs::dataManager->settingsRepo->inbound_socks_port;
+        // Запись до изменения: если сеанс сюда зашёл и не вышел, на следующем
+        // запуске будет видно, что прокси остался наш, и его надо снять.
+        Configs::SystemStateJournal::Record(
+            QStringLiteral("system-proxy"),
+            QStringLiteral("%1:%2").arg(Configs::dataManager->settingsRepo->inbound_address).arg(socks_port));
         SetSystemProxy(socks_port, socks_port, Configs::dataManager->settingsRepo->proxy_scheme);
     } else {
         ClearSystemProxy();
+        Configs::SystemStateJournal::Forget(QStringLiteral("system-proxy"));
     }
 }
 
