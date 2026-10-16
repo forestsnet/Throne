@@ -5,6 +5,7 @@
 #include <memory>
 #include <QHostInfo>
 #include <QNetworkAccessManager>
+#include <QNetworkProxy>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QRandomGenerator>
@@ -17,6 +18,13 @@
 
 namespace Configs {
     namespace {
+        // Щуп обязан ходить мимо системного прокси. Ядро при резолве им не
+        // пользуется — у sing-box свой стек, — поэтому проба через прокси мерит
+        // не тот путь. На машине с настроенным прокси это выглядело так:
+        // заданный DoT «не отвечает», клиент уходит с него без причины.
+        // Проверено на стенде: с поддельным прокси tls://77.88.8.8 молчал,
+        // без него ответил за 222 мс.
+
         // Имя для пробы: существует всегда, короткое, ни у кого не вызывает
         // вопросов в журналах и нигде не блокируется.
         const auto kProbeName = QStringLiteral("example.com");
@@ -178,6 +186,7 @@ namespace Configs {
 
         if (parsed.type == QLatin1String("udp")) {
             auto *socket = new QUdpSocket(this);
+            socket->setProxy(QNetworkProxy::NoProxy);
             connect(timer, &QTimer::timeout, socket, &QObject::deleteLater);
             connect(socket, &QUdpSocket::readyRead, this, [socket, done, elapsed, id] {
                 QByteArray payload(static_cast<int>(socket->pendingDatagramSize()), '\0');
@@ -195,6 +204,7 @@ namespace Configs {
         if (parsed.type == QLatin1String("https") || parsed.type == QLatin1String("h3")) {
             // RFC 8484: тело — тот же пакет, что и по UDP.
             auto *manager = new QNetworkAccessManager(this);
+            manager->setProxy(QNetworkProxy::NoProxy);
             QUrl url;
             url.setScheme("https");
             url.setHost(parsed.server);
@@ -236,6 +246,7 @@ namespace Configs {
 
         const bool encrypted = parsed.type != QLatin1String("tcp");
         QTcpSocket *socket = encrypted ? new QSslSocket(this) : new QTcpSocket(this);
+        socket->setProxy(QNetworkProxy::NoProxy);
         connect(timer, &QTimer::timeout, socket, &QObject::deleteLater);
         auto buffer = std::make_shared<QByteArray>();
         connect(socket, &QTcpSocket::readyRead, this, [socket, buffer, done, elapsed, id] {
