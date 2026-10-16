@@ -398,6 +398,12 @@ Section "Uninstall"
   DeleteRegKey SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\Throne"
   DeleteRegKey SHCTX "Software\Throne"
 
+  ; Настройка сбора аварийных дампов машинная, пишется при каждом запуске с
+  ; правами администратора и прежде оставалась навсегда — указывая на каталог,
+  ; которого после удаления уже нет.
+  DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\Throne.exe"
+  DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\ThroneCore.exe"
+
   ; Last, because SHCTX follows the shell var context and an all-users uninstall
   ; would otherwise resolve $APPDATA to ProgramData.
   ${If} $DeleteUserData == 1

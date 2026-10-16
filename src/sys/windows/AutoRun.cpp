@@ -166,7 +166,40 @@ bool autoRun_priorityIsStale(const QString &xml) {
     return match.captured(1).toInt() > 6;
 }
 
+// Имя задачи содержит хеш пути к программе, поэтому задача от перемещённой или
+// удалённой копии невидима для остальных проверок и остаётся в планировщике
+// навсегда, пытаясь при каждом входе запустить несуществующий файл.
+static void sweepStaleTasks() {
+    QProcess list;
+    list.start("schtasks.exe", QStringList() << "/query" << "/fo" << "csv" << "/nh");
+    list.waitForFinished(10000);
+    const auto rows = QString::fromLocal8Bit(list.readAllStandardOutput()).split('\n');
+
+    for (const auto &row : rows) {
+        auto name = row.section(',', 0, 0).trimmed();
+        name.remove('"');
+        if (!name.contains("Throne AutoRun ")) continue;
+        if (name == QLatin1String("\\") + GetTaskName() || name.endsWith(GetTaskName())) continue;
+
+        QProcess query;
+        query.start("schtasks.exe", QStringList() << "/query" << "/tn" << name << "/xml");
+        query.waitForFinished(10000);
+        const auto xml = QString::fromLocal8Bit(query.readAllStandardOutput());
+        static const QRegularExpression command("<Command>\\s*\"?([^<\"]+)\"?\\s*</Command>");
+        const auto match = command.match(xml);
+        if (!match.hasMatch()) continue;
+        if (QFileInfo::exists(match.captured(1).trimmed())) continue;
+
+        QProcess remove;
+        remove.start("schtasks.exe", QStringList() << "/delete" << "/tn" << name << "/f");
+        remove.waitForFinished(10000);
+        LOG_INFO("removed an autostart task of a copy that is gone: " + name);
+    }
+}
+
 void AutoRun_FixTaskIfNeeded() {
+    sweepStaleTasks();
+
     QString taskName = GetTaskName();
     QString runLevel = (Configs::IsAdmin() && !Configs::dataManager->settingsRepo->disable_run_admin) ? "HighestAvailable" : "LeastPrivilege";
 

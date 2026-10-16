@@ -323,6 +323,19 @@ Keywords=proxy;vpn;network;privacy;
         y = message(scr, y, f"Removing .desktop file from {DESKTOPDIR}")
         remove_path(DESKTOPDIR / "Throne.desktop")
 
+        # Автозапуск остаётся и после удаления: каждый вход в систему оболочка
+        # пытается поднять то, чего уже нет.
+        y = message(scr, y, f"Removing autostart entry from {AUTOSTARTDIR}")
+        remove_path(AUTOSTARTDIR / "Throne.desktop")
+
+        # Ядро из AppImage копируется наружу образа и получает setuid root.
+        # Эта копия переживает удаление самого образа, и остаётся setuid-root
+        # файл, который никто уже не обслуживает.
+        appimage_core = Path.home() / ".local/share/Throne"
+        if appimage_core.exists():
+            y = message(scr, y, f"Removing the core copied out of the AppImage from {appimage_core}")
+            remove_path(appimage_core)
+
         y = message(scr, y, "Uninstallation successfully completed!")
     scr.addstr(y, 0, "└  Press any key to exit")
     scr.refresh()
