@@ -255,6 +255,13 @@ namespace Configs {
                 xray_vless_preference = static_cast<Xray::XrayVlessPreference>(ok ? v : 0);
                 continue;
             }
+            // Прямой DNS по умолчанию был DoH к Quad9, а его начали резать.
+            // Переносим только тех, у кого он так и остался нетронутым: свой
+            // выбор человека не трогаем.
+            if (key == "direct_dns" && str == "https://9.9.9.9/dns-query") {
+                direct_dns = "77.88.8.8";
+                continue;
+            }
             // Pre-1.14 DNS rule strategies: only the v4-only case survives as a filter, the rest were no-ops.
             if (key == "direct_dns_strategy") {
                 direct_dns_disable_ipv6 = str == "ipv4_only";
