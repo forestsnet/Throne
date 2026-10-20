@@ -18,7 +18,7 @@
         <tr>
             <td>Windows</td>
             <td>
-                <a href="https://github.com/{{REPO}}/releases/download/{{TAG}}/Throne-{{TAG}}-windows-universal-installer.exe"><img src="https://img.shields.io/badge/Setup-Universal-0078D4.svg?logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTAgMGgxMS40djExLjRIMHptMTIuNiAwSDI0djExLjRIMTIuNnpNMCAxMi42aDExLjRWMjRIMHptMTIuNiAwSDI0VjI0SDEyLjZ6Ii8%2BPC9zdmc%2B"></a><br>
+                <a href="https://github.com/{{REPO}}/releases/download/{{TAG}}/FSNT-Client-Setup.exe"><img src="https://img.shields.io/badge/Setup-Universal-0078D4.svg?logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTAgMGgxMS40djExLjRIMHptMTIuNiAwSDI0djExLjRIMTIuNnpNMCAxMi42aDExLjRWMjRIMHptMTIuNiAwSDI0VjI0SDEyLjZ6Ii8%2BPC9zdmc%2B"></a><br>
                 <a href="https://github.com/{{REPO}}/releases/download/{{TAG}}/Throne-{{TAG}}-windows64.zip"><img src="https://img.shields.io/badge/Portable-x64-2B88D8.svg?logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTAgMGgxMS40djExLjRIMHptMTIuNiAwSDI0djExLjRIMTIuNnpNMCAxMi42aDExLjRWMjRIMHptMTIuNiAwSDI0VjI0SDEyLjZ6Ii8%2BPC9zdmc%2B"></a><br>
                 <a href="https://github.com/{{REPO}}/releases/download/{{TAG}}/Throne-{{TAG}}-windows-arm64.zip"><img src="https://img.shields.io/badge/Portable-ARM64-5AA9E6.svg?logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTAgMGgxMS40djExLjRIMHptMTIuNiAwSDI0djExLjRIMTIuNnpNMCAxMi42aDExLjRWMjRIMHptMTIuNiAwSDI0VjI0SDEyLjZ6Ii8%2BPC9zdmc%2B"></a><br>
                 <a href="https://github.com/{{REPO}}/releases/download/{{TAG}}/Throne-{{TAG}}-windowslegacy64.zip"><img src="https://img.shields.io/badge/Portable-x64%20legacy-6B7F95.svg?logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTAgMGgxMS40djExLjRIMHptMTIuNiAwSDI0djExLjRIMTIuNnpNMCAxMi42aDExLjRWMjRIMHptMTIuNiAwSDI0VjI0SDEyLjZ6Ii8%2BPC9zdmc%2B"></a><br>
@@ -28,6 +28,9 @@
         <tr>
             <td>macOS</td>
             <td>
+                <a href="https://github.com/{{REPO}}/releases/download/{{TAG}}/FSNT-Client-macos-arm64.dmg"><img src="https://img.shields.io/badge/DMG-Apple%20Silicon-000000.svg?logo=apple"></a><br>
+                <a href="https://github.com/{{REPO}}/releases/download/{{TAG}}/FSNT-Client-macos-intel.dmg"><img src="https://img.shields.io/badge/DMG-Intel%20x64-00A9E0.svg?logo=apple"></a><br>
+                <a href="https://github.com/{{REPO}}/releases/download/{{TAG}}/FSNT-Client-macos-intel-legacy.dmg"><img src="https://img.shields.io/badge/DMG-Intel%20x64%20(legacy)-7FCDEB.svg?logo=apple"></a><br>
                 <a href="https://github.com/{{REPO}}/releases/download/{{TAG}}/Throne-{{TAG}}-macos-arm64.zip"><img src="https://img.shields.io/badge/ZIP-Apple%20Silicon-000000.svg?logo=apple"></a><br>
                 <a href="https://github.com/{{REPO}}/releases/download/{{TAG}}/Throne-{{TAG}}-macos-amd64.zip"><img src="https://img.shields.io/badge/ZIP-Intel%20x64-00A9E0.svg?logo=apple"></a><br>
                 <a href="https://github.com/{{REPO}}/releases/download/{{TAG}}/Throne-{{TAG}}-macoslegacy-amd64.zip"><img src="https://img.shields.io/badge/ZIP-Intel%20x64%20(legacy)-7FCDEB.svg?logo=apple"></a>
@@ -52,6 +55,13 @@
             </td>
         </tr>
         <tr>
+            <td>Linux (any distro)</td>
+            <td>
+                <a href="https://github.com/{{REPO}}/releases/download/{{TAG}}/FSNT-Client-x86_64.AppImage"><img src="https://img.shields.io/badge/AppImage-x64-F84E29.svg?logo=linux"></a><br>
+                <a href="https://github.com/{{REPO}}/releases/download/{{TAG}}/FSNT-Client-aarch64.AppImage"><img src="https://img.shields.io/badge/AppImage-ARM64-F89A29.svg?logo=linux"></a>
+            </td>
+        </tr>
+        <tr>
             <td>Linux (portable)</td>
             <td>
                 <a href="https://github.com/{{REPO}}/releases/download/{{TAG}}/Throne-{{TAG}}-linux-amd64.zip"><img src="https://img.shields.io/badge/ZIP-x64-F84E29.svg?logo=linux"></a><br>
@@ -61,4 +71,4 @@
     </tbody>
 </table>
 
-> **Setup** picks the right build for your Windows version and CPU; **legacy** builds are for Windows 7 / 8. **system Qt** packages use the Qt libraries installed on your system and are much smaller. **macOS:** the app is not signed, see the [README](https://github.com/{{REPO}}#note-on-macos-releases) for how to open it.
+> **Setup** picks the right build for your Windows version and CPU; **legacy** builds are for Windows 7 / 8. **AppImage** is one file for every distribution, with nothing to install. **system Qt** packages use the Qt libraries installed on your system and are much smaller. **macOS:** take the DMG; if macOS refuses to open the app, see the [README](https://github.com/{{REPO}}#note-on-macos-releases).
