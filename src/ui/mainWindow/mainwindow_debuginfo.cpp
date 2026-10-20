@@ -273,14 +273,6 @@ void MainWindow::on_menu_profile_debug_info_triggered() {
             stream << "NTP server port: " << settings->ntp_server_port << "\n";
             stream << "NTP interval: " << settings->ntp_interval << "\n";
             
-            stream << "\n=== DNS HIJACK ===\n";
-            stream << "DNS server enabled: " << (settings->enable_dns_server ? "Yes" : "No") << "\n";
-            stream << "DNS server listen LAN: " << (settings->dns_server_listen_lan ? "Yes" : "No") << "\n";
-            stream << "DNS server listen port: " << settings->dns_server_listen_port << "\n";
-            stream << "DNS v4 response: " << settings->dns_v4_resp << "\n";
-            stream << "DNS v6 response: " << settings->dns_v6_resp << "\n";
-            stream << "Enable redirect: " << (settings->enable_redirect ? "Yes" : "No") << "\n";
-            
             stream << "\n=== SUBSCRIPTION ===\n";
             stream << "User agent: " << settings->GetUserAgent() << "\n";
             stream << "Auto update interval: " << settings->sub_auto_update << " min\n";

@@ -8,6 +8,8 @@ inline QString GroupDeleteRefusalText(const Engine::ServiceError &error) {
     if (error.code == QLatin1String("last_group")) return QObject::tr("Throne needs at least one group.");
     if (error.code == QLatin1String("busy")) return QObject::tr("This group's subscription is being updated. Try again when it finishes.");
     if (error.code == QLatin1String("editing")) return QObject::tr("Close the editor of this group or of one of its profiles first.");
+    if (error.code == QLatin1String("pinned"))
+        return QObject::tr("This subscription is pinned by the provider and cannot be removed while its profile is running.");
     if (error.code == QLatin1String("not_found")) return QObject::tr("This group no longer exists.");
     return error.message;
 }

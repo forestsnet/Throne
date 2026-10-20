@@ -126,7 +126,7 @@ namespace Configs {
     }
 
     void DnsProbe::probeOne(int index, const QString &address, int timeoutMs) {
-        const auto parsed = ParseDnsAddress(address);
+        const auto parsed = Fsnt::ParseDnsAddress(address);
         if (!parsed.valid) {
             complete(index, false, -1, parsed.error);
             return;

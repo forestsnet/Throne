@@ -173,6 +173,22 @@ func (s *server) Start(ctx context.Context, in *gen.LoadConfigReq) (out *gen.Err
 	return
 }
 
+// Снимает туннель с его маршрутами, возвращает системный DNS и останавливает
+// дочерние процессы — то же, что делает команда Stop из приложения. Отдельная
+// точка нужна потому, что это требуется и без команды: по сигналу и по уходу
+// родителя ядро обязано убрать за собой само, иначе всё перечисленное остаётся
+// в системе, а человек — без сети.
+func Teardown(ctx context.Context) error {
+	resp, err := globalServer.Stop(ctx, &gen.EmptyReq{})
+	if err != nil {
+		return err
+	}
+	if resp != nil && resp.Error != nil && *resp.Error != "" {
+		return errors.New(*resp.Error)
+	}
+	return nil
+}
+
 func (s *server) Stop(ctx context.Context, in *gen.EmptyReq) (out *gen.ErrorResp, _ error) {
 	lifecycleMu.Lock()
 	defer lifecycleMu.Unlock()

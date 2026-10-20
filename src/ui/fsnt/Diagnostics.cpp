@@ -78,23 +78,6 @@ namespace Fsnt {
             }};
 
         checks << Check{
-            QObject::tr("System DNS"), [] {
-                const auto &s = Configs::dataManager->settingsRepo;
-                if (!s->system_dns_set) return diagOk();
-                // Подмену ставит и снимает ядро. Пока профиль работает — всё
-                // на месте; если же ничего не подключено, значит прошлый сеанс
-                // не убрал за собой, и резолвер сейчас смотрит в мёртвый порт.
-                if (diagTunnelRunning()) return diagOk();
-                return diagFailed(
-                    QObject::tr("The previous session left the system DNS pointing at the core, "
-                                "which is no longer running. Nothing resolves until it is put "
-                                "back, VPN or not."),
-                    QObject::tr("Restore"), [] {
-                        if (auto *m = GetMainWindow(); m != nullptr) m->RestoreStaleSystemDns(false);
-                    });
-            }};
-
-        checks << Check{
             QObject::tr("Direct DNS"), [] {
                 const auto &s = Configs::dataManager->settingsRepo;
                 if (s->use_dns_object) return diagSkipped(QObject::tr("Set by hand in the DNS object."));

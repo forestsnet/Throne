@@ -14,6 +14,8 @@
 #include "include/sys/HostPresence.hpp"
 #include "include/sys/HostTun.hpp"
 #include "include/sys/KillSwitch.hpp"
+#include "include/global/DnsAutoSelect.hpp"
+#include "include/global/SystemStateJournal.hpp"
 #include "include/sys/SystemProxy.hpp"
 
 #include <QThread>
@@ -106,6 +108,59 @@ namespace Engine {
         return QStringLiteral("the core lacks the privileges Tun needs");
     }
 
+    // Прямой DNS разрешает имя самого сервера. Молчит он — туннель поднимать
+    // нельзя: маршруты уйдут ему, подключаться будет некуда, и машина останется
+    // вообще без сети. Отсюда, а не из окна: автозапуск, перезапуск и remote API
+    // поднимают профиль мимо кнопки, а последствия у них те же.
+    bool ConnectionManager::deferStartForDns(const StartRequest &request) {
+        const auto &settings = Configs::dataManager->settingsRepo;
+        if (!settings->direct_dns_auto) return false;
+        if (settings->use_dns_object) return false;   // секцией DNS распоряжается сам человек
+        if (!m_dnsSelect.isNull()) return true;       // подбор уже идёт и сам продолжит запуск
+
+        auto *select = new Configs::DnsAutoSelect(this);
+        m_dnsSelect = select;
+        StartRequest next = request;
+        next.dnsChecked = true;
+        connect(select, &Configs::DnsAutoSelect::Selected, this,
+                [this, next, select](const QString &address, bool fellBack) {
+                    select->deleteLater();
+                    auto &s = Configs::dataManager->settingsRepo;
+
+                    if (address.isEmpty()) {
+                        const auto text = MainWindowTr::tr(
+                            "No DNS server answered, so the address of the VPN server cannot be "
+                            "resolved. Check the connection or set another DNS in the settings.");
+                        MW_show_log(text);
+                        // В режиме туннеля это не просто отказ подключиться:
+                        // туннель забрал бы маршруты и оставил машину без сети.
+                        if (s->spmode_vpn) {
+                            if (!m_options.headless) {
+                                PostNotice({NoticeLevel::Warning, MainWindowTr::tr("Direct DNS"), text});
+                            }
+                            emit startFinished(next.serial, next.profileId, StartOutcome::StartFailed, text);
+                            emit statusChanged();
+                            return;
+                        }
+                        // Без туннеля терять нечего — пробуем как есть.
+                        start(next);
+                        return;
+                    }
+
+                    if (s->direct_dns_effective != address) {
+                        s->direct_dns_effective = address;
+                        s->Save();
+                    }
+                    if (fellBack) {
+                        MW_show_log(MainWindowTr::tr("Direct DNS %1 did not answer, using %2")
+                                        .arg(s->direct_dns, address));
+                    }
+                    start(next);
+                });
+        select->Start(settings->direct_dns);
+        return true;
+    }
+
     void ConnectionManager::applySystemProxy(bool enable, bool wait) {
         const auto &settings = Configs::dataManager->settingsRepo;
         const auto host = LocalNetwork::InboundConnectHost();
@@ -115,9 +170,29 @@ namespace Engine {
             QString error;
             if (!enable) {
                 error = SystemProxy_Clear();
+                if (error.isEmpty()) {
+                    Configs::SystemStateJournal::Forget(QStringLiteral("system-proxy"));
+                    Configs::SystemStateJournal::Forget(QStringLiteral("system-proxy-previous"));
+                }
             } else if (Configs::dataManager->settingsRepo->spmode_system_proxy) {
+                // Записи до изменения: карта того, что мы поменяли, живёт в
+                // памяти процесса. Сеанс оборвался — она пропала вместе с ним,
+                // а прокси на мёртвый локальный порт остался в системе, и
+                // через WinINET это бьёт не только по браузеру. Журнал на диске
+                // даёт следующему запуску увидеть и снять его.
+                Configs::SystemStateJournal::Record(QStringLiteral("system-proxy"),
+                                                    QStringLiteral("%1:%2").arg(host).arg(port));
+                // Своё мы снимем, но до сих пор заодно стиралось и чужое: откат
+                // ставил «прямое подключение», а не возвращал то, что было.
+                if (const auto previous = SystemProxy_Capture(); !previous.isEmpty()) {
+                    Configs::SystemStateJournal::Record(QStringLiteral("system-proxy-previous"), previous);
+                }
                 // Rechecked: a profile start can queue this after the box was unchecked.
                 error = SystemProxy_Apply(host, port, format);
+                if (!error.isEmpty()) {
+                    Configs::SystemStateJournal::Forget(QStringLiteral("system-proxy"));
+                    Configs::SystemStateJournal::Forget(QStringLiteral("system-proxy-previous"));
+                }
             }
             if (!error.isEmpty()) MW_show_log(MainWindowTr::tr("System proxy: %1").arg(error));
         }, connectionModesSystemProxyThread(), wait);

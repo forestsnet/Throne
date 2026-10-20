@@ -71,6 +71,11 @@ void TrayIcon::setVisible(bool visible) {
     item(m_statusItem).visible = visible;
 }
 
+void TrayIcon::showMessage(const QString &title, const QString &body, int milliseconds) {
+    // Уведомления на macOS показывает MacNotify через UserNotifications.
+    Q_UNUSED(title) Q_UNUSED(body) Q_UNUSED(milliseconds)
+}
+
 bool TrayIcon::isVisible() const {
     return m_visible;
 }

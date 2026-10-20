@@ -87,3 +87,7 @@ QString SystemProxy_Clear() {
     if (errors.isEmpty()) proxyApplied = false;
     return errors.join("; ");
 }
+
+QString SystemProxy_Capture() { return {}; }
+
+void SystemProxy_Restore(const QString &saved) { Q_UNUSED(saved) }

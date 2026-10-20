@@ -1,13 +1,40 @@
 #include "include/sys/Process.hpp"
 #include "include/global/Configs.hpp"
+#include "include/global/Logger.hpp"
 #include "include/sys/KillSwitch.hpp"
 #include "include/sys/ServiceManager.hpp"
+
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QThread>
 
 #ifdef Q_OS_UNIX
 #include <signal.h>
 #include <sys/types.h>
 #include <unistd.h>
 #endif
+
+namespace {
+    // Ядро, поднятое с правами root (полный туннель на macOS и Linux), создаёт
+    // cache.db во владении root. Следующий запуск уже без прав падает с
+    // «initialize cache-file: open cache.db: permission denied» — человеку эта
+    // строка не говорит ничего, а туннель просто не поднимается. Внутри файла
+    // только кэш fakeip и DNS, терять там нечего: удаляем, ядро создаст заново.
+    void coreDropUnusableCacheFile() {
+        const QString path = QDir(Configs::GetBasePath()).filePath("cache.db");
+        const QFileInfo info(path);
+        if (!info.exists() || info.isWritable()) return;
+        // Если у ядра стоит setuid, оно всё равно пойдёт под root и файл ему
+        // доступен — тогда чужой владелец не мешает и кэш стоит сохранить.
+        if (Configs::isSetuidSet(Configs::FindCoreRealPath().toStdString())) return;
+        if (QFile::remove(path)) {
+            LOG_WARN("cache.db was owned by another user (core ran as root before), removed");
+        } else {
+            LOG_WARN("cache.db is not writable and could not be removed: " + path);
+        }
+    }
+}
 
 namespace Configs_sys {
     namespace {
@@ -53,6 +80,20 @@ namespace Configs_sys {
     }
 
     void CoreProcess::Kill(int waitMs) {
+        if (state() == QProcess::NotRunning) return;
+#ifndef Q_OS_WIN
+        // Сначала просьба, и только потом SIGKILL. Перехватить SIGKILL нельзя,
+        // поэтому ядро не получало возможности снять туннель, его маршруты,
+        // подменённый системный DNS и дочерние процессы: всё это оставалось в
+        // системе, а человек — без сети. Штатно откат делает RPC Stop выше по
+        // стеку; сигнал нужен там, куда он не доехал.
+        terminate();
+        if (waitForFinished(qMin(waitMs, 8000))) return;
+        qWarning() << "Core did not exit on request, killing it";
+#else
+        // В Windows terminate() шлёт WM_CLOSE, а у консольного ядра окон нет —
+        // ждать его бессмысленно.
+#endif
         KillChildGroup(this);
         kill();
         waitForFinished(waitMs);
@@ -89,10 +130,19 @@ namespace Configs_sys {
         restarting = true;
         KillChildGroup(this);
         kill();
-        waitForFinished(500);
+        if (!waitForFinished(2000)) {
+            qDebug() << "Core did not stop during restart, forcing terminate...";
+            terminate();
+            waitForFinished(1000);
+        }
+
+        // Дополнительная задержка для освобождения портов и файлов
+        QThread::msleep(500);
+
         started = false;
         Start();
         restarting = false;
+        qDebug() << "Core restart sequence complete";
     }
 
 } // namespace Configs_sys

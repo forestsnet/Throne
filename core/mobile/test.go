@@ -307,7 +307,7 @@ func StartURLTest(current *Instance, platform PlatformInterface, request *TestRe
 				handler.OnResult(result.Tag, int32(result.Duration.Milliseconds()), errorString(result.Error))
 			},
 		).run(func() []*probe.URLTestResult {
-			return probe.BatchURLTest(testCtx, env.box, env.tags, request.URL, int(request.MaxConcurrency), twice, timeout)
+			return probe.BatchURLTest(testCtx, env.box, env.tags, request.URL, "", int(request.MaxConcurrency), twice, timeout)
 		})
 		// A snapshot before the box closes: the probe already sat out the handshake.
 		for _, tag := range request.vpnEndpointTags {

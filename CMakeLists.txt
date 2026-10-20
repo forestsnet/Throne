@@ -34,7 +34,7 @@ if (UNIX AND NOT APPLE)
     set(QT_DBUS_LIBRARY Qt6::DBus)
 endif ()
 
-find_package(Qt6 REQUIRED COMPONENTS Widgets Network LinguistTools ${QT_DBUS_COMPONENT})
+find_package(Qt6 REQUIRED COMPONENTS Widgets Network Svg LinguistTools ${QT_DBUS_COMPONENT})
 
 include("cmake/nkr.cmake")
 
@@ -166,6 +166,8 @@ set(PROJECT_SOURCES
 
         include/configs/sub/GroupUpdater.hpp
         src/configs/sub/GroupUpdater.cpp
+        src/configs/sub/ProviderPolicy.cpp
+        src/configs/sub/SubscriptionUsage.cpp
         include/configs/sub/SubscriptionScan.hpp
         include/configs/sub/SubscriptionParser.hpp
         src/configs/sub/SubscriptionParser.cpp
@@ -214,6 +216,8 @@ set(PROJECT_SOURCES
         src/ui/mainWindow/mainwindow_profiles.cpp
         src/ui/mainWindow/mainwindow_deeplink.cpp
         src/ui/mainWindow/mainwindow_system.cpp
+        src/ui/mainWindow/mainwindow_conflicts.cpp
+        src/ui/mainWindow/mainwindow_debuginfo.cpp
         src/ui/mainWindow/mainwindow_log.cpp
         src/ui/mainWindow/mainwindow_hotkeys.cpp
         src/ui/mainWindow/mainwindow_profile_lifecycle.cpp
@@ -389,6 +393,127 @@ set(PROJECT_SOURCES
         include/ui/profile/dialog_vpn_auth.ui
 
         src/ui/setting/dialog_basic_settings.cpp
+
+        src/ui/setting/dialog_per_app_proxy.cpp
+
+
+        src/ui/fsnt/UiMode.cpp
+
+        include/ui/fsnt/UiMode.hpp
+
+        src/ui/fsnt/FsntTheme.cpp
+
+        include/ui/fsnt/FsntTheme.hpp
+
+        src/ui/fsnt/FsntPalette.cpp
+
+        include/ui/fsnt/FsntPalette.hpp
+
+        src/ui/fsnt/PowerButton.cpp
+
+        include/ui/fsnt/PowerButton.h
+
+        src/ui/fsnt/BusyButton.cpp
+
+        include/ui/fsnt/BusyButton.h
+
+        src/ui/fsnt/FsntWindow.cpp
+
+        include/ui/fsnt/FsntWindow.h
+
+        src/ui/fsnt/ConnectPanel.cpp
+
+        include/ui/fsnt/ConnectPanel.h
+
+        src/ui/fsnt/PingProbe.cpp
+        src/ui/fsnt/UpdateWatcher.cpp
+
+        include/ui/fsnt/UpdateWatcher.hpp
+
+        src/ui/fsnt/DesktopNotice.cpp
+
+        include/ui/fsnt/DesktopNotice.hpp
+
+        src/ui/fsnt/Notifier.cpp
+
+        include/ui/fsnt/Notifier.hpp
+
+        src/ui/fsnt/UpdatePopover.cpp
+
+        include/ui/fsnt/UpdatePopover.hpp
+
+        src/ui/fsnt/SubscriptionSettings.cpp
+
+        include/ui/fsnt/SubscriptionSettings.hpp
+
+        src/ui/fsnt/ServerListPanel.cpp
+
+        include/ui/fsnt/ServerListPanel.h
+
+        src/ui/fsnt/ServerItemDelegate.cpp
+
+        src/ui/fsnt/ServerItemDelegate.h
+
+        src/ui/fsnt/SubscriptionCard.cpp
+
+        include/ui/fsnt/SubscriptionCard.h
+
+        src/ui/fsnt/AddSubscriptionDialog.cpp
+
+        include/ui/fsnt/AddSubscriptionDialog.h
+
+        src/ui/fsnt/CoachMarks.cpp
+
+        include/ui/fsnt/CoachMarks.h
+
+        src/ui/fsnt/WindowChrome.cpp
+
+        include/ui/fsnt/WindowChrome.hpp
+
+        src/configs/RoutePresets.cpp
+
+        include/configs/RoutePresets.hpp
+
+        src/ui/fsnt/TrayMenu.cpp
+
+        include/ui/fsnt/TrayMenu.h
+
+        src/ui/fsnt/Transport.cpp
+
+        include/ui/fsnt/Transport.hpp
+
+        src/ui/fsnt/TunnelProbe.cpp
+
+        include/ui/fsnt/TunnelProbe.hpp
+
+        src/ui/fsnt/Diagnostics.cpp
+
+        include/ui/fsnt/Diagnostics.hpp
+
+        src/ui/fsnt/DiagnosticsDialog.cpp
+
+        include/ui/fsnt/DiagnosticsDialog.h
+
+        src/ui/fsnt/FsntSettingsDialog.cpp
+
+        include/ui/fsnt/FsntSettingsDialog.h
+
+        src/ui/fsnt/SettingsCard.cpp
+
+        include/ui/fsnt/SettingsCard.h
+
+        src/ui/fsnt/FsntControls.cpp
+
+        include/ui/fsnt/FsntControls.h
+
+        src/ui/fsnt/FsntToast.cpp
+
+        include/ui/fsnt/FsntToast.h
+
+        src/ui/fsnt/FsntLogDialog.cpp
+
+        include/ui/fsnt/FsntLogDialog.h
+        include/ui/setting/dialog_per_app_proxy.h
         include/ui/setting/dialog_basic_settings.h
         include/ui/setting/dialog_basic_settings.ui
 
@@ -568,6 +693,20 @@ set(PROJECT_SOURCES
         src/configs/outbounds/custom.cpp
         include/configs/generate.h
         src/configs/generate.cpp
+
+        src/configs/DnsAddress.cpp
+        src/configs/DnsCatalog.cpp
+        src/global/DnsProbe.cpp
+        src/global/SystemStateJournal.cpp
+        src/global/DnsAutoSelect.cpp
+        src/configs/XrayDnsStrip.cpp
+
+        include/configs/DnsAddress.hpp
+        include/configs/DnsCatalog.hpp
+        include/global/DnsProbe.hpp
+        include/global/SystemStateJournal.hpp
+        include/global/DnsAutoSelect.hpp
+        include/configs/XrayDnsStrip.hpp
         include/configs/common/utils.h
         src/configs/common/utils.cpp
         include/configs/outbounds/custom.h
@@ -804,6 +943,9 @@ endif ()
 
 set_target_properties(Throne PROPERTIES
         MACOSX_BUNDLE_ICON_FILE "Throne.icns"
+        # Отображаемое имя (CFBundleName). Идентификатор и имя бинаря остаются прежними:
+        # от них зависят каталог конфига, регистрация deeplink и обновления.
+        MACOSX_BUNDLE_BUNDLE_NAME "FSNT Client"
         RESOURCE ${MACOSX_ICON}
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/res/MacOSXBundleInfo.plist
         MACOSX_BUNDLE_GUI_IDENTIFIER moe.Throne.macosx
@@ -811,7 +953,10 @@ set_target_properties(Throne PROPERTIES
         WIN32_EXECUTABLE TRUE
 )
 
-if (WIN32 AND MSVC)
+# Unity-сборка живёт только на MSVC, поэтому её ловушки — одинаковые имена в
+# анонимных пространствах и зависимость от порядка включений — на других
+# платформах не всплывают. -DNKR_FORCE_UNITY=ON повторяет её локально.
+if ((WIN32 AND MSVC) OR NKR_FORCE_UNITY)
     set_target_properties(Throne PROPERTIES UNITY_BUILD ON)
 endif ()
 set_property(SOURCE "3rdparty/SQLiteCpp/src/sqlite3.c" PROPERTY SKIP_UNITY_BUILD_INCLUSION ON)
@@ -861,10 +1006,37 @@ target_sources(Throne PRIVATE ${CMAKE_BINARY_DIR}/translations.qrc)
 # Target Link
 
 target_link_libraries(Throne PRIVATE
-        Qt6::Widgets Qt6::Network ${QT_DBUS_LIBRARY}
+        Qt6::Widgets Qt6::Network Qt6::Svg ${QT_DBUS_LIBRARY}
         Threads::Threads
         ${NKR_EXTERNAL_TARGETS}
         ${PLATFORM_LIBRARIES}
 )
 
 qt_finalize_executable(Throne)
+
+option(THRONE_BUILD_TESTS "Build unit tests" OFF)
+if (THRONE_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
+
+#### Throne Updater (macOS и Windows; Linux использует Odin) ####
+#
+# Под Windows раньше тоже брали Odin, но он не дожидается выхода приложения и
+# падает с Permission_Denied на замене ещё запущенного Throne.exe. Свой ждёт.
+if (APPLE OR WIN32)
+    add_subdirectory(src/updater)
+    add_dependencies(Throne updater)
+endif()
+
+if (APPLE)
+    # Кладём updater внутрь бандла и при локальной сборке. Приложение ищет его
+    # рядом с собой, то есть в Contents/MacOS, а собирается он в корень build.
+    # Раньше это делал только script/deploy_macos.sh, и в обычной сборке
+    # проверка обновлений была недоступна без всякой на то причины.
+    add_custom_command(TARGET Throne POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:updater>
+            $<TARGET_BUNDLE_CONTENT_DIR:Throne>/MacOS/updater
+            COMMENT "Copying updater into Throne.app")
+endif()

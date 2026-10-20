@@ -3,7 +3,7 @@
 #include <QObject>
 
 class QMenu;
-class QSystemTrayIcon;
+class TrayIcon;
 
 namespace Fsnt {
     // Меню значка приложения: в macOS это пункт в строке меню, в Windows и
@@ -22,7 +22,7 @@ namespace Fsnt {
 
     public:
         // Забирает значок под своё меню. Родитель — окно простого режима.
-        TrayMenu(QSystemTrayIcon *tray, QObject *parent);
+        TrayMenu(TrayIcon *tray, QObject *parent);
 
     private:
         void rebuild();
@@ -32,7 +32,7 @@ namespace Fsnt {
         // новым профилем, иначе выбор просто запомнится до подключения.
         void chooseServer(int profileId, const QString &name);
 
-        QSystemTrayIcon *m_tray = nullptr;
+        TrayIcon *m_tray = nullptr;
         QMenu *m_menu = nullptr;
     };
 } // namespace Fsnt

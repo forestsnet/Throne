@@ -32,6 +32,9 @@ namespace Engine {
         // Unattended callers get every failure through startFinished and the log, never a dialog.
         bool interactive = true;
         quint64 serial = 0;
+        // Подбор рабочего прямого DNS уже отработал. Он асинхронный, поэтому
+        // запуск проходит дважды: второй раз — с готовым ответом.
+        bool dnsChecked = false;
     };
 
     struct StopOptions {

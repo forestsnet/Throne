@@ -65,13 +65,38 @@ namespace Configs {
         // Persisted settings.
         QString mainWindowGeometry;
         QString log_level = "info";
-        QString test_latency_url = "http://cp.cloudflare.com/";
+        // generate_204 отвечает пустым 204 и живёт ровно для таких проверок.
+        QString test_latency_url = "https://www.gstatic.com/generate_204";
         // Fetched WITHOUT any proxy, so it must be reachable directly; empty falls back to the OS.
         QString direct_test_url = "";
         // Both keys are shared with the Android app's settings table; the provider is a Configs_network::ExitLookupProviders() id.
         bool exit_country_lookup = true;
         QString exit_lookup_provider = "auto";
         int url_test_timeout_ms = 3000;
+        // Чем меряем задержку: 0 ICMP, 1 TCP до порта из конфига, 2 рукопожатие
+        // TLS, 3 запрос GET через туннель, 4 запрос HEAD. По умолчанию запрос:
+        // он один меряет весь путь целиком, а не дорогу до сервера.
+        int ping_kind = 3;
+        // Подсказку про переключение подписок показываем один раз — в тот
+        // момент, когда их стало больше одной.
+        bool hint_switch_subs = false;
+        // Системное уведомление о новой версии. Колокольчик в окне остаётся
+        // всегда — выключается именно всплывающее окно системы.
+        bool notify_update_system = true;
+        // Туннель был поднят, когда клиент ушёл обновляться: после перезапуска
+        // возвращаем и сервер, и режим, даже если «подключаться при запуске»
+        // выключено. Человек не просил его отключать — он просил обновиться.
+        bool resume_after_update = false;
+        // Ставить новые версии самому, без вопросов. Спрашиваем об этом один
+        // раз — при первом запуске новой версии.
+        bool auto_update = false;
+        // Версия, с которой клиент запускался в прошлый раз: по ней и видно,
+        // что версия сменилась.
+        QString last_run_version = "";
+        bool notify_subscription = true;
+        bool notify_connection = true;
+        // Версия, о которой уже сказали: второй раз не всплываем.
+        QString update_seen_version = "";
         bool disable_tray = false;
         int test_concurrent = 10;
         bool disable_traffic_stats = false;
@@ -101,8 +126,21 @@ namespace Configs {
         int h2_max_concurrent_streams = 0;
         int quic_initial_packet_size = 0;
         bool quic_disable_path_mtu_discovery = false;
-        QString theme = "0";
-        int language = 0;
+        QString theme = "qdarkstyle";
+        int ui_mode = -1;   // -1 = не задан; см. Fsnt::ResolveInitialUiMode
+        // JSON-массив имён избранных серверов. Именно имён, а не id:
+        // при sub_clear (умолчание upstream) обновление подписки удаляет все
+        // профили и создаёт заново, поэтому id живут только до обновления.
+        QString favorite_profiles = "[]";
+        int simple_transport = 0;   // 0 = TUN, 1 = системный прокси; только для простого режима
+        bool onboarding_done = false;   // мастер первого запуска простого режима
+        bool conflict_warning_disabled = false;   // предупреждение о конфликтующих программах
+        // Сервер, выбранный пользователем в простом режиме, — по имени.
+        // Отдельно от remember_id: тот означает «последний запущенный» и
+        // управляет автозапуском, а выбор строки в списке запускать ничего не
+        // должен. По имени, а не по id, по той же причине, что и избранное.
+        QString simple_selected_server = "";
+        int language = 4;
         QString font = "";
         int font_size = 0;
         QString mw_size = "";
@@ -163,18 +201,23 @@ namespace Configs {
         int sub_tls_version = 0;
         int sub_http_version = 0;
         // Sign encodes enabled (negative = off), magnitude = interval minutes (ignored if < 30).
-        int sub_auto_update = -30;
+        // Включено по умолчанию: в простом режиме обновлять подписку вручную
+        // человеку негде, а устаревший список серверов выглядит как поломка.
+        int sub_auto_update = 120;
         // Follow a server's profile-update-interval instead of sub_auto_update's minutes.
         bool sub_respect_server_interval = false;
-        bool sub_clear = false;
+        // Когда в последний раз сказали про новую версию: напоминаем не чаще
+        // раза в три дня, иначе уведомление превращается в фон.
+        qint64 update_notified_at = 0;
+        bool sub_clear = true;
         bool sub_show_change_popup = true;
-        bool sub_send_hwid = false;
+        bool sub_send_hwid = true;
         QString sub_custom_hwid_params = "";
         bool allow_stopping_active_profile = false;
 
         // Security
         bool skip_cert = false;
-        QString utlsFingerprint = "";
+        QString utlsFingerprint = "firefox";
         bool disable_run_admin = false; // windows only
         bool use_mozilla_certs = false;
         bool kill_switch = false;
@@ -202,8 +245,8 @@ namespace Configs {
         bool remember_system_proxy = false;
         bool remember_tun = false;
         int remember_id = NoProfileId;
-        bool remember_enable = false;
-        bool windows_set_admin = false;
+        bool remember_enable = true;
+        bool windows_set_admin = true;
         QMap<QString, QKeySequence> shortcuts;
 
         // Routing
@@ -211,9 +254,26 @@ namespace Configs {
         // Same sign-encoded interval scheme as sub_auto_update.
         int route_auto_update = -1440;
         qint64 route_auto_update_last = 0;
-        QString remote_dns = "https://8.8.8.8/dns-query";
+        // DNS для трафика через VPN и для прямого — по умолчанию Quad9 на обоих.
+        // Только DoH: обычный запрос по 53 порту виден провайдеру целиком, и
+        // прятать трафик в туннель, оставляя запросы открытыми, бессмысленно.
+        QString remote_dns = "https://9.9.9.9/dns-query";
         bool remote_dns_disable_ipv6 = false;
-        QString direct_dns = "localhost";
+        // Прямой DNS разрешает имена наших же серверов ещё до туннеля, то есть
+        // из сети человека как есть. DoH сюда не годится: Quad9 у нашей
+        // аудитории уже режут, причём частично — на пробу он отвечает, а в
+        // работе рассыпается, и подбор такое не ловит. Обычный порт надёжнее, а
+        // прятать тут нечего: провайдер и так видит соединение с сервером.
+        QString direct_dns = "77.88.8.8";
+        // Подбор рабочего прямого DNS. Он разрешает имя нашего же сервера, и
+        // когда провайдер режет выбранный транспорт, человек остаётся без
+        // интернета вообще: туннель уже забрал маршруты, а подключаться некуда.
+        bool direct_dns_auto = true;
+        // То, что человек вписал сам. Пробуется раньше каталога.
+        QStringList dns_custom_servers = {};
+        // Чем подбор закончился в прошлый раз: подсказка в настройках и в
+        // диагностике, сама настройка от этого не меняется.
+        QString direct_dns_effective = "";
         bool direct_dns_disable_ipv6 = false;
         // Servers typed into the remote / direct DNS fields, newest first.
         QStringList remote_dns_history = {};
@@ -233,15 +293,15 @@ namespace Configs {
         bool dns_use_hosts = false;
         bool dns_predefined_enable = true;
         QStringList dns_predefined_rules = {"127.0.0.1 localhost"};
-        QString resolve_domain_strategy = "";
-        QString default_domain_strategy = "";
-        int ruleset_mirror = Mirrors::CLOUDFLARE;
+        QString resolve_domain_strategy = "prefer_ipv4";
+        QString default_domain_strategy = "prefer_ipv4";
+        int ruleset_mirror = Mirrors::GITHUB;
 
         // Socks & HTTP Inbound
         bool disable_mixed_inbound = false;
         QString inbound_address = "127.0.0.1";
         int inbound_socks_port = 2080; // Mixed, actually
-        bool random_inbound_port = false;
+        bool random_inbound_port = true;
         QString custom_inbound = "{\"inbounds\": []}";
         QString proxy_scheme = "{ip}:{port}";
         bool inbound_auth = false;
@@ -256,17 +316,29 @@ namespace Configs {
         // VPN
         bool fake_dns = false;
         bool fakeip_disable_ipv6 = false;
-        bool enable_tun_routing = false;
-#ifdef Q_OS_WIN
+        bool enable_tun_routing = true;
+#ifdef Q_OS_MACOS
+        QString vpn_implementation = "gvisor";
+        bool vpn_strict_route = false;
+#elif defined(Q_OS_WIN)
+        // gvisor, а не system. Стек system отдаёт пакеты сетевому стеку Windows,
+        // и там их перехватывают чужие сетевые фильтры — антивирусы, обходчики
+        // DPI, остатки других VPN. У пользователя с таким набором туннель
+        // поднимался, маршруты вставали, DNS отвечал, а TCP не проходил ни у
+        // одного процесса: соединение доходило до маршрутизатора и исчезало.
+        // На gvisor та же машина заработала сразу. Свой стек медленнее, но
+        // предсказуем, а разбираться в чужих фильтрах пользователь не может.
+        QString vpn_implementation = "gvisor";
         bool vpn_strict_route = WinVersion::IsBuildNumGreaterOrEqual(BuildNumber::Windows_10_1507);
 #else
+        QString vpn_implementation = "system";
         bool vpn_strict_route = false;
 #endif
         // Linux only; while on, the host cannot act as a network gateway.
         bool vpn_auto_redirect = true;
         // Only UDP and ICMP reach the bridge: pre-match aborts at the sniff rule for TCP.
         bool vpn_l3_bridge = false;
-        int vpn_mtu = 1500;
+        int vpn_mtu = 1420;
         bool disable_private_range_bypass = false;
         QStringList vpn_private_ranges = defaultTunPrivateRanges();
         bool vpn_ipv6 = false;
@@ -318,7 +390,7 @@ namespace Configs {
         int core_dns_in_port = 5533;
 
         // Xray
-        QString xray_log_level = "warning";
+        QString xray_log_level = "info";
         int xray_mux_concurrency = 8;
         bool xray_mux_default_on = false;
         Xray::XrayVlessPreference xray_vless_preference = Xray::XhttpAndReality;

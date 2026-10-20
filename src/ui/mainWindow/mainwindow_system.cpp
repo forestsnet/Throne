@@ -1,11 +1,18 @@
 #include "include/ui/mainwindow.h"
 #include "NkrVersion.h"
+#include "include/ui/fsnt/FsntControls.h"
 
 #include <QApplication>
+#include <QStandardPaths>
+#include <QCoreApplication>
+#include <QThread>
 #include <QDesktopServices>
+#include <QSysInfo>
 #include <QDir>
+#include <QRegularExpression>
 #include <QDirIterator>
 #include <QFile>
+#include <QFileInfo>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QMenu>
@@ -26,10 +33,16 @@
 #include "include/global/HTTPRequestHelper.hpp"
 #include "include/global/LocalNetwork.hpp"
 #include "include/global/Logger.hpp"
+#include "include/global/SystemStateJournal.hpp"
 #include "include/scanner/ScanManager.h"
 #include "include/sys/HostPresence.hpp"
 #include "include/sys/KillSwitch.hpp"
+#include "include/sys/Process.hpp"
 #include "include/sys/SystemProxy.hpp"
+#include "include/ui/fsnt/UiMode.hpp"
+
+#include <QProcess>
+#include <QSettings>
 #include "include/ui/mainWindow/MainWindowInternal.h"
 
 #include "include/ui/group/dialog_manage_groups.h"
@@ -137,6 +150,42 @@ void MainWindow::on_commitDataRequest() {
     exitController()->persistSessionState();
 }
 
+namespace {
+#ifdef Q_OS_MACOS
+    // Обновлятор на маке заменяет весь .app целиком, а настройки по умолчанию
+    // лежат внутри него. После обновления от них не осталось бы и следа —
+    // ни подписок, ни серверов. Поэтому перед уходом переносим их туда, где
+    // новая версия их найдёт: тот же путь, куда клиент уходит сам, когда папка
+    // программы закрыта на запись.
+    void moveConfigOutOfBundle() {
+        const QDir configDir(QDir::currentPath());   // клиент работает в своём config
+        const QString appDir = QApplication::applicationDirPath();
+        if (!configDir.absolutePath().startsWith(appDir)) return;   // и так снаружи
+
+        const QDir userWd(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation));
+        const QString userConfig = userWd.absoluteFilePath("config");
+        QDir().mkpath(userConfig);
+
+        for (const QFileInfo &entry : configDir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot)) {
+            const QString target = userConfig + "/" + entry.fileName();
+            if (entry.isDir()) continue;   // логи и кэш новая версия наберёт заново
+            QFile::remove(target);
+            if (!QFile::copy(entry.absoluteFilePath(), target)) {
+                MW_show_log("[Update] WARNING: could not copy " + entry.fileName() + " out of the bundle");
+            }
+        }
+
+        // Метка говорит новой версии, что настройки этой установки живут здесь.
+        QFile marker(userWd.absoluteFilePath("config/.install-dir-unwritable"));
+        if (marker.open(QIODevice::WriteOnly)) {
+            marker.write(QDir(appDir).absolutePath().toUtf8());
+            marker.close();
+        }
+        MW_show_log("[Update] settings moved to " + userConfig);
+    }
+#endif
+}
+
 void MainWindow::on_menu_exit_triggered() {
     // A teardown already running quits on its own; a second request would cut its nested waits short.
     if (Configs::dataManager->settingsRepo->prepare_exit || exitController()->exitInProgress()) return;
@@ -177,13 +226,26 @@ void MainWindow::on_menu_exit_triggered() {
 
     Engine::host()->shutdown(!unattended);
     if (reason == ExitReason::RunUpdater) {
-        QDir::setCurrent(QApplication::applicationDirPath());
-#ifdef Q_OS_WIN
-        QFile::copy("./updater.exe", "./updater.old");
-        QProcess::startDetached("./updater.old", QStringList{});
-#else
-        QProcess::startDetached("./updater", QStringList{});
+#ifdef Q_OS_MACOS
+        moveConfigOutOfBundle();
 #endif
+        QDir::setCurrent(QApplication::applicationDirPath());
+        // Каталог обновления знает только приложение: на Windows он зависит от
+        // flag_use_appdata. Передаём явно, чтобы обновлятор не угадывал.
+        // Второй аргумент — папка программы. Обновлятор старых версий его не
+        // знает и берёт свою собственную; для них копия и лежит рядом с
+        // программой, так что обе дороги ведут в одно место.
+        // Третьим аргументом — свой PID: обновлятор должен дождаться именно нас,
+        // а не любого процесса с именем Throne. Рядом у людей стоят соседние
+        // копии, и по имени он ждал их до самого таймаута.
+        const QStringList updaterArgs{GetUpdateDirectory(), QApplication::applicationDirPath(),
+                                      QString::number(QCoreApplication::applicationPid())};
+        const QString runner = update_runner.isEmpty()
+                                   ? QApplication::applicationDirPath() + "/updater"
+                                   : update_runner;
+        if (!QProcess::startDetached(runner, updaterArgs)) {
+            MW_show_log("[Update] ERROR: could not start the updater: " + runner);
+        }
     } else if (restart && !relaunched) {
         QDir::setCurrent(QApplication::applicationDirPath());
         // Until this process exits it holds the data dir lock and still answers on the instance socket.
@@ -208,6 +270,123 @@ void MainWindow::toggle_system_proxy() {
     } else {
         connection()->setSystemProxy(true);
     }
+}
+
+namespace {
+    // Спросить в оформлении простого режима, а в инженерном — как раньше.
+    bool askInOwnStyle(const QString &title, const QString &text, const QString &acceptText) {
+        if (GetFacadeWindow() != nullptr) {
+            return Fsnt::Confirm(GetMessageBoxParent(), title, text, acceptText);
+        }
+        return QMessageBox::warning(GetMessageBoxParent(), software_name, text,
+                                    QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes;
+    }
+}
+
+void MainWindow::showFacadeNotice(const QString &text, int milliseconds) {
+    auto *facade = GetFacadeWindow();
+    if (facade == nullptr) return;
+    QMetaObject::invokeMethod(facade, "showNotice", Qt::QueuedConnection, Q_ARG(QString, text),
+                              Q_ARG(int, milliseconds));
+}
+
+
+void MainWindow::ClearStaleSystemProxy() {
+    auto &settings = Configs::dataManager->settingsRepo;
+    if (settings->spmode_system_proxy) return;                      // держим его мы, и сейчас
+    if (settings->core_running && settings->started_id >= 0) return;
+
+    // Журнал знает точно, а не угадывает: запись осталась — значит прошлый
+    // сеанс включил прокси и не дожил до отката. Работает на всех системах,
+    // в отличие от разбора реестра ниже.
+    for (const auto &change : Configs::SystemStateJournal::Leftovers()) {
+        if (change.kind != QLatin1String("system-proxy")) continue;
+        SystemProxy_Clear();
+        Configs::SystemStateJournal::Forget(change.kind);
+#ifdef Q_OS_WIN
+        for (const auto &saved : Configs::SystemStateJournal::Leftovers()) {
+            if (saved.kind == QLatin1String("system-proxy-previous")) SystemProxy_Restore(saved.detail);
+        }
+        Configs::SystemStateJournal::Forget(QStringLiteral("system-proxy-previous"));
+#endif
+        LOG_INFO("system proxy left over from the previous session was cleared: " + change.detail);
+        MW_show_log(tr("Cleared the system proxy left over from the previous session"));
+        return;
+    }
+
+#ifdef Q_OS_WIN
+    // Запасной путь для тех, кто обновился с версии без журнала: там записи
+    // неоткуда взяться, а прокси в системе вполне может висеть.
+
+    // Снимается он только в prepare_exit. Сеанс оборвался иначе — ядро убито,
+    // упало, приложение закрыли жёстко, — и в системе остаётся прокси на
+    // мёртвый локальный порт. Через WinINET это бьёт не только по браузеру:
+    // туда же ходят установщики, обновляторы и всё офисное.
+    QSettings ie("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings",
+                 QSettings::NativeFormat);
+    if (ie.value("ProxyEnable", 0).toInt() == 0) return;
+
+    const auto current = ie.value("ProxyServer").toString();
+    // Только свой: у человека может стоять и чужой локальный прокси.
+    const auto ours = QString(":%1").arg(settings->inbound_socks_port);
+    if (!current.contains(ours)) return;
+
+    ClearSystemProxy();
+    LOG_INFO("system proxy left over from the previous session was cleared: " + current);
+    MW_show_log(tr("Cleared the system proxy left over from the previous session"));
+#endif
+}
+
+#ifdef Q_OS_MACOS
+namespace {
+    // Снимает подменённый DNS у тех сетевых служб, где он указывает внутрь
+    // нашего туннеля. Прав на это не нужно: networksetup проводит изменение
+    // через configd, root требуется только для резервной копии plist.
+    int clearDnsPointingAtTun(const QString &tunAddress) {
+        QProcess list;
+        list.start("/usr/sbin/networksetup", {"-listallnetworkservices"});
+        list.waitForFinished(5000);
+        int cleared = 0;
+        const auto services = QString::fromUtf8(list.readAllStandardOutput()).split('\n');
+        for (const auto &raw : services) {
+            const auto service = raw.trimmed();
+            // Первая строка — заголовок, звёздочкой помечены отключённые службы.
+            if (service.isEmpty() || service.startsWith('*') || service.contains("denotes that")) continue;
+
+            QProcess current;
+            current.start("/usr/sbin/networksetup", {"-getdnsservers", service});
+            current.waitForFinished(5000);
+            if (!QString::fromUtf8(current.readAllStandardOutput()).contains(tunAddress)) continue;
+
+            QProcess reset;
+            reset.start("/usr/sbin/networksetup", {"-setdnsservers", service, "empty"});
+            reset.waitForFinished(5000);
+            LOG_INFO("system DNS of \"" + service + "\" pointed into a tunnel that is gone, reset");
+            ++cleared;
+        }
+        return cleared;
+    }
+} // namespace
+#endif
+
+void MainWindow::ClearStaleSystemDnsTunnel() {
+#ifdef Q_OS_MACOS
+    // На macOS системный DNS подменяет само ядро при каждом запуске туннеля, и
+    // снимает подмену только в Stop. Не дожил сеанс до Stop — резолвер смотрит
+    // внутрь исчезнувшего интерфейса, и не работает ничего: ни через VPN, ни
+    // мимо. В базе следа нет, флаг system_dns_set на маке никем не ставится,
+    // поэтому знать об этом может только журнал.
+    for (const auto &change : Configs::SystemStateJournal::Leftovers()) {
+        if (change.kind != QLatin1String("system-dns-tunnel")) continue;
+        const auto address = change.detail;
+        if (address.isEmpty()) continue;
+        if (clearDnsPointingAtTun(address) > 0) {
+            MW_show_log(tr("Restored the system DNS left over from the previous session"));
+        }
+        Configs::SystemStateJournal::Forget(change.kind);
+        return;
+    }
+#endif
 }
 
 void MainWindow::toggle_tun() {
@@ -245,7 +424,85 @@ void MainWindow::confirm_disable_kill_switch() {
     box->open();
 }
 
+void MainWindow::on_menu_simple_mode_triggered() {
+    const auto answer = QMessageBox::question(
+        this, tr("Simple mode"),
+        tr("The application will restart in the simple interface. Continue?"));
+    if (answer != QMessageBox::StandardButton::Yes) return;
+
+    Configs::dataManager->settingsRepo->ui_mode = static_cast<int>(Fsnt::UiMode::Simple);
+    Configs::dataManager->settingsRepo->Save();
+    this->exit_reason = ExitReason::Restart;
+    on_menu_exit_triggered();
+}
+
 namespace {
+
+// Ассеты форка называются Throne-<platform>-<arch>.zip и версии в имени не содержат,
+// поэтому сравнение идёт по тегу релиза, а не по имени файла.
+bool compareVersions(const QStringList& parts, const QStringList& currentParts) {
+    if (parts.size() < 3 || currentParts.size() < 3) {
+        MW_show_log("Version strings seem to be invalid in compareVersions");
+        return false;
+    }
+
+    std::vector<int> verNums;
+    std::vector<int> currNums;
+
+    verNums.push_back(parts[0].toInt());
+    verNums.push_back(parts[1].toInt());
+    verNums.push_back(parts[2].toInt());
+    if (parts.size() > 3) {
+        if (parts[3] == "alpha") verNums.push_back(1);
+        if (parts[3] == "beta") verNums.push_back(2);
+        if (parts[3] == "rc") verNums.push_back(3);
+        if (parts.size() > 4) verNums.push_back(parts[4].toInt());
+    }
+
+    currNums.push_back(currentParts[0].toInt());
+    currNums.push_back(currentParts[1].toInt());
+    currNums.push_back(currentParts[2].toInt());
+    if (currentParts.size() > 3) {
+        if (currentParts[3] == "alpha") currNums.push_back(1);
+        if (currentParts[3] == "beta") currNums.push_back(2);
+        if (currentParts[3] == "rc") currNums.push_back(3);
+        if (currentParts.size() > 4) currNums.push_back(currentParts[4].toInt());
+    }
+
+    if (verNums.size() < 3 || currNums.size() < 3) {
+        MW_show_log("Version parsing failed in compareVersions");
+        return false;
+    }
+
+    for (int i = 0; i < 3; i++) {
+        if (verNums[i] > currNums[i]) return true;
+        if (verNums[i] < currNums[i]) return false;
+    }
+
+    if (verNums.size() == 5 && currNums.size() == 3) return false;
+    if (verNums.size() == 3 && currNums.size() == 5) return true;
+    if (verNums.size() == 5 && currNums.size() == 5) {
+        for (int i = 3; i < 5; i++) {
+            if (verNums[i] > currNums[i]) return true;
+            if (verNums[i] < currNums[i]) return false;
+        }
+    }
+    return false;
+}
+
+bool isNewerByTag(const QString& releaseTag) {
+    if (QString(NKR_VERSION).isEmpty()) return false;
+
+    QString version = releaseTag;
+    if (version.startsWith('v') || version.startsWith('V')) {
+        version = version.mid(1);
+    }
+
+    auto parts = version.replace("-", ".").split(".");
+    auto currentParts = QString(NKR_VERSION).replace("-", ".").split('.');
+
+    return compareVersions(parts, currentParts);
+}
 
 bool isNewer(QString assetName) {
     if (QString(NKR_VERSION).isEmpty()) return false;
@@ -381,7 +638,138 @@ void MainWindow::OpenDashboard() {
     });
 }
 
-void MainWindow::CheckUpdate() {
+QString MainWindow::GetUpdateDirectory() {
+#ifdef Q_OS_WIN
+    if (Configs::dataManager->settingsRepo->flag_use_appdata) {
+        return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/Throne_update";
+    }
+    return QApplication::applicationDirPath() + "/Throne_update";
+#else
+    return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/Throne_update";
+#endif
+}
+
+bool MainWindow::PrepareUpdateEnvironment() {
+    QString updateDir = GetUpdateDirectory();
+    MW_show_log(QString("[Update] Preparing update environment: %1").arg(updateDir));
+
+    QDir dir;
+    if (!dir.exists(updateDir) && !dir.mkpath(updateDir)) {
+        MW_show_log("[Update] ERROR: Failed to create update directory!");
+        return false;
+    }
+
+    // Чистим остатки прошлой попытки обновления
+    QDir updateFolder(updateDir);
+    updateFolder.setNameFilters(QStringList() << "Throne.zip" << "extracted" << "*.log");
+    updateFolder.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+    for (const QString &entry : updateFolder.entryList()) {
+        const QString path = updateDir + "/" + entry;
+        if (QFileInfo(path).isDir()) {
+            QDir(path).removeRecursively();
+        } else {
+            QFile::remove(path);
+        }
+    }
+
+    MW_show_log("[Update] Update environment prepared");
+    return true;
+}
+
+void MainWindow::InstallUpdateAndRestart(const QString &version) {
+    MW_show_log("[Update] Starting update installation...");
+
+#ifdef Q_OS_WIN
+    const QString updaterPath = QApplication::applicationDirPath() + "/updater.exe";
+#else
+    const QString updaterPath = QApplication::applicationDirPath() + "/updater";
+#endif
+
+    if (!QFile::exists(updaterPath)) {
+        MW_show_log("[Update] ERROR: Updater not found!");
+        MessageBoxWarning(tr("Update"), tr("Updater not found! Please download update manually."));
+        return;
+    }
+
+    // Обновлятор заменяет и сам себя, поэтому запускаем копию. Копия ложится
+    // рядом с программой намеренно: обновлятор из установленной версии считает
+    // своей папкой ту, из которой запущен, и разложит файлы именно в неё.
+    // Заодно это и есть проверка на запись: если копия не легла, то и файлы
+    // программы заменить не выйдет — там Program Files или права урезаны.
+#ifdef Q_OS_WIN
+    update_runner = QApplication::applicationDirPath() + "/updater.old";
+    QFile::remove(update_runner);
+    if (!QFile::copy(updaterPath, update_runner)) {
+        update_runner.clear();
+        MW_show_log("[Update] ERROR: the install folder is not writable, cannot prepare the updater");
+        MessageBoxWarning(tr("Update"),
+                          tr("The program folder is closed for writing, so the update cannot install "
+                             "itself. Download the new version from the release page and install it "
+                             "over the current one."));
+        return;
+    }
+#else
+    update_runner = updaterPath;
+#endif
+
+    // Оставляем метку с версией, которую ждём. Обновлятор работает уже без
+    // окна: если он умрёт молча — антивирус съел, PowerShell закрыт политикой,
+    // архив побился, — при следующем запуске метка останется, и мы об этом
+    // скажем, вместо того чтобы делать вид, что всё прошло.
+    if (!version.isEmpty()) {
+        QFile marker(QDir(GetUpdateDirectory()).filePath("pending-version"));
+        if (marker.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            marker.write(version.trimmed().toUtf8());
+            marker.close();
+        }
+    }
+
+    // Запоминаем, куда возвращаться. Обычная память о последнем профиле
+    // работает только при включённом «подключаться при запуске», а обновление
+    // человек затевал не для того, чтобы остаться без туннеля.
+    const auto &settings = Configs::dataManager->settingsRepo;
+    if (settings->started_id >= 0) {
+        settings->remember_id = settings->started_id;
+        settings->remember_tun = settings->spmode_vpn;
+        settings->remember_system_proxy = settings->spmode_system_proxy;
+        settings->resume_after_update = true;
+        settings->Save();
+    }
+
+    this->exit_reason = ExitReason::RunUpdater;
+    MW_show_log("[Update] Closing application to start updater...");
+    on_menu_exit_triggered();
+}
+
+void MainWindow::ReportPreviousUpdate() {
+    const QString markerPath = QDir(GetUpdateDirectory()).filePath("pending-version");
+    QFile marker(markerPath);
+    if (!marker.exists()) return;
+
+    QString wanted;
+    if (marker.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        wanted = QString::fromUtf8(marker.readAll()).trimmed();
+        marker.close();
+    }
+    QFile::remove(markerPath);
+    if (wanted.isEmpty()) return;
+
+    // Сравниваем по цифрам: в метке лежит имя тега, оно может прийти с "v".
+    const QString wantedDigits = QString(wanted).remove(QRegularExpression("[^0-9.]"));
+    if (wantedDigits.isEmpty() || wantedDigits == QString(NKR_VERSION)) {
+        MW_show_log("[Update] Updated to " + QString(NKR_VERSION));
+        return;
+    }
+
+    MW_show_log("[Update] ERROR: expected " + wanted + " after the update, but this is " + QString(NKR_VERSION));
+    MessageBoxWarning(tr("Update"),
+                      tr("The update to %1 did not install: the program is still %2. This usually means "
+                         "an antivirus stopped the updater. Download the new version from the release "
+                         "page and install it over the current one.\n\nDetails: %3")
+                          .arg(wanted, QString(NKR_VERSION), QDir(GetUpdateDirectory()).filePath("updater.log")));
+}
+
+void MainWindow::CheckUpdate(bool autoInstall) {
     QString search;
 #ifdef Q_OS_WIN
 #  ifdef Q_PROCESSOR_ARM_64
@@ -421,7 +809,7 @@ void MainWindow::CheckUpdate() {
     // Releases carry no checksum or signature, so TLS is all that vouches for the download URL and the archive.
     HttpGetOptions options;
     options.strictTls = true;
-    auto resp = NetworkRequestHelper::HttpGet("https://api.github.com/repos/throneproj/Throne/releases", options);
+    auto resp = NetworkRequestHelper::HttpGet("https://api.github.com/repos/forestsnet/Throne/releases", options);
     if (!resp.error.isEmpty()) {
         runOnUiThread([=,this] {
             MessageBoxWarning(QObject::tr("Update"), QObject::tr("Requesting update error: %1").arg(resp.error + "\n" + resp.data));
@@ -429,7 +817,7 @@ void MainWindow::CheckUpdate() {
         return;
     }
 
-    QString assets_name, release_download_url, release_url, release_note, note_pre_release;
+    QString assets_name, release_download_url, release_url, release_note, note_pre_release, release_tag_name;
     bool exitFlag = false;
     QJsonArray array = QString2QJsonArray(resp.data);
     for (const QJsonValue value : array) {
@@ -438,6 +826,7 @@ void MainWindow::CheckUpdate() {
         for (const QJsonValue asset : release["assets"].toArray()) {
             if (asset["name"].toString().contains(search) && asset["name"].toString().section('.', -1) == QString("zip")) {
                 note_pre_release = release["prerelease"].toBool() ? " (Pre-release)" : "";
+                release_tag_name = release["tag_name"].toString();
                 release_url = release["html_url"].toString();
                 release_note = release["body"].toString();
                 assets_name = asset["name"].toString();
@@ -449,7 +838,7 @@ void MainWindow::CheckUpdate() {
         if (exitFlag) break;
     }
 
-    if (release_download_url.isEmpty() || !isNewer(assets_name)) {
+    if (release_download_url.isEmpty() || !isNewerByTag(release_tag_name)) {
         runOnUiThread([=,this] {
             MessageBoxInfo(QObject::tr("Update"), QObject::tr("No update"));
         });
@@ -457,23 +846,62 @@ void MainWindow::CheckUpdate() {
     }
 
     runOnUiThread([=,this] {
+        // Своя копия, работающая в фоне из этой же установки, держит файлы:
+        // распаковка поверх них молча не доедет.
         const auto headless = Sys::HostPresence::OtherHeadless();
         const bool headlessSameInstall = headless && Sys::HostPresence::SameInstall(*headless, QCoreApplication::applicationDirPath());
-        auto allow_updater = !Configs::dataManager->settingsRepo->flag_use_appdata && !headlessSameInstall;
-        QMessageBox box(QMessageBox::Question, QObject::tr("Update") + note_pre_release,
-                        QObject::tr("Update found: %1\nRelease note:\n%2").arg(assets_name, release_note));
+        // Свой обновлятор умеет ставить обновление и при flag_use_appdata.
+        auto allow_updater = !headlessSameInstall;
+#ifdef Q_OS_LINUX
+        // AppImage — один файл, и заменить его распаковкой архива поверх нельзя:
+        // он примонтирован и доступен только для чтения. Отправляем человека за
+        // свежим образом — это ровно одно скачивание и перезапуск.
+        if (Configs::RunningFromAppImage()) {
+            const QString arch = QSysInfo::currentCpuArchitecture() == QStringLiteral("arm64")
+                                     ? QStringLiteral("aarch64")
+                                     : QStringLiteral("x86_64");
+            const QString link = QStringLiteral(
+                "https://github.com/forestsnet/Throne/releases/latest/download/FSNT-Client-%1.AppImage")
+                                     .arg(arch);
+            if (Fsnt::Confirm(GetMessageBoxParent(), QObject::tr("Update"),
+                              QObject::tr("Version %1 is out. The client runs from an AppImage, so it "
+                                          "cannot replace itself: download the new file and start it "
+                                          "instead of this one.")
+                                  .arg(release_tag_name),
+                              QObject::tr("Download"))) {
+                QDesktopServices::openUrl(QUrl(link));
+            }
+            return;
+        }
+#endif
+        const QString updateTitle = QObject::tr("Update") + note_pre_release;
+        QString updateBody = QObject::tr("Update found: %1\nRelease note:\n%2")
+                                 .arg(assets_name, release_note);
         if (headlessSameInstall) {
-            box.setInformativeText(tr("Update is unavailable while a background Throne (PID %1) runs from this installation; stop it first.")
-                                       .arg(headless->pid));
+            updateBody += "\n\n" + tr("Update is unavailable while a background Throne (PID %1) runs from this installation; stop it first.")
+                                         .arg(headless->pid);
         }
-        QAbstractButton *btn1 = nullptr;
-        if (allow_updater) {
-            btn1 = box.addButton(QObject::tr("Update"), QMessageBox::AcceptRole);
+        // 0 — ставить, 1 — открыть страницу релиза, -1 — ничего.
+        // Согласие уже получено карточкой обновления — второй раз спрашивать
+        // то же самое незачем.
+        int picked = -1;
+        if (autoInstall) {
+            picked = 0;
+            showFacadeNotice(tr("Downloading the update…"), 120000);
+        } else if (GetFacadeWindow() != nullptr) {
+            picked = Fsnt::Choose(GetMessageBoxParent(), updateTitle, updateBody,
+                                  {QObject::tr("Update"), QObject::tr("Open in browser"), QObject::tr("Close")});
+            if (picked == 2) picked = -1;
+        } else {
+            QMessageBox box(QMessageBox::Question, updateTitle, updateBody);
+            QAbstractButton *btn1 = box.addButton(QObject::tr("Update"), QMessageBox::AcceptRole);
+            QAbstractButton *btn2 = box.addButton(QObject::tr("Open in browser"), QMessageBox::AcceptRole);
+            box.addButton(QObject::tr("Close"), QMessageBox::RejectRole);
+            box.exec();
+            if (box.clickedButton() == btn1) picked = 0;
+            else if (box.clickedButton() == btn2) picked = 1;
         }
-        QAbstractButton *btn2 = box.addButton(QObject::tr("Open in browser"), QMessageBox::AcceptRole);
-        box.addButton(QObject::tr("Close"), QMessageBox::RejectRole);
-        box.exec();
-        if (btn1 == box.clickedButton() && allow_updater) {
+        if (picked == 0 && allow_updater) {
             runOnNewThread([=,this] {
                 if (!mu_download_update.tryLock()) {
                     runOnUiThread([=,this](){
@@ -481,28 +909,50 @@ void MainWindow::CheckUpdate() {
                     });
                     return;
                 }
+                MW_show_log("[Update] Starting update download...");
+                if (!PrepareUpdateEnvironment()) {
+                    mu_download_update.unlock();
+                    runOnUiThread([=,this](){
+                        MessageBoxWarning(tr("Update"), tr("Failed to prepare update environment!"));
+                    });
+                    return;
+                }
+                const QString updateDir = GetUpdateDirectory();
+
                 QString errors;
                 if (!release_download_url.isEmpty()) {
-                    auto res = NetworkRequestHelper::DownloadAsset(release_download_url, "Throne.zip", false, true);
+                    MW_show_log(QString("[Update] Downloading from: %1").arg(release_download_url));
+                    auto res = NetworkRequestHelper::DownloadAsset(release_download_url, "Throne.zip", false, true, updateDir);
                     if (!res.isEmpty()) {
+                        MW_show_log(QString("[Update] Download error: %1").arg(res));
                         errors += res;
+                    } else {
+                        MW_show_log("[Update] Download completed successfully");
                     }
                 }
                 mu_download_update.unlock();
                 runOnUiThread([=,this] {
                     if (errors.isEmpty()) {
-                        auto q = QMessageBox::question(nullptr, QObject::tr("Update"),
-                                                       QObject::tr("Update is ready, restart to install?"));
-                        if (q == QMessageBox::StandardButton::Yes) {
-                            this->exit_reason = ExitReason::RunUpdater;
-                            on_menu_exit_triggered();
+                        const QString readyTitle = QObject::tr("Update");
+                        const QString readyBody = QObject::tr("Update is ready, restart to install?");
+                        const bool restartNow =
+                            autoInstall
+                                ? true
+                                : (GetFacadeWindow() != nullptr
+                                       ? Fsnt::Confirm(GetMessageBoxParent(), readyTitle, readyBody, QObject::tr("Restart"))
+                                       : QMessageBox::question(nullptr, readyTitle, readyBody) == QMessageBox::StandardButton::Yes);
+                        if (restartNow) {
+                            InstallUpdateAndRestart(release_tag_name);
+                        } else {
+                            MW_show_log("[Update] Installation postponed.");
+                            MessageBoxInfo(tr("Update"), tr("Update is ready. The update will be installed on next application restart."));
                         }
                     } else {
                         MessageBoxWarning(tr("Failed to download update assets"), errors);
                     }
                 });
             });
-        } else if (btn2 == box.clickedButton()) {
+        } else if (picked == 1) {
             QDesktopServices::openUrl(QUrl(release_url));
         }
     });

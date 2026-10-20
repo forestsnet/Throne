@@ -18,7 +18,7 @@
 #include "include/configs/sub/GroupUpdater.hpp"
 #include "include/configs/sub/ProviderPolicy.hpp"
 #include "include/database/GroupsRepo.h"
-#include "include/configs/DnsAddress.hpp"
+#include "include/configs/generate.h"
 #include "include/configs/DnsCatalog.hpp"
 #include "include/configs/RoutePresets.hpp"
 #include "include/ui/fsnt/Transport.hpp"
@@ -240,9 +240,11 @@ namespace {
     // «DoT» понятнее, чем «tls://», а разница между ними — ровно та, из-за
     // которой у людей и отваливается резолв.
     QString dnsTransportLabel(const QString &address) {
-        const auto parsed = Configs::ParseDnsAddress(address);
-        if (!parsed.valid) return {};
-        if (parsed.isLocal()) return QObject::tr("System resolver");
+        // Разбором распоряжается сборщик конфига: именно он решает, что уедет в
+        // ядро, и подсказка обязана говорить о том же адресе, что и он.
+        Configs::DnsAddress parsed;
+        if (!Configs::ParseDnsAddress(address, &parsed)) return {};
+        if (parsed.type == QLatin1String("local")) return QObject::tr("System resolver");
         if (parsed.type == QLatin1String("tls")) return QStringLiteral("DoT");
         if (parsed.type == QLatin1String("https") || parsed.type == QLatin1String("h3")) return QStringLiteral("DoH");
         return parsed.type.toUpper();
@@ -310,11 +312,12 @@ void FsntSettingsDialog::buildDns(QVBoxLayout *column, QWidget *host) {
             QLineEdit::Normal, {}, &accepted).trimmed();
         if (!accepted || entered.isEmpty()) return;
 
-        const auto parsed = Configs::ParseDnsAddress(entered);
-        if (!parsed.valid) {
+        Configs::DnsAddress parsed;
+        QString why;
+        if (!Configs::ParseDnsAddress(entered, &parsed, &why)) {
             // Раньше адрес сохранялся любой, а ошибка всплывала много позже —
             // отсутствием интернета, без всякой связи с тем, что человек вписал.
-            MessageBoxWarning(tr("Address not understood"), parsed.error);
+            MessageBoxWarning(tr("Address not understood"), why);
             return;
         }
 

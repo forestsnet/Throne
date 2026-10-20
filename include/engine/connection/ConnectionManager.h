@@ -7,6 +7,7 @@
 #include <QList>
 #include <QMutex>
 #include <QObject>
+#include <QPointer>
 #include <QString>
 
 #include "include/engine/EngineTypes.h"
@@ -14,6 +15,10 @@
 
 namespace Configs {
     class Profile;
+}
+
+namespace Configs {
+    class DnsAutoSelect;
 }
 
 namespace Engine {
@@ -87,6 +92,9 @@ namespace Engine {
 
         // Any thread. Queued on one worker thread in call order; wait spins a nested loop until this change ran.
         void applySystemProxy(bool enable, bool wait = false);
+
+        // true — запуск отложен до конца подбора прямого DNS; он продолжит его сам.
+        bool deferStartForDns(const StartRequest &request);
 
         bool ensureTunPrivileges(bool interactive);
 
@@ -194,6 +202,8 @@ namespace Engine {
 
         RuntimeOptions m_options;
         bool m_tunRestoreHeld = false;
+        // Идущий подбор DNS; пока он жив, новые запуски к нему и присоединяются.
+        QPointer<Configs::DnsAutoSelect> m_dnsSelect;
         QString m_tunBlockedCache;
         // The inputs m_tunBlockedCache was computed from (Tun CIDR and probed DNS port); a change recomputes it.
         QString m_tunBlockedKey;

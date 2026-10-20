@@ -1,14 +1,17 @@
 #include "include/global/DeviceDetailsHelper.hpp"
 
-#include "include/global/Logger.hpp"
+#include "include/global/Configs.hpp"
 
+#include <QCryptographicHash>
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QMutex>
+#include <QRegularExpression>
+#include <QSettings>
+#include <QStandardPaths>
 #include <QString>
 #include <QSysInfo>
-#include <QFile>
-#include <QDir>
-#include <QMutex>
-#include <QSaveFile>
-#include <QUuid>
 #include <vector>   
 #include <string>
 
@@ -137,12 +140,12 @@ namespace {
     QMutex g_deviceDetailsStoreMutex;
     QString g_deviceDetailsStoreDir;
 
-#if !defined(Q_OS_WIN) && !defined(Q_OS_MACOS)
     QString deviceDetailsStoreDir() {
         QMutexLocker locker(&g_deviceDetailsStoreMutex);
         return g_deviceDetailsStoreDir;
     }
 
+#ifdef Q_OS_LINUX
     // The machine-id format: 32 hex digits ("uninitialized" and an empty file fail).
     bool deviceDetailsIsMachineId(const QString &id) {
         if (id.size() != 32) return false;
@@ -153,34 +156,6 @@ namespace {
         return true;
     }
 
-    // Unix without a usable machine-id: a generated ID kept in <configDir>/hwid, so the x-hwid header stays the same across runs.
-    QString deviceDetailsPersistedId() {
-        const QString dir = deviceDetailsStoreDir();
-        if (dir.isEmpty()) return {};
-        const QString path = QDir(dir).absoluteFilePath(QStringLiteral("hwid"));
-        QFile existing(path);
-        if (existing.open(QIODevice::ReadOnly)) {
-            const QString id = QString::fromLatin1(existing.read(256)).trimmed();
-            if (deviceDetailsIsMachineId(id)) return id;
-        }
-        const QString id = QUuid::createUuid().toString(QUuid::Id128);
-        QSaveFile file(path);
-        if (file.open(QIODevice::WriteOnly)) {
-            file.setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner);
-            file.write(id.toLatin1() + '\n');
-            if (file.commit()) {
-                LOG_INFO(QStringLiteral("no usable /etc/machine-id; generated a device ID in %1").arg(path));
-                return id;
-            }
-        }
-        // A per-run ID would count as a new device on every launch; sending none is the lesser harm.
-        LOG_WARN(QStringLiteral("no usable /etc/machine-id, and %1 cannot be written (%2); subscriptions are fetched without a device ID")
-                     .arg(path, file.errorString()));
-        return {};
-    }
-#endif
-
-#ifdef Q_OS_LINUX
     QString deviceDetailsMachineId(const QString &path) {
         QFile file(path);
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return {};
@@ -188,6 +163,115 @@ namespace {
         return deviceDetailsIsMachineId(id) ? id : QString();
     }
 #endif
+
+    // Идентификатор устройства панели видят в заголовке x-hwid и по нему считают
+    // устройства подписки. Панель ждёт опознаваемое значение: получив пустое или
+    // мусорное, она отвечает заглушкой «App not supported», и человек видит её
+    // вместо серверов, ничего не понимая. Раньше на Windows без MachineGuid мы
+    // слали "имя-компьютера-windows", а на Linux без machine-id — вообще ничего.
+    QString hwidFromParts(const QStringList &parts) {
+        const QByteArray device = QCryptographicHash::hash(parts.join('|').toUtf8(),
+                                                           QCryptographicHash::Sha256);
+        const QByteArray digest = QCryptographicHash::hash("fsnt-hwid-" + device.toHex(),
+                                                           QCryptographicHash::Sha256);
+        const QString hex = QString::fromLatin1(digest.toHex()).left(32).toUpper();
+        // Формат тот же, что у остальных клиентов: UUID 8-4-4-4-12.
+        return QStringLiteral("%1-%2-%3-%4-%5")
+            .arg(hex.mid(0, 8), hex.mid(8, 4), hex.mid(12, 4), hex.mid(16, 4), hex.mid(20, 12));
+    }
+
+    bool looksLikeId(const QString &value) {
+        static const QRegularExpression re(QStringLiteral("^[0-9a-fA-F-]{16,}$"));
+        return re.match(value).hasMatch();
+    }
+
+    // Третье место — каталог настроек, который задаёт Bootstrap: в переносном
+    // режиме он уезжает вместе с приложением, и идентификатор уезжает с ним.
+    QString configStoreHwidPath() {
+        const QString dir = deviceDetailsStoreDir();
+        return dir.isEmpty() ? QString() : QDir(dir).absoluteFilePath(QStringLiteral("hwid"));
+    }
+
+    // Идентификатор хранится в системе, а не только рядом с настройками:
+    // на Windows это ветка реестра пользователя, на macOS — свой plist, на
+    // Linux — файл в ~/.config. Папку клиента человек сносит вместе с
+    // приложением, и тогда устройство выглядело бы для панели новым и занимало
+    // ещё один слот. Файл рядом с настройками остаётся вторым местом: если
+    // системную запись вычистит «чистильщик», идентификатор поднимется оттуда.
+    constexpr auto kHwidKey = "device/hwid";
+
+    // Не в папке программы: в переносном режиме это папка на флешке, а при
+    // обычной установке она уезжает вместе с приложением — идентификатор обязан
+    // пережить и то, и другое.
+    QString hwidFilePath() {
+        return QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation))
+            .filePath(QStringLiteral("device_id"));
+    }
+
+    // На Windows пишем прямо в свою ветку реестра: там идентификатору и место,
+    // и переустановка приложения его не трогает. На остальных системах опорой
+    // служит файл в пользовательских данных — он тоже переживает переустановку,
+    // а запись в общее хранилище настроек macOS иногда молча не доезжает.
+    QSettings systemStore() {
+#ifdef Q_OS_WIN
+        return QSettings(QStringLiteral("HKEY_CURRENT_USER\\Software\\FSNT\\Throne"),
+                         QSettings::NativeFormat);
+#else
+        return QSettings(QSettings::NativeFormat, QSettings::UserScope, QStringLiteral("FSNT"),
+                         QStringLiteral("Throne"));
+#endif
+    }
+
+    QString systemStoredHwid() {
+        QSettings store = systemStore();
+        return store.value(QLatin1String(kHwidKey)).toString().trimmed();
+    }
+
+    void rememberEverywhere(const QString &hwid) {
+        if (hwid.isEmpty()) return;
+        QSettings store = systemStore();
+        store.setValue(QLatin1String(kHwidKey), hwid);
+        store.sync();
+
+        for (const QString &path : {hwidFilePath(), configStoreHwidPath()}) {
+            if (path.isEmpty()) continue;
+            QFile file(path);
+            QDir().mkpath(QFileInfo(file).absolutePath());
+            if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                file.write(hwid.toUtf8());
+                file.close();
+            }
+        }
+    }
+
+    QString rememberedHwid(const QString &primary, const QStringList &parts) {
+        if (const QString fromSystem = systemStoredHwid(); !fromSystem.isEmpty()) {
+            rememberEverywhere(fromSystem);   // на случай, если файл потеряли
+            return fromSystem;
+        }
+
+        for (const QString &path : {hwidFilePath(), configStoreHwidPath()}) {
+            if (path.isEmpty()) continue;
+            QFile file(path);
+            if (!file.exists() || !file.open(QIODevice::ReadOnly | QIODevice::Text)) continue;
+            const QString stored = QString::fromUtf8(file.readAll()).trimmed();
+            file.close();
+            if (stored.isEmpty()) continue;
+            rememberEverywhere(stored);
+            return stored;
+        }
+
+        // У кого система выдаёт свой идентификатор, тот остаётся со старым
+        // значением: менять его на новое — это заново занять слот на панели.
+        const QString chosen = looksLikeId(primary) ? primary : hwidFromParts(parts);
+        rememberEverywhere(chosen);
+        return chosen;
+    }
+
+    QStringList hwidParts(const QString &machineId) {
+        return {machineId, QSysInfo::machineHostName(), QSysInfo::productType(),
+                QSysInfo::currentCpuArchitecture(), qEnvironmentVariable("USER", qEnvironmentVariable("USERNAME"))};
+    }
 } // namespace
 
 void SetDeviceIdStore(const QString &configDir) {
@@ -200,11 +284,8 @@ DeviceDetails GetDeviceDetails() {
         DeviceDetails d;
 
     #ifdef Q_OS_WIN
-        d.hwid = QSysInfo::machineUniqueId();
-        if (d.hwid.isEmpty()) {
-            auto productType = QSysInfo::productType().toUtf8();
-            d.hwid = QString("%1-%2").arg(QSysInfo::machineHostName(), QString::fromUtf8(productType));
-        }
+        const QString winMachineId = QString::fromUtf8(QSysInfo::machineUniqueId());
+        d.hwid = rememberedHwid(winMachineId, hwidParts(winMachineId));
 
         d.os = QStringLiteral("Windows");
 
@@ -219,19 +300,19 @@ DeviceDetails GetDeviceDetails() {
     #elif defined(Q_OS_LINUX)
         QString mid = deviceDetailsMachineId(QStringLiteral("/etc/machine-id"));
         if (mid.isEmpty()) mid = deviceDetailsMachineId(QStringLiteral("/var/lib/dbus/machine-id"));
-        if (mid.isEmpty()) mid = deviceDetailsPersistedId();
-        d.hwid = mid;
+        d.hwid = rememberedHwid(mid, hwidParts(mid));
         d.os = QStringLiteral("Linux");
         d.osVersion = QSysInfo::kernelVersion();
         d.model = QSysInfo::prettyProductName();
     #elif defined(Q_OS_MACOS)
-        d.hwid = QSysInfo::machineUniqueId();
+        const QString macMachineId = QString::fromUtf8(QSysInfo::machineUniqueId());
+        d.hwid = rememberedHwid(macMachineId, hwidParts(macMachineId));
         d.os = QStringLiteral("macOS");
         d.osVersion = QSysInfo::productVersion();
         d.model = QSysInfo::prettyProductName();
     #else
-        d.hwid = QSysInfo::machineUniqueId();
-        if (d.hwid.isEmpty()) d.hwid = deviceDetailsPersistedId();
+        const QString otherMachineId = QString::fromUtf8(QSysInfo::machineUniqueId());
+        d.hwid = rememberedHwid(otherMachineId, hwidParts(otherMachineId));
         d.os = QSysInfo::productType();
         d.osVersion = QSysInfo::productVersion();
         d.model = QSysInfo::prettyProductName();

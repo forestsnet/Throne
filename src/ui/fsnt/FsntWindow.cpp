@@ -36,6 +36,10 @@
 #include "include/ui/fsnt/TunnelProbe.hpp"
 #include "include/ui/fsnt/ConnectPanel.h"
 #include "include/ui/mainwindow.h"
+#include "include/engine/supervisor/CoreSupervisor.h"
+#include "include/engine/connection/ConnectionManager.h"
+#include "include/engine/EngineEvents.h"
+#include "include/engine/EngineHost.h"
 #include "include/ui/fsnt/FsntSettingsDialog.h"
 #include "include/ui/fsnt/Notifier.hpp"
 #include "include/ui/fsnt/UpdatePopover.hpp"
@@ -54,6 +58,7 @@ FsntWindow::FsntWindow(QWidget *parent) : QMainWindow(parent) {
     // С этого момента диплинки и диалоги ядра поднимают это окно, а не
     // спрятанный MainWindow.
     SetFacadeWindow(this);
+    SetFacadeNoticeHandler(Fsnt::Notice);
 
     setWindowTitle("FSNT Client");
     resize(960, 640);
@@ -67,8 +72,7 @@ FsntWindow::FsntWindow(QWidget *parent) : QMainWindow(parent) {
     connect(m_probe, &Fsnt::TunnelProbe::tunnelDead, this, &FsntWindow::offerCompatibleTunnel);
 
     // Тему и колбэки ядра уже поставил MainWindow: он создаётся раньше и служит движком.
-    chainCoreMessages();
-    chainLogLines();
+    observeEngine();
 
     auto *central = new QWidget(this);
     central->setObjectName("fsntRoot");
@@ -157,65 +161,41 @@ void FsntWindow::runTour() {
 }
 
 
-void FsntWindow::chainCoreMessages() {
-    // Ядро шлёт состояние через единственный MW_dialog_message, и его владелец —
-    // MainWindow. Не перехватываем, а оборачиваем: прежний обработчик вызывается
-    // как обычно, мы лишь узнаём о событии дополнительно.
-    // QPointer, а не this: колбэк переживает окно. При выходе MainWindow
-    // продолжает слать сообщения и писать лог, и вызов по указателю на уже
-    // разрушенное окно — обращение к освобождённой памяти.
-    auto previous = MW_dialog_message;
-    QPointer<FsntWindow> self(this);
-    MW_dialog_message = [self, previous](MwMessage cmd, QStringList args) {
-        if (previous) previous(cmd, args);
-        if (self.isNull()) return;
-        QMetaObject::invokeMethod(self, [self, cmd, args] {
-            if (!self.isNull()) self->onCoreMessage(cmd, args);
-        }, Qt::QueuedConnection);
-    };
-}
+void FsntWindow::observeEngine() {
+    auto *engine = Engine::host();
+    if (engine == nullptr) return;
 
-void FsntWindow::chainLogLines() {
-    // Как и с сообщениями ядра: не перехватываем, а оборачиваем — прежний
-    // обработчик MainWindow должен продолжать писать лог в файл и в окно.
-    auto previous = MW_show_log;
-    QPointer<FsntWindow> self(this);
-    MW_show_log = [self, previous](const QString &line) {
-        if (previous) previous(line);
-        if (self.isNull()) return;
-        QMetaObject::invokeMethod(self, [self, line] {
-            if (!self.isNull()) emit self->logLine(line);
-        }, Qt::QueuedConnection);
-    };
-}
+    // Состояние подключения. Падение ядра отдельным сигналом: по одному лишь
+    // «не подключено» не отличить упавшую попытку от ещё идущей.
+    connect(engine->connection(), &Engine::ConnectionManager::connectionStateChanged, this,
+            [this](Engine::ConnectionState state) {
+                refreshConnectionState();
+                if (state == Engine::ConnectionState::Running && m_probe != nullptr) m_probe->start();
+            });
+    connect(engine->supervisor(), &Engine::CoreSupervisor::coreExited, this, [this](bool wasConnected) {
+        if (wasConnected && m_connectPanel != nullptr) m_connectPanel->reportFailure();
+        refreshConnectionState();
+    });
 
-void FsntWindow::onCoreMessage(MwMessage cmd, const QStringList &args) {
-    Q_UNUSED(args)
-    switch (cmd) {
-        case MwMessage::CoreCrashed:
-            // Отдельной веткой: refresh() по одному лишь «не подключено» не
-            // отличит упавшую попытку от ещё идущей.
-            if (m_connectPanel != nullptr) m_connectPanel->reportFailure();
-            refreshConnectionState();
-            break;
-        case MwMessage::CoreStarted:
-        case MwMessage::ProfileChanged:
-            refreshConnectionState();
-            if (m_probe != nullptr) m_probe->start();
-            break;
-        case MwMessage::SubscriptionFinished:
-            refreshServerList();
-            refreshConnectionState();
-            onSubscriptionUpdated();
-            break;
-        case MwMessage::GroupsChanged:
-        case MwMessage::SubscriptionGroupChanged:
-        case MwMessage::SubscriptionNewGroup:
-            refreshServerList();
-            refreshConnectionState();
-            break;
-        default:
-            break;
+    // Подписки: список серверов и карточка подписки живут этими событиями.
+    auto *events = Engine::EngineEvents::instance();
+    connect(events, &Engine::EngineEvents::subscriptionFinished, this, [this](int, bool) {
+        refreshServerList();
+        refreshConnectionState();
+        onSubscriptionUpdated();
+    });
+    const auto refreshBoth = [this] {
+        refreshServerList();
+        refreshConnectionState();
+    };
+    connect(events, &Engine::EngineEvents::subscriptionNewGroup, this, refreshBoth);
+    connect(events, &Engine::EngineEvents::subscriptionGroupChanged, this, refreshBoth);
+    connect(events, &Engine::EngineEvents::groupsChanged, this, refreshBoth);
+
+    // Журнал: MainWindow отдаёт строки сигналом, свой сток ставить не нужно —
+    // иначе инженерное окно перестанет их получать.
+    if (auto *mw = GetMainWindow(); mw != nullptr) {
+        connect(mw, &MainWindow::userLogLine, this, [this](const QString &line) { emit logLine(line); });
     }
 }
 

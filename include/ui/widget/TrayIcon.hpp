@@ -16,6 +16,9 @@ public:
     void setToolTip(const QString &text);
     void setContextMenu(QMenu *menu);
     void setVisible(bool visible);
+    // Всплывающее сообщение системы. На macOS не делает ничего: там
+    // уведомления идут через UserNotifications (MacNotify).
+    void showMessage(const QString &title, const QString &body, int milliseconds);
     void hide() { setVisible(false); }
     bool isVisible() const;
 

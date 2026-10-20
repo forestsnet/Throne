@@ -34,7 +34,7 @@ build_installer() {
         "/DAppVersionPatch=${parts[2]:-0}" \
         "/DAppVersionBuild=${parts[3]:-0}" \
         "/O$(cygpath -w "$DEPLOY")" \
-        "/FThrone-$TAG-windows-universal-installer" \
+        "/FFSNT-Client-Setup" \
         "$(cygpath -w "$ROOT/script/windows_installer.iss")"
 }
 
@@ -56,6 +56,16 @@ zip_app() {
     mv "$DEPLOY/$1/Throne.app" "$WORK/$2/Throne/"
     cd "$WORK/$2"
     zip -q --symlinks -r "$DEPLOY/Throne-$TAG-$2.zip" Throne
+}
+
+# Образы собираются в build-cpp: hdiutil есть только на маке, а упаковка идёт
+# на Linux. Здесь им остаётся дать итоговые имена — те, по которым их скачивают
+# и на которые ссылается обновлятор.
+move_dmgs() {
+    cd "$DEPLOY"
+    mv darwin-arm64/FSNT-Client.dmg FSNT-Client-macos-arm64.dmg
+    mv darwin-amd64/FSNT-Client.dmg FSNT-Client-macos-intel.dmg
+    mv darwinlegacy-amd64/FSNT-Client.dmg FSNT-Client-macos-intel-legacy.dmg
 }
 
 zip_debug() {
@@ -83,7 +93,7 @@ run_task() {
     return $rc
 }
 
-export -f build_installer zip_dir zip_app zip_debug pack_deb pack_rpm run_task
+export -f build_installer zip_dir zip_app move_dmgs zip_debug pack_deb pack_rpm run_task
 
 case "$TARGET" in
 windows)
@@ -113,6 +123,7 @@ macos)
         "zip-macos-arm64 zip_app darwin-arm64 macos-arm64"
         "zip-macos-amd64 zip_app darwin-amd64 macos-amd64"
         "zip-macoslegacy-amd64 zip_app darwinlegacy-amd64 macoslegacy-amd64"
+        "dmg-macos move_dmgs"
     )
     ;;
 debug)

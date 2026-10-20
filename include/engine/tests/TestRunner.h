@@ -36,7 +36,11 @@ namespace Engine {
         TestRunner& operator=(const TestRunner&) = delete;
 
         // The run* calls return whether a session started; onFinished fires either way, on a refusal before they return.
-        bool runUrlTests(const QList<int>& profileIDs, const std::function<void()>& onFinished = {}, bool interactive = true);
+        // method — HTTP-метод пробы; пусто берётся за GET, как было до появления
+        // выбора способа замера. HEAD нужен там, где тело ответа не нужно, а
+        // ответ сервера бывает тяжёлым.
+        bool runUrlTests(const QList<int>& profileIDs, const std::function<void()>& onFinished = {},
+                         bool interactive = true, const QString& method = {});
 
         // Waits out a running session instead of refusing it; returns at once and is safe from any thread.
         void queueUrlTests(const QList<int>& profileIDs, const std::function<void()>& onFinished, bool interactive = true);
@@ -111,6 +115,8 @@ namespace Engine {
         std::atomic<bool> testingCurrent_ = false;
         // The running session's flag: an unattended session never prompts for geo assets.
         std::atomic<bool> interactive_ = true;
+        // Ставится перед началом прогона: сеансы не идут параллельно.
+        QString urlMethod_;
 
         // Tests bypass the clash tracker, so their bytes are counted only here, diffed per tag.
         QMutex creditMu_;

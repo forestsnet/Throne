@@ -1,14 +1,17 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
 	"os"
+	"os/signal"
 	"runtime"
 	runtimeDebug "runtime/debug"
 	"runtime/metrics"
 	"runtime/pprof"
+	"strings"
 	"syscall"
 	"time"
 
@@ -19,6 +22,7 @@ import (
 	"ThroneCore/internal/guard"
 	"ThroneCore/internal/ipc"
 	"ThroneCore/internal/parentcheck"
+	"ThroneCore/internal/process"
 	"ThroneCore/internal/rpc"
 
 	C "github.com/sagernet/sing-box/constant"
@@ -95,6 +99,7 @@ func RunCore() {
 		os.Exit(guard.IdentityExitCode)
 	}
 	guard.CleanupStale()
+	process.SweepStaleConfigDirs()
 
 	go func() {
 		parent, err := os.FindProcess(parentcheck.ParentPID)
@@ -103,16 +108,29 @@ func RunCore() {
 		}
 		if runtime.GOOS == "windows" {
 			state, err := parent.Wait()
-			log.Fatalln("parent exited:", state, err)
+			shutdown(1, fmt.Sprintln("parent exited:", state, err))
 		} else {
 			for {
 				time.Sleep(time.Second * 10)
 				err = parent.Signal(syscall.Signal(0))
 				if err != nil {
-					log.Fatalln("parent exited:", err)
+					shutdown(1, fmt.Sprintln("parent exited:", err))
 				}
 			}
 		}
+	}()
+
+	// Сигналы ловим на весь срок жизни, а не только на время создания службы.
+	// Без этого SIGTERM убивал ядро по умолчанию, то есть ровно так же, как
+	// SIGKILL: туннель, маршруты и системный DNS оставались в системе.
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		sig := <-signals
+		// Код 0: остановка по просьбе — не отказ. С ненулевым кодом (а тем
+		// более с гибелью от сигнала) приложение заносит каждый свой выход в
+		// журнал как падение ядра.
+		shutdown(0, fmt.Sprintln("got signal:", sig))
 	}()
 
 	boxmain.DisableColor()
@@ -134,6 +152,29 @@ func RunCore() {
 	fmt.Println("Core Has Successfully Connected to Throne!")
 	rpc.Serve(conn, debug)
 	log.Fatal("IPC connection dropped, exiting")
+}
+
+// Выход с откатом. log.Fatalln звал os.Exit, а тот не выполняет ни отложенных
+// вызовов, ни чего-либо ещё: туннель, его маршруты, подменённый системный DNS и
+// дочерние процессы оставались в системе. Человек при этом остаётся без сети и
+// связать это с давно закрытым клиентом не может.
+func shutdown(code int, reason string) {
+	log.Println("shutting down:", strings.TrimSpace(reason))
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		if err := rpc.Teardown(context.Background()); err != nil {
+			log.Println("teardown failed:", err)
+		}
+	}()
+	// Ограничение по времени: зависший откат не должен держать ядро вечно,
+	// иначе вместо следа в системе получим вечный процесс.
+	select {
+	case <-done:
+	case <-time.After(10 * time.Second):
+		log.Println("teardown timed out")
+	}
+	os.Exit(code)
 }
 
 func main() {

@@ -85,6 +85,12 @@ namespace Subscription {
 
         void SubscribeUrl(const QString &url, const Finish &finish = nullptr);
 
+        // То же, но с отчётом о результате и с уборкой за собой: если первая
+        // загрузка не удалась, пустая группа удаляется. Простому режиму
+        // настроек группы не показывают, и починить такую подписку человеку
+        // нечем — в списке остаётся строка, которая ничего не делает.
+        void SubscribeUrlWithOutcome(const QString &url, const OutcomeFinish &done);
+
         void ImportUrl(const QString &url, const Finish &finish = nullptr);
 
         void ImportText(const QString &text, int gid = -1, const Finish &finish = nullptr);
@@ -124,18 +130,22 @@ namespace Subscription {
             std::shared_ptr<UpdateOutcome> outcome;
         };
 
+        // Общий вход обоих SubscribeUrl; выполняется на рабочем потоке.
+        void subscribeToUrl(const QString &content, const OutcomeFinish &done);
         Job refreshJob(int gid, bool batch, Surface surface, const Finish &finish);
         void enqueue(Job job);
         void enqueueLocked(Job job);
         void drain();
         UpdateOutcome refresh(int gid, Surface surface);
         void applyRefresh(const std::shared_ptr<Configs::Group> &group, const QString &url, QByteArray body,
-                          const Configs::SubUserInfo &subInfo, Surface surface, UpdateOutcome &result);
+                          const Configs::SubUserInfo &subInfo, const QString &policyJson, Surface surface,
+                          UpdateOutcome &result);
         void afterUrlTest(int gid);
         // emptyReason replaces the generic "nothing found" when no profile is imported; quiet never shows a report box.
         UpdateOutcome importDocuments(int gid, QList<QByteArray> documents, const QString &emptyReason = {}, bool quiet = false);
+        // policyJson: заголовки политики провайдера, сериализованные; пусто, если их не прислали.
         bool fetch(const QString &url, const QString &name, const RequestIdentity &identity, QByteArray &body,
-                   Configs::SubUserInfo &subInfo, QString *error = nullptr);
+                   Configs::SubUserInfo &subInfo, QString *error = nullptr, QString *policyJson = nullptr);
         [[nodiscard]] qint64 autoUpdateDue(const Configs::Group &group, qint64 interval) const;
 
         // UI thread only: in-memory, so a restart retries a failing group once.

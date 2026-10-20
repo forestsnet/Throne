@@ -1,4 +1,5 @@
 #include "include/ui/mainwindow.h"
+#include "NkrVersion.h"
 
 #include "include/ui/mainWindow/MainWindowInternal.h"
 #include "include/engine/EngineHost.h"
@@ -26,9 +27,18 @@
 #include "include/scanner/IpListUpdater.h"
 #include "include/scanner/ScanManager.h"
 #include "include/ui/stats/dialog_auto_selector.h"
+#include "include/global/SystemStateJournal.hpp"
 #include "include/sys/KillSwitch.hpp"
+#include "include/sys/Process.hpp"
 #include "include/sys/AutoRun.hpp"
 #include "include/sys/UrlScheme.hpp"
+#include "include/ui/setting/dialog_per_app_proxy.h"
+#include <QMenuBar>
+
+#include "include/ui/fsnt/FsntWindow.h"
+#include "include/ui/fsnt/WindowChrome.hpp"
+#include "include/ui/fsnt/UiMode.hpp"
+#include "include/configs/sub/ProviderPolicy.hpp"
 
 #include "include/ui/setting/ThemeManager.hpp"
 #include "include/ui/setting/Icon.hpp"
@@ -70,8 +80,43 @@
 #include "include/global/DeviceDetailsHelper.hpp"
 
 MainWindow *UI_InitMainWindow() {
+    auto &settings = Configs::dataManager->settingsRepo;
+
+    const auto mode = Fsnt::ResolveInitialUiMode(settings->ui_mode);
+    if (settings->ui_mode != static_cast<int>(mode)) {
+        settings->ui_mode = static_cast<int>(mode);
+        settings->Save();
+    }
+
+    // MainWindow создаётся всегда: он регистрирует колбэки ядра, применяет тему,
+    // держит трей и горячие клавиши. В простом режиме он служит движком и не
+    // показывается — лицом работает FsntWindow. Так в код, который правит upstream,
+    // не вносится ни одной правки ради нового интерфейса.
+    // До создания окон: наблюдатель красит рамку каждому, что появится.
+    Fsnt::InstallWindowChromeWatcher();
+
+    // На macOS меню скрытого окна всё равно становится глобальным, и человек
+    // видит в строке меню весь инженерный интерфейс. Нужно держать меню внутри
+    // окна, чтобы оно пряталось вместе с ним; системное меню приложения
+    // (О программе, Выход) macOS рисует сама.
+    //
+    // Решаем это до создания окна. Переключать уже созданную строку меню
+    // вызовом setNativeMenuBar(false) нельзя: в Qt 6.4, на котором собрана
+    // сборка для macOS 11 и 12, она остаётся недостроенной, и первый же
+    // пересчёт раскладки — его вызывает соседний hide() — падает внутри
+    // QMenuBar::minimumSizeHint. Для той сборки это означало, что клиент не
+    // запускался вообще ни разу.
+    if (mode == Fsnt::UiMode::Simple) {
+        QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar, true);
+    }
+
     auto *window = new MainWindow;
     mainwindow = window;
+
+    if (mode == Fsnt::UiMode::Simple) {
+        window->hide();
+        new FsntWindow;
+    }
     return window;
 }
 
@@ -136,6 +181,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             handle_deeplink_impl(url);
         });
     };
+    MW_url_test_one = [=,this](int profileId, const QString &method) {
+        runOnUiThread([=,this] { tests()->runUrlTests({profileId}, {}, true, method); });
+    };
     MW_import_files = [=,this](const QStringList &paths) {
         runOnUiThread([=,this]
         {
@@ -177,11 +225,20 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         syncSettingsMirrors();
     });
 
+    Configs::SystemStateJournal::Init(Configs::GetBasePath());
+    ClearStaleSystemProxy();
+    ClearStaleSystemDnsTunnel();
+
     AutoRun_FixTaskIfNeeded();
     AutoRun_MigrateIfNeeded();
 
     UrlScheme_RegisterIfNeeded();
 
+    // С задержкой: окно к этому моменту уже на экране, и разговор про неудачное
+    // обновление не начинается раньше, чем человек его увидит.
+    setTimeout([this] { ReportPreviousUpdate(); }, this, 4000);
+
+    // migrate old themes
     bool isNum;
     Configs::dataManager->settingsRepo->theme.toInt(&isNum);
     if (isNum) {
@@ -220,12 +277,22 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     SetUserLogSink([=,this](const QString &log) {
         append_log(log);
         Logging::WriteUserLog(log);
+        emit userLogLine(log);
     });
     Configs_network::NetworkRequestHelper::SetDownloadProgressSink([this](const DownloadProgressReport &report, bool show) {
         setDownloadReport(report, show);
         // Progress updates are throttled; the final one must land.
         UpdateDataView(!show);
     });
+
+#ifdef Q_OS_LINUX
+    // В AppImage ядро должно жить снаружи образа: там ему можно выдать права.
+    Configs::PrepareAppImageCore();
+#endif
+    // Проверяем при запуске без окна: показывать модальное окно поверх ещё не
+    // построенного интерфейса рано, пользователь увидит объяснение при первой
+    // же попытке подключиться.
+    EnsureCorePresent(false);
 
     if (!Configs::dataManager->settingsRepo->font.isEmpty()) {
         auto font = qApp->font();
@@ -278,6 +345,25 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             btnFilter, [btnFilter] { btnFilter->setChecked(false); });
     ui->tabWidget->setCornerWidget(btnFilter, Qt::TopRightCorner);
     RegisterHotkey(false);
+
+    // Минимум задан в mainwindow.ui и подхватывается через designMinimumSize.
+    // Применяем размер только если геометрия не была восстановлена выше
+    if (Configs::dataManager->settingsRepo->mainWindowGeometry.isEmpty()) {
+        // Геометрия не сохранена, используем размер из mw_size или значения по умолчанию
+        auto last_size = Configs::dataManager->settingsRepo->mw_size.split("x");
+        if (last_size.length() == 2) {
+            auto w = last_size[0].toInt();
+            auto h = last_size[1].toInt();
+            // Применяем сохранённый размер, но не меньше минимального
+            if (w > 0 && h > 0) {
+                resize(qMax(w, 1000), qMax(h, 600));
+            } else {
+                resize(1200, 750);
+            }
+        } else {
+            resize(1200, 750);
+        }
+    }
     auto last_size = Configs::dataManager->settingsRepo->mw_size.split("x");
     if (last_size.length() == 2) {
         auto w = last_size[0].toInt();
@@ -287,6 +373,21 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         }
     }
 
+    software_name = "FSNT Client";
+    software_core_name = "sing-box";
+    // Непустой каталог панели ядро считает пользовательским и своё туда не тянет.
+    if (auto dashDir = QDir("dashboard"); !dashDir.exists() && QDir().mkdir("dashboard")) {
+        if (auto dashFile = QFile(":/Throne/dashboard-notice.html"); dashFile.exists() && dashFile.open(QIODevice::ReadOnly))
+        {
+            auto data = dashFile.readAll();
+            if (auto dest = QFile("dashboard/index.html"); dest.open(QIODevice::Truncate | QIODevice::WriteOnly))
+            {
+                dest.write(data);
+                dest.close();
+            }
+            dashFile.close();
+        }
+    }
     if (auto iconsDir = QDir("icons"); !iconsDir.exists()) {
         QDir().mkdir("icons") ? qDebug("created icons dir") : qDebug("Failed to create icons dir");
     }
@@ -298,6 +399,62 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->toolButton_testing->setMenu(ui->menuTesting);
     ui->toolButton_tools->setMenu(ui->menuTools);
     ui->toolButton_program->installEventFilter(this);
+
+    // --- Кнопки форка на верхней панели ---
+    ui->toolButton_hidden->setMenu(ui->menuHidden_menu);
+    ui->horizontalLayout_2->addStretch();
+    ui->horizontalLayout_2->addWidget(ui->toolButton_speedtest);
+    ui->horizontalLayout_2->addWidget(ui->toolButton_ping);
+    ui->horizontalLayout_2->addSpacing(50);
+
+    connect(ui->toolButton_speedtest, &QToolButton::clicked, this, [=,this]() {
+        // Используем существующий action из меню
+        ui->actionSpeedtest_Group->trigger();
+    });
+
+    connect(ui->toolButton_ping, &QToolButton::clicked, this, [=,this]() {
+        // Используем TCP Ping для быстрого теста
+        auto currentGroup = Configs::dataManager->groupsRepo->CurrentGroup();
+        if (!currentGroup || currentGroup->Profiles().isEmpty()) {
+            MessageBoxWarning(tr("Ping Test"), tr("No profiles in current group."));
+            return;
+        }
+        ui->actionUrl_Test_Group->trigger();
+    });
+
+    connect(ui->toolButton_update, &QToolButton::clicked, this, [=,this] {
+        QMenu menu(this);
+
+        if (QFile::exists(QApplication::applicationDirPath() + "/updater") ||
+            QFile::exists(QApplication::applicationDirPath() + "/updater.exe")) {
+            auto checkAction = menu.addAction(QObject::tr("Check for updates"));
+            connect(checkAction, &QAction::triggered, this, [=,this] {
+                runOnNewThread([=,this] { CheckUpdate(); });
+            });
+            menu.addSeparator();
+        } else {
+            auto noUpdaterAction = menu.addAction(QObject::tr("Updater not found. Please update manually from GitHub."));
+            noUpdaterAction->setEnabled(false);
+            menu.addSeparator();
+        }
+
+        auto githubAction = menu.addAction(QObject::tr("Open GitHub Releases"));
+        connect(githubAction, &QAction::triggered, this, [=,this] {
+            QDesktopServices::openUrl(QUrl("https://github.com/forestsnet/Throne/releases"));
+        });
+
+        auto repoAction = menu.addAction(QObject::tr("Open Repository"));
+        connect(repoAction, &QAction::triggered, this, [=,this] {
+            QDesktopServices::openUrl(QUrl("https://github.com/forestsnet/Throne"));
+        });
+
+        // Показываем меню под кнопкой синхронно
+        QPoint pos = ui->toolButton_update->mapToGlobal(QPoint(0, ui->toolButton_update->height()));
+        menu.exec(pos);
+    });
+
+    // Показывать кнопку всегда, независимо от наличия updater
+    ui->toolButton_update->setVisible(true);
 
     designMinimumSize = minimumSize();
     applyTopBarMetrics();
@@ -695,7 +852,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         connection()->setSystemProxy(false);
         connection()->setTun(false);
     });
-    connect(ui->menu_qr, &QAction::triggered, this, [=,this]() { display_qr_link(false); });
+    connect(ui->menu_qr, &QAction::triggered, this, [=,this]() {
+        // QR — та же ссылка, только картинкой.
+        if (ConfigHiddenForSelection()) return;
+        display_qr_link(false);
+    });
 
     connect(ui->menu_server, &QMenu::aboutToShow, this, [=,this](){
         if (auto selected = get_now_selected_list(); selected.empty())
@@ -788,6 +949,21 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     {
         ui->menuRouting_Menu->clear();
         ui->menuRouting_Menu->addAction(ui->menu_routing_settings);
+
+        auto* actionPerApp = new QAction(ui->menuRouting_Menu);
+        actionPerApp->setText(tr("Per-app proxy..."));
+        connect(actionPerApp, &QAction::triggered, this, [=,this] {
+            auto *dialog = new DialogPerAppProxy(this);
+            dialog->setAttribute(Qt::WA_DeleteOnClose);
+            connect(dialog, &QDialog::accepted, this, [=,this] {
+                // Правила уходят в ядро только при пересборке конфига.
+                if (Configs::dataManager->settingsRepo->started_id >= 0) {
+                    profile_start(Configs::dataManager->settingsRepo->started_id);
+                }
+            });
+            dialog->show();
+        });
+        ui->menuRouting_Menu->addAction(actionPerApp);
 
         auto* actionAdblock = new QAction(ui->menuRouting_Menu);
         actionAdblock->setText(tr("Enable AdBlock"));
@@ -900,6 +1076,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         } else {
             ui->actionCopy_Test_Result->setVisible(true);
         }
+
+        // Скрываем сами пункты, а не только их действие: кнопка, которая
+        // отказывает по нажатию, хуже отсутствующей.
+        if (Subscription::PolicyHidesConfig(profile->gid)) return;
 
         ui->menu_export_config->setVisible(true);
     });
@@ -1029,5 +1209,9 @@ void MainWindow::setupTrafficGraph() {
     connect(m_trafficStatsChartAction, &QAction::triggered, this, [this] { ui->actionTraffic_Stats->trigger(); });
     trafficChart->addMenuAction(m_trafficStatsChartAction);
     refresh_traffic_graph_settings();
+}
+
+TrayIcon *MainWindow::trayIcon() const {
+    return tray;
 }
 

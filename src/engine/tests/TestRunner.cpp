@@ -201,6 +201,7 @@ namespace Engine {
         req.url = Configs::dataManager->settingsRepo->test_latency_url.toStdString();
         req.max_concurrency = Configs::dataManager->settingsRepo->test_concurrent;
         req.test_timeout_ms = Configs::dataManager->settingsRepo->url_test_timeout_ms;
+        if (!urlMethod_.isEmpty()) req.method = urlMethod_.toStdString();
 
         // The test box dies with the RPC, so the verdict has to be asked for up front.
         for (auto it = target.tag2entID.cbegin(); it != target.tag2entID.cend(); ++it) {
@@ -326,11 +327,14 @@ namespace Engine {
         }
     }
 
-    bool TestRunner::runUrlTests(const QList<int>& profileIDs, const std::function<void()>& onFinished, bool interactive) {
+    bool TestRunner::runUrlTests(const QList<int>& profileIDs, const std::function<void()>& onFinished, bool interactive,
+                                 const QString& method) {
+        urlMethod_ = method;
         return runLatencyGroup(LatencyKind::Url, profileIDs, onFinished, false, interactive);
     }
 
     void TestRunner::queueUrlTests(const QList<int>& profileIDs, const std::function<void()>& onFinished, bool interactive) {
+        urlMethod_.clear();
         runOnNewThread([=, this] { runLatencyGroup(LatencyKind::Url, profileIDs, onFinished, true, interactive); });
     }
 

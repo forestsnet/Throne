@@ -265,6 +265,30 @@ namespace Configs
             return {};
         }
 
+        // Узел полного конфига Xray: сам конфиг — это файл со списком
+        // аутбаундов, а не один аутбаунд, и адрес с портом лежат в том из них,
+        // куда Xray маршрутизирует по умолчанию.
+        QJsonObject xrayFullConfigPeer(const QString& config)
+        {
+            const auto root = QString2QJsonObject(config);
+            return xrayOutboundPeer(firstXrayEgress(xrayAgreed(root, "outbounds").toArray()));
+        }
+
+        // streamSettings того же узла: оттуда берётся SNI.
+        QJsonObject xrayStream(const QJsonObject& o)
+        {
+            return xrayAgreed(o, "streamSettings").toObject();
+        }
+
+        QString xrayStreamSni(const QJsonObject& stream)
+        {
+            if (stream.isEmpty()) return {};
+            // У Reality имя для рукопожатия — домен прикрытия, и лежит оно отдельно.
+            const auto reality = xrayAgreed(stream, "realitySettings").toObject();
+            if (!reality.isEmpty()) return xrayAgreed(reality, "serverName").toString();
+            return xrayAgreed(xrayAgreed(stream, "tlsSettings").toObject(), "serverName").toString();
+        }
+
         bool isBlank(const QJsonValue& value)
         {
             return value.isNull() || value.isUndefined() || (value.isString() && value.toString().isEmpty()) ||
@@ -674,6 +698,7 @@ namespace Configs
         if (type == CustomOutbound) return QString2QJsonObject(config)["server"].toString();
         // EffectiveSecurity's private-server check reads this, so it must be the destination Xray dials.
         if (type == CustomXrayOutbound) return xrayOutboundAddress(QString2QJsonObject(config));
+        if (type == CustomXrayFullConfig) return xrayAgreed(xrayFullConfigPeer(config), "address").toString();
         return {};
     }
 
@@ -687,6 +712,32 @@ namespace Configs
             if (const auto peer = xrayOutboundPeer(QString2QJsonObject(config)); !peer.isEmpty()) {
                 return ::DisplayAddress(xrayAgreed(peer, "address").toString(), xrayAgreed(peer, "port").toInt());
             }
+        }
+        if (type == CustomXrayFullConfig) {
+            if (const auto peer = xrayFullConfigPeer(config); !peer.isEmpty()) {
+                return ::DisplayAddress(xrayAgreed(peer, "address").toString(), xrayAgreed(peer, "port").toInt());
+            }
+        }
+        return {};
+    }
+
+    QString Custom::GetPort()
+    {
+        if (type == CustomOutbound) return QString::number(QString2QJsonObject(config)["server_port"].toInt());
+        if (type == CustomXrayOutbound) {
+            return QString::number(xrayAgreed(xrayOutboundPeer(QString2QJsonObject(config)), "port").toInt());
+        }
+        if (type == CustomXrayFullConfig) return QString::number(xrayAgreed(xrayFullConfigPeer(config), "port").toInt());
+        return QString::number(server_port);
+    }
+
+    QString Custom::GetSni()
+    {
+        if (type == CustomOutbound) return QString2QJsonObject(config)["tls"].toObject()["server_name"].toString();
+        if (type == CustomXrayOutbound) return xrayStreamSni(xrayStream(QString2QJsonObject(config)));
+        if (type == CustomXrayFullConfig) {
+            const auto root = QString2QJsonObject(config);
+            return xrayStreamSni(xrayStream(firstXrayEgress(xrayAgreed(root, "outbounds").toArray())));
         }
         return {};
     }

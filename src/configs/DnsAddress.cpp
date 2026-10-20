@@ -2,7 +2,7 @@
 
 #include <QStringList>
 
-namespace Configs {
+namespace Fsnt {
     namespace {
         const QStringList kSchemes = {"udp", "tcp", "tls", "quic", "https", "h3"};
 
@@ -175,4 +175,4 @@ namespace Configs {
         }
         return FormatDnsAddress(copy);
     }
-} // namespace Configs
+} // namespace Fsnt

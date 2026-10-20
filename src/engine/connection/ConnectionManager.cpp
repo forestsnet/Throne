@@ -105,6 +105,9 @@ namespace Engine {
         StartRequest resolved = request;
         resolved.profileId = ent->id;
 
+        // До всего остального: если прямой DNS молчит, поднимать туннель нельзя.
+        if (!resolved.dnsChecked && deferStartForDns(resolved)) return;
+
         auto *killSwitch = Sys::KillSwitch::instance();
         if (killSwitch->state() == Sys::KillSwitch::State::Arming) {
             // Only the latest request survives, so repeated clicks while arming start one profile.

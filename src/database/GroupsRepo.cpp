@@ -42,6 +42,7 @@ namespace Configs {
                 endpoint_json TEXT NOT NULL DEFAULT '{}',
                 sort_method INTEGER NOT NULL DEFAULT 0,
                 sort_descending INTEGER NOT NULL DEFAULT 0,
+                provider_policy_json TEXT NOT NULL DEFAULT '',
                 created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
                 updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
             )
@@ -59,6 +60,8 @@ namespace Configs {
             db.exec("ALTER TABLE groups ADD COLUMN sort_method INTEGER NOT NULL DEFAULT 0");
         if (!groupsColumnExists("sort_descending"))
             db.exec("ALTER TABLE groups ADD COLUMN sort_descending INTEGER NOT NULL DEFAULT 0");
+        if (!groupsColumnExists("provider_policy_json"))
+            db.exec("ALTER TABLE groups ADD COLUMN provider_policy_json TEXT NOT NULL DEFAULT ''");
 
         db.exec(R"(
             CREATE TABLE IF NOT EXISTS groups_order (
@@ -135,6 +138,7 @@ namespace Configs {
             group->sort.descending = json["sort_descending"].toBool();
         }
         group->test_items_to_show = static_cast<testShowItems>(json["test_items_to_show"].toInt(0));
+        group->provider_policy_json = json["provider_policy_json"].toString();
         
         return group;
     }
@@ -157,8 +161,9 @@ namespace Configs {
             (id, archive, skip_auto_update, auto_clear_unavailable, name, url, info, sub_last_update,
              front_proxy_id, landing_proxy_id,
              column_width_json, profiles_json, scroll_last_profile, test_sort_by, traffic_sort_by, test_items_to_show,
-             type_sort_by, sub_options_json, sub_metadata_json, endpoint_json, sort_method, sort_descending)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             type_sort_by, sub_options_json, sub_metadata_json, endpoint_json, sort_method, sort_descending,
+             provider_policy_json)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
                 archive = excluded.archive, skip_auto_update = excluded.skip_auto_update,
                 auto_clear_unavailable = excluded.auto_clear_unavailable, name = excluded.name,
@@ -170,6 +175,7 @@ namespace Configs {
                 type_sort_by = excluded.type_sort_by, sub_options_json = excluded.sub_options_json,
                 sub_metadata_json = excluded.sub_metadata_json, endpoint_json = excluded.endpoint_json,
                 sort_method = excluded.sort_method, sort_descending = excluded.sort_descending,
+                provider_policy_json = excluded.provider_policy_json,
                 updated_at = strftime('%s', 'now')
         )",
             id,
@@ -193,7 +199,8 @@ namespace Configs {
             subMetadataJson.toStdString(),
             endpointJson.toStdString(),
             static_cast<int>(group->sort.method),
-            group->sort.descending ? 1 : 0
+            group->sort.descending ? 1 : 0,
+            group->provider_policy_json.toStdString()
         );
     }
 
@@ -202,7 +209,8 @@ namespace Configs {
             SELECT id, archive, skip_auto_update, auto_clear_unavailable, name, url, info, sub_last_update,
                    front_proxy_id, landing_proxy_id,
                    column_width_json, profiles_json, scroll_last_profile, test_sort_by, traffic_sort_by, test_items_to_show,
-                   type_sort_by, sub_options_json, sub_metadata_json, endpoint_json, sort_method, sort_descending
+                   type_sort_by, sub_options_json, sub_metadata_json, endpoint_json, sort_method, sort_descending,
+                   provider_policy_json
             FROM groups WHERE id = ?
         )", id);
         if (!query || !query->executeStep()) {
@@ -256,6 +264,7 @@ namespace Configs {
         }
         json["sort_method"] = query->getColumn(20).getInt();
         json["sort_descending"] = query->getColumn(21).getInt() != 0;
+        json["provider_policy_json"] = QString::fromStdString(query->getColumn(22).getText());
 
         auto group = groupFromJson(json);
         // Refreshes could map several identical servers onto one id, leaving it in the persisted list once per server (#1775).

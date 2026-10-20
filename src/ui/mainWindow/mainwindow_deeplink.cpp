@@ -10,6 +10,7 @@
 #include <QMessageBox>
 #include <QStringConverter>
 #include <QUrl>
+#include <QUrlQuery>
 
 #include "3rdparty/QrDecoder.h"
 #include "include/api/remote/Server.hpp"
@@ -27,6 +28,7 @@
 #include "include/sys/AutoRun.hpp"
 #include "include/sys/KillSwitch.hpp"
 #include "include/ui/mainWindow/MainWindowInternal.h"
+#include "include/ui/fsnt/FsntControls.h"
 #include "include/ui/setting/Icon.hpp"
 #include "include/ui/utils/ProfilesTableModel.h"
 
@@ -138,6 +140,48 @@ void MainWindow::handle_deeplink_impl(const QString &url) {
         return;
     }
 
+    // Управление туннелем ссылкой: throne://connect, throne://disconnect,
+    // throne://toggle. Окно намеренно не поднимаем — смысл этих ссылок в том,
+    // чтобы их вешали на горячую клавишу или ярлык, и выскакивающее окно там
+    // только мешает. О результате говорит трей.
+    const bool wantConnect = cmd.compare("connect", Qt::CaseInsensitive) == 0;
+    const bool wantDisconnect = cmd.compare("disconnect", Qt::CaseInsensitive) == 0;
+    const bool wantToggle = cmd.compare("toggle", Qt::CaseInsensitive) == 0;
+    if (wantConnect || wantDisconnect || wantToggle) {
+        const bool running = Configs::dataManager->settingsRepo->started_id >= 0;
+        if (Fsnt_RequestConnection) {
+            if (running && (wantDisconnect || wantToggle)) Fsnt_RequestConnection(false);
+            else if (!running && (wantConnect || wantToggle)) Fsnt_RequestConnection(true);
+            return;
+        }
+        if (running && (wantDisconnect || wantToggle)) {
+            profile_stop(false, false, true);
+        } else if (!running && (wantConnect || wantToggle)) {
+            // Профиль берём тот же, что и кнопка подключения: последний
+            // запущенный, а если его нет — выбранный в списке.
+            int id = Configs::dataManager->settingsRepo->started_id;
+            if (id < 0) id = Configs::dataManager->settingsRepo->remember_id;
+            if (id < 0) {
+                MW_show_log(tr("Deeplink %1: no profile to start").arg(cmd));
+                return;
+            }
+            profile_start(id);
+        }
+        return;
+    }
+
+    // Форма форка: throne://subscribe?url=<percent-encoded>. Ссылки такого вида
+    // уже разошлись у пользователей, поэтому поддерживаем наравне с addsub.
+    if (cmd.compare("subscribe", Qt::CaseInsensitive) == 0) {
+        const QString subUrl = QUrlQuery(u).queryItemValue("url", QUrl::FullyDecoded);
+        if (subUrl.isEmpty()) {
+            MessageBoxWarning(tr("Add subscription"), tr("The link did not contain a subscription URL."));
+            return;
+        }
+        handle_addsub(subUrl, {});
+        return;
+    }
+
     QString base64 = u.path();
     if (base64.startsWith('/')) {
         base64 = base64.mid(1);
@@ -174,7 +218,7 @@ void MainWindow::handle_import_route(const QString &url) {
     }
     if (profile->name.trimmed().isEmpty()) profile->name = tr("Imported profile");
 
-    ActivateWindow(this);
+    ActivateUiWindow();
 
     auto prompt = tr("Add this routing profile?\n\nName: %1").arg(profile->name);
     if (!warnings.isEmpty()) prompt += "\n\n" + tr("Note:") + "\n" + warnings.trimmed();
@@ -196,7 +240,7 @@ void MainWindow::handle_add_remote_routes(const QString &url) {
         return;
     }
 
-    ActivateWindow(this);
+    ActivateUiWindow();
 
     QString prompt = tr("Add these remote routing profiles?") + "\n";
     for (int i = 0; i < profiles.size(); ++i) {
@@ -228,20 +272,65 @@ void MainWindow::handle_add_remote_routes(const QString &url) {
     });
 }
 
+// Автосозданная пустая группа "Default" только мешает после добавления подписки.
+// Имя переводимое, поэтому сверяем и с оригиналом, и с переводом, а решает всё же
+// не имя: удаляем лишь группу без URL и без профилей, чтобы не задеть созданную вручную.
+void MainWindow::remove_leftover_default_group(int keepGid) {
+    const QString translated = QObject::tr("Default");
+    for (int gid : Configs::dataManager->groupsRepo->GetAllGroupIds()) {
+        if (gid == keepGid) continue;
+        const auto candidate = Configs::dataManager->groupsRepo->GetGroup(gid);
+        if (!candidate) continue;
+        if (!candidate->url.isEmpty()) continue;
+        if (!candidate->Profiles().isEmpty()) continue;
+        if (candidate->name != "Default" && candidate->name != translated) continue;
+
+        MW_show_log(tr("Removing empty default group: %1").arg(candidate->name));
+        Configs::dataManager->groupsRepo->DeleteGroup(gid);
+        break;
+    }
+}
+
 void MainWindow::handle_addsub(const QString &url, const QString &name) {
     if (url.isEmpty()) {
         MessageBoxWarning(tr("Add subscription"), tr("The link did not contain a subscription URL."));
         return;
     }
 
-    ActivateWindow(this);
+    ActivateUiWindow();
 
     const QString groupName = FIRST_OR_SECOND(name, QUrl(url).host());
     const auto prompt = tr("Add this subscription?\n\nName: %1\nURL: %2")
                             .arg(groupName, url);
     bool autoUpdate = true;
-    if (MessageBoxCheck(tr("Add subscription"), prompt, tr("Auto update"), autoUpdate) != QMessageBox::Ok) {
+    // В простом режиме спрашиваем своим окном: QMessageBox рисуется стилем
+    // системы и рядом с окном клиента выглядит чужим. В инженерном режиме
+    // оставляем штатный диалог — там всё остальное тоже платформенное.
+    if (auto *facade = GetFacadeWindow(); facade != nullptr) {
+        if (!Fsnt::ConfirmSubscription(facade, groupName, url, autoUpdate)) return;
+    } else if (MessageBoxCheck(tr("Add subscription"), prompt, tr("Auto update"), autoUpdate) != QMessageBox::Ok) {
         return;
+    }
+
+    // Ту же самую ссылку обновляем, а не заводим дублем. Сравниваем целиком:
+    // по одному домену жили две разные подписки одного провайдера — вторая
+    // молча затирала первую, и человек оставался без её серверов.
+    const QString sameAs = QUrl(url).toString(QUrl::StripTrailingSlash);
+    if (!sameAs.isEmpty()) {
+        for (int gid : Configs::dataManager->groupsRepo->GetAllGroupIds()) {
+            auto existing = Configs::dataManager->groupsRepo->GetGroup(gid);
+            if (!existing || existing->url.isEmpty()) continue;
+            if (QUrl(existing->url).toString(QUrl::StripTrailingSlash) != sameAs) continue;
+
+            MW_show_log(tr("Updating existing subscription: %1").arg(existing->name));
+            existing->url = url;
+            existing->skip_auto_update = !autoUpdate;
+            Configs::dataManager->groupsRepo->Save(existing);
+            refresh_groups();
+            show_group(existing->id);
+            Subscription::updater()->RefreshGroup(existing->id);
+            return;
+        }
     }
 
     auto group = Configs::GroupsRepo::NewGroup();
@@ -249,6 +338,9 @@ void MainWindow::handle_addsub(const QString &url, const QString &name) {
     group->url = url;
     group->skip_auto_update = !autoUpdate;
     Configs::dataManager->groupsRepo->AddGroup(group);
+    // Пустая группа «Default», оставшаяся от первого запуска, человеку в
+    // списке подписок не нужна.
+    remove_leftover_default_group(group->id);
     Engine::EngineEvents::SubscriptionNewGroup(group->id);
     Subscription::updater()->RefreshGroup(group->id, nullptr, Subscription::GroupUpdater::Surface::Report);
 }
@@ -331,7 +423,7 @@ void MainWindow::dialog_message_impl(MwMessage cmd, const QStringList &args) {
         exitController()->requestExit(ExitReason::Restart, false);
         break;
     case MwMessage::Raise:
-        ActivateWindow(this);
+        ActivateUiWindow();
         break;
     case MwMessage::UpdateShortcuts:
         loadShortcuts();

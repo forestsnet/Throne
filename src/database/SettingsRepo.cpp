@@ -49,6 +49,14 @@ namespace Configs {
             {"net_insecure",                  &net_insecure},
             {"sub_send_hwid",                 &sub_send_hwid},
             {"start_minimal",                 &start_minimal},
+            {"onboarding_done",               &onboarding_done},
+            {"hint_switch_subs",              &hint_switch_subs},
+            {"notify_update_system",          &notify_update_system},
+            {"resume_after_update",           &resume_after_update},
+            {"auto_update",                   &auto_update},
+            {"notify_subscription",           &notify_subscription},
+            {"notify_connection",             &notify_connection},
+            {"conflict_warning_disabled",     &conflict_warning_disabled},
             {"enable_ntp",                    &enable_ntp},
             {"windows_set_admin",             &windows_set_admin},
             {"disable_win_admin",             &disable_run_admin},
@@ -66,6 +74,7 @@ namespace Configs {
             {"follow_status_in_taskbar",           &follow_status_in_taskbar},
             {"xray_mux_default_on",           &xray_mux_default_on},
             {"use_dns_object",                &use_dns_object},
+            {"direct_dns_auto",               &direct_dns_auto},
             {"skip_delete_confirmation",      &skip_delete_confirmation},
             {"show_config_security",          &show_config_security},
             {"log_enable_include",            &log_enable_include},
@@ -104,6 +113,8 @@ namespace Configs {
             {"test_concurrent",        &test_concurrent},
             {"remember_id",            &remember_id},
             {"language",               &language},
+            {"ui_mode",                &ui_mode},
+            {"simple_transport",       &simple_transport},
             {"font_size",              &font_size},
             {"max_log_line",           &max_log_line},
             {"log_font_size",          &log_font_size},
@@ -124,6 +135,7 @@ namespace Configs {
             {"speed_test_mode",        &speed_test_mode},
             {"speed_test_timeout_ms",  &speed_test_timeout_ms},
             {"url_test_timeout_ms",    &url_test_timeout_ms},
+            {"ping_kind",              &ping_kind},
             {"xray_mux_concurrency",   &xray_mux_concurrency},
             {"current_route_id",       &current_route_id},
             {"ruleset_mirror",         &ruleset_mirror},
@@ -139,6 +151,8 @@ namespace Configs {
             {"test_url",                   &test_latency_url},
             {"direct_test_url",            &direct_test_url},
             {"exit_lookup_provider",       &exit_lookup_provider},
+            {"update_seen_version",        &update_seen_version},
+            {"last_run_version",           &last_run_version},
             {"inbound_address",            &inbound_address},
             {"log_level",                  &log_level},
             {"log_file_level",             &log_file_level},
@@ -153,6 +167,8 @@ namespace Configs {
             {"h2_stream_receive_window",   &h2_stream_receive_window},
             {"h2_connection_receive_window", &h2_connection_receive_window},
             {"theme",                      &theme},
+            {"favorite_profiles",          &favorite_profiles},
+            {"simple_selected_server",     &simple_selected_server},
             {"custom_inbound",             &custom_inbound},
             {"custom_route",               &custom_route_global},
             {"font",                       &font},
@@ -193,6 +209,7 @@ namespace Configs {
             {"xray_geosite_url",           &xray_geosite_url},
             {"remote_dns",                 &remote_dns},
             {"direct_dns",                 &direct_dns},
+            {"direct_dns_effective",          &direct_dns_effective},
             {"dns_object",                 &dns_object},
             {"dns_optimistic_timeout",     &dns_optimistic_timeout},
             {"dns_query_timeout",          &dns_query_timeout},
@@ -215,6 +232,7 @@ namespace Configs {
         };
 
         stringListMap = {
+            {"dns_custom_servers",       &dns_custom_servers},
             {"dns_predefined_rules",     &dns_predefined_rules},
             {"remote_dns_history",       &remote_dns_history},
             {"direct_dns_history",       &direct_dns_history},
@@ -270,6 +288,13 @@ namespace Configs {
                 xray_vless_preference = static_cast<Xray::XrayVlessPreference>(ok ? v : 0);
                 continue;
             }
+            // Прямой DNS по умолчанию был DoH к Quad9, а его начали резать.
+            // Переносим только тех, у кого он так и остался нетронутым: свой
+            // выбор человека не трогаем.
+            if (key == "direct_dns" && str == "https://9.9.9.9/dns-query") {
+                direct_dns = "77.88.8.8";
+                continue;
+            }
             // Pre-1.14 DNS rule strategies: only the v4-only case survives as a filter, the rest were no-ops.
             if (key == "direct_dns_strategy") {
                 direct_dns_disable_ipv6 = str == "ipv4_only";
@@ -281,6 +306,10 @@ namespace Configs {
             }
             if (key == "route_auto_update_last") {
                 route_auto_update_last = str.toLongLong();
+                continue;
+            }
+            if (key == "update_notified_at") {
+                update_notified_at = str.toLongLong();
                 continue;
             }
             if (auto boolVal = boolMap.find(key); boolVal != boolMap.end()) {
@@ -357,6 +386,8 @@ namespace Configs {
         // qint64 timestamp: out of range for the int map, so persisted here.
         addPair(QStringLiteral("route_auto_update_last"),
             std::to_string(route_auto_update_last));
+        addPair(QStringLiteral("update_notified_at"),
+            std::to_string(update_notified_at));
 
         db.execBatchSettingsReplace(keyValues);
     }
@@ -376,9 +407,9 @@ namespace Configs {
         if (user_agent.isEmpty() || isDefault) {
             const QStringView version = SubStrBefore(QStringLiteral(NKR_VERSION), u"-");
             if (version.contains(u'.')) {
-                return QStringLiteral("Throne/") + version.toString();
+                return QStringLiteral("Throne/") + version.toString() + QStringLiteral(" (FSNT Fork)");
             }
-            return QStringLiteral("Throne/1.0.0");
+            return QStringLiteral("Throne/1.0.0 (FSNT Fork)");
         }
         return user_agent;
     }

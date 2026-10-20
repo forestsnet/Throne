@@ -1,4 +1,5 @@
 #include "include/configs/sub/GroupUpdater.hpp"
+#include "include/configs/sub/ProviderPolicy.hpp"
 
 #include "include/configs/generate.h"
 #include "include/configs/sub/ImportReport.hpp"
@@ -609,16 +610,54 @@ namespace Subscription {
 
     void GroupUpdater::SubscribeUrl(const QString &url, const Finish &finish) {
         const auto content = url.trimmed();
-        enqueue({-1, false, [=, this] {
-            auto group = Configs::GroupsRepo::NewGroup();
-            group->name = QUrl(content).host();
-            group->url = content;
-            // Stored before the download: a failed one is fixed through the group's own TLS, HTTP and User Agent settings.
-            Configs::dataManager->groupsRepo->AddGroup(group);
-            Engine::EngineEvents::SubscriptionNewGroup(group->id);
-            refresh(group->id, Surface::Report);
-            emit asyncUpdateCallback(group->id);
-        }, finish});
+        enqueue({-1, false, [=, this] { subscribeToUrl(content, nullptr); }, finish});
+    }
+
+    void GroupUpdater::SubscribeUrlWithOutcome(const QString &url, const OutcomeFinish &done) {
+        const auto content = url.trimmed();
+        enqueue({-1, false, [=, this] { subscribeToUrl(content, done); }});
+    }
+
+    // Общий вход. done == nullptr: ведём себя как upstream — группа остаётся на
+    // месте, отчёт показывается сам, и человек правит её настройки.
+    void GroupUpdater::subscribeToUrl(const QString &content, const OutcomeFinish &done) {
+        auto &groupsRepo = Configs::dataManager->groupsRepo;
+        const Surface surface = done == nullptr ? Surface::Report : Surface::Log;
+        const auto sameLink = [](const QString &a, const QString &b) {
+            return QUrl(a.trimmed()).toString(QUrl::StripTrailingSlash) ==
+                   QUrl(b.trimmed()).toString(QUrl::StripTrailingSlash);
+        };
+
+        // Та же ссылка уже добавлена — обновляем её, а не заводим соседнюю.
+        // Человек, у которого подписка не открывалась, нажимал «Добавить»
+        // снова и снова и получил полтора десятка одинаковых подписок.
+        for (const int gid : groupsRepo->GetGroupsTabOrder()) {
+            const auto existing = groupsRepo->GetGroup(gid);
+            if (existing == nullptr || existing->url.isEmpty()) continue;
+            if (!sameLink(existing->url, content)) continue;
+            const auto outcome = refresh(existing->id, surface);
+            emit asyncUpdateCallback(existing->id);
+            if (done != nullptr) done(outcome);
+            return;
+        }
+
+        auto group = Configs::GroupsRepo::NewGroup();
+        group->name = QUrl(content).host();
+        group->url = content;
+        // Stored before the download: a failed one is fixed through the group's own TLS, HTTP and User Agent settings.
+        groupsRepo->AddGroup(group);
+        Engine::EngineEvents::SubscriptionNewGroup(group->id);
+        const auto outcome = refresh(group->id, surface);
+        emit asyncUpdateCallback(group->id);
+        if (done == nullptr) return;
+
+        // Подписка не открылась — на месте новой группы остаётся пустая строка
+        // в списке. Убираем её: она ничего не даёт, а мешает.
+        if (!outcome.ok()) {
+            groupsRepo->DeleteGroup(group->id);
+            Engine::EngineEvents::GroupsChanged();
+        }
+        done(outcome);
     }
 
     void GroupUpdater::ImportUrl(const QString &url, const Finish &finish) {
@@ -784,7 +823,7 @@ namespace Subscription {
     }
 
     bool GroupUpdater::fetch(const QString &url, const QString &name, const RequestIdentity &identity, QByteArray &body,
-                             Configs::SubUserInfo &subInfo, QString *error) {
+                             Configs::SubUserInfo &subInfo, QString *error, QString *policyJson) {
         MW_show_log(">>>>>>>> " + QObject::tr("Requesting subscription: %1").arg(name));
         HttpGetOptions options;
         options.maxBytes = kMaxSubscriptionBytes;
@@ -800,6 +839,11 @@ namespace Subscription {
             return false;
         }
         body = std::move(resp.data);
+
+        if (policyJson != nullptr) {
+            const auto policy = Subscription::ParseProviderPolicy(resp.header);
+            *policyJson = policy.isEmpty() ? QString() : Subscription::SerializeProviderPolicy(policy);
+        }
 
         const QString userInfoHeader = NetworkRequestHelper::GetHeader(resp.header, "Subscription-UserInfo");
         if (!userInfoHeader.isEmpty()) subInfo = Configs::ParseSubUserInfo(userInfoHeader);
@@ -948,7 +992,8 @@ namespace Subscription {
         QByteArray body;
         Configs::SubUserInfo subInfo;
         QString error;
-        if (!fetch(url, group->name, ResolveIdentity(group.get()), body, subInfo, &error)) {
+        QString policyJson;
+        if (!fetch(url, group->name, ResolveIdentity(group.get()), body, subInfo, &error, &policyJson)) {
             auto outcome = groupUpdaterFailure(gid, UpdateOutcome::Failure::Fetch, groupUpdaterFetchError(error));
             outcome.report.addFatal(fetchFailure(error));
             if (surface == Surface::Report) {
@@ -959,12 +1004,13 @@ namespace Subscription {
         }
         UpdateOutcome outcome;
         outcome.gid = gid;
-        applyRefresh(group, url, std::move(body), subInfo, surface, outcome);
+        applyRefresh(group, url, std::move(body), subInfo, policyJson, surface, outcome);
         return outcome;
     }
 
     void GroupUpdater::applyRefresh(const std::shared_ptr<Configs::Group> &group, const QString &url, QByteArray body,
-                                    const Configs::SubUserInfo &subInfo, Surface surface, UpdateOutcome &result) {
+                                    const Configs::SubUserInfo &subInfo, const QString &policyJson, Surface surface,
+                                    UpdateOutcome &result) {
         auto &settings = Configs::dataManager->settingsRepo;
         auto &profilesRepo = Configs::dataManager->profilesRepo;
         auto &groupsRepo = Configs::dataManager->groupsRepo;
@@ -1002,6 +1048,8 @@ namespace Subscription {
 
         group->sub_info = subInfo;
         group->info.clear();
+        // Пустая политика не затирает сохранённую: панель могла временно не прислать заголовки.
+        if (!policyJson.isEmpty()) group->provider_policy_json = policyJson;
         groupsRepo->Save(group);
 
         // Auto selectors are local state, not servers the remote sent: keep them out of the diff.

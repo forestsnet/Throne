@@ -51,9 +51,10 @@ protected:
     QVBoxLayout *sidePanelLayout() const { return m_sideLayout; }
 
 private:
-    void chainCoreMessages();
-    void chainLogLines();
-    void onCoreMessage(MwMessage cmd, const QStringList &args);
+    // Подписка на события движка: состояние подключения, обновления подписок
+    // и строки журнала. Раньше это делалось подменой MW_dialog_message и
+    // MW_show_log; теперь у движка есть свои сигналы, и подменять ничего не надо.
+    void observeEngine();
     void refreshConnectionState();
     void refreshServerList();
     QPixmap renderLogo(int size);

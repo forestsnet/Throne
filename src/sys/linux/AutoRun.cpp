@@ -7,6 +7,7 @@
 
 
 #include <QStandardPaths>
+#include <QFileInfo>
 #include <QProcessEnvironment>
 #include <QTextStream>
 
@@ -90,6 +91,25 @@ bool AutoRun_IsEnabled() {
     return QFile::exists(desktopFileLocation);
 }
 
-void AutoRun_FixTaskIfNeeded() {}
+void AutoRun_FixTaskIfNeeded() {
+    // Файл автозапуска от удалённой или перемещённой копии остаётся и при
+    // каждом входе пытается запустить то, чего нет.
+    const QString path = getUserAutostartDir_private() + QCoreApplication::applicationName() + QLatin1String(".desktop");
+    QFile file(path);
+    if (!file.exists() || !file.open(QIODevice::ReadOnly)) return;
+    const auto content = QString::fromUtf8(file.readAll());
+    file.close();
+
+    for (const auto &line : content.split('\n')) {
+        if (!line.startsWith(QLatin1String("Exec="))) continue;
+        // Exec=<путь> [-tray ...]; путь может быть в кавычках.
+        auto exec = line.mid(5).trimmed();
+        if (exec.startsWith('"')) exec = exec.mid(1).section('"', 0, 0);
+        else exec = exec.section(' ', 0, 0);
+        if (exec.isEmpty() || QFileInfo::exists(exec)) return;
+        QFile::remove(path);
+        return;
+    }
+}
 
 void AutoRun_MigrateIfNeeded() {}

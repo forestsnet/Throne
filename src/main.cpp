@@ -41,6 +41,35 @@
 #include "include/sys/windows/WinVersion.h"
 #include <qfontdatabase.h>
 #include <windows.h>
+#include <aclapi.h>
+#include <sddl.h>
+
+namespace {
+    // Канал одного экземпляра принадлежит той копии, что запустилась первой.
+    // Если она поднята с правами администратора, Windows не даёт процессу с
+    // обычными правами в неё писать — и ссылка throne:// из браузера до неё не
+    // доходит, вместо этого вылезает UAC. Помечаем канал средним уровнем
+    // целостности: обычный процесс того же пользователя достучится, а песочница
+    // браузера с низким уровнем — нет.
+    void winAllowPipeFromNormalRights(const QString &serverName) {
+        const QString path = QStringLiteral("\\\\.\\pipe\\") + serverName;
+        PSECURITY_DESCRIPTOR descriptor = nullptr;
+        if (!ConvertStringSecurityDescriptorToSecurityDescriptorW(L"S:(ML;;NW;;;ME)", SDDL_REVISION_1,
+                                                                  &descriptor, nullptr)) {
+            return;
+        }
+        PACL sacl = nullptr;
+        BOOL present = FALSE;
+        BOOL defaulted = FALSE;
+        if (GetSecurityDescriptorSacl(descriptor, &present, &sacl, &defaulted) && present) {
+            auto *raw = const_cast<wchar_t *>(reinterpret_cast<const wchar_t *>(path.utf16()));
+            const DWORD rc = SetNamedSecurityInfoW(raw, SE_FILE_OBJECT, LABEL_SECURITY_INFORMATION,
+                                                   nullptr, nullptr, nullptr, sacl);
+            if (rc != ERROR_SUCCESS) qWarning() << "could not relabel the local server pipe:" << rc;
+        }
+        LocalFree(descriptor);
+    }
+}
 #endif
 #ifdef Q_OS_LINUX
 #include <include/sys/linux/coreDump.h>
@@ -163,6 +192,9 @@ int main(int argc, char* argv[]) {
         QMessageBox::critical(nullptr, "Throne", error);
         return 1;
     }
+#ifdef Q_OS_WIN
+    winAllowPipeFromNormalRights(serverName);
+#endif
     // Not before this point: until the data dir is ours there is nothing to tear down, and the default action ends the waits above.
 #ifdef Q_OS_UNIX
     Engine::Bootstrap::InstallTerminationHandlers(signal_handler);
@@ -185,6 +217,25 @@ int main(int argc, char* argv[]) {
     if (Configs::dataManager->settingsRepo->start_minimal) Configs::dataManager->settingsRepo->flag_tray = true;
 
     GuiStartup::LoadTranslator();
+
+#ifdef Q_OS_WIN
+    // Повышение прав идёт только здесь, ниже проверки одного экземпляра. Пока
+    // оно стояло выше, клик по ссылке throne:// в браузере поднимал UAC, и
+    // ссылка терялась: перезапуск шёл без аргументов. Теперь запущенной копии
+    // ссылка уходит по каналу и без всякого UAC, а поднимаемся мы только когда
+    // копии нет — и уносим с собой то, с чем нас открыли.
+    if (Configs::dataManager->settingsRepo->windows_set_admin && !Configs::IsAdmin() && !Configs::dataManager->settingsRepo->disable_run_admin)
+    {
+        Configs::dataManager->settingsRepo->windows_set_admin = false; // so that if permission denied, we will run as user on the next run
+        Configs::dataManager->settingsRepo->Save();
+        QStringList elevatedArgs;
+        if (!launchDeeplink.isEmpty()) elevatedArgs << launchDeeplink;
+        elevatedArgs << launchFiles;
+        WinCommander::runProcessElevated(QApplication::applicationFilePath(), elevatedArgs, "", 1, false);
+        QApplication::quit();
+        return 0;
+    }
+#endif
 
     // Must follow the single-instance check: opening the log earlier truncates the running instance's file and fakes a crash marker.
     Engine::Bootstrap::StartLogging(dataDir);

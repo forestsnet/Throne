@@ -136,6 +136,7 @@ namespace Configs
         QString url = "";
         QString info = "";
         SubUserInfo sub_info;
+        QString provider_policy_json = "";   // ProviderPolicy, сериализованная; пусто = политики нет
         qint64 sub_last_update = 0;
         SubscriptionOptions sub_options;
         int front_proxy_id = -1;

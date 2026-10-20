@@ -169,11 +169,11 @@ void AddSubscriptionDialog::submit() {
     m_guard->start();
 
     // Колбэк приходит из рабочего потока обновлятора — возвращаемся в UI.
-    using Result = Subscription::GroupUpdater::SubscribeResult;
-    Subscription::updater()->SubscribeUrl(text, [this](Result result) {
-        QMetaObject::invokeMethod(this, [this, result] {
+    Subscription::updater()->SubscribeUrlWithOutcome(text, [this](const Subscription::UpdateOutcome &outcome) {
+        const bool ok = outcome.ok();
+        QMetaObject::invokeMethod(this, [this, ok] {
             m_guard->stop();
-            if (result == Result::Failed) {
+            if (!ok) {
                 fail(subscriptionFailureHint());
                 return;
             }

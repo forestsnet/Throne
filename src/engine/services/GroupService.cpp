@@ -1,5 +1,7 @@
 #include "include/engine/services/GroupService.h"
 
+#include "include/configs/sub/ProviderPolicy.hpp"
+
 #include <memory>
 
 #include <QMetaObject>
@@ -123,6 +125,12 @@ namespace Engine::GroupService {
         }
         if (Subscription::updater()->IsBusy(groupId)) {
             return ServiceError{409, QStringLiteral("busy"), QStringLiteral("The group's subscription is updating")};
+        }
+        // Подписка, закреплённая поставщиком: удалить её, пока работает её же
+        // профиль, нельзя — иначе человек остаётся без доступа и без списка.
+        if (Subscription::PolicyBlocksDeletion(groupId)) {
+            return ServiceError{409, QStringLiteral("pinned"),
+                                QStringLiteral("The subscription is pinned by the provider")};
         }
         bool editing = IsBeingEdited(EditTarget::Group, groupId);
         if (!editing && IsBeingEdited(EditTarget::Profile)) {

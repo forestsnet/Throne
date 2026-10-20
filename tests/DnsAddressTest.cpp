@@ -2,10 +2,10 @@
 
 #include "include/configs/DnsAddress.hpp"
 
-using Configs::DnsAddress;
-using Configs::DnsAddressWithType;
-using Configs::FormatDnsAddress;
-using Configs::ParseDnsAddress;
+using Fsnt::DnsAddress;
+using Fsnt::DnsAddressWithType;
+using Fsnt::FormatDnsAddress;
+using Fsnt::ParseDnsAddress;
 
 class DnsAddressTest : public QObject {
     Q_OBJECT

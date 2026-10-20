@@ -87,6 +87,15 @@ void SetDialogMessageSink(std::function<void(MwMessage, const QStringList &)> si
 // Set by MainWindow; marshals to the UI thread.
 inline std::function<void(QString)> MW_handle_deeplink;
 
+// Проба одного профиля запросом через туннель: так умеет только ядро, поэтому
+// вызов ставит MainWindow. method — "GET" или "HEAD".
+inline std::function<void(int /*profileId*/, QString /*method*/)> MW_url_test_one;
+// Подключение по ссылке throne://connect. Простое окно знает и выбранный
+// сервер, и режим транспорта, поэтому диплинк не повторяет этот выбор, а просит
+// окно сделать ровно то, что делает кнопка. В расширенном режиме колбэк пуст —
+// работает запасной путь по started_id/remember_id.
+inline std::function<void(bool /*connect*/)> Fsnt_RequestConnection;
+
 // Set by MainWindow; marshals to the UI thread.
 inline std::function<void(QStringList)> MW_import_files;
 
@@ -235,6 +244,23 @@ int HeadlessDialogCount();
 void LogHeadlessDialog(const QString &kind, const QString &title, const QString &text, const QString &defaultValue);
 
 QWidget *GetMessageBoxParent();
+
+// Окно, которое пользователь реально видит. В простом режиме MainWindow создан,
+// но спрятан: он работает движком, а лицом служит FsntWindow. Поднимать на экран
+// и назначать родителем диалогов надо именно лицо, иначе показывается
+// инженерный интерфейс, а модальные окна уходят за простое и остаются
+// незамеченными.
+void SetFacadeWindow(QWidget *w);
+
+// Простой режим рисует свои окна сообщений: штатный QMessageBox берёт стиль
+// системы и посреди клиента выглядит как окно чужой программы. Обработчик
+// ставит слой интерфейса, поэтому include/ui/ сюда не просачивается — а
+// проверка границы движка и интерфейса этого не допускает.
+using FacadeNoticeHandler = std::function<void(QWidget *parent, const QString &title, const QString &text)>;
+void SetFacadeNoticeHandler(FacadeNoticeHandler handler);
+QWidget *GetFacadeWindow();
+// Поднять видимое окно: лицо, если оно есть, иначе MainWindow.
+void ActivateUiWindow();
 
 int MessageBoxWarning(const QString &title, const QString &text);
 

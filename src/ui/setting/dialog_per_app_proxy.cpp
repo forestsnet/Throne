@@ -22,7 +22,6 @@
 #include "include/global/Utils.hpp"
 #include "include/ui/fsnt/FsntControls.h"
 #include "include/ui/fsnt/FsntTheme.hpp"
-#include "include/ui/mainwindow_interface.h"
 
 namespace {
     constexpr auto kAppPrefix = "processName:";

@@ -47,6 +47,9 @@ bool AutoRun_SetEnabled(bool enable, QString *error) {
 
     CFRelease(folderCFStr);
     CFRelease(urlRef);
+    // LSSharedFileListItemRemove об отказе не сообщает, поэтому снятие
+    // проверяем по итогу, а не по возвращённому значению.
+    if (ok) ok = AutoRun_IsEnabled() == enable;
     if (!ok && error) *error = "Could not update the login items";
     return ok;
 }

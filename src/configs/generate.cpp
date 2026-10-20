@@ -1,4 +1,8 @@
+#include "include/configs/DnsAddress.hpp"
+#include "include/global/Logger.hpp"
+#include "include/configs/XrayDnsStrip.hpp"
 #include "include/configs/generate.h"
+#include "include/configs/sub/ProviderPolicy.hpp"
 #include "include/api/RPC.h"
 #include "include/configs/AutoSelectorPlan.h"
 #include "include/configs/common/utils.h"
@@ -40,6 +44,8 @@ namespace {
 }
 
 namespace Configs {
+
+
     namespace {
 
         // ------------------------------------------------------------- tags
@@ -1117,7 +1123,13 @@ namespace Configs {
                 }
             }
 
-            auto directDnsObj = buildDnsObj(ctx, ctx.dns.direct_dns);
+            // Подбор мог выбрать не то, что записано в настройках: заданный сервер
+            // молчал, и ядру надо отдать тот, который отвечает, иначе имя нашего
+            // же сервера разрешать нечем. Своему DNS профиля маршрутизации не мешаем.
+            const bool autoDirectDns = !ctx.routeOwnsDns && settings.direct_dns_auto
+                                       && !settings.direct_dns_effective.isEmpty();
+            auto directDnsObj = buildDnsObj(ctx, autoDirectDns ? settings.direct_dns_effective
+                                                               : ctx.dns.direct_dns);
             directDnsObj["tag"] = tags::dnsDirect;
             directDnsObj["domain_resolver"] = tags::dnsLocal;
             servers.append(directDnsObj);
@@ -1676,6 +1688,15 @@ namespace Configs {
                 if (userXrayConfig.isEmpty()) {
                     ctx.error = "Custom Xray full config is not valid JSON";
                     return ingressTag;
+                }
+                // Панель может запретить брать DNS из конфига (dns-from-json-enable: false).
+                // Сравнение с false истинно только если заголовок реально прислан:
+                // отсутствие политики блок dns не трогает.
+                if (Subscription::ActiveProviderPolicy().dnsFromJson == false) {
+                    const auto stripped = StripXrayDns(userXrayConfig);
+                    MW_show_log(QString("[Policy] Provider disabled DNS from JSON: dropped dns "
+                                        "section, %1 dns outbound(s), %2 routing rule(s)")
+                                    .arg(stripped.outbounds).arg(stripped.rules));
                 }
                 // A pre-probed 0 means the caller's probe failed; re-probe rather than bake in a dead port.
                 int port = req.xrayFullConfigPort;
@@ -2278,6 +2299,30 @@ namespace Configs {
                                                   : routeChain->get_route_rules(false, routeDeps.outboundMap);
             if (ctx.l3Bridge) profileRules = withL3BridgeTwins(profileRules);
 
+            // Списки приложений от провайдера. Ставим их перед правилами
+            // пользователя: провайдеру нужно, чтобы торренты гарантированно шли
+            // мимо туннеля, иначе его блокируют вместе с клиентом.
+            QJsonArray providerAppRules;
+            if (!ctx.forTest) {
+                const auto &policy = Subscription::ActiveProviderPolicy();
+                const auto bypassApps = Subscription::ParseAppList(policy.perAppBypassList);
+                if (!bypassApps.isEmpty()) {
+                    providerAppRules.append(QJsonObject{
+                        {"action", "route"},
+                        {"process_name", QJsonArray::fromStringList(bypassApps)},
+                        {"outbound", tags::direct},
+                    });
+                }
+                const auto proxyApps = Subscription::ParseAppList(policy.perAppProxyList);
+                if (!proxyApps.isEmpty()) {
+                    providerAppRules.append(QJsonObject{
+                        {"action", "route"},
+                        {"process_name", QJsonArray::fromStringList(proxyApps)},
+                        {"outbound", tags::proxy},
+                    });
+                }
+            }
+
             QJsonObject extraCoreDirect;
             if (!ctx.result->extraCoreData->path.isEmpty())
             {
@@ -2365,6 +2410,7 @@ namespace Configs {
             appendIfSet(injected.resolve);
             appendIfSet(injected.dnsHijack);
             appendIfSet(injected.dnsInReject);
+            for (const auto& r : providerAppRules) routeRules.append(r);
             for (const auto& r : profileRules) routeRules.append(r);
             for (const auto& r : vpnAuxRules) routeRules.append(r);
             for (const auto& r : l3BridgeFinalRules) routeRules.append(r);

@@ -32,6 +32,7 @@
 #include <QFontInfo>
 #include <QTextBoundaryFinder>
 
+
 #ifdef Q_OS_WIN
 #include "include/sys/windows/guihelper.h"
 #endif
@@ -351,6 +352,27 @@ QString DisplayTime(long long time, int formatType) {
     return QLocale().toString(t, QLocale::FormatType(formatType));
 }
 
+// QPointer, а не сырой указатель: лицо может быть закрыто раньше, чем что-то
+// решит спросить у него родителя.
+static QPointer<QWidget> g_facadeWindow;
+
+void SetFacadeWindow(QWidget *w) { g_facadeWindow = w; }
+
+QWidget *GetFacadeWindow() { return g_facadeWindow.data(); }
+
+static FacadeNoticeHandler g_facadeNotice;
+
+void SetFacadeNoticeHandler(FacadeNoticeHandler handler) { g_facadeNotice = std::move(handler); }
+
+namespace {
+    // Показано ли сообщение средствами простого режима.
+    bool noticeShownByFacade(const QString &title, const QString &text) {
+        if (!g_facadeNotice || GetFacadeWindow() == nullptr) return false;
+        g_facadeNotice(GetMessageBoxParent(), title, text);
+        return true;
+    }
+} // namespace
+
 QWidget *GetMessageBoxParent() {
     if (!IsGuiApp()) {
         LogHeadlessDialog(QStringLiteral("GetMessageBoxParent"), {}, {}, QStringLiteral("nullptr"));
@@ -361,8 +383,22 @@ QWidget *GetMessageBoxParent() {
     while (qobject_cast<QMessageBox *>(parent) != nullptr) {
         parent = parent->parentWidget() != nullptr ? parent->parentWidget()->window() : nullptr;
     }
-    if (parent == nullptr && mainwindow != nullptr && mainwindow->isVisible()) return mainwindow;
-    return parent;
+    if (parent != nullptr) return parent;
+    // Простой режим: MainWindow спрятан, и без этой ветки родителя не было
+    // вовсе. Модальное окно вставало за простым, то переставало отвечать на
+    // клики, а вопрос оставался неотвеченным — и вызвавшая его операция
+    // молча отменялась.
+    if (!g_facadeWindow.isNull() && g_facadeWindow->isVisible()) return g_facadeWindow.data();
+    if (mainwindow != nullptr && mainwindow->isVisible()) return mainwindow;
+    return nullptr;
+}
+
+void ActivateUiWindow() {
+    if (!g_facadeWindow.isNull()) {
+        ActivateWindow(g_facadeWindow.data());
+        return;
+    }
+    if (mainwindow != nullptr) ActivateWindow(mainwindow);
 }
 
 int MessageBoxWarning(const QString &title, const QString &text) {
@@ -370,6 +406,7 @@ int MessageBoxWarning(const QString &title, const QString &text) {
         LogHeadlessDialog(QStringLiteral("MessageBoxWarning"), title, text, QStringLiteral("Ok"));
         return QMessageBox::Ok;
     }
+    if (noticeShownByFacade(title, text)) return QMessageBox::Ok;
     return QMessageBox::warning(GetMessageBoxParent(), title, text);
 }
 
@@ -408,6 +445,7 @@ int MessageBoxInfo(const QString &title, const QString &text) {
         LogHeadlessDialog(QStringLiteral("MessageBoxInfo"), title, text, QStringLiteral("Ok"));
         return QMessageBox::Ok;
     }
+    if (noticeShownByFacade(title, text)) return QMessageBox::Ok;
     return QMessageBox::information(GetMessageBoxParent(), title, text);
 }
 

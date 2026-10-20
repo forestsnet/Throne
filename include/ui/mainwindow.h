@@ -128,6 +128,9 @@ public:
 
     void toggle_system_proxy();
 
+    // Строка поверх окна простого режима; в инженерном ничего не делает.
+    void showFacadeNotice(const QString &text, int milliseconds = 5000);
+
     void start_select_mode(QObject *context, const std::function<void(int)> &callback);
 
     // Returns a line per global hotkey that could not be registered.
@@ -136,6 +139,23 @@ public:
     bool IsGlobalHotkeySupported() const;
 
     bool StopVPNProcess();
+
+    QStringList CheckConflictingProcesses();
+
+    // Проверяет конфликтующие программы и спрашивает пользователя.
+    // Возвращает, можно ли продолжать запуск.
+    bool ConfirmConflictingProcesses();
+
+    // Провайдер закрыл конфигурацию выделенных профилей. Пишет причину в лог,
+    // чтобы действие не выглядело сломанным.
+    bool ConfigHiddenForSelection();
+
+    // Файл ядра на месте? Антивирусы регулярно принимают его за угрозу и
+    // удаляют молча, после чего подключение падает без внятной причины.
+    // Возвращает true, если ядро есть; иначе объясняет пользователю.
+    bool EnsureCorePresent(bool interactive = true);
+
+    void applyProviderPolicy(int gid);
 
     // Whole poll snapshot in the lister's order, never a delta. UI thread only.
     void UpdateConnectionList(const QList<Stats::ConnectionMetadata>& connections);
@@ -154,11 +174,31 @@ public:
 
     void refreshScannerDataView(bool force = false);
 
+    // Простому режиму нужен тот же значок, но со своим меню. Значок создаётся
+    // без родителя, поэтому findChild его не находит.
+    [[nodiscard]] class TrayIcon *trayIcon() const;
+
+    // Снимает системный прокси, оставшийся от оборвавшегося сеанса. На Windows
+    // он ставится через WinINET, то есть в те же «Свойства обозревателя»,
+    // откуда его берут Internet Explorer и всё, что ходит через WinINET.
+    void ClearStaleSystemProxy();
+
+    // То же для системного DNS, подменённого ядром под туннель на macOS.
+    void ClearStaleSystemDnsTunnel();
+
 signals:
 
     void profile_selected(int id);
 
+    // Строка пользовательского журнала. Простой режим показывает её в своём
+    // окне логов; подменять сток нельзя — инженерное окно потеряет строки.
+    void userLogLine(const QString &line);
+
 public slots:
+
+    // autoInstall: человек уже согласился в карточке обновления, поэтому
+    // ставим молча — скачиваем, ставим и перезапускаемся.
+    void CheckUpdate(bool autoInstall = false);
 
     void on_commitDataRequest();
 
@@ -222,6 +262,10 @@ private slots:
 
     void on_menu_update_subscription_triggered();
 
+    void on_menu_profile_debug_info_triggered();
+
+    void on_menu_simple_mode_triggered();
+
     void on_profilesTableView_doubleClicked(const QModelIndex &index);
 
     void on_profilesTableView_customContextMenuRequested(const QPoint &pos);
@@ -229,6 +273,16 @@ private slots:
     void on_tabWidget_currentChanged(int index);
 
     void on_tabWidget_customContextMenuRequested(const QPoint& p);
+
+    // Обновление через собственный обновлятор форка
+    QString GetUpdateDirectory();
+    bool PrepareUpdateEnvironment();
+    void InstallUpdateAndRestart(const QString &version = {});
+
+    // Разбор того, чем закончилось прошлое обновление: обновлятор работает уже
+    // без окна, и до этой проверки любая его осечка выглядела как «программа
+    // закрылась и ничего не произошло».
+    void ReportPreviousUpdate();
 
 private:
     Ui::MainWindow *ui;
@@ -263,6 +317,12 @@ private:
     // Set by request_unattended_exit: no dialog during the teardown, and a restart stays in the tray when the window was hidden.
     bool m_exitUnattended = false;
     bool m_exitKeepTray = false;
+
+    // Обновлятор готовим, пока окно ещё живо: копия лежит в каталоге обновления,
+    // а признак говорит, что папку установки без прав администратора не
+    // переписать. Раньше вся эта работа шла уже после закрытия окна, и любая
+    // осечка выглядела как «нажал да, программа закрылась, и всё».
+    QString update_runner;
     QMutex mu_download_update;
     QMutex mu_download_dashboard;
     class ConnectionsTreeModel *connectionsModel = nullptr;
@@ -405,6 +465,7 @@ private:
     void handle_deeplink_impl(const QString &url);
 
     void handle_addsub(const QString &url, const QString &name);
+    void remove_leftover_default_group(int keepGid);
 
     void handle_import_route(const QString &url);
 
@@ -447,7 +508,7 @@ private:
 
     void syncConnectionViewState();
 
-    void dragEnterEvent(QDragEnterEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event) override;
 
     void dropEvent(QDropEvent* event) override;
 
@@ -457,6 +518,7 @@ private:
     bool usesTightLabels() const;
 
     QSize designMinimumSize;
+    bool m_applyingProviderPolicy = false;
 
     QTimer *m_proxyListRefreshDebounce = nullptr;
     void scheduleProxyListRefresh();
@@ -492,8 +554,6 @@ private:
     QPointer<DialogIpLists> m_ipListsDialog;
     QHash<int, QString> m_scannerNames;
     bool m_scannerPanelShown = false;
-
-    void CheckUpdate();
 
     void OpenDashboard();
 

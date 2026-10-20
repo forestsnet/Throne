@@ -43,6 +43,13 @@ namespace Configs
 
         QString DisplayAddress() override;
 
+        // Адрес, порт и SNI у custom-профилей лежат внутри их собственного JSON,
+        // а не в полях server/server_port, поэтому базовая реализация отдаёт
+        // пустоту: ни список серверов, ни проба связи их не видели.
+        QString GetPort() override;
+
+        QString GetSni() override;
+
         QString DisplayType() override
         {
             if (type == CustomOutbound) {

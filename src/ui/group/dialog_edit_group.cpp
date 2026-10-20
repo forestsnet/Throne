@@ -4,12 +4,14 @@
 #include <QHash>
 #include <QStringListModel>
 #include <QCompleter>
+#include <QDateTime>
 #include <QTimer>
 #include <QAbstractItemView>
 #include <QUrl>
 
 #include "include/database/GroupsRepo.h"
 #include "include/database/ProfilesRepo.h"
+#include "include/configs/sub/ProviderPolicy.hpp"
 #include "include/global/RunningProfiles.hpp"
 #include "include/global/Validation.hpp"
 #include "include/ui/group/dialog_edit_group_advanced.h"
@@ -64,7 +66,28 @@ DialogEditGroup::DialogEditGroup(const std::shared_ptr<Configs::Group> &ent, QWi
         connect(dialog, &QDialog::finished, dialog, &QDialog::deleteLater);
         dialog->open();
     });
-    ui->url->setText(ent->url);
+    if (Subscription::PolicyHidesUrl() && !ent->url.isEmpty()) {
+        // Провайдер просит не показывать ссылку. Поле остаётся видимым, чтобы
+        // пользователь понимал, что подписка есть, но значение скрыто и не правится.
+        ui->url->setText(QString("\u2022").repeated(16));
+        ui->url->setReadOnly(true);
+        ui->url->setToolTip(tr("The provider hides the subscription URL."));
+    } else {
+        ui->url->setText(ent->url);
+    }
+
+    // Сведения, присланные панелью в заголовках подписки.
+    const auto policy = Subscription::DeserializeProviderPolicy(ent->provider_policy_json);
+    if (!policy.isEmpty()) {
+        QStringList lines;
+        if (!policy.announce.isEmpty())   lines << policy.announce;
+        if (!policy.supportUrl.isEmpty()) lines << tr("Support: %1").arg(policy.supportUrl);
+        if (policy.refillDate > 0) {
+            lines << tr("Refill date: %1")
+                        .arg(QDateTime::fromSecsSinceEpoch(policy.refillDate).toString(Qt::ISODate));
+        }
+        if (!lines.isEmpty()) ui->url->setToolTip(lines.join("\n"));
+    }
     ui->type->setCurrentIndex(ent->url.isEmpty() ? 0 : 1);
     ui->type->currentIndexChanged(ui->type->currentIndex());
     ui->cat_share->setVisible(false);
@@ -268,7 +291,8 @@ void DialogEditGroup::accept() {
     }
     ent->name = ui->name->text().trimmed();
     ent->auto_clear_unavailable = ui->auto_clear_unavailable->isChecked();
-    ent->url = newUrl;
+    // Если ссылка была скрыта, поле содержит маску — исходное значение сохраняем как есть.
+    if (!ui->url->isReadOnly()) ent->url = newUrl;
     ent->skip_auto_update = ui->skip_auto_update->isChecked();
     ent->sub_options = subOptions;
     restartNeeded = endpoint != ent->endpoint && editGroupRunningProfileInherits(ent->Profiles());

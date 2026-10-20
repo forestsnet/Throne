@@ -33,7 +33,7 @@ namespace {
 }
 
 namespace Fsnt {
-    TrayMenu::TrayMenu(QSystemTrayIcon *tray, QObject *parent) : QObject(parent), m_tray(tray) {
+    TrayMenu::TrayMenu(TrayIcon *tray, QObject *parent) : QObject(parent), m_tray(tray) {
         if (m_tray == nullptr) return;
 
         m_menu = new QMenu();

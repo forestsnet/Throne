@@ -2,7 +2,10 @@
 
 #include <QString>
 
-namespace Configs {
+// Своё, а не Configs::ParseDnsAddress из generate.h: тот живёт внутри сборщика
+// конфига и тянет за собой весь генератор. Щупу, каталогу и подбору нужен
+// разбор без зависимостей — их можно проверить тестом, а генератор нельзя.
+namespace Fsnt {
     // Разбор адреса DNS-сервера в том виде, в каком его вписывает человек:
     // 1.1.1.1, tls://77.88.8.8, https://dns.google/dns-query, [2606:4700::1111]:853.
     //
@@ -34,4 +37,4 @@ namespace Configs {
     // Тот же сервер другим транспортом: tls://77.88.8.8 -> udp://77.88.8.8.
     // Для dhcp и local возвращает пустую строку: менять там нечего.
     QString DnsAddressWithType(const DnsAddress &address, const QString &type);
-} // namespace Configs
+} // namespace Fsnt

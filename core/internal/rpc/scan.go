@@ -186,7 +186,7 @@ func (s *server) ScanURLTest(ctx context.Context, in *gen.ScanURLTestRequest) (*
 		}
 		session.RecordURL(labelOf[result.Tag], result.Duration, result.Error)
 	}
-	results := probe.BatchURLTestTo(scanCtx, env.box, env.tags, test.GetUrl(), int(test.GetMaxConcurrency()),
+	results := probe.BatchURLTestTo(scanCtx, env.box, env.tags, test.GetUrl(), test.GetMethod(), int(test.GetMaxConcurrency()),
 		in.GetWarmLatency(), milliseconds(test.GetTestTimeoutMs()), publish)
 	if scanCtx.Err() == nil && egressLost() {
 		return nil, scan.ErrEgressLost

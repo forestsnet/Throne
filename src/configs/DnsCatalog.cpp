@@ -38,7 +38,7 @@ namespace Configs {
                     const auto text = address.toString().trimmed();
                     // Битые адреса выкидываем здесь, чтобы подбор не тратил на
                     // них ожидание, а человек увидел причину в журнале.
-                    const auto parsed = ParseDnsAddress(text);
+                    const auto parsed = Fsnt::ParseDnsAddress(text);
                     if (!parsed.valid) {
                         LOG_WARN(QString("dns catalog: %1 is skipped (%2)").arg(text, parsed.error));
                         continue;
@@ -115,13 +115,13 @@ namespace Configs {
             candidates << address;
         };
 
-        const auto chosen = ParseDnsAddress(configured);
+        const auto chosen = Fsnt::ParseDnsAddress(configured);
         if (chosen.valid) {
             add(configured);
             // Тот же сервер другим транспортом. Режут обычно транспорт, а не
             // сервер, и это самый дешёвый способ выбраться.
             for (const auto &type : {"udp", "tls", "https", "tcp"}) {
-                add(DnsAddressWithType(chosen, QString::fromLatin1(type)));
+                add(Fsnt::DnsAddressWithType(chosen, QString::fromLatin1(type)));
             }
         }
 
