@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "_comment": "Порядок в списке и есть порядок предпочтения при подборе. Файл можно положить рядом с настройками под тем же именем — он перекроет встроенный.",
+  "servers": [
+    {
+      "title": "Cloudflare",
+      "addresses": ["1.1.1.1", "tls://1.1.1.1", "https://1.1.1.1/dns-query"],
+      "roles": ["direct", "remote"]
+    },
+    {
+      "title": "Google",
+      "addresses": ["8.8.8.8", "tls://dns.google", "https://dns.google/dns-query"],
+      "roles": ["direct", "remote"]
+    },
+    {
+      "title": "Quad9",
+      "addresses": ["9.9.9.9", "tls://dns.quad9.net", "https://9.9.9.9/dns-query"],
+      "roles": ["direct", "remote"]
+    },
+    {
+      "title": "AdGuard",
+      "addresses": ["94.140.14.14", "tls://dns.adguard-dns.com", "https://dns.adguard-dns.com/dns-query"],
+      "roles": ["direct", "remote"]
+    },
+    {
+      "title": "Yandex",
+      "addresses": ["77.88.8.8", "tls://dns.yandex.ru", "https://dns.yandex.ru/dns-query"],
+      "roles": ["direct"]
+    },
+    {
+      "title": "local",
+      "addresses": ["local"],
+      "roles": ["direct"]
+    }
+  ]
+}
