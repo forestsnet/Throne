@@ -8,7 +8,7 @@ SUFFIX=""
 DIST="$(cd "$(dirname "$0")/../dist/linux" && pwd)"
 
 if [[ $3 == "systemqt" ]]; then
-    DEPENDS="desktop-file-utils, libqt6core6, libqt6gui6, libqt6network6, libqt6widgets6, qt6-qpa-plugins, qt6-wayland, qt6-gtk-platformtheme, qt6-xdgdesktopportal-platformtheme, libxcb-cursor0, fonts-noto-color-emoji"
+    DEPENDS="desktop-file-utils, libqt6core6, libqt6gui6, libqt6network6, libqt6widgets6, libqt6svg6, qt6-qpa-plugins, qt6-wayland, qt6-gtk-platformtheme, qt6-xdgdesktopportal-platformtheme, libxcb-cursor0, fonts-noto-color-emoji"
 else
     # usr/lib bundles only Qt, ICU and xcb-cursor/xcb-util. Throne links libxcb itself, and the bundled Qt loads the
     # rest from the system even headless, so slim images and Pi OS Lite fail in the loader without them.
