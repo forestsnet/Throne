@@ -4,7 +4,10 @@
 #include <QCryptographicHash>
 #include <QDir>
 #include <QFileInfo>
+#include <QProcess>
+#include <QRegularExpression>
 #include <QSettings>
+#include <QStringList>
 #include <vector>
 #include "include/global/Configs.hpp"
 #include "include/global/Logger.hpp"
@@ -250,12 +253,50 @@ static QString removeTask(const TaskRoot &root, const QString &name) {
     return SUCCEEDED(hr) ? QString() : hresultText(hr);
 }
 
+// Имя задачи содержит хеш пути к программе, поэтому задача от перемещённой или
+// удалённой копии невидима для остальных проверок и остаётся в планировщике
+// навсегда, пытаясь при каждом входе запустить несуществующий файл.
+static void sweepStaleTasks() {
+    QProcess list;
+    list.start("schtasks.exe", QStringList() << "/query" << "/fo" << "csv" << "/nh");
+    list.waitForFinished(10000);
+    const auto rows = QString::fromLocal8Bit(list.readAllStandardOutput()).split('\n');
+
+    for (const auto &row : rows) {
+        auto name = row.section(',', 0, 0).trimmed();
+        name.remove('"');
+        if (!name.contains("Throne AutoRun ")) continue;
+        // Свою и прежнюю общую задачу не трогаем: прежнюю переносит
+        // AutoRun_FixTaskIfNeeded, и удалить её он должен сам.
+        if (name.endsWith(userTaskName()) || name.endsWith(legacyTaskName())) continue;
+
+        QProcess query;
+        query.start("schtasks.exe", QStringList() << "/query" << "/tn" << name << "/xml");
+        query.waitForFinished(10000);
+        const auto xml = QString::fromLocal8Bit(query.readAllStandardOutput());
+        static const QRegularExpression command("<Command>\\s*\"?([^<\"]+)\"?\\s*</Command>");
+        const auto match = command.match(xml);
+        if (!match.hasMatch()) continue;
+        if (QFileInfo::exists(match.captured(1).trimmed())) continue;
+
+        QProcess remove;
+        remove.start("schtasks.exe", QStringList() << "/delete" << "/tn" << name << "/f");
+        remove.waitForFinished(10000);
+        LOG_INFO("removed an autostart task of a copy that is gone: " + name);
+    }
+}
+
 bool AutoRun_SetEnabled(bool enable, QString *error) {
     const TaskRoot root;
     QString failure;
     if (FAILED(root.status())) {
         failure = hresultText(root.status());
     } else if (enable) {
+        // Заодно чужие остатки: проверки по имени видят только текущую
+        // установку, а задача от перемещённой или удалённой копии остаётся в
+        // планировщике навсегда. Здесь, а не при каждом старте: schtasks
+        // перечисляет все задачи машины.
+        sweepStaleTasks();
         if (const HRESULT hr = root.put(userTaskName(), autoRunTaskXml(autoRunElevated())); FAILED(hr)) failure = hresultText(hr);
     } else {
         failure = removeTask(root, userTaskName());
@@ -277,36 +318,6 @@ bool AutoRun_IsEnabled() {
     return false;
 }
 
-// Имя задачи содержит хеш пути к программе, поэтому задача от перемещённой или
-// удалённой копии невидима для остальных проверок и остаётся в планировщике
-// навсегда, пытаясь при каждом входе запустить несуществующий файл.
-static void sweepStaleTasks() {
-    QProcess list;
-    list.start("schtasks.exe", QStringList() << "/query" << "/fo" << "csv" << "/nh");
-    list.waitForFinished(10000);
-    const auto rows = QString::fromLocal8Bit(list.readAllStandardOutput()).split('\n');
-
-    for (const auto &row : rows) {
-        auto name = row.section(',', 0, 0).trimmed();
-        name.remove('"');
-        if (!name.contains("Throne AutoRun ")) continue;
-        if (name == QLatin1String("\\") + GetTaskName() || name.endsWith(GetTaskName())) continue;
-
-        QProcess query;
-        query.start("schtasks.exe", QStringList() << "/query" << "/tn" << name << "/xml");
-        query.waitForFinished(10000);
-        const auto xml = QString::fromLocal8Bit(query.readAllStandardOutput());
-        static const QRegularExpression command("<Command>\\s*\"?([^<\"]+)\"?\\s*</Command>");
-        const auto match = command.match(xml);
-        if (!match.hasMatch()) continue;
-        if (QFileInfo::exists(match.captured(1).trimmed())) continue;
-
-        QProcess remove;
-        remove.start("schtasks.exe", QStringList() << "/delete" << "/tn" << name << "/f");
-        remove.waitForFinished(10000);
-        LOG_INFO("removed an autostart task of a copy that is gone: " + name);
-    }
-}
 
 void AutoRun_FixTaskIfNeeded() {
     const TaskRoot root;
