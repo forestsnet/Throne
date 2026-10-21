@@ -331,7 +331,7 @@ void MainWindow::ClearStaleSystemProxy() {
     const auto ours = QString(":%1").arg(settings->inbound_socks_port);
     if (!current.contains(ours)) return;
 
-    ClearSystemProxy();
+    SystemProxy_Clear();
     LOG_INFO("system proxy left over from the previous session was cleared: " + current);
     MW_show_log(tr("Cleared the system proxy left over from the previous session"));
 #endif

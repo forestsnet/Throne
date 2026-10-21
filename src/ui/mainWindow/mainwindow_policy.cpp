@@ -165,17 +165,18 @@ bool MainWindow::requestCorePrivileges() {
     if (n == QMessageBox::Yes) {
         runOnNewThread([=,this]
         {
-            auto chownArgs = QString("root:root " + Configs::FindCoreRealPath());
+            const auto corePath = Configs::FindCoreRealPath();
+            const QStringList chownArgs{QStringLiteral("root:root"), corePath};
             auto ret = Linux_Run_Command("chown", chownArgs);
             if (ret != 0) {
-                MW_show_log(QString("Failed to run chown %1 code is %2").arg(chownArgs).arg(ret));
+                MW_show_log(QString("Failed to run chown %1 code is %2").arg(chownArgs.join(' ')).arg(ret));
             }
-            auto chmodArgs = QString("u+s " + Configs::FindCoreRealPath());
+            const QStringList chmodArgs{QStringLiteral("u+s"), corePath};
             ret = Linux_Run_Command("chmod", chmodArgs);
             if (ret == 0) {
                 StopVPNProcess();
             } else {
-                MW_show_log(QString("Failed to run chmod %1").arg(chmodArgs));
+                MW_show_log(QString("Failed to run chmod %1").arg(chmodArgs.join(' ')));
             }
         });
         return false;
