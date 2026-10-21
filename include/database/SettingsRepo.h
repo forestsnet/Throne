@@ -318,20 +318,10 @@ namespace Configs {
         bool fakeip_disable_ipv6 = false;
         bool enable_tun_routing = true;
 #ifdef Q_OS_MACOS
-        QString vpn_implementation = "gvisor";
         bool vpn_strict_route = false;
 #elif defined(Q_OS_WIN)
-        // gvisor, а не system. Стек system отдаёт пакеты сетевому стеку Windows,
-        // и там их перехватывают чужие сетевые фильтры — антивирусы, обходчики
-        // DPI, остатки других VPN. У пользователя с таким набором туннель
-        // поднимался, маршруты вставали, DNS отвечал, а TCP не проходил ни у
-        // одного процесса: соединение доходило до маршрутизатора и исчезало.
-        // На gvisor та же машина заработала сразу. Свой стек медленнее, но
-        // предсказуем, а разбираться в чужих фильтрах пользователь не может.
-        QString vpn_implementation = "gvisor";
         bool vpn_strict_route = WinVersion::IsBuildNumGreaterOrEqual(BuildNumber::Windows_10_1507);
 #else
-        QString vpn_implementation = "system";
         bool vpn_strict_route = false;
 #endif
         // Linux only; while on, the host cannot act as a network gateway.

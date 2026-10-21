@@ -235,7 +235,6 @@ void MainWindow::on_menu_profile_debug_info_triggered() {
             stream << "Proxy scheme: " << settings->proxy_scheme << "\n";
             
             stream << "\n=== VPN/TUN ===\n";
-            stream << "VPN implementation: " << settings->vpn_implementation << "\n";
             stream << "VPN strict route: " << (settings->vpn_strict_route ? "Yes" : "No") << "\n";
             stream << "VPN MTU: " << settings->vpn_mtu << "\n";
             stream << "VPN IPv6: " << (settings->vpn_ipv6 ? "Yes" : "No") << "\n";

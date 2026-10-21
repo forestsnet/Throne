@@ -645,27 +645,19 @@ void FsntWindow::resizeEvent(QResizeEvent *event) {
 
 void FsntWindow::offerCompatibleTunnel() {
 #ifdef Q_OS_WIN
-    auto &settings = Configs::dataManager->settingsRepo;
-    // Совместимый стек уже стоит — значит дело не в нём, и советовать нечего.
-    if (settings->vpn_implementation != QLatin1String("system")) return;
     if (m_compatibleOffered) return;
     m_compatibleOffered = true;
 
+    // Раньше здесь предлагалось переключить стек туннеля на совместимый. Выбора
+    // стека больше нет: ядро ведёт весь трафик своим, и чужие сетевые фильтры
+    // до него не достают. Остаётся назвать вещи своими именами — молчать о
+    // поднятом туннеле, через который ничего не идёт, нельзя.
     ActivateUiWindow();
-    const auto answer = QMessageBox::question(
-        this, tr("Connected, but nothing opens"),
-        tr("The tunnel is up, but no traffic goes through it. Usually another program on "
-           "this computer intercepts network packets: an antivirus, a DPI-bypass tool or "
-           "what another VPN left behind.\n\n"
-           "Switch the tunnel to compatible mode and reconnect? It is a little slower, "
-           "but it does not depend on them."));
-    if (answer != QMessageBox::Yes) return;
-
-    settings->vpn_implementation = QStringLiteral("gvisor");
-    settings->Save();
-    if (auto *mw = GetMainWindow(); mw != nullptr && settings->started_id >= 0) {
-        mw->profile_start(settings->started_id);
-    }
+    Fsnt::Notice(this, tr("Connected, but nothing opens"),
+                 tr("The tunnel is up, but no traffic goes through it. Usually another program on "
+                    "this computer intercepts network packets: an antivirus, a DPI-bypass tool or "
+                    "what another VPN left behind. Try switching the connection mode to system "
+                    "proxy in the settings, or turn those programs off one by one."));
 #endif
 }
 

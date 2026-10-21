@@ -122,19 +122,6 @@ void FsntSettingsDialog::buildConnection(QVBoxLayout *column, QWidget *host) {
     m_transport->setCurrentIndex(qBound(0, settings->simple_transport, 1));
     card.addControl(tr("Connection mode"), m_transport);
 
-#ifdef Q_OS_WIN
-    // Стек TUN показываем только здесь: чинить им приходится именно Windows, а
-    // жила эта настройка в расширенном режиме, куда обычный человек не дойдёт.
-    m_tunStack = makeSelect(host);
-    m_tunStack->addItem(tr("Compatible"), QStringLiteral("gvisor"));
-    m_tunStack->addItem(tr("Fast"), QStringLiteral("system"));
-    m_tunStack->setCurrentIndex(settings->vpn_implementation == QLatin1String("system") ? 1 : 0);
-    card.addControl(tr("Tunnel mode"), m_tunStack);
-    card.addNote(tr("If the client says connected but no site opens, switch to Compatible. "
-                    "The fast mode hands packets to Windows, where antivirus software, "
-                    "DPI-bypass tools and leftovers of other VPNs intercept them."));
-#endif
-
     // Провайдер может закрыть настройки, которыми управляет сам. Прячем ровно
     // маршрутизацию: и профиль маршрутов, и выбор приложений — это она же.
     // Режим подключения и автозапуск остаются: пользователь должен видеть,
@@ -473,15 +460,6 @@ void FsntSettingsDialog::save() {
     bool modeChanged = transport != settings->simple_transport;
     settings->simple_transport = transport;
 
-#ifdef Q_OS_WIN
-    if (m_tunStack != nullptr) {
-        const QString stack = m_tunStack->currentData().toString();
-        if (stack != settings->vpn_implementation) {
-            settings->vpn_implementation = stack;
-            modeChanged = true;
-        }
-    }
-#endif
     settings->language = m_language->currentData().toInt();
     settings->start_minimal = m_startMinimal->isChecked();
     if (m_autoUpdate != nullptr) settings->auto_update = m_autoUpdate->isChecked();

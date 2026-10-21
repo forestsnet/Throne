@@ -237,24 +237,6 @@ namespace Fsnt {
                 const auto response = Configs_network::NetworkRequestHelper::HttpGet(kDiagProbeUrl);
                 if (response.error.isEmpty()) return diagOk();
 
-#ifdef Q_OS_WIN
-                const auto &s = Configs::dataManager->settingsRepo;
-                if (s->simple_transport == 0
-                    && s->vpn_implementation == QLatin1String("system")) {
-                    return diagFailed(
-                        QObject::tr("The tunnel is up, but nothing passes through it. The fast "
-                                    "tunnel mode gives packets to Windows, where another "
-                                    "program's filter takes them."),
-                        QObject::tr("Switch to compatible"), [] {
-                            auto &st = Configs::dataManager->settingsRepo;
-                            st->vpn_implementation = QStringLiteral("gvisor");
-                            st->Save();
-                            if (auto *m = GetMainWindow(); m != nullptr && st->started_id >= 0) {
-                                m->profile_start(st->started_id);
-                            }
-                        });
-                }
-#endif
                 return diagFailed(QObject::tr("The tunnel is up, but nothing passes through it: %1")
                                   .arg(response.error));
             }};
