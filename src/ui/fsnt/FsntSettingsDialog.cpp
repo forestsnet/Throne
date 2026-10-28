@@ -333,6 +333,14 @@ void FsntSettingsDialog::buildDns(QVBoxLayout *column, QWidget *host) {
         && settings->direct_dns_effective != settings->direct_dns) {
         card.addNote(tr("Last connection actually used %1.").arg(settings->direct_dns_effective));
     }
+
+    m_blockPrivateRelay = card.addToggle(tr("Turn off iCloud Private Relay while connected"),
+                                         settings->block_private_relay);
+    card.addNote(tr("Apple hides the IP address of Safari behind its own relay, and it does not "
+                    "step aside for this client the way it does for others, so pages see Apple's "
+                    "address instead of the country you picked. While this is on, the relay is "
+                    "told it is unavailable and Safari goes through the tunnel like everything "
+                    "else. Apple devices on the same network are affected too."));
 }
 
 void FsntSettingsDialog::buildSubscriptions(QVBoxLayout *column, QWidget *host) {
@@ -462,6 +470,11 @@ void FsntSettingsDialog::save() {
 
     settings->language = m_language->currentData().toInt();
     settings->start_minimal = m_startMinimal->isChecked();
+    if (m_blockPrivateRelay != nullptr && m_blockPrivateRelay->isChecked() != settings->block_private_relay) {
+        settings->block_private_relay = m_blockPrivateRelay->isChecked();
+        // Правило живёт в конфиге ядра, а его собирают при запуске профиля.
+        modeChanged = true;
+    }
     if (m_autoUpdate != nullptr) settings->auto_update = m_autoUpdate->isChecked();
     if (m_notifyUpdate != nullptr) settings->notify_update_system = m_notifyUpdate->isChecked();
     if (m_notifySubscription != nullptr) settings->notify_subscription = m_notifySubscription->isChecked();

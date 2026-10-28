@@ -864,6 +864,8 @@ set(ENGINE_SOURCES
         src/engine/services/WebDavBackup.cpp
         include/engine/services/AssetUpdates.h
         src/engine/services/AssetUpdates.cpp
+        src/engine/services/GeoAssetMirrors.cpp
+        include/engine/services/GeoAssetMirrors.h
         include/engine/services/StatsService.h
         src/engine/services/StatsService.cpp
         include/engine/tests/TestObserver.h

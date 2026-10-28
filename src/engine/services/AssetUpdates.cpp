@@ -1,4 +1,5 @@
 #include "include/engine/services/AssetUpdates.h"
+#include "include/engine/services/GeoAssetMirrors.h"
 
 #include <algorithm>
 #include <atomic>
@@ -144,11 +145,21 @@ namespace Engine::AssetUpdates {
                     result.skipped = true;
                     continue;
                 }
-                result.error = NetworkRequestHelper::DownloadAsset(result.url, result.fileName);
+                // Заданный адрес первым, затем его зеркала. Без geosite.dat не
+                // собирается конфиг, и отказ GitHub выглядит для человека как
+                // отказ подключения.
+                const auto sources = Engine::GeoAssetMirrors(result.url);
+                for (int i = 0; i < sources.size(); ++i) {
+                    result.url = sources.at(i);
+                    result.error = NetworkRequestHelper::DownloadAsset(result.url, result.fileName);
+                    if (result.error.isEmpty()) break;
+                    const bool last = i + 1 == sources.size();
+                    MW_show_log(QStringLiteral("[Geo assets] %1 from %2 failed: %3%4")
+                                    .arg(result.fileName, result.url, result.error,
+                                         last ? QString() : QStringLiteral(", trying a mirror")));
+                }
                 if (result.error.isEmpty()) {
-                    MW_show_log(QStringLiteral("[Geo assets] Downloaded %1.").arg(result.fileName));
-                } else {
-                    MW_show_log(QStringLiteral("[Geo assets] %1 download failed: %2").arg(result.fileName, result.error));
+                    MW_show_log(QStringLiteral("[Geo assets] Downloaded %1 from %2.").arg(result.fileName, result.url));
                 }
             }
             runOnUiThread([results, files, done] {

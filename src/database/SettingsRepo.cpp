@@ -33,6 +33,7 @@ namespace Configs {
             {"net_use_proxy",                 &net_use_proxy},
             {"remember_enable",               &remember_enable},
             {"skip_cert",                     &skip_cert},
+            {"block_private_relay",           &block_private_relay},
             {"fakedns",                       &fake_dns},
             {"fakeip_disable_ipv6",           &fakeip_disable_ipv6},
             {"direct_dns_disable_ipv6",       &direct_dns_disable_ipv6},

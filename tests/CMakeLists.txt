@@ -39,6 +39,15 @@ target_link_libraries(XrayDnsStripTest PRIVATE Qt6::Test)
 
 add_test(NAME XrayDnsStripTest COMMAND XrayDnsStripTest)
 
+qt_add_executable(GeoAssetMirrorsTest
+        GeoAssetMirrorsTest.cpp
+        ../src/engine/services/GeoAssetMirrors.cpp
+)
+target_include_directories(GeoAssetMirrorsTest PRIVATE ${CMAKE_SOURCE_DIR})
+target_link_libraries(GeoAssetMirrorsTest PRIVATE Qt6::Test)
+
+add_test(NAME GeoAssetMirrorsTest COMMAND GeoAssetMirrorsTest)
+
 qt_add_executable(DnsAddressTest
         DnsAddressTest.cpp
         ../src/configs/DnsAddress.cpp

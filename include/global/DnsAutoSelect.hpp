@@ -19,7 +19,9 @@ namespace Configs {
         // configured — то, что стоит в настройках. Сначала проверяется он один:
         // в обычном случае это ответ за доли секунды и никакой задержки при
         // подключении. Вся цепочка опрашивается, только если он не ответил.
-        void Start(const QString &configured, int timeoutMs = 2500);
+        // probeName — имя сервера, к которому идёт подключение. Проверять надо
+        // именно его: чужое имя резолвер может знать, а нужное — нет.
+        void Start(const QString &configured, int timeoutMs = 2500, const QString &probeName = {});
 
     signals:
         // address пуст, если не ответил никто: подключаться в этом случае нельзя.
@@ -28,6 +30,7 @@ namespace Configs {
 
     private:
         QString m_configured;
+        QString m_probeName;
         int m_timeoutMs = 2500;
     };
 } // namespace Configs

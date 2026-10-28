@@ -7,8 +7,9 @@
 namespace Configs {
     DnsAutoSelect::DnsAutoSelect(QObject *parent) : QObject(parent) {}
 
-    void DnsAutoSelect::Start(const QString &configured, int timeoutMs) {
+    void DnsAutoSelect::Start(const QString &configured, int timeoutMs, const QString &probeName) {
         m_configured = configured.trimmed();
+        m_probeName = probeName.trimmed();
         m_timeoutMs = timeoutMs;
 
         auto *first = new DnsProbe(this);
@@ -44,13 +45,13 @@ namespace Configs {
                 }
                 emit Selected(best, true);
             });
-            rest->Start(candidates, m_timeoutMs);
+            rest->Start(candidates, m_timeoutMs, m_probeName);
         });
 
         if (m_configured.isEmpty()) {
-            first->Start({}, m_timeoutMs);
+            first->Start({}, m_timeoutMs, m_probeName);
             return;
         }
-        first->Start({m_configured}, m_timeoutMs);
+        first->Start({m_configured}, m_timeoutMs, m_probeName);
     }
 } // namespace Configs

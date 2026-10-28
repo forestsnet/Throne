@@ -45,6 +45,7 @@ private:
     FsntSelect *m_pingKind = nullptr;
     QLineEdit *m_pingUrl = nullptr;
     FsntSwitch *m_startMinimal = nullptr;
+    FsntSwitch *m_blockPrivateRelay = nullptr;
     FsntSwitch *m_autoUpdate = nullptr;
     FsntSwitch *m_notifyUpdate = nullptr;
     FsntSwitch *m_notifySubscription = nullptr;

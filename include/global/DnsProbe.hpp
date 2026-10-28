@@ -30,7 +30,12 @@ namespace Configs {
         // Пробует все адреса разом и отдаёт результаты в порядке, в котором их
         // задали. Параллельно, потому что последовательно по три секунды на
         // каждого — это минута ожидания на десятке кандидатов.
-        void Start(const QStringList &addresses, int timeoutMs = 3000);
+        // probeName — имя, которым проверяем. По умолчанию нейтральное, но
+        // вызывающий обязан передать имя того сервера, к которому собирается
+        // подключаться: резолвер, бодро отвечающий на постороннее имя, вполне
+        // может не знать нужного или отдавать по нему подменённый адрес, и
+        // тогда «рабочий» по итогам пробы сервер нам ничем не поможет.
+        void Start(const QStringList &addresses, int timeoutMs = 3000, const QString &probeName = {});
 
         // Самый быстрый из ответивших; при отсутствии таковых — пустая строка.
         static QString Fastest(const QList<DnsProbeResult> &results);
@@ -40,6 +45,8 @@ namespace Configs {
 
     private:
         void probeOne(int index, const QString &address, int timeoutMs);
+
+        QString m_probeName;
         void finishLater();
         void complete(int index, bool ok, int latencyMs, const QString &error);
 

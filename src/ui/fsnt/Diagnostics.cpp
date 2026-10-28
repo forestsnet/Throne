@@ -13,7 +13,9 @@
 #include "include/global/HTTPRequestHelper.hpp"
 #include "include/global/Utils.hpp"
 #include "include/global/DnsAutoSelect.hpp"
+#include "include/database/ProfilesRepo.h"
 #include "include/global/DnsProbe.hpp"
+#include <QHostAddress>
 #include "include/ui/fsnt/Transport.hpp"
 #include "include/ui/mainwindow.h"
 
@@ -87,6 +89,17 @@ namespace Fsnt {
                                          ? s->direct_dns_effective
                                          : s->direct_dns;
 
+                // По имени сервера, к которому подключаемся, а не по
+                // постороннему: отвечающий на чужое имя резолвер может не знать
+                // нужного, и тогда зелёная строка здесь — неправда.
+                QString serverName;
+                if (const auto ent = Configs::dataManager->profilesRepo->GetProfile(
+                        Configs::dataManager->settingsRepo->remember_id);
+                    ent != nullptr && ent->outbound != nullptr) {
+                    const auto addr = ent->outbound->GetAddress().trimmed();
+                    if (!addr.isEmpty() && QHostAddress(addr).isNull()) serverName = addr;
+                }
+
                 // Проба синхронная: проверка и так крутится в рабочем потоке,
                 // а свой цикл событий здесь проще, чем тащить асинхронность
                 // через весь контракт проверок.
@@ -98,7 +111,7 @@ namespace Fsnt {
                                      results = r;
                                      loop.quit();
                                  });
-                probe.Start({address}, 3000);
+                probe.Start({address}, 3000, serverName);
                 loop.exec();
 
                 if (!results.isEmpty() && results.first().ok) return diagOk();
@@ -110,7 +123,7 @@ namespace Fsnt {
                     QObject::tr("%1 does not answer (%2). Names of the VPN servers are resolved "
                                 "through it, so nothing can connect until it does.")
                         .arg(address, why),
-                    QObject::tr("Find a working one"), [](const auto &done) {
+                    QObject::tr("Find a working one"), [serverName](const auto &done) {
                         auto *select = new Configs::DnsAutoSelect(GetMainWindow());
                         QObject::connect(select, &Configs::DnsAutoSelect::Selected, select,
                                          [select, done](const QString &found, bool) {
@@ -132,7 +145,7 @@ namespace Fsnt {
                                              }
                                              done();
                                          });
-                        select->Start(Configs::dataManager->settingsRepo->direct_dns);
+                        select->Start(Configs::dataManager->settingsRepo->direct_dns, 2500, serverName);
                     });
             }};
 

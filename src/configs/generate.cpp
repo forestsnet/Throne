@@ -1277,6 +1277,20 @@ namespace Configs {
                 });
             }
 
+            // Перед всеми остальными: ответ на эти имена не должен зависеть от
+            // того, какое правило совпало раньше.
+            if (!ctx.forTest && settings.block_private_relay) {
+                // Ровно те два имени, которые Apple называет сетям, где реле не
+                // поддерживается, и ровно тем ответом: NXDOMAIN, а не таймаут и
+                // не потерянный пакет — на них устройство тормозит вместо того,
+                // чтобы честно сказать человеку, что реле тут не работает.
+                headRules.prepend(QJsonObject{
+                    {"domain", QJsonArray{"mask.icloud.com", "mask-h2.icloud.com"}},
+                    {"action", "predefined"},
+                    {"rcode", "NXDOMAIN"},
+                });
+            }
+
             if (!headRules.isEmpty()) {
                 for (const auto &rule : rules) headRules.append(rule);
                 rules = headRules;

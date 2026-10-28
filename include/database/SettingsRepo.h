@@ -314,6 +314,13 @@ namespace Configs {
         bool adblock_enable = false;
 
         // VPN
+        // iCloud Private Relay выключает себя, только если система видит VPN, а
+        // видит она его лишь у туннелей через NetworkExtension. Ядро открывает
+        // utun напрямую, поэтому реле остаётся включённым, трафик Safari идёт в
+        // него, и наружу светится выход Apple вместо выбранной страны. Apple
+        // просит сети, которым реле не подходит, отвечать NXDOMAIN на его имена
+        // — тогда устройство честно говорит человеку, что реле тут недоступно.
+        bool block_private_relay = true;
         bool fake_dns = false;
         bool fakeip_disable_ipv6 = false;
         bool enable_tun_routing = true;

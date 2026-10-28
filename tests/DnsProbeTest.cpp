@@ -31,6 +31,20 @@ private slots:
         QCOMPARE(static_cast<quint8>(query[query.size() - 3]), quint8(1)); // тип A
     }
 
+    // Проверять резолвер надо по имени того сервера, к которому подключаемся:
+    // отвечающий на постороннее имя вполне может не знать нужного или отдать по
+    // нему подменённый адрес, и тогда «рабочим» окажется бесполезный сервер.
+    void queryCarriesTheNameItWasGiven() {
+        const auto query = BuildDnsQuery("de1.example-vpn.net", 0x4242);
+        QVERIFY(query.contains(QByteArray("\3de1\13example-vpn\3net\0", 21)));
+        QVERIFY(!query.contains(QByteArray("\7example\3com", 12)));
+    }
+
+    void probeNameSurvivesSubdomainsAndHyphens() {
+        const auto query = BuildDnsQuery("a-b.c-d.ru", 1);
+        QVERIFY(query.contains(QByteArray("\3a-b\3c-d\2ru\0", 12)));
+    }
+
     void acceptsAnswer() {
         QString error;
         QVERIFY(IsDnsResponseFor(reply(0x1234, 0x81, 0x80), 0x1234, &error));

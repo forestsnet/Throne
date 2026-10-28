@@ -93,7 +93,8 @@ namespace Configs {
         return best;
     }
 
-    void DnsProbe::Start(const QStringList &addresses, int timeoutMs) {
+    void DnsProbe::Start(const QStringList &addresses, int timeoutMs, const QString &probeName) {
+        m_probeName = probeName.trimmed().isEmpty() ? kProbeName : probeName.trimmed();
         m_results.clear();
         m_pending = static_cast<int>(addresses.size());
         for (const auto &address : addresses) {
@@ -165,7 +166,7 @@ namespace Configs {
 
         if (parsed.isLocal()) {
             // Системный резолвер: своего сокета нет, спрашиваем через Qt.
-            QHostInfo::lookupHost(kProbeName, this, [done, elapsed](const QHostInfo &info) {
+            QHostInfo::lookupHost(m_probeName, this, [done, elapsed](const QHostInfo &info) {
                 if (info.error() != QHostInfo::NoError) {
                     done(false, -1, info.errorString());
                     return;
@@ -178,7 +179,7 @@ namespace Configs {
         }
 
         const quint16 id = static_cast<quint16>(QRandomGenerator::global()->bounded(1, 0xfffe));
-        const QByteArray query = BuildDnsQuery(kProbeName, id);
+        const QByteArray query = BuildDnsQuery(m_probeName, id);
         const quint16 port = parsed.port > 0 ? static_cast<quint16>(parsed.port) : kDefaultPort(parsed.type);
 
         connect(timer, &QTimer::timeout, this, [done] { done(false, -1, QStringLiteral("превышено ожидание")); });

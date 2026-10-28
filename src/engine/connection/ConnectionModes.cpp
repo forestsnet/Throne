@@ -14,6 +14,8 @@
 #include "include/sys/HostPresence.hpp"
 #include "include/sys/HostTun.hpp"
 #include "include/sys/KillSwitch.hpp"
+#include <QHostAddress>
+#include "include/database/ProfilesRepo.h"
 #include "include/global/DnsAutoSelect.hpp"
 #include "include/global/SystemStateJournal.hpp"
 #include "include/sys/SystemProxy.hpp"
@@ -118,6 +120,19 @@ namespace Engine {
         if (settings->use_dns_object) return false;   // секцией DNS распоряжается сам человек
         if (!m_dnsSelect.isNull()) return true;       // подбор уже идёт и сам продолжит запуск
 
+        // Имя сервера, к которому подключаемся: проверять резолвер надо именно
+        // по нему. Отвечающий на постороннее имя вполне может не знать нужного
+        // или отдать по нему подменённый адрес, и тогда «рабочим» окажется
+        // сервер, который нам ничем не поможет.
+        QString serverName;
+        if (const auto ent = Configs::dataManager->profilesRepo->GetProfile(request.profileId);
+            ent != nullptr && ent->outbound != nullptr) {
+            serverName = ent->outbound->GetAddress().trimmed();
+        }
+        // Сервер задан адресом, а не именем — разрешать нечего, и держать из-за
+        // этого запуск незачем.
+        if (!serverName.isEmpty() && !QHostAddress(serverName).isNull()) return false;
+
         auto *select = new Configs::DnsAutoSelect(this);
         m_dnsSelect = select;
         StartRequest next = request;
@@ -157,7 +172,7 @@ namespace Engine {
                     }
                     start(next);
                 });
-        select->Start(settings->direct_dns);
+        select->Start(settings->direct_dns, 2500, serverName);
         return true;
     }
 
