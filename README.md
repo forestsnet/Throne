@@ -9,7 +9,11 @@ Now supporting headless mode, running as a service or in a container, controlled
 <img width="1002" height="789" alt="image" src="https://github.com/user-attachments/assets/af4a8e32-7e55-430c-9402-ec2d665cf71a" />
 
 ### Note on MacOS releases
-Apple platforms have a very strict security policy and since Throne does not have a signed certificate, you will have to remove the quarantine using `xattr -d com.apple.quarantine /path/to/throne.app`. Move `Throne.app` to `/Applications` before the first launch — the built-in privilege escalation opens `Terminal` to make the core setuid-root, and that step can fail while the app is still inside `~/Downloads`. The [Homebrew cask](#macos-homebrew) does both for you.
+Apple platforms have a very strict security policy and since Throne does not have a signed certificate, you will have to remove the quarantine using `xattr -d com.apple.quarantine /path/to/throne.app`. Move `Throne.app` to `/Applications` before the first launch. The [Homebrew cask](#macos-homebrew) does both for you.
+
+Opening a TUN device needs root, so the app asks macOS for your password once and makes the core setuid-root. The permission belongs to that one file: an update installs a new core and takes the permission with the old one, so you are asked again after an update.
+
+While the tunnel is up, iCloud Private Relay is switched off for the network you are on. The relay does not step aside for a plain `utun` the way it does for a VPN with a system extension, so Safari would otherwise keep reaching sites through Apple instead of the country the profile picked. Whatever the setting was is put back when you disconnect, and there is a switch for the whole thing under DNS.
 
 ### GitHub Releases (Portable ZIP)
 
