@@ -225,7 +225,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         syncSettingsMirrors();
     });
 
-    Configs::SystemStateJournal::Init(Configs::GetBasePath());
+    // Журнал уже поднят в Bootstrap::OpenDataDir: его пишет и headless.
     ClearStaleSystemProxy();
     ClearStaleSystemDnsTunnel();
 

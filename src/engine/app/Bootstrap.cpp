@@ -19,6 +19,7 @@
 #include "include/engine/headless/HeadlessInstance.h"
 #include "include/global/Configs.hpp"
 #include "include/global/DeviceDetailsHelper.hpp"
+#include "include/global/SystemStateJournal.hpp"
 #include "include/global/Logger.hpp"
 #include "include/stats/traffic/TrafficStatsManager.hpp"
 
@@ -351,6 +352,11 @@ namespace Engine::Bootstrap {
         const QString &appdataDir = dataDir.appdataDir;
         const QString &configDir = dataDir.configDir;
         SetDeviceIdStore(configDir);
+        // Здесь, а не в окне: в headless окна нет вовсе, и записи о подменённом
+        // системном прокси и DNS уходили в неинициализированный журнал. Именно
+        // этот режим работает без присмотра и чаще всего обрывается незамеченным,
+        // то есть ровно тот случай, ради которого журнал и заведён.
+        Configs::SystemStateJournal::Init(dataDir.wd.absolutePath());
 
         QDir::setCurrent(configDir);
 #ifdef Q_OS_UNIX
