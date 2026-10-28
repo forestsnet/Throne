@@ -2424,6 +2424,19 @@ namespace Configs {
             appendIfSet(injected.resolve);
             appendIfSet(injected.dnsHijack);
             appendIfSet(injected.dnsInReject);
+            // Отказ по имени из рукопожатия, после sniff. Одного NXDOMAIN мало:
+            // руководство Apple написано для сети, в которую устройство входит
+            // заново, а туннель поднимается посреди сеанса — адреса реле у
+            // клиента уже закэшированы, и соединения к ним живы. Запрет имени
+            // их не касается, поэтому реле продолжало работать, показывая миру
+            // настоящий город человека вместо выбранной страны. Отказ, а не
+            // молчание: Apple просит не ронять пакеты, от этого клиент висит.
+            if (!ctx.forTest && settings.block_private_relay) {
+                routeRules.append(QJsonObject{
+                    {"domain", QJsonArray{"mask.icloud.com", "mask-h2.icloud.com"}},
+                    {"action", "reject"},
+                });
+            }
             for (const auto& r : providerAppRules) routeRules.append(r);
             for (const auto& r : profileRules) routeRules.append(r);
             for (const auto& r : vpnAuxRules) routeRules.append(r);

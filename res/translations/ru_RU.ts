@@ -2,6 +2,170 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ru_RU">
 <context>
+    <name>AddSubscriptionDialog</name>
+    <message>
+        <source>Could not open the subscription. Most likely it is blocked by %1 — such programs rewrite network packets, and the provider's site stops answering. Close it and try again.</source>
+        <translation>Не удалось открыть подписку. Скорее всего мешает %1 — такие программы правят сетевые пакеты, и сайт провайдера перестаёт отвечать. Закройте её и попробуйте снова.</translation>
+    </message>
+    <message>
+        <source>Could not open the subscription. Check the link, and if it opens in a browser — look for an anti-censorship tool or antivirus that filters traffic on this computer.</source>
+        <translation>Не удалось открыть подписку. Проверьте ссылку, а если в браузере она открывается — ищите обходчик блокировок или антивирус, который фильтрует трафик на этом компьютере.</translation>
+    </message>
+    <message>
+        <source>Add a server</source>
+        <translation>Добавить сервер</translation>
+    </message>
+    <message>
+        <source>Paste the subscription link your provider gave you, or a single server link such as vless:// or ss://.</source>
+        <translation>Вставьте ссылку на подписку, которую дал провайдер, или ссылку на один сервер — vless:// , ss:// и подобные.</translation>
+    </message>
+    <message>
+        <source>Paste from clipboard</source>
+        <translation>Вставить из буфера</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Отмена</translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation>Добавить</translation>
+    </message>
+    <message>
+        <source>The provider did not answer. Check the link and your connection.</source>
+        <translation>Провайдер не ответил. Проверьте ссылку и соединение.</translation>
+    </message>
+    <message>
+        <source>The clipboard is empty.</source>
+        <translation>Буфер обмена пуст.</translation>
+    </message>
+    <message>
+        <source>Adding…</source>
+        <translation>Добавляем…</translation>
+    </message>
+    <message>
+        <source>My servers</source>
+        <translation>Мои серверы</translation>
+    </message>
+    <message>
+        <source>Enter a link first.</source>
+        <translation>Сначала вставьте ссылку.</translation>
+    </message>
+    <message>
+        <source>Could not create a group for your own servers.</source>
+        <translation>Не удалось создать группу для своих серверов.</translation>
+    </message>
+    <message>
+        <source>Nothing here looks like a server link.</source>
+        <translation>Здесь нет ничего похожего на ссылку сервера.</translation>
+    </message>
+    <message>
+        <source>Fetching the subscription…</source>
+        <translation>Загружаем подписку…</translation>
+    </message>
+</context>
+<context>
+    <name>CoachMarks</name>
+    <message>
+        <source>Skip</source>
+        <translation>Пропустить</translation>
+    </message>
+    <message>
+        <source>Back</source>
+        <translation>Назад</translation>
+    </message>
+    <message>
+        <source>STEP %1 OF %2</source>
+        <translation>ШАГ %1 ИЗ %2</translation>
+    </message>
+    <message>
+        <source>Got it</source>
+        <translation>Понятно</translation>
+    </message>
+    <message>
+        <source>Next</source>
+        <translation>Дальше</translation>
+    </message>
+</context>
+<context>
+    <name>ConnectPanel</name>
+    <message>
+        <source>The tunnel needs administrator rights</source>
+        <translation>Для туннеля нужны права администратора</translation>
+    </message>
+    <message>
+        <source>Full tunnel routes every program on the computer, and macOS gives that only with your password.
+
+You can try again — the password window will come back. Or connect through the system proxy: it works without any rights, browsers and most programs go through it, and the few that ignore proxy settings stay outside.</source>
+        <translation>Полный туннель ведёт через себя все программы компьютера, а такое macOS разрешает только по паролю.
+
+Можно попробовать ещё раз — окно с паролем вернётся. Либо подключиться через системный прокси: он работает вообще без прав, браузеры и большинство программ идут через него, а те немногие, что игнорируют настройки прокси, останутся снаружи.</translation>
+    </message>
+    <message>
+        <source>Ask for the password again</source>
+        <translation>Спросить пароль ещё раз</translation>
+    </message>
+    <message>
+        <source>Connect through the proxy</source>
+        <translation>Подключиться через прокси</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Отмена</translation>
+    </message>
+    <message>
+        <source>Connected</source>
+        <translation>Подключено</translation>
+    </message>
+    <message>
+        <source>Disconnected</source>
+        <translation>Отключено</translation>
+    </message>
+    <message>
+        <source>No server selected</source>
+        <translation>Сервер не выбран</translation>
+    </message>
+    <message>
+        <source>Could not connect</source>
+        <translation>Не удалось подключиться</translation>
+    </message>
+    <message>
+        <source>Could not disconnect</source>
+        <translation>Не удалось отключиться</translation>
+    </message>
+    <message>
+        <source>Disconnecting</source>
+        <translation>Отключаемся</translation>
+    </message>
+    <message>
+        <source>Add a subscription first</source>
+        <translation>Сначала добавьте подписку</translation>
+    </message>
+    <message>
+        <source>Connecting</source>
+        <translation>Подключаемся</translation>
+    </message>
+    <message>
+        <source>Full tunnel (TUN)</source>
+        <translation>Весь трафик (TUN)</translation>
+    </message>
+    <message>
+        <source>System proxy</source>
+        <translation>Системный прокси</translation>
+    </message>
+    <message>
+        <source>chosen automatically</source>
+        <translation>выбран автоматически</translation>
+    </message>
+</context>
+<context>
+    <name>ConnectionManager</name>
+    <message>
+        <source>A background Throne (PID %1) owns Tun on this computer; stop it or use thronectl.</source>
+        <translation type="unfinished">Tun на этом компьютере занят фоновым Throne (PID %1); остановите его или используйте thronectl.</translation>
+    </message>
+</context>
+<context>
     <name>ConnectionsFilterHeader</name>
     <message>
         <source>Disable Filter</source>
@@ -105,6 +269,68 @@ Outbound: %4</translation>
     <message>
         <source>Click to sort by speed; right-click to choose total/down/up</source>
         <translation>Нажмите, чтобы отсортировать по скорости; ПКМ — выбор: всего/скачивание/отдача</translation>
+    </message>
+</context>
+<context>
+    <name>CoreDiagnostics</name>
+    <message>
+        <source>The core is not running.</source>
+        <translation type="unfinished">Ядро не запущено.</translation>
+    </message>
+    <message>
+        <source>Could not reach the core. See the log for details.</source>
+        <translation type="unfinished">Не удалось установить связь с ядром. Подробности смотрите в логах.</translation>
+    </message>
+    <message>
+        <source>The core could not capture the profile: %1</source>
+        <translation type="unfinished">Ядру не удалось выполнить профилирование: %1</translation>
+    </message>
+    <message>
+        <source>The core returned an empty profile.</source>
+        <translation type="unfinished">Ядро вернуло пустой результат профилирования.</translation>
+    </message>
+    <message>
+        <source>Could not save %1: %2</source>
+        <translation type="unfinished">Не удалось сохранить %1: %2</translation>
+    </message>
+    <message>
+        <source>Performance profile saved to %1</source>
+        <translation type="unfinished">Результат профилирования сохранен в %1</translation>
+    </message>
+    <message>
+        <source>The performance profile was saved (%1).</source>
+        <translation type="unfinished">Результат профилирования сохранен (%1).</translation>
+    </message>
+    <message>
+        <source>Performance profile failed: %1</source>
+        <translation type="unfinished">Ошибка профилирования: %1</translation>
+    </message>
+    <message>
+        <source>Performance profile</source>
+        <translation type="unfinished">Профилирование</translation>
+    </message>
+    <message>
+        <source>Show in folder</source>
+        <translation type="unfinished">Показать в папке</translation>
+    </message>
+</context>
+<context>
+    <name>CoreSupervisor</name>
+    <message>
+        <source>Throne could not open the local channel the core connects to (%1), so no profile can start.</source>
+        <translation type="unfinished">Throne не удалось открыть локальный канал, через который подключается ядро (%1), поэтому ни один профиль не может быть запущен.</translation>
+    </message>
+    <message>
+        <source>Core unavailable</source>
+        <translation type="unfinished">Ядро недоступно</translation>
+    </message>
+    <message>
+        <source>The core did not connect within %1 s, restarting it.</source>
+        <translation type="unfinished">Ядро не подключилось за %1 с, перезапуск.</translation>
+    </message>
+    <message>
+        <source>The core keeps exiting, so it is no longer restarted. Use Restart Core to try again.</source>
+        <translation type="unfinished">Ядро постоянно завершает работу, поэтому больше не перезапускается. Попробуйте снова через «Перезапуск ядра».</translation>
     </message>
 </context>
 <context>
@@ -534,6 +760,26 @@ It stays a preference, not a lock: if that profile stops working the selector st
     <message>
         <source>Restore from Backup...</source>
         <translation>Восстановить из копии</translation>
+    </message>
+    <message>
+        <source>WebDAV</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Keep backups on a WebDAV server such as Nextcloud, a NAS or Yandex Disk. Uploads include the parts checked under Create Backup.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>WebDAV Settings...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Upload to WebDAV</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Restore from WebDAV...</source>
+        <translation type="unfinished" />
     </message>
     <message>
         <source>Security</source>
@@ -1116,6 +1362,170 @@ Select which parts to restore:</source>
         <translation>Загрузка geo-файла Xray: %1</translation>
     </message>
     <message>
+        <source>Enter your WebDAV server in WebDAV Settings first.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>WebDAV Settings</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Server URL</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Username</source>
+        <translation type="unfinished">Имя пользователя</translation>
+    </message>
+    <message>
+        <source>Password</source>
+        <translation type="unfinished">Пароль</translation>
+    </message>
+    <message>
+        <source>Folder</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Device name</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Connect through the proxy</source>
+        <translation type="unfinished">Подключиться через прокси</translation>
+    </message>
+    <message>
+        <source>Test</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Testing the connection...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Connected. The backup folder is ready.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Connection failed:
+%1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>The server URL must start with http:// or https://.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Uploading the backup...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Upload failed:
+%1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Backup uploaded:
+%1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Backup uploaded, but the backup list could not be updated: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Restore from WebDAV</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Loading the backup list...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Could not list the backups:
+%1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>The backup list could not be read: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>There are no backups in the WebDAV folder yet.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Created</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Device</source>
+        <translation type="unfinished">Устройство</translation>
+    </message>
+    <message>
+        <source>Platform</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Version</source>
+        <translation type="unfinished">Версия</translation>
+    </message>
+    <message>
+        <source>Parts</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Size</source>
+        <translation type="unfinished">Размер</translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="unfinished">Удалить</translation>
+    </message>
+    <message>
+        <source>Unknown device</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>%1 (this device)</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Unknown</source>
+        <translation type="unfinished">Неизвестно</translation>
+    </message>
+    <message>
+        <source>Downloading the backup...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Could not download the backup:
+%1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Delete Backup</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Delete this backup from the WebDAV server? This cannot be undone.
+
+%1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Deleting the backup...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Could not delete the backup:
+%1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Backup deleted, but the backup list could not be updated: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
         <source>Failed to create database snapshot: %1</source>
         <translation>Не удалось создать снимок базы данных: %1</translation>
     </message>
@@ -1160,6 +1570,10 @@ This backup may have been created with a newer version of the application.</sour
         <translation>Этот файл резервной копии не содержит восстанавливаемых данных.</translation>
     </message>
     <message>
+        <source>Created by: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
         <source>Each selected part replaces the current data. This cannot be undone.
 Throne will restart to complete the restore.</source>
         <translation>Каждый выбранный раздел заменит текущие данные. Это действие нельзя отменить.
@@ -1189,15 +1603,7 @@ Throne will restart to complete the restore.</source>
         <source>The backup's database is damaged: %1</source>
         <translation>База данных резервной копии повреждена: %1</translation>
     </message>
-<message>
-        <source>Auto-scroll log</source>
-        <translation>Авто-скролл логов</translation>
-    </message>
-    <message>
-        <source>Show System DNS option</source>
-        <translation>Отображать режим «Системный DNS»</translation>
-    </message>
-    </context>
+</context>
 <context>
     <name>DialogEditGroup</name>
     <message>
@@ -1241,6 +1647,18 @@ Throne will restart to complete the restore.</source>
         <translation>Копировать ссылки профилей</translation>
     </message>
     <message>
+        <source>The provider hides the subscription URL.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Support: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Refill date: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
         <source>No profile named "%1". Pick one from the list.</source>
         <translation>Профиля с названием "%1" нет. Выберите профиль из списка.</translation>
     </message>
@@ -1268,15 +1686,7 @@ Throne will restart to complete the restore.</source>
         <source>Copy profile share links (Deep Links)</source>
         <translation>Копировать ссылки профилей (deep links)</translation>
     </message>
-<message>
-        <source>Warning</source>
-        <translation>Предупреждение</translation>
-    </message>
-    <message>
-        <source>Please input URL</source>
-        <translation>Пожалуйста, введите URL</translation>
-    </message>
-    </context>
+</context>
 <context>
     <name>DialogEditGroupAdvanced</name>
     <message>
@@ -2508,10 +2918,6 @@ Throne will restart to complete the restore.</source>
         <source>The short ID has no effect without a Reality public key, so Reality stays off.</source>
         <translation>Short ID не действует без публичного ключа Reality, поэтому Reality остается выключенным.</translation>
     </message>
-<message>
-        <source>XHTTP maxConnections cannot be specified together with maxConcurrency.</source>
-        <translation>В XHTTP нельзя одновременно указывать maxConnections и maxConcurrency.</translation>
-    </message>
 </context>
 <context>
     <name>DialogEndpointDetails</name>
@@ -3424,6 +3830,10 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
         <translation>Добавить удалённые профили маршрутизации</translation>
     </message>
     <message>
+        <source>It uses its own DNS servers: remote %1, direct %2.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
         <source>Use an IP address, for example 223.5.5.5 or tls://1.1.1.1: this server resolves the names of the others.</source>
         <translation>Укажите IP-адрес, например 223.5.5.5 или tls://1.1.1.1: этот сервер разрешает имена остальных.</translation>
     </message>
@@ -3551,63 +3961,7 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
         <source>Add these remote routing profiles?</source>
         <translation>Добавить эти удалённые профили маршрутизации?</translation>
     </message>
-<message>
-        <source>Hijack</source>
-        <translation>Перехват</translation>
-    </message>
-    <message>
-        <source>DNS Server</source>
-        <translation>DNS-сервер</translation>
-    </message>
-    <message>
-        <source>Enable</source>
-        <translation>Вкл.</translation>
-    </message>
-    <message>
-        <source>How does it work?</source>
-        <translation>Как это работает?</translation>
-    </message>
-    <message>
-        <source>Listen Address</source>
-        <translation>Прослушиваемый адрес</translation>
-    </message>
-    <message>
-        <source>Listen Port</source>
-        <translation>Прослушиваемый порт</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Following format should be used:&lt;br/&gt;domain:a.com&lt;/p&gt;&lt;p&gt;suffix:a.com&lt;/p&gt;&lt;p&gt;regex:someregex&lt;/p&gt;&lt;p&gt;rule_set:nameOfRuleSet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Необходимо использовать следующий формат:&lt;br/&gt;domain:a.com&lt;/p&gt;&lt;p&gt;suffix:a.com&lt;/p&gt;&lt;p&gt;regex:someregex&lt;/p&gt;&lt;p&gt;rule_set:nameOfRuleSet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Rules</source>
-        <translation>Правила</translation>
-    </message>
-    <message>
-        <source>IPv4 Response</source>
-        <translation>Ответ IPv4</translation>
-    </message>
-    <message>
-        <source>IPv6 Response</source>
-        <translation>Ответ IPv6</translation>
-    </message>
-    <message>
-        <source>Redirect Settings</source>
-        <translation>Настройки перенаправления</translation>
-    </message>
-    <message>
-        <source>DNS Rules are not valid</source>
-        <translation>Правила DNS недействительны</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Whether to listen on 0.0.0.0 so that other devices on LAN can use this server&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Нужно ли прослушивать 0.0.0.0, чтобы другие устройства в локальной сети могли использовать этот сервер.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Allow Lan to Connect</source>
-        <translation>Разрешить подключения из локальной сети</translation>
-    </message>
-    </context>
+</context>
 <context>
     <name>DialogNewScan</name>
     <message>
@@ -3810,6 +4164,69 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
 %2</source>
         <translation>Экспортировано OTP-профилей: %1. Файл:
 %2</translation>
+    </message>
+</context>
+<context>
+    <name>DialogPerAppProxy</name>
+    <message>
+        <source>Your provider routes these itself. %1</source>
+        <translation>Эти приложения провайдер ведёт сам. %1</translation>
+    </message>
+    <message>
+        <source>Past the VPN: %1</source>
+        <translation>Мимо VPN: %1</translation>
+    </message>
+    <message>
+        <source>Through the VPN: %1</source>
+        <translation>Через VPN: %1</translation>
+    </message>
+    <message>
+        <source>Per-app proxy</source>
+        <translation>Прокси по приложениям</translation>
+    </message>
+    <message>
+        <source>No routing profile is selected.</source>
+        <translation>Профиль маршрутизации не выбран.</translation>
+    </message>
+    <message>
+        <source>Choose how each application is routed. The choice is stored as processName rules in the current routing profile.</source>
+        <translation>Выберите, как маршрутизировать каждое приложение. Выбор сохраняется правилами processName в текущем профиле маршрутизации.</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>Закрыть</translation>
+    </message>
+    <message>
+        <source>Search applications</source>
+        <translation>Поиск приложений</translation>
+    </message>
+    <message>
+        <source>Show system processes</source>
+        <translation>Показать системные процессы</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Отмена</translation>
+    </message>
+    <message>
+        <source>Save</source>
+        <translation>Сохранить</translation>
+    </message>
+    <message>
+        <source>Not set</source>
+        <translation>Не задано</translation>
+    </message>
+    <message>
+        <source>Through proxy</source>
+        <translation>Через прокси</translation>
+    </message>
+    <message>
+        <source>Direct</source>
+        <translation>Напрямую</translation>
+    </message>
+    <message>
+        <source>Per-app routing updated: %1 via proxy, %2 direct</source>
+        <translation>Маршрутизация по приложениям обновлена: %1 через прокси, %2 напрямую</translation>
     </message>
 </context>
 <context>
@@ -4786,22 +5203,6 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <source>IPv6 CIDR</source>
         <translation>IPv6 CIDR</translation>
     </message>
-<message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Required on newer Linux kernels for the system and mixed stacks to pass traffic. While enabled, this machine cannot be used as a network gateway for other devices.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Требуется в новых версиях ядра Linux для пропуска трафика через системный и смешанный стеки. При включении этой функции данный компьютер нельзя использовать в качестве сетевого шлюза для других устройств.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Invalid Tun Address</source>
-        <translation>Неверный адрес TUN</translation>
-    </message>
-    <message>
-        <source>IPv4 CIDR is invalid.</source>
-        <translation>Некорректный IPv4 CIDR.</translation>
-    </message>
-    <message>
-        <source>IPv6 CIDR is invalid.</source>
-        <translation>Некорректный IPv6 CIDR.</translation>
-    </message>
 </context>
 <context>
     <name>DialogVpnAuth</name>
@@ -5143,14 +5544,6 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     <message>
         <source>Already set</source>
         <translation>Уже задано</translation>
-    </message>
-<message>
-        <source>ECH Server Name</source>
-        <translation>ECH имя сервера</translation>
-    </message>
-    <message>
-        <source>Certificate sha256</source>
-        <translation>Сертификат SHA256</translation>
     </message>
 </context>
 <context>
@@ -5506,35 +5899,7 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <source>The rest will be measured before the selector starts.</source>
         <translation>Остальные профили будут измерены до запуска автовыбора.</translation>
     </message>
-<message>
-        <source>The group whose profiles this selector picks from. New servers added by a subscription update join automatically — you never have to edit this profile again.</source>
-        <translation>Группа, из профилей которой осуществляется автовыбор. Новые серверы, добавленные в результате обновления подписки, присоединяются автоматически — вам больше не придется редактировать этот профиль.</translation>
-    </message>
-    <message>
-        <source>leave empty to use every profile in the group</source>
-        <translation>оставьте поле пустым, чтобы использовать все профили в группе</translation>
-    </message>
-    <message>
-        <source>optional</source>
-        <translation>необязательно</translation>
-    </message>
-    <message>
-        <source>Fetched WITHOUT the proxy to tell a dead internet connection apart from dead servers. Leave empty to rely on the operating system's network state, which is the safer default on a censored network where any fixed address may be blocked.</source>
-        <translation>Запрос выполняется БЕЗ использования прокси, чтобы отличить отсутствие интернет-соединения от неработающих серверов. Оставьте поле пустым, чтобы полагаться на данные об состоянии сети, предоставляемые операционной системой — это более безопасный вариант по умолчанию в условиях цензурированной сети, где любой фиксированный адрес может быть заблокирован.</translation>
-    </message>
-    <message>
-        <source>Select the group this auto selector should track.</source>
-        <translation>Выберите группу, за которой должен следить этот автовыбор.</translation>
-    </message>
-    <message>
-        <source>The name filter is not a valid regular expression: %1</source>
-        <translation>Фильтр по имени не является допустимым регулярным выражением: %1</translation>
-    </message>
-    <message>
-        <source>%1 of %2 profiles in the group can be used; %3 would run.</source>
-        <translation>Можно использовать %1 из %2 профилей в группе; %3 будут запущены.</translation>
-    </message>
-    </context>
+</context>
 <context>
     <name>EditChain</name>
     <message>
@@ -5600,14 +5965,6 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     <message>
         <source>Add at least one profile to the chain.</source>
         <translation>Добавьте в цепочку хотя бы один профиль.</translation>
-    </message>
-<message>
-        <source>Profiles that use an extra core can only be the final hop in the chain. Move it to the top of the list.</source>
-        <translation>Профили, использующие extra-core, могут быть только последним звеном в цепочке. Переместите его в начало списка.</translation>
-    </message>
-    <message>
-        <source>Only one extra-core profile is allowed in a chain.</source>
-        <translation>В цепочке допускается только один extra-core профиль.</translation>
     </message>
 </context>
 <context>
@@ -7691,31 +8048,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <source>QUIC</source>
         <translation>QUIC</translation>
     </message>
-<message>
-        <source>bbr</source>
-        <translation>BBR</translation>
-    </message>
-    <message>
-        <source>cubic</source>
-        <translation>CUBIC</translation>
-    </message>
-    <message>
-        <source>reno</source>
-        <translation>Reno</translation>
-    </message>
-    <message>
-        <source>bbr_standard</source>
-        <translation>BBR Standard</translation>
-    </message>
-    <message>
-        <source>bbr2</source>
-        <translation>BBR v2</translation>
-    </message>
-    <message>
-        <source>bbr_variant</source>
-        <translation>Вариант BBR</translation>
-    </message>
-    </context>
+</context>
 <context>
     <name>EditTuic</name>
     <message>
@@ -7746,27 +8079,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <source>UDP over Stream</source>
         <translation>UDP over Stream</translation>
     </message>
-<message>
-        <source>bbr</source>
-        <translation>BBR</translation>
-    </message>
-    <message>
-        <source>cubic</source>
-        <translation>CUBIC</translation>
-    </message>
-    <message>
-        <source>new_reno</source>
-        <translation>New Reno</translation>
-    </message>
-    <message>
-        <source>native</source>
-        <translation>нативный</translation>
-    </message>
-    <message>
-        <source>quic</source>
-        <translation>QUIC</translation>
-    </message>
-    </context>
+</context>
 <context>
     <name>EditVMess</name>
     <message>
@@ -7891,15 +8204,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <source>Open Amnezia Options and fix %1: %2</source>
         <translation>Откройте «Параметры Amnezia» и исправьте %1: %2</translation>
     </message>
-<message>
-        <source>Getting keypair...</source>
-        <translation>Получение пары ключей…</translation>
-    </message>
-    <message>
-        <source>Failed to get key pair</source>
-        <translation>Не удалось получить пару ключей</translation>
-    </message>
-    </context>
+</context>
 <context>
     <name>EditWireguardAmnezia</name>
     <message>
@@ -8085,35 +8390,521 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <source>Flow</source>
         <translation>Flow</translation>
     </message>
-<message>
-        <source>none</source>
-        <translation>нет</translation>
-    </message>
-    </context>
+</context>
 <context>
-    <name>Engine::ConnectionManager</name>
+    <name>FsntDiagnosticsDialog</name>
     <message>
-        <source>A background Throne (PID %1) owns Tun on this computer; stop it or use thronectl.</source>
-        <translation>Tun на этом компьютере занят фоновым Throne (PID %1); остановите его или используйте thronectl.</translation>
+        <source>Diagnostics</source>
+        <translation>Диагностика</translation>
+    </message>
+    <message>
+        <source>The client checks itself and says what to fix. Everything here runs on this computer; nothing is sent anywhere.</source>
+        <translation>Клиент проверяет себя сам и говорит, что чинить. Всё это выполняется на вашем компьютере, никуда ничего не отправляется.</translation>
+    </message>
+    <message>
+        <source>checking…</source>
+        <translation>проверяю…</translation>
+    </message>
+    <message>
+        <source>Run again</source>
+        <translation>Проверить заново</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>Закрыть</translation>
+    </message>
+    <message>
+        <source>Working…</source>
+        <translation>Работаю…</translation>
+    </message>
+    <message>
+        <source>Found %1 problem(s). Fix the topmost one first: the checks run from cause to effect, and the rest are often its consequences.</source>
+        <translation>Найдено проблем: %1. Начните с верхней: проверки идут от причины к следствию, и остальные часто её последствия.</translation>
+    </message>
+    <message>
+        <source>No breakage found, but %1 thing(s) are worth a look.</source>
+        <translation>Поломок нет, но стоит взглянуть: %1.</translation>
+    </message>
+    <message>
+        <source>Everything checks out. If something still does not work, build a support report from the menu and send it over.</source>
+        <translation>Всё в порядке. Если что-то всё равно не работает — соберите отчёт для поддержки из меню и пришлите его.</translation>
     </message>
 </context>
 <context>
-    <name>Engine::CoreSupervisor</name>
+    <name>FsntLogDialog</name>
     <message>
-        <source>Throne could not open the local channel the core connects to (%1), so no profile can start.</source>
-        <translation>Throne не удалось открыть локальный канал, через который подключается ядро (%1), поэтому ни один профиль не может быть запущен.</translation>
+        <source>Logs</source>
+        <translation>Логи</translation>
     </message>
     <message>
-        <source>Core unavailable</source>
-        <translation>Ядро недоступно</translation>
+        <source>Filter lines</source>
+        <translation>Фильтр строк</translation>
     </message>
     <message>
-        <source>The core did not connect within %1 s, restarting it.</source>
-        <translation>Ядро не подключилось за %1 с, перезапуск.</translation>
+        <source>Problems only</source>
+        <translation>Только проблемы</translation>
     </message>
     <message>
-        <source>The core keeps exiting, so it is no longer restarted. Use Restart Core to try again.</source>
-        <translation>Ядро постоянно завершает работу, поэтому больше не перезапускается. Попробуйте снова через «Перезапуск ядра».</translation>
+        <source>Follow new lines</source>
+        <translation>Следить за новыми</translation>
+    </message>
+    <message>
+        <source>Copy</source>
+        <translation>Копировать</translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation>Очистить</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>Закрыть</translation>
+    </message>
+</context>
+<context>
+    <name>FsntSettingsDialog</name>
+    <message>
+        <source>Custom: %1</source>
+        <translation>Своя: %1</translation>
+    </message>
+    <message>
+        <source>A profile you built yourself in advanced mode.</source>
+        <translation>Схема, собранная вами в расширенном режиме.</translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation>Настройки</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Отмена</translation>
+    </message>
+    <message>
+        <source>Save</source>
+        <translation>Сохранить</translation>
+    </message>
+    <message>
+        <source>Connection</source>
+        <translation>Подключение</translation>
+    </message>
+    <message>
+        <source>Full tunnel (TUN)</source>
+        <translation>Весь трафик (TUN)</translation>
+    </message>
+    <message>
+        <source>System proxy</source>
+        <translation>Системный прокси</translation>
+    </message>
+    <message>
+        <source>Connection mode</source>
+        <translation>Режим подключения</translation>
+    </message>
+    <message>
+        <source>Routing</source>
+        <translation>Маршрутизация</translation>
+    </message>
+    <message>
+        <source>Routing is managed by your provider while this subscription is connected. Disconnect to change it.</source>
+        <translation>Пока эта подписка подключена, маршрутизацией управляет ваш провайдер. Отключитесь, чтобы изменить её.</translation>
+    </message>
+    <message>
+        <source>DNS</source>
+        <translation>DNS</translation>
+    </message>
+    <message>
+        <source>Through the VPN</source>
+        <translation>Через VPN</translation>
+    </message>
+    <message>
+        <source>Direct traffic</source>
+        <translation>Прямой трафик</translation>
+    </message>
+    <message>
+        <source>Turn off iCloud Private Relay while connected</source>
+        <translation>Отключать iCloud Private Relay на время подключения</translation>
+    </message>
+    <message>
+        <source>Apple hides the IP address of Safari behind its own relay, and it does not step aside for this client the way it does for others, so pages see Apple's address instead of the country you picked. While this is on, the relay is told it is unavailable and Safari goes through the tunnel like everything else. Apple devices on the same network are affected too.</source>
+        <translation>Apple прячет адрес Safari за своим реле и, в отличие от других клиентов, нашему дорогу не уступает — сайты видят адрес Apple вместо выбранной вами страны. Пока это включено, реле получает ответ, что оно недоступно, и Safari идёт через туннель наравне со всем остальным. Это касается и других устройств Apple в той же сети.</translation>
+    </message>
+    <message>
+        <source>Subscriptions</source>
+        <translation>Подписки</translation>
+    </message>
+    <message>
+        <source>Off</source>
+        <translation>Выкл.</translation>
+    </message>
+    <message>
+        <source>Every 30 minutes</source>
+        <translation>Каждые 30 минут</translation>
+    </message>
+    <message>
+        <source>Every hour</source>
+        <translation>Каждый час</translation>
+    </message>
+    <message>
+        <source>Every 2 hours</source>
+        <translation>Каждые 2 часа</translation>
+    </message>
+    <message>
+        <source>Every 6 hours</source>
+        <translation>Каждые 6 часов</translation>
+    </message>
+    <message>
+        <source>Every 12 hours</source>
+        <translation>Каждые 12 часов</translation>
+    </message>
+    <message>
+        <source>Once a day</source>
+        <translation>Раз в сутки</translation>
+    </message>
+    <message>
+        <source>Auto update</source>
+        <translation>Авто-обновление</translation>
+    </message>
+    <message>
+        <source>Update all now</source>
+        <translation>Обновить все сейчас</translation>
+    </message>
+    <message>
+        <source>This subscription is pinned by your provider and cannot be removed while it is connected.</source>
+        <translation>Эта подписка закреплена провайдером и не может быть удалена, пока подключена.</translation>
+    </message>
+    <message>
+        <source>Remove the current subscription</source>
+        <translation>Удалить текущую подписку</translation>
+    </message>
+    <message>
+        <source>Application</source>
+        <translation>Приложение</translation>
+    </message>
+    <message>
+        <source>Language</source>
+        <translation>Язык</translation>
+    </message>
+    <message>
+        <source>System</source>
+        <translation>Системный</translation>
+    </message>
+    <message>
+        <source>Reconnect on start</source>
+        <translation>Подключаться при запуске</translation>
+    </message>
+    <message>
+        <source>Allow local network access</source>
+        <translation>Разрешить доступ из локальной сети</translation>
+    </message>
+    <message>
+        <source>Choose apps to route</source>
+        <translation>Выбрать приложения</translation>
+    </message>
+    <message>
+        <source>Switch automatically when it stops answering</source>
+        <translation>Переключать самому, когда перестаёт отвечать</translation>
+    </message>
+    <message>
+        <source>Add your own server</source>
+        <translation>Добавить свой сервер</translation>
+    </message>
+    <message>
+        <source>Address, for example 1.1.1.1, tls://dns.google or https://dns.google/dns-query:</source>
+        <translation>Адрес, например 1.1.1.1, tls://dns.google или https://dns.google/dns-query:</translation>
+    </message>
+    <message>
+        <source>Address not understood</source>
+        <translation>Адрес не понят</translation>
+    </message>
+    <message>
+        <source>The first resolves names for tunnelled traffic, the second for everything that goes direct. The direct one has to work before the tunnel is up, so a provider that blocks DoT or DoH leaves nothing to connect with — that is what the automatic switch is for.</source>
+        <translation>Первый разрешает имена для трафика в туннеле, второй — для всего, что идёт напрямую. Прямой обязан работать ещё до поднятия туннеля, поэтому у провайдера, который режет DoT или DoH, подключаться становится нечем — ради этого и нужен автоматический подбор.</translation>
+    </message>
+    <message>
+        <source>Last connection actually used %1.</source>
+        <translation>В прошлый раз подключение шло через %1.</translation>
+    </message>
+    <message>
+        <source>Dark</source>
+        <translation>Тёмная</translation>
+    </message>
+    <message>
+        <source>Light</source>
+        <translation>Светлая</translation>
+    </message>
+    <message>
+        <source>Theme</source>
+        <translation>Тема</translation>
+    </message>
+    <message>
+        <source>Launch at login</source>
+        <translation>Запускать при входе в систему</translation>
+    </message>
+    <message>
+        <source>Start minimized to tray</source>
+        <translation>Запускать свёрнутым в трей</translation>
+    </message>
+    <message>
+        <source>Install updates by itself</source>
+        <translation>Ставить обновления самостоятельно</translation>
+    </message>
+    <message>
+        <source>Notifications</source>
+        <translation>Уведомления</translation>
+    </message>
+    <message>
+        <source>New version of the client</source>
+        <translation>Новая версия клиента</translation>
+    </message>
+    <message>
+        <source>Subscription updated</source>
+        <translation>Подписка обновлена</translation>
+    </message>
+    <message>
+        <source>VPN turned on and off</source>
+        <translation>Включение и выключение VPN</translation>
+    </message>
+    <message>
+        <source>About the subscription and the tunnel we only tell you when the client window is not in front of you: while you are looking at it, you can see everything anyway.</source>
+        <translation>О подписке и туннеле сообщаем, только когда окно клиента не перед вами: пока вы в него смотрите, всё и так видно.</translation>
+    </message>
+    <message>
+        <source>Could not change the autostart entry. The system refused it: on Windows this is usually the elevation prompt being dismissed.</source>
+        <translation>Не удалось изменить автозапуск: система отказала. В Windows так обычно выглядит закрытый запрос прав администратора.</translation>
+    </message>
+    <message>
+        <source>Language changes apply after restarting the application.</source>
+        <translation>Смена языка применится после перезапуска приложения.</translation>
+    </message>
+    <message>
+        <source>Latency check</source>
+        <translation>Проверка задержки</translation>
+    </message>
+    <message>
+        <source>URL test address</source>
+        <translation>Адрес для URL-теста</translation>
+    </message>
+    <message>
+        <source>Send device id</source>
+        <translation>Отправлять идентификатор устройства</translation>
+    </message>
+    <message>
+        <source>Providers count devices by it. With it off a subscription may come back empty, and the reason will not be obvious.</source>
+        <translation>По нему провайдеры считают устройства. С выключенным подписка может прийти пустой, и причина будет неочевидна.</translation>
+    </message>
+</context>
+<context>
+    <name>FsntWindow</name>
+    <message>
+        <source>A new version is out</source>
+        <translation>Вышла новая версия</translation>
+    </message>
+    <message>
+        <source>FSNT Client %1 is out</source>
+        <translation>Вышел FSNT Client %1</translation>
+    </message>
+    <message>
+        <source>Updating to %1</source>
+        <translation>Обновляемся до %1</translation>
+    </message>
+    <message>
+        <source>The client will restart and reconnect by itself.</source>
+        <translation>Клиент перезапустится и сам вернёт подключение.</translation>
+    </message>
+    <message>
+        <source>Updating to %1, the client will restart</source>
+        <translation>Обновляемся до %1, клиент перезапустится</translation>
+    </message>
+    <message>
+        <source>Update by itself?</source>
+        <translation>Обновляться самостоятельно?</translation>
+    </message>
+    <message>
+        <source>Update by itself</source>
+        <translation>Обновляться самому</translation>
+    </message>
+    <message>
+        <source>Not now</source>
+        <translation>Не надо</translation>
+    </message>
+    <message>
+        <source>The client can install new versions on its own: it downloads the update, restarts and brings the connection back to the same server.
+
+You can change this later in settings.</source>
+        <translation>Клиент умеет ставить новые версии сам: скачивает обновление, перезапускается и возвращает подключение к тому же серверу.
+
+Это можно поменять потом в настройках.</translation>
+    </message>
+    <message>
+        <source>You are now on %1. The client can install the next versions on its own: it downloads the update, restarts and brings the connection back to the same server.
+
+You can change this later in settings.</source>
+        <translation>Теперь у вас %1. Следующие версии клиент может ставить сам: скачает обновление, перезапустится и вернёт подключение к тому же серверу.
+
+Это можно поменять потом в настройках.</translation>
+    </message>
+    <message>
+        <source>FSNT Client %1 is out — press the bell</source>
+        <translation>Вышел FSNT Client %1 — нажмите на колокольчик</translation>
+    </message>
+    <message>
+        <source>Click here to update — it takes about a minute.</source>
+        <translation>Нажмите, чтобы обновиться — это займёт около минуты.</translation>
+    </message>
+    <message>
+        <source>VPN is on</source>
+        <translation>VPN включён</translation>
+    </message>
+    <message>
+        <source>VPN is off</source>
+        <translation>VPN выключен</translation>
+    </message>
+    <message>
+        <source>Traffic goes through %1.</source>
+        <translation>Трафик идёт через %1.</translation>
+    </message>
+    <message>
+        <source>Traffic goes through the tunnel.</source>
+        <translation>Трафик идёт через туннель.</translation>
+    </message>
+    <message>
+        <source>Traffic goes directly again.</source>
+        <translation>Трафик снова идёт напрямую.</translation>
+    </message>
+    <message>
+        <source>Subscription updated</source>
+        <translation>Подписка обновлена</translation>
+    </message>
+    <message>
+        <source>The provider returned no servers.</source>
+        <translation>Провайдер не вернул ни одного сервера.</translation>
+    </message>
+    <message>
+        <source>Version %1 is out</source>
+        <translation>Вышла версия %1</translation>
+    </message>
+    <message>
+        <source>You have %1 installed. Press Update and the client will download and install the new version itself.</source>
+        <translation>У вас установлена %1. Нажмите «Обновить» — клиент сам скачает и поставит новую версию.</translation>
+    </message>
+    <message>
+        <source>Diagnostics</source>
+        <translation>Диагностика</translation>
+    </message>
+    <message>
+        <source>Connected, but nothing opens</source>
+        <translation>Подключено, но ничего не открывается</translation>
+    </message>
+    <message>
+        <source>How to use the app</source>
+        <translation>Как пользоваться приложением</translation>
+    </message>
+    <message>
+        <source>Start with a subscription</source>
+        <translation>Начните с подписки</translation>
+    </message>
+    <message>
+        <source>Many providers put an Add button right on your subscription page: it opens the client and fills everything in. If yours does not, press this plus and paste the link by hand.</source>
+        <translation>У многих провайдеров прямо на странице подписки есть кнопка «Добавить»: она сама открывает клиент и всё заполняет. Если её нет — нажмите плюс и вставьте ссылку вручную.</translation>
+    </message>
+    <message>
+        <source>Your servers</source>
+        <translation>Ваши серверы</translation>
+    </message>
+    <message>
+        <source>Servers appear here once the subscription loads. The number on the right is the ping: the lower it is, the faster the server answers.</source>
+        <translation>Серверы появятся здесь, когда загрузится подписка. Число справа — пинг: чем меньше, тем быстрее отвечает сервер.</translation>
+    </message>
+    <message>
+        <source>One button</source>
+        <translation>Одна кнопка</translation>
+    </message>
+    <message>
+        <source>Press it to send your traffic through the tunnel, press it again to stop. With no server picked, the fastest one is chosen for you.</source>
+        <translation>Нажмите — и трафик пойдёт через туннель, нажмите ещё раз — остановится. Если сервер не выбран, возьмётся самый быстрый.</translation>
+    </message>
+    <message>
+        <source>Connection mode, DNS and the apps that go through the tunnel. Everything here has a working default, so you do not have to touch it.</source>
+        <translation>Режим подключения, DNS и приложения, которые идут через туннель. Всё здесь уже настроено разумно, трогать необязательно.</translation>
+    </message>
+    <message>
+        <source>A live log. If something goes wrong, open it and copy the last lines into your message to support.</source>
+        <translation>Живой журнал. Если что-то пошло не так — откройте и скопируйте последние строки в обращение в поддержку.</translation>
+    </message>
+    <message>
+        <source>Everything else</source>
+        <translation>Всё остальное</translation>
+    </message>
+    <message>
+        <source>App updates, a support report and the config folder. Closing the window only hides it to the tray: the tunnel keeps running.</source>
+        <translation>Обновление приложения, отчёт для поддержки и папка конфигурации. Крестик только прячет окно в трей — туннель продолжает работать.</translation>
+    </message>
+    <message>
+        <source>Advanced mode</source>
+        <translation>Расширенный режим</translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation>Настройки</translation>
+    </message>
+    <message>
+        <source>dev</source>
+        <translation>dev</translation>
+    </message>
+    <message>
+        <source>Application version</source>
+        <translation>Версия приложения</translation>
+    </message>
+    <message>
+        <source>Logs</source>
+        <translation>Логи</translation>
+    </message>
+    <message>
+        <source>More</source>
+        <translation>Ещё</translation>
+    </message>
+    <message>
+        <source>FSNT Client · development build</source>
+        <translation>FSNT Client · сборка для разработки</translation>
+    </message>
+    <message>
+        <source>Check for updates</source>
+        <translation>Проверить обновления</translation>
+    </message>
+    <message>
+        <source>Updates are unavailable in this build</source>
+        <translation>Обновления недоступны в этой сборке</translation>
+    </message>
+    <message>
+        <source>Build a support report</source>
+        <translation>Собрать отчёт для поддержки</translation>
+    </message>
+    <message>
+        <source>Open the config folder</source>
+        <translation>Открыть папку конфигурации</translation>
+    </message>
+    <message numerus="yes">
+        <source>%n server(s) available.</source>
+        <translation><numerusform>Доступен %n сервер.</numerusform><numerusform>Доступно %n сервера.</numerusform><numerusform>Доступно %n серверов.</numerusform></translation>
+    </message>
+    <message>
+        <source>The tunnel is up, but no traffic goes through it. Usually another program on this computer intercepts network packets: an antivirus, a DPI-bypass tool or what another VPN left behind. Try switching the connection mode to system proxy in the settings, or turn those programs off one by one.</source>
+        <translation>Туннель поднят, но трафик через него не идёт. Обычно пакеты перехватывает другая программа на этом компьютере: антивирус, обходчик блокировок или остатки другого VPN. Попробуйте переключить режим подключения на системный прокси в настройках или по очереди выключить такие программы.</translation>
+    </message>
+    <message>
+        <source>The application will restart in the advanced interface. Continue?</source>
+        <translation>Приложение перезапустится в расширенном интерфейсе. Продолжить?</translation>
+    </message>
+    <message>
+        <source>Restart</source>
+        <translation>Перезапустить</translation>
+    </message>
+    <message>
+        <source>Now you have two subscriptions</source>
+        <translation>Теперь у вас две подписки</translation>
+    </message>
+    <message>
+        <source>Servers live separately in each one. This is where you switch between them: pick a subscription and its own servers appear in the list below.</source>
+        <translation>Серверы лежат в каждой отдельно. Здесь они и переключаются: выберите подписку — и ниже появятся её серверы.</translation>
     </message>
 </context>
 <context>
@@ -8309,6 +9100,172 @@ Improves hole-punching reliability. Requires IPv4.</source>
     <message>
         <source>Last update failed: %1</source>
         <translation>Последнее обновление не удалось: %1</translation>
+    </message>
+</context>
+<context>
+    <name>IpListUpdater</name>
+    <message>
+        <source>The IP list no longer exists</source>
+        <translation type="unfinished">Список IP больше не существует</translation>
+    </message>
+    <message>
+        <source>Only lists with a URL or rule-set source can be updated</source>
+        <translation type="unfinished">Обновлять можно только списки с источником «URL» или «Набор правил»</translation>
+    </message>
+    <message>
+        <source>Updating IP list %1</source>
+        <translation type="unfinished">Обновление списка IP %1</translation>
+    </message>
+    <message>
+        <source>Updating IP list %1 failed: %2</source>
+        <translation type="unfinished">Не удалось обновить список IP %1: %2</translation>
+    </message>
+    <message>
+        <source>its source changed during the update</source>
+        <translation type="unfinished">его источник изменился во время обновления</translation>
+    </message>
+    <message>
+        <source>The source changed during the update</source>
+        <translation type="unfinished">Источник изменился во время обновления</translation>
+    </message>
+    <message>
+        <source>The entries could not be saved</source>
+        <translation type="unfinished">Не удалось сохранить записи</translation>
+    </message>
+    <message numerus="yes">
+        <source>IP list %1 updated (%n entries)</source>
+        <translation type="unfinished">
+            <numerusform>Список IP %1 обновлен (%n запись)</numerusform>
+            <numerusform>Список IP %1 обновлен (%n записи)</numerusform>
+            <numerusform>Список IP %1 обновлен (%n записей)</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>The list has no source to fetch</source>
+        <translation type="unfinished">У списка нет источника для загрузки</translation>
+    </message>
+    <message>
+        <source>Unknown rule-set: %1</source>
+        <translation type="unfinished">Неизвестный набор правил: %1</translation>
+    </message>
+    <message>
+        <source>The source must be an http(s) URL</source>
+        <translation type="unfinished">Источником должен быть URL http(s)</translation>
+    </message>
+    <message>
+        <source>The core is not running</source>
+        <translation type="unfinished">Ядро не запущено</translation>
+    </message>
+    <message>
+        <source>The core could not read the rule-set</source>
+        <translation type="unfinished">Ядру не удалось прочитать набор правил</translation>
+    </message>
+    <message>
+        <source>The address returned a web page instead of an IP list</source>
+        <translation type="unfinished">По этому адресу находится веб-страница, а не список IP</translation>
+    </message>
+    <message>
+        <source>No addresses found</source>
+        <translation type="unfinished">Адреса не найдены</translation>
+    </message>
+    <message>
+        <source>IP list update failed: %1</source>
+        <translation type="unfinished">Не удалось обновить список IP: %1</translation>
+    </message>
+    <message>
+        <source>IP list update failed</source>
+        <translation type="unfinished">Не удалось обновить список IP</translation>
+    </message>
+</context>
+<context>
+    <name>KillSwitch</name>
+    <message>
+        <source>The kill switch needs Throne to run as administrator.</source>
+        <translation type="unfinished">Для kill switch нужно запустить Throne от имени администратора.</translation>
+    </message>
+    <message>
+        <source>The kill switch needs the core to have root privileges.</source>
+        <translation type="unfinished">Для kill switch ядру нужны права root.</translation>
+    </message>
+    <message>
+        <source>The kill switch is not supported on this system.</source>
+        <translation type="unfinished">Kill switch не поддерживается в этой системе.</translation>
+    </message>
+    <message>
+        <source>Another program removed the kill switch rules or disabled the system firewall.</source>
+        <translation type="unfinished">Другая программа удалила правила kill switch или отключила системный брандмауэр.</translation>
+    </message>
+    <message>
+        <source>The kill switch rejected its settings.</source>
+        <translation type="unfinished">Kill switch не принял настройки.</translation>
+    </message>
+    <message>
+        <source>The kill switch process stopped unexpectedly.</source>
+        <translation type="unfinished">Процесс kill switch неожиданно остановился.</translation>
+    </message>
+    <message>
+        <source>Details: %1</source>
+        <translation type="unfinished">Подробности: %1</translation>
+    </message>
+    <message>
+        <source>[Kill switch] Off.</source>
+        <translation type="unfinished">[Kill switch] Выключен.</translation>
+    </message>
+    <message>
+        <source>[Kill switch] Allowing the extra core %1.</source>
+        <translation type="unfinished">[Kill switch] Разрешено дополнительное ядро %1.</translation>
+    </message>
+    <message>
+        <source>[Kill switch] Warning: %1</source>
+        <translation type="unfinished">[Kill switch] Предупреждение: %1</translation>
+    </message>
+    <message>
+        <source>[Kill switch] On: only traffic through Throne can leave this device.</source>
+        <translation type="unfinished">[Kill switch] Включен: покинуть это устройство может только трафик через Throne.</translation>
+    </message>
+    <message>
+        <source>[Kill switch] New settings applied.</source>
+        <translation type="unfinished">[Kill switch] Новые настройки применены.</translation>
+    </message>
+    <message>
+        <source>the kill switch did not respond within %1 seconds</source>
+        <translation type="unfinished">kill switch не ответил в течение %1 с</translation>
+    </message>
+    <message>
+        <source>could not start %1: %2</source>
+        <translation type="unfinished">не удалось запустить %1: %2</translation>
+    </message>
+    <message>
+        <source>the kill switch process crashed</source>
+        <translation type="unfinished">процесс kill switch аварийно завершился</translation>
+    </message>
+    <message>
+        <source>the kill switch process exited with code %1</source>
+        <translation type="unfinished">процесс kill switch завершился с кодом %1</translation>
+    </message>
+    <message>
+        <source>the kill switch process crashed before it was ready</source>
+        <translation type="unfinished">процесс kill switch аварийно завершился до готовности</translation>
+    </message>
+    <message>
+        <source>the kill switch process exited with code %1 before it was ready</source>
+        <translation type="unfinished">процесс kill switch завершился с кодом %1 до готовности</translation>
+    </message>
+    <message>
+        <source>[Kill switch] The new settings could not be applied, the previous ones stay in force: %1</source>
+        <translation type="unfinished">[Kill switch] Не удалось применить новые настройки, продолжают действовать прежние: %1</translation>
+    </message>
+    <message>
+        <source>[Kill switch] Protection lost: %1</source>
+        <translation type="unfinished">[Kill switch] Защита потеряна: %1</translation>
+    </message>
+    <message>
+        <source>[Kill switch] Starting it again...</source>
+        <translation type="unfinished">[Kill switch] Повторный запуск...</translation>
+    </message>
+    <message>
+        <source>[Kill switch] Not active: %1</source>
+        <translation type="unfinished">[Kill switch] Не активен: %1</translation>
     </message>
 </context>
 <context>
@@ -8537,6 +9494,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Регулярное выражение</translation>
     </message>
     <message>
+        <source>Ctrl+Shift+D</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
         <source>Remove Duplicates</source>
         <translation>Удалить дубликаты</translation>
     </message>
@@ -8705,8 +9666,31 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Объявление</translation>
     </message>
     <message>
+        <source>Collecting debug information...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Debug information saved to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Debug information collected successfully!
+
+Saved to:
+%1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Failed to create debug archive</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
         <source>Error</source>
         <translation>Ошибка</translation>
+    </message>
+    <message>
+        <source>Failed to create debug information archive</source>
+        <translation type="unfinished" />
     </message>
     <message>
         <source>Url Test selected Group</source>
@@ -8819,10 +9803,6 @@ URL: %2</translation>
         <translation>Группа</translation>
     </message>
     <message>
-        <source>Imported %1 profile(s)</source>
-        <translation>Импортировано профилей: %1</translation>
-    </message>
-    <message>
         <source>Not Running</source>
         <translation>Не запущен</translation>
     </message>
@@ -8843,20 +9823,8 @@ URL: %2</translation>
         <translation>Kill switch: не активен</translation>
     </message>
     <message>
-        <source>Connect OK</source>
-        <translation>Подключено</translation>
-    </message>
-    <message>
         <source>Connecting</source>
         <translation>Подключение</translation>
-    </message>
-    <message>
-        <source>Waiting for authentication</source>
-        <translation>Ожидание аутентификации</translation>
-    </message>
-    <message>
-        <source>Tunnel error</source>
-        <translation>Ошибка туннеля</translation>
     </message>
     <message>
         <source>Clone %1 item(s)</source>
@@ -8895,48 +9863,12 @@ URL: %2</translation>
         <translation>Очистить</translation>
     </message>
     <message>
-        <source>[%1] test error: %2</source>
-        <translation>[%1] ошибка теста: %2</translation>
-    </message>
-    <message>
-        <source>a tested profile</source>
-        <translation>тестируемый профиль</translation>
-    </message>
-    <message>
-        <source>[%1] IP test error: %2</source>
-        <translation>[%1] Ошибка теста IP: %2</translation>
-    </message>
-    <message>
-        <source>Failed to build test config for batch: </source>
-        <translation>Не удалось собрать тестовую конфигурацию для пакета профилей: </translation>
-    </message>
-    <message>
         <source>Testing</source>
         <translation>Тестирование</translation>
     </message>
     <message>
         <source>Unavailable</source>
         <translation>Недоступен</translation>
-    </message>
-    <message>
-        <source>The last test did not exit completely, please wait. If it persists, please restart the program.</source>
-        <translation>Предыдущий тест еще не завершился, подождите. Если проблема не исчезнет, перезапустите программу.</translation>
-    </message>
-    <message>
-        <source>IP test finished!</source>
-        <translation>Тест IP завершён!</translation>
-    </message>
-    <message>
-        <source>The last test did not finish completely, please wait. If it persists, please restart the program.</source>
-        <translation>Предыдущий тест еще не завершился, подождите. Если проблема не исчезнет, перезапустите программу.</translation>
-    </message>
-    <message>
-        <source>Failed to build batch test config: </source>
-        <translation>Не удалось собрать тестовую конфигурацию для пакета профилей: </translation>
-    </message>
-    <message>
-        <source>a required category</source>
-        <translation>обязательная категория</translation>
     </message>
     <message>
         <source>Geo asset missing category</source>
@@ -8967,20 +9899,8 @@ Download them now?</source>
         <translation>Ошибка загрузки Geo-файлов</translation>
     </message>
     <message>
-        <source>Downloaded Xray geo asset files.</source>
-        <translation>Загружены гео-файлы Xray.</translation>
-    </message>
-    <message>
         <source>Geo assets installed</source>
         <translation>Geo-файлы установлены</translation>
-    </message>
-    <message>
-        <source>[Kill switch] Not starting %1: the kill switch is not active.</source>
-        <translation>[Kill switch] %1 не запускается: kill switch не активен.</translation>
-    </message>
-    <message>
-        <source>[Kill switch] The extra core %1 could not be allowed through the kill switch.</source>
-        <translation>[Kill switch] Не удалось пропустить дополнительное ядро %1 через kill switch.</translation>
     </message>
     <message>
         <source>Kill switch</source>
@@ -8991,64 +9911,8 @@ Download them now?</source>
         <translation>Не удалось обновить kill switch, чтобы пропустить дополнительное ядро этого профиля, поэтому профиль не запущен. Подробности в логе.</translation>
     </message>
     <message>
-        <source>[Auto selector] Running the best %1 of %2 ranked profiles.</source>
-        <translation>[Автовыбор] Запущены лучшие профили: %1 из %2.</translation>
-    </message>
-    <message>
         <source>If there is no response for a long time, it is recommended to restart the software.</source>
         <translation>Если нет ответа в течение долгого времени, рекомендуем перезапустить программу.</translation>
-    </message>
-    <message>
-        <source>Starting profile %1</source>
-        <translation>Запуск профиля %1</translation>
-    </message>
-    <message>
-        <source>Failed to start profile %1</source>
-        <translation>Не удалось запустить профиль %1</translation>
-    </message>
-    <message>
-        <source>Stopping profile %1</source>
-        <translation>Остановка профиля %1</translation>
-    </message>
-    <message>
-        <source>Failed to stop, please restart the program.</source>
-        <translation>Не удалось остановить, пожалуйста, перезапустите программу.</translation>
-    </message>
-    <message>
-        <source>[VPN] %1: %2</source>
-        <translation>[VPN] %1: %2</translation>
-    </message>
-    <message>
-        <source>VPN endpoint problem</source>
-        <translation>Проблема конечной точки VPN</translation>
-    </message>
-    <message>
-        <source>VPN endpoint</source>
-        <translation>Конечная точка VPN</translation>
-    </message>
-    <message>
-        <source>[VPN] %1: the core did not answer the sign-in prompt.</source>
-        <translation>[VPN] %1: ядро не ответило на запрос входа.</translation>
-    </message>
-    <message>
-        <source>[VPN] %1: could not answer the sign-in prompt: %2</source>
-        <translation>[VPN] %1: не удалось ответить на запрос входа: %2</translation>
-    </message>
-    <message>
-        <source>[VPN] %1: signed in again with a new one-time code.</source>
-        <translation>[VPN] %1: выполнен повторный вход с новым одноразовым кодом.</translation>
-    </message>
-    <message>
-        <source>[VPN] %1 rejected the saved credentials; restarting the profile with a new one-time code.</source>
-        <translation>[VPN] %1: сохраненные учетные данные отклонены; профиль перезапускается с новым одноразовым кодом.</translation>
-    </message>
-    <message>
-        <source>The server refused the credentials saved with this profile. Enter the ones to use for this session; the profile itself is left unchanged.</source>
-        <translation>Сервер отклонил учетные данные, сохраненные в этом профиле. Введите данные для этого сеанса; сам профиль не изменится.</translation>
-    </message>
-    <message>
-        <source>[VPN] %1 rejected the saved credentials.</source>
-        <translation>[VPN] %1: сохраненные учетные данные отклонены.</translation>
     </message>
     <message>
         <source>Stop Testing</source>
@@ -9247,10 +10111,6 @@ Error: %1</source>
         <translation>Введите пароль в открывшемся терминале и повторите попытку.</translation>
     </message>
     <message>
-        <source>System proxy: %1</source>
-        <translation>Системный прокси: %1</translation>
-    </message>
-    <message>
         <source>Kill switch is not active</source>
         <translation>Kill switch не активен</translation>
     </message>
@@ -9277,10 +10137,6 @@ Error: %1</source>
     <message>
         <source>Turn off the kill switch? Traffic that does not go through Throne will no longer be blocked.</source>
         <translation>Отключить kill switch? Трафик, идущий не через Throne, больше не будет блокироваться.</translation>
-    </message>
-    <message>
-        <source>[Kill switch] Restarting the core so that its own traffic passes the kill switch...</source>
-        <translation>[Kill switch] Перезапуск ядра, чтобы его собственный трафик проходил через kill switch...</translation>
     </message>
     <message>
         <source>The sing-box API is disabled. Set a listen port in Preferences &gt; Basic Settings &gt; Core.</source>
@@ -9323,48 +10179,12 @@ Error: %1</source>
         <translation>Открыть менеджер</translation>
     </message>
     <message>
-        <source>Profile test aborted</source>
-        <translation>Тест профиля прерван</translation>
-    </message>
-    <message>
-        <source>Something is very wrong, the subject ent cannot be found!</source>
-        <translation>Что-то явно не так, объект ent не может быть найден!</translation>
-    </message>
-    <message>
-        <source>Profile manager data is corrupted, try again.</source>
-        <translation>Данные менеджера профилей повреждены, попробуйте еще раз.</translation>
-    </message>
-    <message>
-        <source>Speedtest finished!</source>
-        <translation>Тест скорости завершён!</translation>
-    </message>
-    <message>
-        <source>Failed to stop tests</source>
-        <translation>Не удалось остановить тесты</translation>
-    </message>
-    <message>
         <source>Geo data files were downloaded successfully.
 
 Please try again.</source>
         <translation>Гео-файлы были успешно загружены.
 
 Пожалуйста, попробуйте еще раз.</translation>
-    </message>
-    <message>
-        <source>BuildConfig return error</source>
-        <translation>Ошибка BuildConfig</translation>
-    </message>
-    <message>
-        <source>Another profile is starting...</source>
-        <translation>Другой профиль запускается...</translation>
-    </message>
-    <message>
-        <source>Another profile is stopping...</source>
-        <translation>Другой профиль останавливается...</translation>
-    </message>
-    <message>
-        <source>Try to start the config, but the core has not listened to the RPC port, so restart it...</source>
-        <translation>Попытка запустить конфигурацию, но ядро не слушает порт RPC — перезапуск ядра...</translation>
     </message>
     <message>
         <source>Stop return error</source>
@@ -9395,6 +10215,10 @@ Please try again.</source>
         <translation>Не удалось установить веб-панель</translation>
     </message>
     <message>
+        <source>Update</source>
+        <translation>Обновление</translation>
+    </message>
+    <message>
         <source>Last download request has not finished yet</source>
         <translation>Предыдущая загрузка ещё не завершилась</translation>
     </message>
@@ -9417,26 +10241,6 @@ Please try again.</source>
     <message>
         <source>Speedtest Group</source>
         <translation>Тест скорости всей группы</translation>
-    </message>
-    <message>
-        <source>The last url test did not exit completely, please wait. If it persists, please restart the program.</source>
-        <translation>Предыдущий тест задержки еще не завершился, подождите. Если проблема не исчезнет, перезапустите программу.</translation>
-    </message>
-    <message>
-        <source>URL test finished!</source>
-        <translation>Тест задержки завершён!</translation>
-    </message>
-    <message>
-        <source>Profile speed test aborted</source>
-        <translation>Тест скорости профиля прерван</translation>
-    </message>
-    <message>
-        <source>[%1] speed test error: %2</source>
-        <translation>[%1] ошибка теста скорости: %2</translation>
-    </message>
-    <message>
-        <source>User opted for no privilege req, some features may not work</source>
-        <translation>Пользователь решил не запрашивать привилегии, некоторые функции могут не работать</translation>
     </message>
     <message>
         <source>Unable to capture screen</source>
@@ -9475,10 +10279,6 @@ Please try again.</source>
         <translation>Выберите файлы профилей</translation>
     </message>
     <message>
-        <source>routing profiles</source>
-        <translation>профилей маршрутизации</translation>
-    </message>
-    <message>
         <source>Import routing profile</source>
         <translation>Импорт профиля маршрутизации</translation>
     </message>
@@ -9505,36 +10305,8 @@ Name: %1</source>
 </translation>
     </message>
     <message>
-        <source>[Auto selector] Reusing existing test results; ranked %1 profiles.</source>
-        <translation>[Автовыбор] Использованы сохранённые результаты замеров; ранжировано профилей: %1.</translation>
-    </message>
-    <message>
-        <source>[Auto selector] Measuring %1 not-yet-tested profiles...</source>
-        <translation>[Автовыбор] Замер ещё не протестированных профилей: %1...</translation>
-    </message>
-    <message>
-        <source>[Auto selector] Ranked %1 profiles.</source>
-        <translation>[Автовыбор] Ранжировано профилей: %1.</translation>
-    </message>
-    <message>
-        <source>[Auto selector] The subscription replaced profiles it was running on — rebuilding.</source>
-        <translation>[Автовыбор] Подписка заменила используемые профили — пересборка.</translation>
-    </message>
-    <message>
-        <source>[Auto selector] Every running profile stopped working — rebuilding from the next best candidates.</source>
-        <translation>[Автовыбор] Все запущенные профили перестали работать — выполняется пересборка из следующих наилучших кандидатов.</translation>
-    </message>
-    <message>
         <source>Close every connection listed below</source>
         <translation>Закрыть все подключения, перечисленные ниже</translation>
-    </message>
-    <message>
-        <source>Failed to close connections: %1</source>
-        <translation>Не удалось закрыть подключения: %1</translation>
-    </message>
-    <message>
-        <source>IPC error</source>
-        <translation>Ошибка IPC</translation>
     </message>
     <message>
         <source>Collapse All</source>
@@ -9739,18 +10511,6 @@ Name: %1</source>
         <translation>Эта группа была удалена, пока вы её редактировали.</translation>
     </message>
     <message>
-        <source>The Xray config "%1" needs "%2", but the installed %3 does not contain it.</source>
-        <translation>Конфигурации Xray «%1» нужен «%2», но в установленном %3 его нет.</translation>
-    </message>
-    <message>
-        <source>The Xray config "%1" needs geo data files that are not installed: %2. Download them under Basic Settings &gt; Miscellaneous &gt; Xray Geo Assets.</source>
-        <translation>Конфигурации Xray «%1» нужны неустановленные файлы геоданных: %2. Загрузите их в «Основные настройки &gt; Разное &gt; Геоданные Xray».</translation>
-    </message>
-    <message>
-        <source>Geo asset files are already being downloaded.</source>
-        <translation>Файлы геоданных уже загружаются.</translation>
-    </message>
-    <message>
         <source>Update is unavailable while a background Throne (PID %1) runs from this installation; stop it first.</source>
         <translation>Обновление недоступно, пока из этой установки работает фоновый Throne (PID %1); сначала остановите его.</translation>
     </message>
@@ -9758,7 +10518,7 @@ Name: %1</source>
         <source>Kill switch is blocking traffic</source>
         <translation>Kill switch блокирует трафик</translation>
     </message>
-<message>
+    <message>
         <source>Deeplink %1: no profile to start</source>
         <translation>Ссылка %1: нечего запускать</translation>
     </message>
@@ -9773,14 +10533,6 @@ Name: %1</source>
     <message>
         <source>Per-app proxy...</source>
         <translation>Прокси по приложениям...</translation>
-    </message>
-    <message>
-        <source>Delete group</source>
-        <translation>Удаление группы</translation>
-    </message>
-    <message>
-        <source>This subscription is pinned by the provider and cannot be removed while its profile is running.</source>
-        <translation>Эта подписка закреплена провайдером и не может быть удалена, пока запущен её профиль.</translation>
     </message>
     <message>
         <source>Removing empty default group: %1</source>
@@ -9811,22 +10563,6 @@ Name: %1</source>
         <translation>Обновление / Github</translation>
     </message>
     <message>
-        <source>No internet since the last session</source>
-        <translation>Интернета нет с прошлого сеанса</translation>
-    </message>
-    <message>
-        <source>The previous session ended without cleaning up: the system DNS still points at the core, which is no longer running. Until it is put back, nothing resolves — VPN or not.
-
-Putting it back needs administrator rights.</source>
-        <translation>Прошлый сеанс завершился, не убрав за собой: системный DNS до сих пор направлен на ядро, которого больше нет. Пока это не вернуть, не открывается ничего — ни через VPN, ни мимо.
-
-Чтобы вернуть, нужны права администратора.</translation>
-    </message>
-    <message>
-        <source>Restart as administrator</source>
-        <translation>Перезапустить от администратора</translation>
-    </message>
-    <message>
         <source>Cleared the system proxy left over from the previous session</source>
         <translation>Снят системный прокси, оставшийся от прошлого сеанса</translation>
     </message>
@@ -9847,32 +10583,12 @@ Putting it back needs administrator rights.</source>
         <translation>Обновление готово и будет установлено при следующем запуске приложения.</translation>
     </message>
     <message>
-        <source>Reset and Restart</source>
-        <translation>Сброс и перезапуск</translation>
-    </message>
-    <message>
         <source>Updating existing subscription: %1</source>
         <translation>Обновляется существующая подписка: %1</translation>
     </message>
     <message>
-        <source>Hotkey Settings</source>
-        <translation>Настройки горячих клавиш</translation>
-    </message>
-    <message>
-        <source>Export Xray config</source>
-        <translation>Экспортировать конфиг Xray</translation>
-    </message>
-    <message>
-        <source>Settings changed, restart proxy?</source>
-        <translation>Настройки изменены, перезапустить прокси?</translation>
-    </message>
-    <message>
         <source>The provider has hidden the configuration of this subscription.</source>
         <translation>Провайдер закрыл конфигурацию этой подписки.</translation>
-    </message>
-    <message>
-        <source>Config copied</source>
-        <translation>Конфигурация скопирована</translation>
     </message>
     <message>
         <source>The core file is missing:
@@ -9893,84 +10609,51 @@ Antivirus software often deletes it as a false positive. Add the application fol
         <translation>Открыть страницу загрузок</translation>
     </message>
     <message>
+        <source>Обнаружены программы, которые могут помешать работе TUN режима:
+
+</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>
+
+Эти программы могут конфликтовать с виртуальным сетевым адаптером TUN.
+</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Рекомендуется закрыть эти программы перед запуском профиля в VPN режиме.
+
+</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Продолжить запуск?</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Предупреждение о конфликтах</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
         <source>Больше не показывать</source>
         <translation>Больше не показывать</translation>
     </message>
     <message>
-        <source>Could not change the autostart entry. The system refused it: on Windows this is usually the elevation prompt being dismissed.</source>
-        <translation>Не удалось изменить автозапуск: система отказала. В Windows так обычно выглядит закрытый запрос прав администратора.</translation>
+        <source>Продолжить</source>
+        <translation type="unfinished" />
     </message>
     <message>
-        <source>System DNS</source>
-        <translation>Системный DNS</translation>
-    </message>
-    <message>
-        <source>The core needs administrator rights for the tunnel.
-
-macOS will ask for your password in its own window — the same one you use to log into this Mac. After that the connection starts by itself.</source>
-        <translation>Для туннеля ядру нужны права администратора.
-
-macOS сама спросит пароль в своём окне — тот же, которым вы входите в этот Mac. После этого подключение начнётся само.</translation>
-    </message>
-    <message>
-        <source>Continue</source>
-        <translation>Продолжить</translation>
+        <source>Отмена</source>
+        <translation type="unfinished" />
     </message>
     <message>
         <source>Downloading the update…</source>
         <translation>Скачиваем обновление…</translation>
     </message>
     <message>
-        <source>Core privileges granted</source>
-        <translation>Ядро получило права</translation>
-    </message>
-    <message>
-        <source>Export Sing-box config</source>
-        <translation>Экспортировать конфиг Sing-box</translation>
-    </message>
-    <message>
-        <source>You need to enable hijack DNS server first</source>
-        <translation>Сначала необходимо включить перехват DNS-сервера</translation>
-    </message>
-    <message>
-        <source>Failed to set system dns: </source>
-        <translation>Не удалось установить системный DNS: </translation>
-    </message>
-    <message>
-        <source>No DNS server answered, so the address of the VPN server cannot be resolved. Check the connection or set another DNS in the settings.</source>
-        <translation>Ни один сервер DNS не ответил, адрес сервера VPN определить нечем. Проверьте соединение или укажите другой DNS в настройках.</translation>
-    </message>
-    <message>
-        <source>Direct DNS %1 did not answer, using %2</source>
-        <translation>Прямой DNS %1 не ответил, используется %2</translation>
-    </message>
-    <message>
-        <source>Copy core config</source>
-        <translation>Копировать конфигурацию ядра</translation>
-    </message>
-    <message>
-        <source>Copy test config</source>
-        <translation>Копировать тестовую конфигурацию</translation>
-    </message>
-    <message>
-        <source>Administrator rights</source>
-        <translation>Права администратора</translation>
-    </message>
-    <message>
         <source>The tunnel needs administrator rights, connection cancelled</source>
         <translation>Для туннеля нужны права администратора, подключение отменено</translation>
-    </message>
-    <message>
-        <source>FSNT Client is setting up the tunnel and needs administrator rights.</source>
-        <translation>FSNT Client настраивает туннель, для этого нужны права администратора.</translation>
-    </message>
-    <message>
-        <source>subscriptions</source>
-        <translation>подписок</translation>
-    </message>
-    <message>
-        <source>Copied!</source>
-        <translation>Скопировано!</translation>
     </message>
     <message>
         <source>The program folder is closed for writing, so the update cannot install itself. Download the new version from the release page and install it over the current one.</source>
@@ -9987,6 +10670,277 @@ Details: %3</source>
     <message>
         <source>Switch to the simple interface</source>
         <translation>Переключиться в простой интерфейс</translation>
+    </message>
+</context>
+<context>
+    <name>MainWindowTr</name>
+    <message>
+        <source>[Auto selector] Running the best %1 of %2 ranked profiles.</source>
+        <translation type="unfinished">[Автовыбор] Запущены лучшие профили: %1 из %2.</translation>
+    </message>
+    <message>
+        <source>[Auto selector] Reusing existing test results; ranked %1 profiles.</source>
+        <translation type="unfinished">[Автовыбор] Использованы сохранённые результаты замеров; ранжировано профилей: %1.</translation>
+    </message>
+    <message>
+        <source>[Auto selector] Measuring %1 not-yet-tested profiles...</source>
+        <translation type="unfinished">[Автовыбор] Замер ещё не протестированных профилей: %1...</translation>
+    </message>
+    <message>
+        <source>[Auto selector] Ranked %1 profiles.</source>
+        <translation type="unfinished">[Автовыбор] Ранжировано профилей: %1.</translation>
+    </message>
+    <message>
+        <source>[Auto selector] The subscription replaced profiles it was running on — rebuilding.</source>
+        <translation type="unfinished">[Автовыбор] Подписка заменила используемые профили — пересборка.</translation>
+    </message>
+    <message>
+        <source>[Auto selector] Every running profile stopped working — rebuilding from the next best candidates.</source>
+        <translation type="unfinished">[Автовыбор] Все запущенные профили перестали работать — выполняется пересборка из следующих наилучших кандидатов.</translation>
+    </message>
+    <message>
+        <source>[Kill switch] Not starting %1: the kill switch is not active.</source>
+        <translation type="unfinished">[Kill switch] %1 не запускается: kill switch не активен.</translation>
+    </message>
+    <message>
+        <source>BuildConfig return error</source>
+        <translation type="unfinished">Ошибка BuildConfig</translation>
+    </message>
+    <message>
+        <source>[Kill switch] The extra core %1 could not be allowed through the kill switch.</source>
+        <translation type="unfinished">[Kill switch] Не удалось пропустить дополнительное ядро %1 через kill switch.</translation>
+    </message>
+    <message>
+        <source>Another profile is starting...</source>
+        <translation type="unfinished">Другой профиль запускается...</translation>
+    </message>
+    <message>
+        <source>Another profile is stopping...</source>
+        <translation type="unfinished">Другой профиль останавливается...</translation>
+    </message>
+    <message>
+        <source>Try to start the config, but the core has not listened to the RPC port, so restart it...</source>
+        <translation type="unfinished">Попытка запустить конфигурацию, но ядро не слушает порт RPC — перезапуск ядра...</translation>
+    </message>
+    <message>
+        <source>Starting profile %1</source>
+        <translation type="unfinished">Запуск профиля %1</translation>
+    </message>
+    <message>
+        <source>Failed to start profile %1</source>
+        <translation type="unfinished">Не удалось запустить профиль %1</translation>
+    </message>
+    <message>
+        <source>Stop return error</source>
+        <translation type="unfinished">Ошибка остановки</translation>
+    </message>
+    <message>
+        <source>Stopping profile %1</source>
+        <translation type="unfinished">Остановка профиля %1</translation>
+    </message>
+    <message>
+        <source>Failed to stop, please restart the program.</source>
+        <translation type="unfinished">Не удалось остановить, пожалуйста, перезапустите программу.</translation>
+    </message>
+    <message>
+        <source>User opted for no privilege req, some features may not work</source>
+        <translation type="unfinished">Пользователь решил не запрашивать привилегии, некоторые функции могут не работать</translation>
+    </message>
+    <message>
+        <source>Tun Mode</source>
+        <translation type="unfinished">Режим TUN</translation>
+    </message>
+    <message>
+        <source>No DNS server answered, so the address of the VPN server cannot be resolved. Check the connection or set another DNS in the settings.</source>
+        <translation>Ни один DNS-сервер не ответил, поэтому адрес VPN-сервера разрешить нечем. Проверьте подключение или задайте другой DNS в настройках.</translation>
+    </message>
+    <message>
+        <source>Direct DNS</source>
+        <translation>Прямой DNS</translation>
+    </message>
+    <message>
+        <source>Direct DNS %1 did not answer, using %2</source>
+        <translation>Прямой DNS %1 не ответил, используется %2</translation>
+    </message>
+    <message>
+        <source>System proxy: %1</source>
+        <translation>Системный прокси: %1</translation>
+    </message>
+    <message>
+        <source>[Kill switch] Restarting the core so that its own traffic passes the kill switch...</source>
+        <translation type="unfinished">[Kill switch] Перезапуск ядра, чтобы его собственный трафик проходил через kill switch...</translation>
+    </message>
+    <message>
+        <source>Imported %1 profile(s)</source>
+        <translation type="unfinished">Импортировано профилей: %1</translation>
+    </message>
+    <message>
+        <source>Tun Settings changed</source>
+        <translation type="unfinished">Настройки режима TUN изменены</translation>
+    </message>
+    <message>
+        <source>Restart Tun to take effect.</source>
+        <translation type="unfinished">Перезапустите режим TUN, чтобы изменения вступили в силу.</translation>
+    </message>
+    <message>
+        <source>Settings changed</source>
+        <translation type="unfinished">Настройки изменены</translation>
+    </message>
+    <message>
+        <source>Restart the program to take effect.</source>
+        <translation type="unfinished">Перезапустите программу, чтобы изменения вступили в силу.</translation>
+    </message>
+    <message>
+        <source>routing profiles</source>
+        <translation type="unfinished">профилей маршрутизации</translation>
+    </message>
+    <message>
+        <source>a required category</source>
+        <translation type="unfinished">обязательная категория</translation>
+    </message>
+    <message>
+        <source>The Xray config "%1" needs "%2", but the installed %3 does not contain it.</source>
+        <translation type="unfinished">Конфигурации Xray «%1» нужен «%2», но в установленном %3 его нет.</translation>
+    </message>
+    <message>
+        <source>The Xray config "%1" needs geo data files that are not installed: %2. Download them under Basic Settings &gt; Miscellaneous &gt; Xray Geo Assets.</source>
+        <translation type="unfinished">Конфигурации Xray «%1» нужны неустановленные файлы геоданных: %2. Загрузите их в «Основные настройки &gt; Разное &gt; Геоданные Xray».</translation>
+    </message>
+    <message>
+        <source>Downloaded Xray geo asset files.</source>
+        <translation type="unfinished">Загружены гео-файлы Xray.</translation>
+    </message>
+    <message>
+        <source>Geo asset files are already being downloaded.</source>
+        <translation type="unfinished">Файлы геоданных уже загружаются.</translation>
+    </message>
+    <message>
+        <source>Failed to close connections: %1</source>
+        <translation type="unfinished">Не удалось закрыть подключения: %1</translation>
+    </message>
+    <message>
+        <source>IPC error</source>
+        <translation type="unfinished">Ошибка IPC</translation>
+    </message>
+    <message>
+        <source>Failed to stop tests</source>
+        <translation type="unfinished">Не удалось остановить тесты</translation>
+    </message>
+    <message>
+        <source>a tested profile</source>
+        <translation type="unfinished">тестируемый профиль</translation>
+    </message>
+    <message>
+        <source>[%1] test error: %2</source>
+        <translation type="unfinished">[%1] ошибка теста: %2</translation>
+    </message>
+    <message>
+        <source>[%1] IP test error: %2</source>
+        <translation type="unfinished">[%1] Ошибка теста IP: %2</translation>
+    </message>
+    <message>
+        <source>Profile test aborted</source>
+        <translation type="unfinished">Тест профиля прерван</translation>
+    </message>
+    <message>
+        <source>Something is very wrong, the subject ent cannot be found!</source>
+        <translation type="unfinished">Что-то явно не так, объект ent не может быть найден!</translation>
+    </message>
+    <message>
+        <source>Profile manager data is corrupted, try again.</source>
+        <translation type="unfinished">Данные менеджера профилей повреждены, попробуйте еще раз.</translation>
+    </message>
+    <message>
+        <source>The last url test did not exit completely, please wait. If it persists, please restart the program.</source>
+        <translation type="unfinished">Предыдущий тест задержки еще не завершился, подождите. Если проблема не исчезнет, перезапустите программу.</translation>
+    </message>
+    <message>
+        <source>The last test did not exit completely, please wait. If it persists, please restart the program.</source>
+        <translation type="unfinished">Предыдущий тест еще не завершился, подождите. Если проблема не исчезнет, перезапустите программу.</translation>
+    </message>
+    <message>
+        <source>Failed to build test config for batch: </source>
+        <translation type="unfinished">Не удалось собрать тестовую конфигурацию для пакета профилей: </translation>
+    </message>
+    <message>
+        <source>URL test finished!</source>
+        <translation type="unfinished">Тест задержки завершён!</translation>
+    </message>
+    <message>
+        <source>IP test finished!</source>
+        <translation type="unfinished">Тест IP завершён!</translation>
+    </message>
+    <message>
+        <source>The last test did not finish completely, please wait. If it persists, please restart the program.</source>
+        <translation type="unfinished">Предыдущий тест еще не завершился, подождите. Если проблема не исчезнет, перезапустите программу.</translation>
+    </message>
+    <message>
+        <source>Failed to build batch test config: </source>
+        <translation type="unfinished">Не удалось собрать тестовую конфигурацию для пакета профилей: </translation>
+    </message>
+    <message>
+        <source>Speedtest finished!</source>
+        <translation type="unfinished">Тест скорости завершён!</translation>
+    </message>
+    <message>
+        <source>Profile speed test aborted</source>
+        <translation type="unfinished">Тест скорости профиля прерван</translation>
+    </message>
+    <message>
+        <source>[%1] speed test error: %2</source>
+        <translation type="unfinished">[%1] ошибка теста скорости: %2</translation>
+    </message>
+    <message>
+        <source>[VPN] %1: %2</source>
+        <translation type="unfinished">[VPN] %1: %2</translation>
+    </message>
+    <message>
+        <source>VPN endpoint problem</source>
+        <translation type="unfinished">Проблема конечной точки VPN</translation>
+    </message>
+    <message>
+        <source>VPN endpoint</source>
+        <translation type="unfinished">Конечная точка VPN</translation>
+    </message>
+    <message>
+        <source>[VPN] %1: the core did not answer the sign-in prompt.</source>
+        <translation type="unfinished">[VPN] %1: ядро не ответило на запрос входа.</translation>
+    </message>
+    <message>
+        <source>[VPN] %1: could not answer the sign-in prompt: %2</source>
+        <translation type="unfinished">[VPN] %1: не удалось ответить на запрос входа: %2</translation>
+    </message>
+    <message>
+        <source>[VPN] %1: signed in again with a new one-time code.</source>
+        <translation type="unfinished">[VPN] %1: выполнен повторный вход с новым одноразовым кодом.</translation>
+    </message>
+    <message>
+        <source>[VPN] %1 rejected the saved credentials; restarting the profile with a new one-time code.</source>
+        <translation type="unfinished">[VPN] %1: сохраненные учетные данные отклонены; профиль перезапускается с новым одноразовым кодом.</translation>
+    </message>
+    <message>
+        <source>The server refused the credentials saved with this profile. Enter the ones to use for this session; the profile itself is left unchanged.</source>
+        <translation type="unfinished">Сервер отклонил учетные данные, сохраненные в этом профиле. Введите данные для этого сеанса; сам профиль не изменится.</translation>
+    </message>
+    <message>
+        <source>[VPN] %1 rejected the saved credentials.</source>
+        <translation type="unfinished">[VPN] %1: сохраненные учетные данные отклонены.</translation>
+    </message>
+    <message>
+        <source>Connect OK</source>
+        <translation>Подключено</translation>
+    </message>
+    <message>
+        <source>Connecting</source>
+        <translation>Подключение</translation>
+    </message>
+    <message>
+        <source>Waiting for authentication</source>
+        <translation type="unfinished">Ожидание аутентификации</translation>
+    </message>
+    <message>
+        <source>Tunnel error</source>
+        <translation type="unfinished">Ошибка туннеля</translation>
     </message>
 </context>
 <context>
@@ -10098,6 +11052,10 @@ Details: %3</source>
         <translation>Запрос через прокси, но профиль не запущен.</translation>
     </message>
     <message>
+        <source>Request with proxy but the mixed inbound is disabled and Tun Mode is off.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
         <source>Response larger than %1 MB</source>
         <translation>Размер ответа превышает %1 МБ</translation>
     </message>
@@ -10108,6 +11066,10 @@ Details: %3</source>
     <message>
         <source>Download failed: the server returned an empty response.</source>
         <translation>Загрузка не удалась: сервер вернул пустой ответ.</translation>
+    </message>
+    <message>
+        <source>Could not create destination directory.</source>
+        <translation type="unfinished" />
     </message>
     <message>
         <source>Could not open file.</source>
@@ -10292,6 +11254,22 @@ To fix this, share the hotspot from the throne-tun adapter instead of "%1" (Sett
         <translation>Перезапуск ядра...</translation>
     </message>
     <message>
+        <source>Check for updates</source>
+        <translation type="unfinished">Проверить обновления</translation>
+    </message>
+    <message>
+        <source>Updater not found. Please update manually from GitHub.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Open GitHub Releases</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Open Repository</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
         <source>Download Profiles</source>
         <translation>Скачать профили</translation>
     </message>
@@ -10318,6 +11296,14 @@ To fix this, share the hotspot from the throne-tun adapter instead of "%1" (Sett
     <message>
         <source>No update</source>
         <translation>Обновлений нет</translation>
+    </message>
+    <message>
+        <source>Version %1 is out. The client runs from an AppImage, so it cannot replace itself: download the new file and start it instead of this one.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Download</source>
+        <translation>Загрузить</translation>
     </message>
     <message>
         <source>Update found: %1
@@ -10406,6 +11392,22 @@ Release note:
     <message>
         <source>DNS address "%1" is invalid: %2</source>
         <translation>Недопустимый адрес DNS "%1": %2</translation>
+    </message>
+    <message>
+        <source>Chain "%1" has a hop (profile id %2) that no longer exists, edit the chain to remove it</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Group "%1" has a front proxy that has been deleted.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Group "%1" has a landing proxy that has been deleted.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>A proxy in the chain can no longer be found.</source>
+        <translation type="unfinished" />
     </message>
     <message>
         <source>The profile no longer exists</source>
@@ -11424,10 +12426,14 @@ Release note:
         <translation>Сначала закройте редактор этой группы или одного из её профилей.</translation>
     </message>
     <message>
+        <source>This subscription is pinned by the provider and cannot be removed while its profile is running.</source>
+        <translation type="unfinished">Эта подписка закреплена провайдером и не может быть удалена, пока запущен её профиль.</translation>
+    </message>
+    <message>
         <source>This group no longer exists.</source>
         <translation>Этой группы больше не существует.</translation>
     </message>
-<message>
+    <message>
         <source>Save</source>
         <translation>Сохранить</translation>
     </message>
@@ -11442,6 +12448,10 @@ Release note:
     <message>
         <source>Link</source>
         <translation>Ссылка</translation>
+    </message>
+    <message numerus="yes">
+        <source>%n server(s), updated %1</source>
+        <translation><numerusform>%n сервер, обновлено %1</numerusform><numerusform>%n сервера, обновлено %1</numerusform><numerusform>%n серверов, обновлено %1</numerusform></translation>
     </message>
     <message>
         <source>Update automatically</source>
@@ -11492,10 +12502,6 @@ Release note:
         <translation>Скачать заново</translation>
     </message>
     <message>
-        <source>The previous session left the system DNS pointing at the core, which is no longer running. Nothing resolves until it is put back, VPN or not.</source>
-        <translation>Прошлый сеанс оставил системный DNS направленным на ядро, которого больше нет. Пока это не вернуть, не открывается ничего — ни через VPN, ни мимо.</translation>
-    </message>
-    <message>
         <source>Set by hand in the DNS object.</source>
         <translation>Задан вручную в объекте DNS.</translation>
     </message>
@@ -11506,10 +12512,6 @@ Release note:
     <message>
         <source>Find a working one</source>
         <translation>Подобрать рабочий</translation>
-    </message>
-    <message>
-        <source>No DNS server answered.</source>
-        <translation>Ни один сервер DNS не ответил.</translation>
     </message>
     <message>
         <source>Direct DNS switched to %1</source>
@@ -11564,6 +12566,14 @@ Release note:
         <translation>Выбран системный прокси, но в Windows он выключен — трафик идёт мимо VPN.</translation>
     </message>
     <message>
+        <source>Direct DNS</source>
+        <translation>Прямой DNS</translation>
+    </message>
+    <message>
+        <source>No DNS server answered. Check the connection, or set your own address in the settings.</source>
+        <translation>Ни один DNS-сервер не ответил. Проверьте подключение или задайте свой адрес в настройках.</translation>
+    </message>
+    <message>
         <source>System proxy is selected, but it is not active.</source>
         <translation>Выбран системный прокси, но он не включён.</translation>
     </message>
@@ -11582,14 +12592,6 @@ Release note:
     <message>
         <source>Traffic through the tunnel</source>
         <translation>Трафик через туннель</translation>
-    </message>
-    <message>
-        <source>The tunnel is up, but nothing passes through it. The fast tunnel mode gives packets to Windows, where another program's filter takes them.</source>
-        <translation>Туннель поднят, но через него ничего не проходит. Быстрый режим отдаёт пакеты Windows, где их забирает фильтр другой программы.</translation>
-    </message>
-    <message>
-        <source>Switch to compatible</source>
-        <translation>Переключить на совместимый</translation>
     </message>
     <message>
         <source>The tunnel is up, but nothing passes through it: %1</source>
@@ -11612,14 +12614,6 @@ Release note:
         <translation>Часы расходятся на %1 мин. Проверка сертификатов не проходит, и соединение рвётся на рукопожатии. Включите автоматическое время в настройках Windows.</translation>
     </message>
     <message>
-        <source>Downloaded Xray geo asset: %1</source>
-        <translation>Загружен гео-файл Xray: %1</translation>
-    </message>
-    <message>
-        <source>Auto selector — no working profile out of %1</source>
-        <translation>Автовыбор — в %1 нет рабочего профиля</translation>
-    </message>
-    <message>
         <source>System resolver</source>
         <translation>Системный резолвер</translation>
     </message>
@@ -11630,6 +12624,10 @@ Release note:
     <message>
         <source>Custom: %1</source>
         <translation>Свой: %1</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished">Отмена</translation>
     </message>
     <message>
         <source>Add subscription</source>
@@ -11695,6 +12693,90 @@ Release note:
         <source>URL test (GET)</source>
         <translation>URL-тест (GET)</translation>
     </message>
+    <message>
+        <source>Enter the WebDAV server URL in the WebDAV settings.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>The WebDAV server URL must start with http:// or https://.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>The server sent more than %1 MB.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Could not write the downloaded backup: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>The server did not answer in time.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>The server could not be reached.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>The server answered with a redirect (HTTP %1); check the server URL.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>The server redirected to %1; check the server URL.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Wrong username or password.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Permission denied.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Not found.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Server error (HTTP %1).</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>HTTP %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>The server's folder listing could not be read.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Could not create the folder on the server: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>The backup list kept changing while it was being updated.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Could not read the backup file: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Unknown device</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>The backup's file name is not safe to use.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Could not create a temporary file: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>The downloaded backup does not match the backup list; it may have been replaced or damaged.</source>
+        <translation type="unfinished" />
+    </message>
 </context>
 <context>
     <name>QPlatformTheme</name>
@@ -11720,13 +12802,6 @@ Release note:
     </message>
 </context>
 <context>
-    <name>Qv2ray::ui::widgets::AutoCompleteTextEdit</name>
-    <message>
-        <source>You can not input space characters here.</source>
-        <translation>Здесь нельзя вводить пробелы.</translation>
-    </message>
-</context>
-<context>
     <name>RawRouteItem</name>
     <message>
         <source>Raw routing profile</source>
@@ -11735,6 +12810,14 @@ Release note:
     <message>
         <source>Name</source>
         <translation>Название</translation>
+    </message>
+    <message>
+        <source>Route</source>
+        <translation type="unfinished">Маршрутизация</translation>
+    </message>
+    <message>
+        <source>DNS</source>
+        <translation type="unfinished">DNS</translation>
     </message>
     <message>
         <source>Use the route object exactly as written (outbound ids are still resolved to tags).
@@ -11809,97 +12892,74 @@ outbound и другие функции Throne могут не работать.
     </message>
 </context>
 <context>
-    <name>RemoteApi::Router</name>
+    <name>RouteDnsEditor</name>
     <message>
-        <source>[API] %1 %2 from %3</source>
-        <translation>[API] %1 %2 от %3</translation>
+        <source>Use the global DNS settings</source>
+        <translation type="unfinished" />
     </message>
     <message>
-        <source>[API] %1</source>
-        <translation>[API] %1</translation>
-    </message>
-    <message numerus="yes">
-        <source>[API] Testing %n profile(s) to find the lowest latency</source>
-        <translation>
-            <numerusform>[API] Тестирование %n профиля для поиска наименьшей задержки</numerusform>
-            <numerusform>[API] Тестирование %n профилей для поиска наименьшей задержки</numerusform>
-            <numerusform>[API] Тестирование %n профилей для поиска наименьшей задержки</numerusform>
-        </translation>
+        <source>The servers set in Routing Settings &gt; DNS.</source>
+        <translation type="unfinished" />
     </message>
     <message>
-        <source>[API] Lowest latency: %1 (%2 ms)</source>
-        <translation>[API] Наименьшая задержка: %1 (%2 мс)</translation>
-    </message>
-</context>
-<context>
-    <name>RemoteApi::Server</name>
-    <message>
-        <source>The request was dropped without an answer</source>
-        <translation>Запрос отброшен без ответа</translation>
+        <source>Use custom DNS settings</source>
+        <translation type="unfinished" />
     </message>
     <message>
-        <source>Off</source>
-        <translation>Выключен</translation>
+        <source>These servers replace the global ones while this routing profile is in use.</source>
+        <translation type="unfinished" />
     </message>
     <message>
-        <source>Not listening: the key is missing or invalid</source>
-        <translation>Не принимает подключения: ключ отсутствует или недействителен</translation>
+        <source>Routing Settings use a custom DNS object, so that object applies instead of the values below.</source>
+        <translation type="unfinished" />
     </message>
     <message>
-        <source>Port %1 is in use</source>
-        <translation>Порт %1 занят</translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;examples:&lt;br/&gt;tls://8.8.8.8&lt;br/&gt;https://domain/path&lt;/p&gt;&lt;p&gt;tcp://8.8.8.8:1234&lt;/p&gt;&lt;p&gt;dhcp://auto&lt;/p&gt;&lt;p&gt;h3://domain/path&lt;/p&gt;&lt;p&gt;quic://domain:4632&lt;/p&gt;&lt;p&gt;localhost&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished" />
     </message>
     <message>
-        <source>Cannot listen on port %1: %2</source>
-        <translation>Не удалось начать прослушивание порта %1: %2</translation>
+        <source>Remote DNS</source>
+        <translation type="unfinished">Удалённый DNS</translation>
     </message>
     <message>
-        <source>Listening on port %1 (local network)</source>
-        <translation>Прослушивается порт %1 (локальная сеть)</translation>
+        <source>Disable IPv6</source>
+        <translation type="unfinished">Отключить IPv6</translation>
     </message>
     <message>
-        <source>Listening on %1:%2</source>
-        <translation>Прослушивается %1:%2</translation>
+        <source>Answer AAAA queries sent to this server with an empty result.</source>
+        <translation type="unfinished">Отвечать на запросы AAAA, отправленные на этот сервер, пустым результатом.</translation>
     </message>
     <message>
-        <source>Stopped listening</source>
-        <translation>Прослушивание остановлено</translation>
+        <source>Direct DNS</source>
+        <translation type="unfinished">DNS для прямых запросов</translation>
     </message>
     <message>
-        <source>Refused %1: too many failed attempts</source>
-        <translation>Отклонено подключение %1: слишком много неудачных попыток</translation>
+        <source>Default DNS server</source>
+        <translation type="unfinished">DNS-сервер по умолчанию</translation>
     </message>
     <message>
-        <source>Refused %1: not in the allowed addresses</source>
-        <translation>Отклонено подключение %1: адрес не входит в разрешенные</translation>
+        <source>Enable DNS Routing</source>
+        <translation type="unfinished">Включить DNS-маршрутизацию</translation>
     </message>
     <message>
-        <source>Refused %1: too many connections</source>
-        <translation>Отклонено подключение %1: слишком много подключений</translation>
+        <source>Domains this profile sends direct are resolved with the direct DNS too.</source>
+        <translation type="unfinished" />
     </message>
     <message>
-        <source>unsupported protocol version</source>
-        <translation>неподдерживаемая версия протокола</translation>
+        <source>Enable FakeIP</source>
+        <translation type="unfinished">Включить FakeIP</translation>
     </message>
     <message>
-        <source>invalid frame length</source>
-        <translation>недопустимая длина фрейма</translation>
+        <source>FakeIP Disable IPv6</source>
+        <translation type="unfinished">FakeIP: отключить IPv6</translation>
     </message>
     <message>
-        <source>a frame failed authentication, most likely the key is wrong</source>
-        <translation>фрейм не прошел аутентификацию, скорее всего, ключ неверный</translation>
+        <source>Hand out no fake IPv6 addresses; AAAA queries are answered empty.</source>
+        <translation type="unfinished">Не выдавать FakeIP-адреса IPv6; на запросы AAAA даются пустые ответы.</translation>
     </message>
     <message>
-        <source>The response is too large</source>
-        <translation>Ответ слишком большой</translation>
-    </message>
-    <message>
-        <source>Closed the connection from %1: %2</source>
-        <translation>Закрыто подключение от %1: %2</translation>
-    </message>
-    <message>
-        <source>Throne is shutting down</source>
-        <translation>Throne завершает работу</translation>
+        <source>Local Override, the hosts file, predefined answers and the advanced DNS settings always come from Routing Settings &gt; DNS.</source>
+        <translation type="unfinished" />
     </message>
 </context>
 <context>
@@ -12041,6 +13101,10 @@ Your local edits are overwritten on each update.</source>
         <translation>Инструкция по простым правилам</translation>
     </message>
     <message>
+        <source>DNS</source>
+        <translation type="unfinished">DNS</translation>
+    </message>
+    <message>
         <source>Profile #%1 — deleted, dropped when you save</source>
         <translation>Профиль #%1 — удалён, будет убран при сохранении</translation>
     </message>
@@ -12135,6 +13199,10 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>Загрузить</translation>
     </message>
     <message>
+        <source>Disabled: kept in the profile but left out of the generated config.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
         <source>Invalid URL</source>
         <translation>Неверный URL</translation>
     </message>
@@ -12170,19 +13238,73 @@ Remove that endpoint from this routing profile as well?</source>
         <source>Fetched with warnings</source>
         <translation>Загружено с предупреждениями</translation>
     </message>
-<message>
-        <source>Invalid operation</source>
-        <translation>Неверная операция</translation>
+</context>
+<context>
+    <name>RoutePresets</name>
+    <message>
+        <source>Games and Discord</source>
+        <translation>Игры и Discord</translation>
     </message>
     <message>
-        <source>Cannot create Route Profile with empty name</source>
-        <translation>Невозможно создать профиль маршрута с пустым именем</translation>
+        <source>Steam, Epic, Riot, Battle.net, PlayStation, Xbox, Roblox and Discord go through the tunnel, everything else directly. Pick a nearby server: game traffic now goes through it, and distance turns into ping.</source>
+        <translation>Steam, Epic, Riot, Battle.net, PlayStation, Xbox, Roblox и Discord идут через туннель, остальное — напрямую. Берите сервер поближе: игровой трафик теперь идёт через него, и расстояние превращается в пинг.</translation>
     </message>
     <message>
-        <source>Remote routing profiles need a URL.</source>
-        <translation>Для удалённых профилей маршрутизации необходим URL.</translation>
+        <source>Games, video and social</source>
+        <translation>Игры, видео и соцсети</translation>
     </message>
-    </context>
+    <message>
+        <source>The same plus YouTube, Twitch, Instagram, WhatsApp, Telegram, TikTok and ChatGPT. Banking and government sites stay direct, so they keep working.</source>
+        <translation>То же плюс YouTube, Twitch, Instagram, WhatsApp, Telegram, TikTok и ChatGPT. Банки и госуслуги остаются напрямую и продолжают работать.</translation>
+    </message>
+    <message>
+        <source>Everything through the VPN</source>
+        <translation>Всё через VPN</translation>
+    </message>
+    <message>
+        <source>Every app and every site goes through the tunnel. The safest choice and the one to pick if you are not sure; the local network still works.</source>
+        <translation>Все приложения и все сайты идут через туннель. Самый надёжный вариант и тот, что стоит выбрать, если не уверены; локальная сеть при этом работает.</translation>
+    </message>
+    <message>
+        <source>Except domestic sites</source>
+        <translation>Кроме российских сайтов</translation>
+    </message>
+    <message>
+        <source>Russian sites and addresses go directly, everything else through the tunnel. Banking and government sites keep working and stay fast.</source>
+        <translation>Российские сайты и адреса идут напрямую, остальное — через туннель. Банки и госуслуги продолжают работать и не теряют в скорости.</translation>
+    </message>
+    <message>
+        <source>Blocked sites only</source>
+        <translation>Только заблокированное</translation>
+    </message>
+    <message>
+        <source>Only what is blocked goes through the tunnel, the rest directly. The fastest option, but a site missing from the list will not be unblocked.</source>
+        <translation>Через туннель идёт только заблокированное, остальное напрямую. Самый быстрый вариант, но сайт, которого нет в списке, не откроется.</translation>
+    </message>
+</context>
+<context>
+    <name>Router</name>
+    <message>
+        <source>[API] %1 %2 from %3</source>
+        <translation type="unfinished">[API] %1 %2 от %3</translation>
+    </message>
+    <message>
+        <source>[API] %1</source>
+        <translation type="unfinished">[API] %1</translation>
+    </message>
+    <message numerus="yes">
+        <source>[API] Testing %n profile(s) to find the lowest latency</source>
+        <translation type="unfinished">
+            <numerusform>[API] Тестирование %n профиля для поиска наименьшей задержки</numerusform>
+            <numerusform>[API] Тестирование %n профилей для поиска наименьшей задержки</numerusform>
+            <numerusform>[API] Тестирование %n профилей для поиска наименьшей задержки</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>[API] Lowest latency: %1 (%2 ms)</source>
+        <translation type="unfinished">[API] Наименьшая задержка: %1 (%2 мс)</translation>
+    </message>
+</context>
 <context>
     <name>RuntimeStatsWidget</name>
     <message>
@@ -12418,233 +13540,158 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
 </context>
 <context>
-    <name>Scanner::IpListUpdater</name>
-    <message>
-        <source>The IP list no longer exists</source>
-        <translation>Список IP больше не существует</translation>
-    </message>
-    <message>
-        <source>Only lists with a URL or rule-set source can be updated</source>
-        <translation>Обновлять можно только списки с источником «URL» или «Набор правил»</translation>
-    </message>
-    <message>
-        <source>Updating IP list %1</source>
-        <translation>Обновление списка IP %1</translation>
-    </message>
-    <message>
-        <source>Updating IP list %1 failed: %2</source>
-        <translation>Не удалось обновить список IP %1: %2</translation>
-    </message>
-    <message>
-        <source>its source changed during the update</source>
-        <translation>его источник изменился во время обновления</translation>
-    </message>
-    <message>
-        <source>The source changed during the update</source>
-        <translation>Источник изменился во время обновления</translation>
-    </message>
-    <message>
-        <source>The entries could not be saved</source>
-        <translation>Не удалось сохранить записи</translation>
-    </message>
-    <message numerus="yes">
-        <source>IP list %1 updated (%n entries)</source>
-        <translation>
-            <numerusform>Список IP %1 обновлен (%n запись)</numerusform>
-            <numerusform>Список IP %1 обновлен (%n записи)</numerusform>
-            <numerusform>Список IP %1 обновлен (%n записей)</numerusform>
-        </translation>
-    </message>
-    <message>
-        <source>The list has no source to fetch</source>
-        <translation>У списка нет источника для загрузки</translation>
-    </message>
-    <message>
-        <source>Unknown rule-set: %1</source>
-        <translation>Неизвестный набор правил: %1</translation>
-    </message>
-    <message>
-        <source>The source must be an http(s) URL</source>
-        <translation>Источником должен быть URL http(s)</translation>
-    </message>
-    <message>
-        <source>The core is not running</source>
-        <translation>Ядро не запущено</translation>
-    </message>
-    <message>
-        <source>The core could not read the rule-set</source>
-        <translation>Ядру не удалось прочитать набор правил</translation>
-    </message>
-    <message>
-        <source>The address returned a web page instead of an IP list</source>
-        <translation>По этому адресу находится веб-страница, а не список IP</translation>
-    </message>
-    <message>
-        <source>No addresses found</source>
-        <translation>Адреса не найдены</translation>
-    </message>
-    <message>
-        <source>IP list update failed: %1</source>
-        <translation>Не удалось обновить список IP: %1</translation>
-    </message>
-    <message>
-        <source>IP list update failed</source>
-        <translation>Не удалось обновить список IP</translation>
-    </message>
-</context>
-<context>
-    <name>Scanner::ScanManager</name>
+    <name>ScanManager</name>
     <message>
         <source>The scan is already running</source>
-        <translation>Сканирование уже выполняется</translation>
+        <translation type="unfinished">Сканирование уже выполняется</translation>
     </message>
     <message>
         <source>The scan no longer exists</source>
-        <translation>Сканирование больше не существует</translation>
+        <translation type="unfinished">Сканирование больше не существует</translation>
     </message>
     <message>
         <source>Turn on at least one test phase</source>
-        <translation>Включите хотя бы один этап проверки</translation>
+        <translation type="unfinished">Включите хотя бы один этап проверки</translation>
     </message>
     <message>
         <source>A TLS handshake check needs TLS turned on</source>
-        <translation>Для проверки TLS-хендшейка нужно включить TLS</translation>
+        <translation type="unfinished">Для проверки TLS-хендшейка нужно включить TLS</translation>
     </message>
     <message>
         <source>HTTP/3 needs TLS turned on</source>
-        <translation>Для HTTP/3 нужно включить TLS</translation>
+        <translation type="unfinished">Для HTTP/3 нужно включить TLS</translation>
     </message>
     <message>
         <source>The profile for the config test cannot be used</source>
-        <translation>Профиль для проверки конфигурации нельзя использовать</translation>
+        <translation type="unfinished">Профиль для проверки конфигурации нельзя использовать</translation>
     </message>
     <message>
         <source>Choose the IP list to scan</source>
-        <translation>Выберите список IP для сканирования</translation>
+        <translation type="unfinished">Выберите список IP для сканирования</translation>
     </message>
     <message>
         <source>The IP list to scan is empty</source>
-        <translation>Список IP для сканирования пуст</translation>
+        <translation type="unfinished">Список IP для сканирования пуст</translation>
     </message>
     <message>
         <source>The result list is empty</source>
-        <translation>Список результатов пуст</translation>
+        <translation type="unfinished">Список результатов пуст</translation>
     </message>
     <message>
         <source>Pause the scan first</source>
-        <translation>Сначала приостановите сканирование</translation>
+        <translation type="unfinished">Сначала приостановите сканирование</translation>
     </message>
     <message>
         <source>Scan %1 Result</source>
-        <translation>Результат сканирования %1</translation>
+        <translation type="unfinished">Результат сканирования %1</translation>
     </message>
     <message>
         <source>config test</source>
-        <translation>проверка конфигурации</translation>
+        <translation type="unfinished">проверка конфигурации</translation>
     </message>
     <message>
         <source>Scanning %1 with %2</source>
-        <translation>Сканирование %1 (%2)</translation>
+        <translation type="unfinished">Сканирование %1 (%2)</translation>
     </message>
     <message>
         <source>%1 failed %2: %3</source>
-        <translation>%1 — сбой (%2): %3</translation>
+        <translation type="unfinished">%1 — сбой (%2): %3</translation>
     </message>
     <message>
         <source>Connected to %1 with TCP (%2 ms)</source>
-        <translation>TCP-подключение к %1 установлено (%2 мс)</translation>
+        <translation type="unfinished">TCP-подключение к %1 установлено (%2 мс)</translation>
     </message>
     <message>
         <source>%1 replied to ping (%2 ms)</source>
-        <translation>%1 ответил на пинг (%2 мс)</translation>
+        <translation type="unfinished">%1 ответил на пинг (%2 мс)</translation>
     </message>
     <message>
         <source>TLS handshake with %1 succeeded (%2 ms)</source>
-        <translation>TLS-хендшейк с %1 выполнен (%2 мс)</translation>
+        <translation type="unfinished">TLS-хендшейк с %1 выполнен (%2 мс)</translation>
     </message>
     <message>
         <source>%1 answered over HTTP (%2 ms)</source>
-        <translation>%1 ответил по HTTP (%2 мс)</translation>
+        <translation type="unfinished">%1 ответил по HTTP (%2 мс)</translation>
     </message>
     <message>
         <source>%1 passed the config test (%2 ms)</source>
-        <translation>%1 прошел проверку конфигурации (%2 мс)</translation>
+        <translation type="unfinished">%1 прошел проверку конфигурации (%2 мс)</translation>
     </message>
     <message>
         <source>Preparing</source>
-        <translation>Подготовка</translation>
+        <translation type="unfinished">Подготовка</translation>
     </message>
     <message>
         <source>The scan stopped on an unexpected error</source>
-        <translation>Сканирование остановлено из-за непредвиденной ошибки</translation>
+        <translation type="unfinished">Сканирование остановлено из-за непредвиденной ошибки</translation>
     </message>
     <message>
         <source>Scan %1: saving its final state failed</source>
-        <translation>Сканирование %1: не удалось сохранить итоговое состояние</translation>
+        <translation type="unfinished">Сканирование %1: не удалось сохранить итоговое состояние</translation>
     </message>
     <message>
         <source>Preparing targets…</source>
-        <translation>Подготовка целей…</translation>
+        <translation type="unfinished">Подготовка целей…</translation>
     </message>
     <message>
         <source>The scan has no profile for the config test</source>
-        <translation>У сканирования нет профиля для проверки конфигурации</translation>
+        <translation type="unfinished">У сканирования нет профиля для проверки конфигурации</translation>
     </message>
     <message>
         <source>The result list could not be created</source>
-        <translation>Не удалось создать список результатов</translation>
+        <translation type="unfinished">Не удалось создать список результатов</translation>
     </message>
     <message>
         <source>The base IP list no longer exists</source>
-        <translation>Базовый список IP больше не существует</translation>
+        <translation type="unfinished">Базовый список IP больше не существует</translation>
     </message>
     <message>
         <source>The base IP list is empty</source>
-        <translation>Базовый список IP пуст</translation>
+        <translation type="unfinished">Базовый список IP пуст</translation>
     </message>
     <message>
         <source>The base IP list holds only IPv6 ranges; enable IPv6 scanning</source>
-        <translation>Базовый список IP содержит только диапазоны IPv6; включите сканирование IPv6</translation>
+        <translation type="unfinished">Базовый список IP содержит только диапазоны IPv6; включите сканирование IPv6</translation>
     </message>
     <message>
         <source>%1 snapshot</source>
-        <translation>%1 (снимок)</translation>
+        <translation type="unfinished">%1 (снимок)</translation>
     </message>
     <message>
         <source>The base IP list could not be copied</source>
-        <translation>Не удалось скопировать базовый список IP</translation>
+        <translation type="unfinished">Не удалось скопировать базовый список IP</translation>
     </message>
     <message>
         <source>The base IP list holds no valid target</source>
-        <translation>Базовый список IP не содержит допустимых целей</translation>
+        <translation type="unfinished">Базовый список IP не содержит допустимых целей</translation>
     </message>
     <message>
         <source>The result list holds only IPv6 entries; enable IPv6 scanning</source>
-        <translation>Список результатов содержит только записи IPv6; включите сканирование IPv6</translation>
+        <translation type="unfinished">Список результатов содержит только записи IPv6; включите сканирование IPv6</translation>
     </message>
     <message>
         <source>%1 rescan snapshot</source>
-        <translation>%1 (снимок для повторного сканирования)</translation>
+        <translation type="unfinished">%1 (снимок для повторного сканирования)</translation>
     </message>
     <message>
         <source>The result list could not be copied</source>
-        <translation>Не удалось скопировать список результатов</translation>
+        <translation type="unfinished">Не удалось скопировать список результатов</translation>
     </message>
     <message>
         <source>The result list holds no valid target</source>
-        <translation>Список результатов не содержит допустимых целей</translation>
+        <translation type="unfinished">Список результатов не содержит допустимых целей</translation>
     </message>
     <message>
         <source>The copy of the result list is gone; rescan the results again</source>
-        <translation>Копия списка результатов пропала; повторите сканирование результатов</translation>
+        <translation type="unfinished">Копия списка результатов пропала; повторите сканирование результатов</translation>
     </message>
     <message>
         <source>The copy of the base IP list is gone; restart the scan</source>
-        <translation>Копия базового списка IP пропала; перезапустите сканирование</translation>
+        <translation type="unfinished">Копия базового списка IP пропала; перезапустите сканирование</translation>
     </message>
     <message numerus="yes">
         <source>Found %n result(s); stopping as configured</source>
-        <translation>
+        <translation type="unfinished">
             <numerusform>Найден %n результат; остановка согласно настройкам</numerusform>
             <numerusform>Найдено %n результата; остановка согласно настройкам</numerusform>
             <numerusform>Найдено %n результатов; остановка согласно настройкам</numerusform>
@@ -12652,35 +13699,35 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
     <message>
         <source>IPv6 is unreachable from this network; scan paused (turn off IPv6 scanning to go on)</source>
-        <translation>IPv6 недоступен из этой сети; сканирование приостановлено (чтобы продолжить, отключите сканирование IPv6)</translation>
+        <translation type="unfinished">IPv6 недоступен из этой сети; сканирование приостановлено (чтобы продолжить, отключите сканирование IPv6)</translation>
     </message>
     <message>
         <source>Network appears to be down; scan paused</source>
-        <translation>Похоже, сеть недоступна; сканирование приостановлено</translation>
+        <translation type="unfinished">Похоже, сеть недоступна; сканирование приостановлено</translation>
     </message>
     <message>
         <source>Scan %1: network check failed: %2</source>
-        <translation>Сканирование %1: ошибка проверки сети: %2</translation>
+        <translation type="unfinished">Сканирование %1: ошибка проверки сети: %2</translation>
     </message>
     <message>
         <source>IPv4 is unreachable from this network; IPv4 results were kept</source>
-        <translation>IPv4 недоступен из этой сети; результаты IPv4 сохранены</translation>
+        <translation type="unfinished">IPv4 недоступен из этой сети; результаты IPv4 сохранены</translation>
     </message>
     <message>
         <source>IPv6 is unreachable from this network; IPv6 results were kept</source>
-        <translation>IPv6 недоступен из этой сети; результаты IPv6 сохранены</translation>
+        <translation type="unfinished">IPv6 недоступен из этой сети; результаты IPv6 сохранены</translation>
     </message>
     <message>
         <source>The core ended the scan session early</source>
-        <translation>Ядро досрочно завершило сеанс сканирования</translation>
+        <translation type="unfinished">Ядро досрочно завершило сеанс сканирования</translation>
     </message>
     <message>
         <source>The core made no progress on the scan</source>
-        <translation>Сканирование в ядре не продвинулось</translation>
+        <translation type="unfinished">Сканирование в ядре не продвинулось</translation>
     </message>
     <message numerus="yes">
         <source>%n result(s) passed only on a retry; the network fails some attempts at random</source>
-        <translation>
+        <translation type="unfinished">
             <numerusform>%n результат прошел проверку только с повторной попытки; сеть случайным образом обрывает часть попыток</numerusform>
             <numerusform>%n результата прошли проверку только с повторной попытки; сеть случайным образом обрывает часть попыток</numerusform>
             <numerusform>%n результатов прошли проверку только с повторной попытки; сеть случайным образом обрывает часть попыток</numerusform>
@@ -12688,7 +13735,7 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
     <message numerus="yes">
         <source>Re-testing %n failed result(s)…</source>
-        <translation>
+        <translation type="unfinished">
             <numerusform>Повторная проверка %n неудачного результата…</numerusform>
             <numerusform>Повторная проверка %n неудачных результатов…</numerusform>
             <numerusform>Повторная проверка %n неудачных результатов…</numerusform>
@@ -12696,11 +13743,11 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
     <message>
         <source>The core did not answer the probe request</source>
-        <translation>Ядро не ответило на запрос проверки</translation>
+        <translation type="unfinished">Ядро не ответило на запрос проверки</translation>
     </message>
     <message numerus="yes">
         <source>Testing %n candidate(s) through the config…</source>
-        <translation>
+        <translation type="unfinished">
             <numerusform>Проверка %n кандидата через конфигурацию…</numerusform>
             <numerusform>Проверка %n кандидатов через конфигурацию…</numerusform>
             <numerusform>Проверка %n кандидатов через конфигурацию…</numerusform>
@@ -12708,19 +13755,19 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
     <message>
         <source>The core did not answer the config test</source>
-        <translation>Ядро не ответило на проверку конфигурации</translation>
+        <translation type="unfinished">Ядро не ответило на проверку конфигурации</translation>
     </message>
     <message>
         <source>Checking the network…</source>
-        <translation>Проверка сети…</translation>
+        <translation type="unfinished">Проверка сети…</translation>
     </message>
     <message>
         <source>Scan %1 stopped: %2</source>
-        <translation>Сканирование %1 остановлено: %2</translation>
+        <translation type="unfinished">Сканирование %1 остановлено: %2</translation>
     </message>
     <message numerus="yes">
         <source>Skipped %n invalid entry(ies)</source>
-        <translation>
+        <translation type="unfinished">
             <numerusform>Пропущена %n недопустимая запись</numerusform>
             <numerusform>Пропущено %n недопустимые записи</numerusform>
             <numerusform>Пропущено %n недопустимых записей</numerusform>
@@ -12728,15 +13775,254 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
     <message>
         <source>Probing</source>
-        <translation>Проверка адресов</translation>
+        <translation type="unfinished">Проверка адресов</translation>
     </message>
     <message>
         <source>Testing configs</source>
-        <translation>Проверка конфигураций</translation>
+        <translation type="unfinished">Проверка конфигураций</translation>
     </message>
     <message>
         <source>Checking network</source>
-        <translation>Проверка сети</translation>
+        <translation type="unfinished">Проверка сети</translation>
+    </message>
+</context>
+<context>
+    <name>Server</name>
+    <message>
+        <source>The request was dropped without an answer</source>
+        <translation type="unfinished">Запрос отброшен без ответа</translation>
+    </message>
+    <message>
+        <source>Off</source>
+        <translation>Выкл.</translation>
+    </message>
+    <message>
+        <source>Not listening: the key is missing or invalid</source>
+        <translation type="unfinished">Не принимает подключения: ключ отсутствует или недействителен</translation>
+    </message>
+    <message>
+        <source>Port %1 is in use</source>
+        <translation type="unfinished">Порт %1 занят</translation>
+    </message>
+    <message>
+        <source>Cannot listen on port %1: %2</source>
+        <translation type="unfinished">Не удалось начать прослушивание порта %1: %2</translation>
+    </message>
+    <message>
+        <source>Listening on port %1 (local network)</source>
+        <translation type="unfinished">Прослушивается порт %1 (локальная сеть)</translation>
+    </message>
+    <message>
+        <source>Listening on %1:%2</source>
+        <translation type="unfinished">Прослушивается %1:%2</translation>
+    </message>
+    <message>
+        <source>Stopped listening</source>
+        <translation type="unfinished">Прослушивание остановлено</translation>
+    </message>
+    <message>
+        <source>Refused %1: too many failed attempts</source>
+        <translation type="unfinished">Отклонено подключение %1: слишком много неудачных попыток</translation>
+    </message>
+    <message>
+        <source>Refused %1: not in the allowed addresses</source>
+        <translation type="unfinished">Отклонено подключение %1: адрес не входит в разрешенные</translation>
+    </message>
+    <message>
+        <source>Refused %1: too many connections</source>
+        <translation type="unfinished">Отклонено подключение %1: слишком много подключений</translation>
+    </message>
+    <message>
+        <source>unsupported protocol version</source>
+        <translation type="unfinished">неподдерживаемая версия протокола</translation>
+    </message>
+    <message>
+        <source>invalid frame length</source>
+        <translation type="unfinished">недопустимая длина фрейма</translation>
+    </message>
+    <message>
+        <source>a frame failed authentication, most likely the key is wrong</source>
+        <translation type="unfinished">фрейм не прошел аутентификацию, скорее всего, ключ неверный</translation>
+    </message>
+    <message>
+        <source>The response is too large</source>
+        <translation type="unfinished">Ответ слишком большой</translation>
+    </message>
+    <message>
+        <source>Closed the connection from %1: %2</source>
+        <translation type="unfinished">Закрыто подключение от %1: %2</translation>
+    </message>
+    <message>
+        <source>Throne is shutting down</source>
+        <translation type="unfinished">Throne завершает работу</translation>
+    </message>
+</context>
+<context>
+    <name>ServerItemDelegate</name>
+    <message>
+        <source>ms</source>
+        <translation>мс</translation>
+    </message>
+    <message>
+        <source>ok</source>
+        <translation>есть связь</translation>
+    </message>
+    <message>
+        <source>no reply</source>
+        <translation>нет ответа</translation>
+    </message>
+</context>
+<context>
+    <name>ServerListPanel</name>
+    <message>
+        <source>Subscription</source>
+        <translation>Подписка</translation>
+    </message>
+    <message>
+        <source>Copy link</source>
+        <translation>Скопировать ссылку</translation>
+    </message>
+    <message>
+        <source>Link copied</source>
+        <translation>Ссылка скопирована</translation>
+    </message>
+    <message>
+        <source>Subscription settings</source>
+        <translation>Настройки подписки</translation>
+    </message>
+    <message>
+        <source>Delete subscription</source>
+        <translation>Удалить подписку</translation>
+    </message>
+    <message>
+        <source>Delete «%1» along with its servers?</source>
+        <translation>Удалить «%1» вместе с её серверами?</translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation>Удалить</translation>
+    </message>
+    <message>
+        <source>The provider pinned this subscription: it cannot be removed while its server is running.</source>
+        <translation>Провайдер закрепил эту подписку: её нельзя удалить, пока работает её сервер.</translation>
+    </message>
+    <message>
+        <source>Subscription deleted</source>
+        <translation>Подписка удалена</translation>
+    </message>
+    <message>
+        <source>Delete duplicates (%1)</source>
+        <translation>Удалить дубликаты (%1)</translation>
+    </message>
+    <message>
+        <source>Delete duplicates</source>
+        <translation>Удалить дубликаты</translation>
+    </message>
+    <message>
+        <source>Delete all subscriptions</source>
+        <translation>Удалить все подписки</translation>
+    </message>
+    <message>
+        <source>Delete all</source>
+        <translation>Удалить все</translation>
+    </message>
+    <message>
+        <source>Add subscription</source>
+        <translation>Добавить подписку</translation>
+    </message>
+    <message>
+        <source>Update subscription</source>
+        <translation>Обновить подписку</translation>
+    </message>
+    <message>
+        <source>Search</source>
+        <translation>Поиск</translation>
+    </message>
+    <message>
+        <source>All</source>
+        <translation>Все</translation>
+    </message>
+    <message>
+        <source>Favorites</source>
+        <translation>Избранное</translation>
+    </message>
+    <message numerus="yes">
+        <source>Deleted %n subscription(s); %1 pinned by the provider left in place</source>
+        <translation><numerusform>Удалена %n подписка. Закреплённых провайдером оставлено: %1</numerusform><numerusform>Удалено %n подписки. Закреплённых провайдером оставлено: %1</numerusform><numerusform>Удалено %n подписок. Закреплённых провайдером оставлено: %1</numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <source>Deleted %n subscription(s)</source>
+        <translation><numerusform>Удалена %n подписка</numerusform><numerusform>Удалено %n подписки</numerusform><numerusform>Удалено %n подписок</numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n subscription(s) repeat a link that is already added. Delete the extra ones?</source>
+        <translation><numerusform>%n подписка повторяет уже добавленную ссылку. Удалить лишнюю?</numerusform><numerusform>%n подписки повторяют уже добавленную ссылку. Удалить лишние?</numerusform><numerusform>%n подписок повторяют уже добавленную ссылку. Удалить лишние?</numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <source>Delete %n subscription(s) and all their servers? Links you will have to add again.</source>
+        <translation><numerusform>Удалить %n подписку вместе со всеми её серверами? Ссылку придётся добавлять заново.</numerusform><numerusform>Удалить %n подписки вместе со всеми их серверами? Ссылки придётся добавлять заново.</numerusform><numerusform>Удалить %n подписок вместе со всеми их серверами? Ссылки придётся добавлять заново.</numerusform></translation>
+    </message>
+    <message>
+        <source>This subscription has no servers yet. Refresh it or add another one.</source>
+        <translation>В этой подписке пока нет серверов. Обновите её или добавьте другую.</translation>
+    </message>
+    <message>
+        <source>No subscription yet.
+Paste the link your provider gave you and the servers will appear here.</source>
+        <translation>Подписки пока нет.
+Вставьте ссылку от провайдера — серверы появятся здесь.</translation>
+    </message>
+    <message>
+        <source>Latency check did not start</source>
+        <translation>Замер не запустился</translation>
+    </message>
+    <message>
+        <source>All servers responded</source>
+        <translation>Все серверы ответили</translation>
+    </message>
+    <message>
+        <source>%1 of %2 servers responded</source>
+        <translation>Ответили %1 из %2 серверов</translation>
+    </message>
+    <message>
+        <source>Subscription updated, nothing changed</source>
+        <translation>Подписка обновлена, изменений нет</translation>
+    </message>
+    <message>
+        <source>Subscription updated: %1 new</source>
+        <translation>Подписка обновлена: %1 новых</translation>
+    </message>
+    <message>
+        <source>Subscription updated: %1 removed</source>
+        <translation>Подписка обновлена: %1 удалено</translation>
+    </message>
+    <message>
+        <source>Subscription updated: %1 new, %2 removed</source>
+        <translation>Подписка обновлена: %1 новых, %2 удалено</translation>
+    </message>
+    <message>
+        <source>Measure latency</source>
+        <translation>Замерить пинг</translation>
+    </message>
+    <message>
+        <source>Measurement stopped</source>
+        <translation>Замер остановлен</translation>
+    </message>
+    <message>
+        <source>Check (%1)</source>
+        <translation>Проверить: %1</translation>
+    </message>
+    <message>
+        <source>Check another way</source>
+        <translation>Проверить иначе</translation>
+    </message>
+    <message>
+        <source>%1: %2 ms</source>
+        <translation>%1: %2 мс</translation>
+    </message>
+    <message>
+        <source>%1: no answer</source>
+        <translation>%1: нет ответа</translation>
     </message>
 </context>
 <context>
@@ -12780,6 +14066,45 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>Kill switch is not active</source>
         <translation>Kill switch не активен</translation>
+    </message>
+</context>
+<context>
+    <name>SubscriptionCard</name>
+    <message>
+        <source>until %1</source>
+        <translation>до %1</translation>
+    </message>
+    <message>
+        <source>No traffic data yet</source>
+        <translation>Нет данных о трафике</translation>
+    </message>
+    <message>
+        <source>%1 used, unlimited</source>
+        <translation>израсходовано %1, безлимитно</translation>
+    </message>
+    <message>
+        <source>%1 of %2</source>
+        <translation>%1 из %2</translation>
+    </message>
+    <message>
+        <source>Traffic resets on %1, in %2 day(s)</source>
+        <translation>Сброс трафика: %1, через %2 дн.</translation>
+    </message>
+    <message>
+        <source>Traffic resets on %1</source>
+        <translation>Сброс трафика: %1</translation>
+    </message>
+    <message>
+        <source>Support</source>
+        <translation>Поддержка</translation>
+    </message>
+    <message>
+        <source>Subscription page</source>
+        <translation>Страница подписки</translation>
+    </message>
+    <message>
+        <source>Message from your provider</source>
+        <translation>Сообщение провайдера</translation>
     </message>
 </context>
 <context>
@@ -12862,140 +14187,6 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
 </context>
 <context>
-    <name>Sys::CoreDiagnostics</name>
-    <message>
-        <source>The core is not running.</source>
-        <translation>Ядро не запущено.</translation>
-    </message>
-    <message>
-        <source>Could not reach the core. See the log for details.</source>
-        <translation>Не удалось установить связь с ядром. Подробности смотрите в логах.</translation>
-    </message>
-    <message>
-        <source>The core could not capture the profile: %1</source>
-        <translation>Ядру не удалось выполнить профилирование: %1</translation>
-    </message>
-    <message>
-        <source>The core returned an empty profile.</source>
-        <translation>Ядро вернуло пустой результат профилирования.</translation>
-    </message>
-    <message>
-        <source>Could not save %1: %2</source>
-        <translation>Не удалось сохранить %1: %2</translation>
-    </message>
-    <message>
-        <source>Performance profile saved to %1</source>
-        <translation>Результат профилирования сохранен в %1</translation>
-    </message>
-    <message>
-        <source>The performance profile was saved (%1).</source>
-        <translation>Результат профилирования сохранен (%1).</translation>
-    </message>
-    <message>
-        <source>Performance profile failed: %1</source>
-        <translation>Ошибка профилирования: %1</translation>
-    </message>
-    <message>
-        <source>Performance profile</source>
-        <translation>Профилирование</translation>
-    </message>
-    <message>
-        <source>Show in folder</source>
-        <translation>Показать в папке</translation>
-    </message>
-</context>
-<context>
-    <name>Sys::KillSwitch</name>
-    <message>
-        <source>The kill switch needs Throne to run as administrator.</source>
-        <translation>Для kill switch нужно запустить Throne от имени администратора.</translation>
-    </message>
-    <message>
-        <source>The kill switch needs the core to have root privileges.</source>
-        <translation>Для kill switch ядру нужны права root.</translation>
-    </message>
-    <message>
-        <source>The kill switch is not supported on this system.</source>
-        <translation>Kill switch не поддерживается в этой системе.</translation>
-    </message>
-    <message>
-        <source>Another program removed the kill switch rules or disabled the system firewall.</source>
-        <translation>Другая программа удалила правила kill switch или отключила системный брандмауэр.</translation>
-    </message>
-    <message>
-        <source>The kill switch rejected its settings.</source>
-        <translation>Kill switch не принял настройки.</translation>
-    </message>
-    <message>
-        <source>The kill switch process stopped unexpectedly.</source>
-        <translation>Процесс kill switch неожиданно остановился.</translation>
-    </message>
-    <message>
-        <source>Details: %1</source>
-        <translation>Подробности: %1</translation>
-    </message>
-    <message>
-        <source>[Kill switch] Off.</source>
-        <translation>[Kill switch] Выключен.</translation>
-    </message>
-    <message>
-        <source>[Kill switch] Allowing the extra core %1.</source>
-        <translation>[Kill switch] Разрешено дополнительное ядро %1.</translation>
-    </message>
-    <message>
-        <source>[Kill switch] Warning: %1</source>
-        <translation>[Kill switch] Предупреждение: %1</translation>
-    </message>
-    <message>
-        <source>[Kill switch] On: only traffic through Throne can leave this device.</source>
-        <translation>[Kill switch] Включен: покинуть это устройство может только трафик через Throne.</translation>
-    </message>
-    <message>
-        <source>[Kill switch] New settings applied.</source>
-        <translation>[Kill switch] Новые настройки применены.</translation>
-    </message>
-    <message>
-        <source>the kill switch did not respond within %1 seconds</source>
-        <translation>kill switch не ответил в течение %1 с</translation>
-    </message>
-    <message>
-        <source>could not start %1: %2</source>
-        <translation>не удалось запустить %1: %2</translation>
-    </message>
-    <message>
-        <source>the kill switch process crashed</source>
-        <translation>процесс kill switch аварийно завершился</translation>
-    </message>
-    <message>
-        <source>the kill switch process exited with code %1</source>
-        <translation>процесс kill switch завершился с кодом %1</translation>
-    </message>
-    <message>
-        <source>the kill switch process crashed before it was ready</source>
-        <translation>процесс kill switch аварийно завершился до готовности</translation>
-    </message>
-    <message>
-        <source>the kill switch process exited with code %1 before it was ready</source>
-        <translation>процесс kill switch завершился с кодом %1 до готовности</translation>
-    </message>
-    <message>
-        <source>[Kill switch] The new settings could not be applied, the previous ones stay in force: %1</source>
-        <translation>[Kill switch] Не удалось применить новые настройки, продолжают действовать прежние: %1</translation>
-    </message>
-    <message>
-        <source>[Kill switch] Protection lost: %1</source>
-        <translation>[Kill switch] Защита потеряна: %1</translation>
-    </message>
-    <message>
-        <source>[Kill switch] Starting it again...</source>
-        <translation>[Kill switch] Повторный запуск...</translation>
-    </message>
-    <message>
-        <source>[Kill switch] Not active: %1</source>
-        <translation>[Kill switch] Не активен: %1</translation>
-    </message>
-</context>
-<context>
     <name>TrafficChartWidget</name>
     <message>
         <source>Download</source>
@@ -13008,6 +14199,49 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>No traffic recorded for this period</source>
         <translation>Нет данных о трафике за этот период</translation>
+    </message>
+</context>
+<context>
+    <name>TrayMenu</name>
+    <message>
+        <source>Disconnect</source>
+        <translation>Отключиться</translation>
+    </message>
+    <message>
+        <source>Connect</source>
+        <translation>Подключиться</translation>
+    </message>
+    <message>
+        <source>Open FSNT Client</source>
+        <translation>Открыть FSNT Client</translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation>Настройки</translation>
+    </message>
+    <message>
+        <source>Quit</source>
+        <translation>Выход</translation>
+    </message>
+    <message>
+        <source>Connected</source>
+        <translation>Подключено</translation>
+    </message>
+    <message>
+        <source>Not connected</source>
+        <translation>Не подключено</translation>
+    </message>
+    <message>
+        <source>FSNT Client — %1</source>
+        <translation>FSNT Client — %1</translation>
+    </message>
+    <message>
+        <source>Server</source>
+        <translation>Сервер</translation>
+    </message>
+    <message>
+        <source>%1 — %2 ms</source>
+        <translation>%1 — %2 мс</translation>
     </message>
 </context>
 <context>
@@ -13073,6 +14307,21 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>Page %1/%2</source>
         <translation>Страница %1/%2</translation>
+    </message>
+</context>
+<context>
+    <name>UpdatePopover</name>
+    <message>
+        <source>Update</source>
+        <translation>Обновить</translation>
+    </message>
+    <message>
+        <source>Later</source>
+        <translation>Позже</translation>
+    </message>
+    <message>
+        <source>What's new</source>
+        <translation>Что нового</translation>
     </message>
 </context>
 <context>
@@ -14498,6 +15747,22 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>В ссылке vpn:// не найден профиль для импорта.</translation>
     </message>
     <message>
+        <source>Remote DNS "%1": %2</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>Direct DNS "%1": %2</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>The default DNS server must be remote or direct, not "%1".</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <source>The profile's own DNS settings were dropped, so it uses the global ones: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
         <source>%1: %2</source>
         <translation>%1: %2</translation>
     </message>
@@ -14973,14 +16238,6 @@ Remove that endpoint from this routing profile as well?</source>
         <source>Line %1 ("%2"): %3</source>
         <translation>Строка %1 ("%2"): %3</translation>
     </message>
-    <message numerus="yes">
-        <source>%n more line(s) have problems.</source>
-        <translation>
-            <numerusform>Еще %n строка с ошибками.</numerusform>
-            <numerusform>Еще %n строки с ошибками.</numerusform>
-            <numerusform>Еще %n строк с ошибками.</numerusform>
-        </translation>
-    </message>
     <message>
         <source>Fix these before saving:</source>
         <translation>Исправьте перед сохранением:</translation>
@@ -14994,1054 +16251,4 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>Предупреждения:</translation>
     </message>
 </context>
-<context><name>AddSubscriptionDialog</name><message>
-        <source>Could not open the subscription. Most likely it is blocked by %1 — such programs rewrite network packets, and the provider's site stops answering. Close it and try again.</source>
-        <translation>Не удалось открыть подписку. Скорее всего мешает %1 — такие программы правят сетевые пакеты, и сайт провайдера перестаёт отвечать. Закройте её и попробуйте снова.</translation>
-    </message>
-    <message>
-        <source>Could not open the subscription. Check the link, and if it opens in a browser — look for an anti-censorship tool or antivirus that filters traffic on this computer.</source>
-        <translation>Не удалось открыть подписку. Проверьте ссылку, а если в браузере она открывается — ищите обходчик блокировок или антивирус, который фильтрует трафик на этом компьютере.</translation>
-    </message>
-    <message>
-        <source>Add subscription</source>
-        <translation>Добавить подписку</translation>
-    </message>
-    <message>
-        <source>Paste the link your provider gave you.</source>
-        <translation>Вставьте ссылку, которую выдал провайдер.</translation>
-    </message>
-    <message>
-        <source>Paste from clipboard</source>
-        <translation>Вставить из буфера</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation>Отмена</translation>
-    </message>
-    <message>
-        <source>Add</source>
-        <translation>Добавить</translation>
-    </message>
-    <message>
-        <source>The provider did not answer. Check the link and your connection.</source>
-        <translation>Провайдер не ответил. Проверьте ссылку и соединение.</translation>
-    </message>
-    <message>
-        <source>The clipboard is empty.</source>
-        <translation>Буфер обмена пуст.</translation>
-    </message>
-    <message>
-        <source>Adding…</source>
-        <translation>Добавляем…</translation>
-    </message>
-    <message>
-        <source>Enter a link first.</source>
-        <translation>Сначала вставьте ссылку.</translation>
-    </message>
-    <message>
-        <source>Fetching the subscription…</source>
-        <translation>Загружаем подписку…</translation>
-    </message>
-</context><context><name>ConnectPanel</name><message>
-        <source>The tunnel needs administrator rights</source>
-        <translation>Для туннеля нужны права администратора</translation>
-    </message>
-    <message>
-        <source>Full tunnel routes every program on the computer, and macOS gives that only with your password.
-
-You can try again — the password window will come back. Or connect through the system proxy: it works without any rights, browsers and most programs go through it, and the few that ignore proxy settings stay outside.</source>
-        <translation>Полный туннель ведёт через себя все программы компьютера, а такое macOS разрешает только по паролю.
-
-Можно попробовать ещё раз — окно с паролем вернётся. Либо подключиться через системный прокси: он работает вообще без прав, браузеры и большинство программ идут через него, а те немногие, что игнорируют настройки прокси, останутся снаружи.</translation>
-    </message>
-    <message>
-        <source>Ask for the password again</source>
-        <translation>Спросить пароль ещё раз</translation>
-    </message>
-    <message>
-        <source>Connect through the proxy</source>
-        <translation>Подключиться через прокси</translation>
-    </message>
-    <message>
-        <source>Connected</source>
-        <translation>Подключено</translation>
-    </message>
-    <message>
-        <source>Disconnected</source>
-        <translation>Отключено</translation>
-    </message>
-    <message>
-        <source>No server selected</source>
-        <translation>Сервер не выбран</translation>
-    </message>
-    <message>
-        <source>Could not connect</source>
-        <translation>Не удалось подключиться</translation>
-    </message>
-    <message>
-        <source>Could not disconnect</source>
-        <translation>Не удалось отключиться</translation>
-    </message>
-    <message>
-        <source>Disconnecting</source>
-        <translation>Отключаемся</translation>
-    </message>
-    <message>
-        <source>Add a subscription first</source>
-        <translation>Сначала добавьте подписку</translation>
-    </message>
-    <message>
-        <source>Connecting</source>
-        <translation>Подключаемся</translation>
-    </message>
-    <message>
-        <source>Full tunnel (TUN)</source>
-        <translation>Весь трафик (TUN)</translation>
-    </message>
-    <message>
-        <source>System proxy</source>
-        <translation>Системный прокси</translation>
-    </message>
-    <message>
-        <source>chosen automatically</source>
-        <translation>выбран автоматически</translation>
-    </message>
-</context><context><name>DialogHotkey</name><message>
-        <source>Hotkey</source>
-        <translation>Горячие клавиши</translation>
-    </message>
-    <message>
-        <source>Show routes</source>
-        <translation>Показать маршруты</translation>
-    </message>
-    <message>
-        <source>Show groups</source>
-        <translation>Показать группы</translation>
-    </message>
-    <message>
-        <source>Trigger main window</source>
-        <translation>Показать главное окно</translation>
-    </message>
-    <message>
-        <source>Proxy mode</source>
-        <translation>Режим прокси</translation>
-    </message>
-    <message>
-        <source>Toggle System Proxy</source>
-        <translation>Вкл. системный прокси</translation>
-    </message>
-    <message>
-        <source>Global</source>
-        <translation>Глобальные</translation>
-    </message>
-    <message>
-        <source>Shortcuts</source>
-        <translation>Горячие клавиши</translation>
-    </message>
-</context><context><name>DialogPerAppProxy</name><message>
-        <source>Your provider routes these itself. %1</source>
-        <translation>Эти приложения провайдер ведёт сам. %1</translation>
-    </message>
-    <message>
-        <source>Past the VPN: %1</source>
-        <translation>Мимо VPN: %1</translation>
-    </message>
-    <message>
-        <source>Through the VPN: %1</source>
-        <translation>Через VPN: %1</translation>
-    </message>
-    <message>
-        <source>Per-app proxy</source>
-        <translation>Прокси по приложениям</translation>
-    </message>
-    <message>
-        <source>No routing profile is selected.</source>
-        <translation>Профиль маршрутизации не выбран.</translation>
-    </message>
-    <message>
-        <source>Choose how each application is routed. The choice is stored as processName rules in the current routing profile.</source>
-        <translation>Выберите, как маршрутизировать каждое приложение. Выбор сохраняется правилами processName в текущем профиле маршрутизации.</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation>Закрыть</translation>
-    </message>
-    <message>
-        <source>Search applications</source>
-        <translation>Поиск приложений</translation>
-    </message>
-    <message>
-        <source>Show system processes</source>
-        <translation>Показать системные процессы</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation>Отмена</translation>
-    </message>
-    <message>
-        <source>Save</source>
-        <translation>Сохранить</translation>
-    </message>
-    <message>
-        <source>Not set</source>
-        <translation>Не задано</translation>
-    </message>
-    <message>
-        <source>Through proxy</source>
-        <translation>Через прокси</translation>
-    </message>
-    <message>
-        <source>Direct</source>
-        <translation>Напрямую</translation>
-    </message>
-    <message>
-        <source>Per-app routing updated: %1 via proxy, %2 direct</source>
-        <translation>Маршрутизация по приложениям обновлена: %1 через прокси, %2 напрямую</translation>
-    </message>
-</context><context><name>DialogRuntimeStats</name><message>
-        <source>%1 active   ·   %2 TCP   ·   %3 UDP</source>
-        <translation>%1 активных   ·   %2 TCP   ·   %3 UDP</translation>
-    </message>
-    <message>
-        <source>No active config</source>
-        <translation>Нет активного подключения</translation>
-    </message>
-    <message>
-        <source>CPU</source>
-        <translation>ЦП</translation>
-    </message>
-    <message>
-        <source>RAM</source>
-        <translation>ОЗУ</translation>
-    </message>
-    <message>
-        <source>Disabled</source>
-        <translation>Выключено</translation>
-    </message>
-    <message>
-        <source>Due now</source>
-        <translation>Прямо сейчас</translation>
-    </message>
-    <message>
-        <source>in %1</source>
-        <translation>через %1</translation>
-    </message>
-    <message>
-        <source>Unavailable</source>
-        <translation>Недоступен</translation>
-    </message>
-    <message>
-        <source>N/A</source>
-        <translation>Недоступно</translation>
-    </message>
-    <message>
-        <source>Runtime Statistics</source>
-        <translation>Статистика выполнения</translation>
-    </message>
-    <message>
-        <source>Process</source>
-        <translation>Процесс</translation>
-    </message>
-    <message>
-        <source>Core</source>
-        <translation>Ядро</translation>
-    </message>
-    <message>
-        <source>Network</source>
-        <translation>Сеть</translation>
-    </message>
-    <message>
-        <source>Connections</source>
-        <translation>Подключения</translation>
-    </message>
-    <message>
-        <source>Proxy</source>
-        <translation>Прокси</translation>
-    </message>
-    <message>
-        <source>Direct</source>
-        <translation>Напрямую</translation>
-    </message>
-    <message>
-        <source>Schedule</source>
-        <translation>Расписание </translation>
-    </message>
-    <message>
-        <source>Next sub update</source>
-        <translation>След. обновл. подписки</translation>
-    </message>
-    <message>
-        <source>Next remote route update</source>
-        <translation>След. обновл. удаленной маршрутизации</translation>
-    </message>
-    <message>
-        <source>System</source>
-        <translation>Система</translation>
-    </message>
-    <message>
-        <source>Databases</source>
-        <translation>Базы данных</translation>
-    </message>
-    <message>
-        <source>Uptime</source>
-        <translation>Время работы</translation>
-    </message>
-    <message>
-        <source>Running Config</source>
-        <translation>Текущая конфигурация</translation>
-    </message>
-    <message>
-        <source>Country</source>
-        <translation>Страна</translation>
-    </message>
-    <message>
-        <source>Config</source>
-        <translation>Конфигурация</translation>
-    </message>
-    <message>
-        <source>Out IP</source>
-        <translation>Выходной IP</translation>
-    </message>
-    <message>
-        <source>Ping</source>
-        <translation>Задержка</translation>
-    </message>
-    </context><context><name>FsntDiagnosticsDialog</name><message>
-        <source>Diagnostics</source>
-        <translation>Диагностика</translation>
-    </message>
-    <message>
-        <source>The client checks itself and says what to fix. Everything here runs on this computer; nothing is sent anywhere.</source>
-        <translation>Клиент проверяет себя сам и говорит, что чинить. Всё это выполняется на вашем компьютере, никуда ничего не отправляется.</translation>
-    </message>
-    <message>
-        <source>checking…</source>
-        <translation>проверяю…</translation>
-    </message>
-    <message>
-        <source>Run again</source>
-        <translation>Проверить заново</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation>Закрыть</translation>
-    </message>
-    <message>
-        <source>Found %1 problem(s). Fix the topmost one first: the checks run from cause to effect, and the rest are often its consequences.</source>
-        <translation>Найдено проблем: %1. Начните с верхней: проверки идут от причины к следствию, и остальные часто её последствия.</translation>
-    </message>
-    <message>
-        <source>No breakage found, but %1 thing(s) are worth a look.</source>
-        <translation>Поломок нет, но стоит взглянуть: %1.</translation>
-    </message>
-    <message>
-        <source>Everything checks out. If something still does not work, build a support report from the menu and send it over.</source>
-        <translation>Всё в порядке. Если что-то всё равно не работает — соберите отчёт для поддержки из меню и пришлите его.</translation>
-    </message>
-</context><context><name>FsntLogDialog</name><message>
-        <source>Logs</source>
-        <translation>Логи</translation>
-    </message>
-    <message>
-        <source>Filter lines</source>
-        <translation>Фильтр строк</translation>
-    </message>
-    <message>
-        <source>Problems only</source>
-        <translation>Только проблемы</translation>
-    </message>
-    <message>
-        <source>Follow new lines</source>
-        <translation>Следить за новыми</translation>
-    </message>
-    <message>
-        <source>Copy</source>
-        <translation>Копировать</translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation>Очистить</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation>Закрыть</translation>
-    </message>
-</context><context><name>FsntSettingsDialog</name><message>
-        <source>Tunnel mode</source>
-        <translation>Режим туннеля</translation>
-    </message>
-    <message>
-        <source>Compatible</source>
-        <translation>Совместимый</translation>
-    </message>
-    <message>
-        <source>Fast</source>
-        <translation>Быстрый</translation>
-    </message>
-    <message>
-        <source>If the client says connected but no site opens, switch to Compatible. The fast mode hands packets to Windows, where antivirus software, DPI-bypass tools and leftovers of other VPNs intercept them.</source>
-        <translation>Если клиент показывает «подключено», а сайты не открываются — переключите на совместимый. Быстрый отдаёт пакеты Windows, где их перехватывают антивирусы, обходчики блокировок и остатки других VPN.</translation>
-    </message>
-    <message>
-        <source>Custom: %1</source>
-        <translation>Своя: %1</translation>
-    </message>
-    <message>
-        <source>A profile you built yourself in advanced mode.</source>
-        <translation>Схема, собранная вами в расширенном режиме.</translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation>Настройки</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation>Отмена</translation>
-    </message>
-    <message>
-        <source>Save</source>
-        <translation>Сохранить</translation>
-    </message>
-    <message>
-        <source>Connection</source>
-        <translation>Подключение</translation>
-    </message>
-    <message>
-        <source>Full tunnel (TUN)</source>
-        <translation>Весь трафик (TUN)</translation>
-    </message>
-    <message>
-        <source>System proxy</source>
-        <translation>Системный прокси</translation>
-    </message>
-    <message>
-        <source>Connection mode</source>
-        <translation>Режим подключения</translation>
-    </message>
-    <message>
-        <source>Routing</source>
-        <translation>Маршрутизация</translation>
-    </message>
-    <message>
-        <source>Routing is managed by your provider while this subscription is connected. Disconnect to change it.</source>
-        <translation>Пока эта подписка подключена, маршрутизацией управляет ваш провайдер. Отключитесь, чтобы изменить её.</translation>
-    </message>
-    <message>
-        <source>DNS</source>
-        <translation>DNS</translation>
-    </message>
-    <message>
-        <source>Through the VPN</source>
-        <translation>Через VPN</translation>
-    </message>
-    <message>
-        <source>Direct traffic</source>
-        <translation>Прямой трафик</translation>
-    </message>
-    <message>
-        <source>Subscriptions</source>
-        <translation>Подписки</translation>
-    </message>
-    <message>
-        <source>Off</source>
-        <translation>Выкл.</translation>
-    </message>
-    <message>
-        <source>Every 30 minutes</source>
-        <translation>Каждые 30 минут</translation>
-    </message>
-    <message>
-        <source>Every hour</source>
-        <translation>Каждый час</translation>
-    </message>
-    <message>
-        <source>Every 2 hours</source>
-        <translation>Каждые 2 часа</translation>
-    </message>
-    <message>
-        <source>Every 6 hours</source>
-        <translation>Каждые 6 часов</translation>
-    </message>
-    <message>
-        <source>Every 12 hours</source>
-        <translation>Каждые 12 часов</translation>
-    </message>
-    <message>
-        <source>Once a day</source>
-        <translation>Раз в сутки</translation>
-    </message>
-    <message>
-        <source>Auto update</source>
-        <translation>Авто-обновление</translation>
-    </message>
-    <message>
-        <source>Update all now</source>
-        <translation>Обновить все сейчас</translation>
-    </message>
-    <message>
-        <source>This subscription is pinned by your provider and cannot be removed while it is connected.</source>
-        <translation>Эта подписка закреплена провайдером и не может быть удалена, пока подключена.</translation>
-    </message>
-    <message>
-        <source>Remove the current subscription</source>
-        <translation>Удалить текущую подписку</translation>
-    </message>
-    <message>
-        <source>Application</source>
-        <translation>Приложение</translation>
-    </message>
-    <message>
-        <source>Language</source>
-        <translation>Язык</translation>
-    </message>
-    <message>
-        <source>System</source>
-        <translation>Системный</translation>
-    </message>
-    <message>
-        <source>Reconnect on start</source>
-        <translation>Подключаться при запуске</translation>
-    </message>
-    <message>
-        <source>Allow local network access</source>
-        <translation>Разрешить доступ из локальной сети</translation>
-    </message>
-    <message>
-        <source>Choose apps to route</source>
-        <translation>Выбрать приложения</translation>
-    </message>
-    <message>
-        <source>Switch automatically when it stops answering</source>
-        <translation>Переключать самому, когда перестаёт отвечать</translation>
-    </message>
-    <message>
-        <source>Add your own server</source>
-        <translation>Добавить свой сервер</translation>
-    </message>
-    <message>
-        <source>Address, for example 1.1.1.1, tls://dns.google or https://dns.google/dns-query:</source>
-        <translation>Адрес, например 1.1.1.1, tls://dns.google или https://dns.google/dns-query:</translation>
-    </message>
-    <message>
-        <source>Address not understood</source>
-        <translation>Адрес не понят</translation>
-    </message>
-    <message>
-        <source>The first resolves names for tunnelled traffic, the second for everything that goes direct. The direct one has to work before the tunnel is up, so a provider that blocks DoT or DoH leaves nothing to connect with — that is what the automatic switch is for.</source>
-        <translation>Первый разрешает имена для трафика в туннеле, второй — для всего, что идёт напрямую. Прямой обязан работать ещё до поднятия туннеля, поэтому у провайдера, который режет DoT или DoH, подключаться становится нечем — ради этого и нужен автоматический подбор.</translation>
-    </message>
-    <message>
-        <source>Last connection actually used %1.</source>
-        <translation>В прошлый раз подключение шло через %1.</translation>
-    </message>
-    <message>
-        <source>Dark</source>
-        <translation>Тёмная</translation>
-    </message>
-    <message>
-        <source>Light</source>
-        <translation>Светлая</translation>
-    </message>
-    <message>
-        <source>Theme</source>
-        <translation>Тема</translation>
-    </message>
-    <message>
-        <source>Launch at login</source>
-        <translation>Запускать при входе в систему</translation>
-    </message>
-    <message>
-        <source>Start minimized to tray</source>
-        <translation>Запускать свёрнутым в трей</translation>
-    </message>
-    <message>
-        <source>Install updates by itself</source>
-        <translation>Ставить обновления самостоятельно</translation>
-    </message>
-    <message>
-        <source>Notifications</source>
-        <translation>Уведомления</translation>
-    </message>
-    <message>
-        <source>New version of the client</source>
-        <translation>Новая версия клиента</translation>
-    </message>
-    <message>
-        <source>Subscription updated</source>
-        <translation>Подписка обновлена</translation>
-    </message>
-    <message>
-        <source>VPN turned on and off</source>
-        <translation>Включение и выключение VPN</translation>
-    </message>
-    <message>
-        <source>About the subscription and the tunnel we only tell you when the client window is not in front of you: while you are looking at it, you can see everything anyway.</source>
-        <translation>О подписке и туннеле сообщаем, только когда окно клиента не перед вами: пока вы в него смотрите, всё и так видно.</translation>
-    </message>
-    <message>
-        <source>Could not change the autostart entry. The system refused it: on Windows this is usually the elevation prompt being dismissed.</source>
-        <translation>Не удалось изменить автозапуск: система отказала. В Windows так обычно выглядит закрытый запрос прав администратора.</translation>
-    </message>
-    <message>
-        <source>Language changes apply after restarting the application.</source>
-        <translation>Смена языка применится после перезапуска приложения.</translation>
-    </message>
-    <message>
-        <source>Latency check</source>
-        <translation>Проверка задержки</translation>
-    </message>
-    <message>
-        <source>URL test address</source>
-        <translation>Адрес для URL-теста</translation>
-    </message>
-    <message>
-        <source>Send device id</source>
-        <translation>Отправлять идентификатор устройства</translation>
-    </message>
-    <message>
-        <source>Providers count devices by it. With it off a subscription may come back empty, and the reason will not be obvious.</source>
-        <translation>По нему провайдеры считают устройства. С выключенным подписка может прийти пустой, и причина будет неочевидна.</translation>
-    </message>
-</context><context><name>FsntWindow</name><message>
-        <source>A new version is out</source>
-        <translation>Вышла новая версия</translation>
-    </message>
-    <message>
-        <source>FSNT Client %1 is out</source>
-        <translation>Вышел FSNT Client %1</translation>
-    </message>
-    <message>
-        <source>Updating to %1</source>
-        <translation>Обновляемся до %1</translation>
-    </message>
-    <message>
-        <source>The client will restart and reconnect by itself.</source>
-        <translation>Клиент перезапустится и сам вернёт подключение.</translation>
-    </message>
-    <message>
-        <source>Updating to %1, the client will restart</source>
-        <translation>Обновляемся до %1, клиент перезапустится</translation>
-    </message>
-    <message>
-        <source>Update by itself?</source>
-        <translation>Обновляться самостоятельно?</translation>
-    </message>
-    <message>
-        <source>Update by itself</source>
-        <translation>Обновляться самому</translation>
-    </message>
-    <message>
-        <source>Not now</source>
-        <translation>Не надо</translation>
-    </message>
-    <message>
-        <source>The client can install new versions on its own: it downloads the update, restarts and brings the connection back to the same server.
-
-You can change this later in settings.</source>
-        <translation>Клиент умеет ставить новые версии сам: скачивает обновление, перезапускается и возвращает подключение к тому же серверу.
-
-Это можно поменять потом в настройках.</translation>
-    </message>
-    <message>
-        <source>You are now on %1. The client can install the next versions on its own: it downloads the update, restarts and brings the connection back to the same server.
-
-You can change this later in settings.</source>
-        <translation>Теперь у вас %1. Следующие версии клиент может ставить сам: скачает обновление, перезапустится и вернёт подключение к тому же серверу.
-
-Это можно поменять потом в настройках.</translation>
-    </message>
-    <message>
-        <source>FSNT Client %1 is out — press the bell</source>
-        <translation>Вышел FSNT Client %1 — нажмите на колокольчик</translation>
-    </message>
-    <message>
-        <source>Click here to update — it takes about a minute.</source>
-        <translation>Нажмите, чтобы обновиться — это займёт около минуты.</translation>
-    </message>
-    <message>
-        <source>VPN is on</source>
-        <translation>VPN включён</translation>
-    </message>
-    <message>
-        <source>VPN is off</source>
-        <translation>VPN выключен</translation>
-    </message>
-    <message>
-        <source>Traffic goes through %1.</source>
-        <translation>Трафик идёт через %1.</translation>
-    </message>
-    <message>
-        <source>Traffic goes through the tunnel.</source>
-        <translation>Трафик идёт через туннель.</translation>
-    </message>
-    <message>
-        <source>Traffic goes directly again.</source>
-        <translation>Трафик снова идёт напрямую.</translation>
-    </message>
-    <message>
-        <source>Subscription updated</source>
-        <translation>Подписка обновлена</translation>
-    </message>
-    <message>
-        <source>The provider returned no servers.</source>
-        <translation>Провайдер не вернул ни одного сервера.</translation>
-    </message>
-    <message>
-        <source>Version %1 is out</source>
-        <translation>Вышла версия %1</translation>
-    </message>
-    <message>
-        <source>You have %1 installed. Press Update and the client will download and install the new version itself.</source>
-        <translation>У вас установлена %1. Нажмите «Обновить» — клиент сам скачает и поставит новую версию.</translation>
-    </message>
-    <message>
-        <source>Diagnostics</source>
-        <translation>Диагностика</translation>
-    </message>
-    <message>
-        <source>Connected, but nothing opens</source>
-        <translation>Подключено, но ничего не открывается</translation>
-    </message>
-    <message>
-        <source>The tunnel is up, but no traffic goes through it. Usually another program on this computer intercepts network packets: an antivirus, a DPI-bypass tool or what another VPN left behind.
-
-Switch the tunnel to compatible mode and reconnect? It is a little slower, but it does not depend on them.</source>
-        <translation>Туннель поднят, но трафик через него не идёт. Обычно это значит, что пакеты перехватывает другая программа на этом компьютере: антивирус, обходчик блокировок или остатки другого VPN.
-
-Переключить туннель в совместимый режим и переподключиться? Он немного медленнее, зато от них не зависит.</translation>
-    </message>
-    <message>
-        <source>How to use the app</source>
-        <translation>Как пользоваться приложением</translation>
-    </message>
-    <message>
-        <source>Start with a subscription</source>
-        <translation>Начните с подписки</translation>
-    </message>
-    <message>
-        <source>Many providers put an Add button right on your subscription page: it opens the client and fills everything in. If yours does not, press this plus and paste the link by hand.</source>
-        <translation>У многих провайдеров прямо на странице подписки есть кнопка «Добавить»: она сама открывает клиент и всё заполняет. Если её нет — нажмите плюс и вставьте ссылку вручную.</translation>
-    </message>
-    <message>
-        <source>Your servers</source>
-        <translation>Ваши серверы</translation>
-    </message>
-    <message>
-        <source>Servers appear here once the subscription loads. The number on the right is the ping: the lower it is, the faster the server answers.</source>
-        <translation>Серверы появятся здесь, когда загрузится подписка. Число справа — пинг: чем меньше, тем быстрее отвечает сервер.</translation>
-    </message>
-    <message>
-        <source>One button</source>
-        <translation>Одна кнопка</translation>
-    </message>
-    <message>
-        <source>Press it to send your traffic through the tunnel, press it again to stop. With no server picked, the fastest one is chosen for you.</source>
-        <translation>Нажмите — и трафик пойдёт через туннель, нажмите ещё раз — остановится. Если сервер не выбран, возьмётся самый быстрый.</translation>
-    </message>
-    <message>
-        <source>Connection mode, DNS and the apps that go through the tunnel. Everything here has a working default, so you do not have to touch it.</source>
-        <translation>Режим подключения, DNS и приложения, которые идут через туннель. Всё здесь уже настроено разумно, трогать необязательно.</translation>
-    </message>
-    <message>
-        <source>A live log. If something goes wrong, open it and copy the last lines into your message to support.</source>
-        <translation>Живой журнал. Если что-то пошло не так — откройте и скопируйте последние строки в обращение в поддержку.</translation>
-    </message>
-    <message>
-        <source>Everything else</source>
-        <translation>Всё остальное</translation>
-    </message>
-    <message>
-        <source>App updates, a support report and the config folder. Closing the window only hides it to the tray: the tunnel keeps running.</source>
-        <translation>Обновление приложения, отчёт для поддержки и папка конфигурации. Крестик только прячет окно в трей — туннель продолжает работать.</translation>
-    </message>
-    <message>
-        <source>Advanced mode</source>
-        <translation>Расширенный режим</translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation>Настройки</translation>
-    </message>
-    <message>
-        <source>dev</source>
-        <translation>dev</translation>
-    </message>
-    <message>
-        <source>Application version</source>
-        <translation>Версия приложения</translation>
-    </message>
-    <message>
-        <source>Logs</source>
-        <translation>Логи</translation>
-    </message>
-    <message>
-        <source>More</source>
-        <translation>Ещё</translation>
-    </message>
-    <message>
-        <source>FSNT Client · development build</source>
-        <translation>FSNT Client · сборка для разработки</translation>
-    </message>
-    <message>
-        <source>Check for updates</source>
-        <translation>Проверить обновления</translation>
-    </message>
-    <message>
-        <source>Updates are unavailable in this build</source>
-        <translation>Обновления недоступны в этой сборке</translation>
-    </message>
-    <message>
-        <source>Build a support report</source>
-        <translation>Собрать отчёт для поддержки</translation>
-    </message>
-    <message>
-        <source>Open the config folder</source>
-        <translation>Открыть папку конфигурации</translation>
-    </message>
-    <message>
-        <source>The application will restart in the advanced interface. Continue?</source>
-        <translation>Приложение перезапустится в расширенном интерфейсе. Продолжить?</translation>
-    </message>
-    <message>
-        <source>Restart</source>
-        <translation>Перезапустить</translation>
-    </message>
-    <message>
-        <source>Now you have two subscriptions</source>
-        <translation>Теперь у вас две подписки</translation>
-    </message>
-    <message>
-        <source>Servers live separately in each one. This is where you switch between them: pick a subscription and its own servers appear in the list below.</source>
-        <translation>Серверы лежат в каждой отдельно. Здесь они и переключаются: выберите подписку — и ниже появятся её серверы.</translation>
-    </message>
-</context><context><name>RoutePresets</name><message>
-        <source>Games and Discord</source>
-        <translation>Игры и Discord</translation>
-    </message>
-    <message>
-        <source>Steam, Epic, Riot, Battle.net, PlayStation, Xbox, Roblox and Discord go through the tunnel, everything else directly. Pick a nearby server: game traffic now goes through it, and distance turns into ping.</source>
-        <translation>Steam, Epic, Riot, Battle.net, PlayStation, Xbox, Roblox и Discord идут через туннель, остальное — напрямую. Берите сервер поближе: игровой трафик теперь идёт через него, и расстояние превращается в пинг.</translation>
-    </message>
-    <message>
-        <source>Games, video and social</source>
-        <translation>Игры, видео и соцсети</translation>
-    </message>
-    <message>
-        <source>The same plus YouTube, Twitch, Instagram, WhatsApp, Telegram, TikTok and ChatGPT. Banking and government sites stay direct, so they keep working.</source>
-        <translation>То же плюс YouTube, Twitch, Instagram, WhatsApp, Telegram, TikTok и ChatGPT. Банки и госуслуги остаются напрямую и продолжают работать.</translation>
-    </message>
-    <message>
-        <source>Everything through the VPN</source>
-        <translation>Всё через VPN</translation>
-    </message>
-    <message>
-        <source>Every app and every site goes through the tunnel. The safest choice and the one to pick if you are not sure; the local network still works.</source>
-        <translation>Все приложения и все сайты идут через туннель. Самый надёжный вариант и тот, что стоит выбрать, если не уверены; локальная сеть при этом работает.</translation>
-    </message>
-    <message>
-        <source>Except domestic sites</source>
-        <translation>Кроме российских сайтов</translation>
-    </message>
-    <message>
-        <source>Russian sites and addresses go directly, everything else through the tunnel. Banking and government sites keep working and stay fast.</source>
-        <translation>Российские сайты и адреса идут напрямую, остальное — через туннель. Банки и госуслуги продолжают работать и не теряют в скорости.</translation>
-    </message>
-    <message>
-        <source>Blocked sites only</source>
-        <translation>Только заблокированное</translation>
-    </message>
-    <message>
-        <source>Only what is blocked goes through the tunnel, the rest directly. The fastest option, but a site missing from the list will not be unblocked.</source>
-        <translation>Через туннель идёт только заблокированное, остальное напрямую. Самый быстрый вариант, но сайт, которого нет в списке, не откроется.</translation>
-    </message>
-</context><context><name>ServerItemDelegate</name><message>
-        <source>ms</source>
-        <translation>мс</translation>
-    </message>
-    <message>
-        <source>ok</source>
-        <translation>есть связь</translation>
-    </message>
-    <message>
-        <source>no reply</source>
-        <translation>нет ответа</translation>
-    </message>
-</context><context><name>ServerListPanel</name><message>
-        <source>Subscription</source>
-        <translation>Подписка</translation>
-    </message>
-    <message>
-        <source>Copy link</source>
-        <translation>Скопировать ссылку</translation>
-    </message>
-    <message>
-        <source>Link copied</source>
-        <translation>Ссылка скопирована</translation>
-    </message>
-    <message>
-        <source>Subscription settings</source>
-        <translation>Настройки подписки</translation>
-    </message>
-    <message>
-        <source>Delete subscription</source>
-        <translation>Удалить подписку</translation>
-    </message>
-    <message>
-        <source>Delete «%1» along with its servers?</source>
-        <translation>Удалить «%1» вместе с её серверами?</translation>
-    </message>
-    <message>
-        <source>Delete</source>
-        <translation>Удалить</translation>
-    </message>
-    <message>
-        <source>The provider pinned this subscription: it cannot be removed while its server is running.</source>
-        <translation>Провайдер закрепил эту подписку: её нельзя удалить, пока работает её сервер.</translation>
-    </message>
-    <message>
-        <source>Subscription deleted</source>
-        <translation>Подписка удалена</translation>
-    </message>
-    <message>
-        <source>Delete duplicates (%1)</source>
-        <translation>Удалить дубликаты (%1)</translation>
-    </message>
-    <message>
-        <source>Delete duplicates</source>
-        <translation>Удалить дубликаты</translation>
-    </message>
-    <message>
-        <source>Delete all subscriptions</source>
-        <translation>Удалить все подписки</translation>
-    </message>
-    <message>
-        <source>Delete all</source>
-        <translation>Удалить все</translation>
-    </message>
-    <message>
-        <source>Add subscription</source>
-        <translation>Добавить подписку</translation>
-    </message>
-    <message>
-        <source>Update subscription</source>
-        <translation>Обновить подписку</translation>
-    </message>
-    <message>
-        <source>Search</source>
-        <translation>Поиск</translation>
-    </message>
-    <message>
-        <source>All</source>
-        <translation>Все</translation>
-    </message>
-    <message>
-        <source>Favorites</source>
-        <translation>Избранное</translation>
-    </message>
-    <message>
-        <source>This subscription has no servers yet. Refresh it or add another one.</source>
-        <translation>В этой подписке пока нет серверов. Обновите её или добавьте другую.</translation>
-    </message>
-    <message>
-        <source>No subscription yet.
-Paste the link your provider gave you and the servers will appear here.</source>
-        <translation>Подписки пока нет.
-Вставьте ссылку от провайдера — серверы появятся здесь.</translation>
-    </message>
-    <message>
-        <source>Latency check did not start</source>
-        <translation>Замер не запустился</translation>
-    </message>
-    <message>
-        <source>All servers responded</source>
-        <translation>Все серверы ответили</translation>
-    </message>
-    <message>
-        <source>%1 of %2 servers responded</source>
-        <translation>Ответили %1 из %2 серверов</translation>
-    </message>
-    <message>
-        <source>Subscription updated, nothing changed</source>
-        <translation>Подписка обновлена, изменений нет</translation>
-    </message>
-    <message>
-        <source>Subscription updated: %1 new</source>
-        <translation>Подписка обновлена: %1 новых</translation>
-    </message>
-    <message>
-        <source>Subscription updated: %1 removed</source>
-        <translation>Подписка обновлена: %1 удалено</translation>
-    </message>
-    <message>
-        <source>Subscription updated: %1 new, %2 removed</source>
-        <translation>Подписка обновлена: %1 новых, %2 удалено</translation>
-    </message>
-    <message>
-        <source>Measure latency</source>
-        <translation>Замерить пинг</translation>
-    </message>
-    <message>
-        <source>Measurement stopped</source>
-        <translation>Замер остановлен</translation>
-    </message>
-    <message>
-        <source>Check (%1)</source>
-        <translation>Проверить: %1</translation>
-    </message>
-    <message>
-        <source>Check another way</source>
-        <translation>Проверить иначе</translation>
-    </message>
-    <message>
-        <source>%1: %2 ms</source>
-        <translation>%1: %2 мс</translation>
-    </message>
-    <message>
-        <source>%1: no answer</source>
-        <translation>%1: нет ответа</translation>
-    </message>
-</context><context><name>SpeedWidget</name><message>
-        <source>Proxy</source>
-        <translation>Прокси</translation>
-    </message>
-    <message>
-        <source>Direct</source>
-        <translation>Напрямую</translation>
-    </message>
-</context><context><name>SubscriptionCard</name><message>
-        <source>until %1</source>
-        <translation>до %1</translation>
-    </message>
-    <message>
-        <source>No traffic data yet</source>
-        <translation>Нет данных о трафике</translation>
-    </message>
-    <message>
-        <source>%1 used, unlimited</source>
-        <translation>израсходовано %1, безлимитно</translation>
-    </message>
-    <message>
-        <source>%1 of %2</source>
-        <translation>%1 из %2</translation>
-    </message>
-    <message>
-        <source>Traffic resets on %1, in %2 day(s)</source>
-        <translation>Сброс трафика: %1, через %2 дн.</translation>
-    </message>
-    <message>
-        <source>Traffic resets on %1</source>
-        <translation>Сброс трафика: %1</translation>
-    </message>
-    <message>
-        <source>Support</source>
-        <translation>Поддержка</translation>
-    </message>
-    <message>
-        <source>Subscription page</source>
-        <translation>Страница подписки</translation>
-    </message>
-    <message>
-        <source>Message from your provider</source>
-        <translation>Сообщение провайдера</translation>
-    </message>
-</context></TS>
+</TS>
