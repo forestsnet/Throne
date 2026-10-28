@@ -93,8 +93,10 @@ namespace Fsnt {
                 // постороннему: отвечающий на чужое имя резолвер может не знать
                 // нужного, и тогда зелёная строка здесь — неправда.
                 QString serverName;
-                if (const auto ent = Configs::dataManager->profilesRepo->GetProfile(
-                        Configs::dataManager->settingsRepo->remember_id);
+                // Запущенный профиль, а если не запущен — тот, что запомнили:
+                // спрашивать надо про имя, к которому человек подключается.
+                const int probeProfile = s->started_id >= 0 ? s->started_id : s->remember_id;
+                if (const auto ent = Configs::dataManager->profilesRepo->GetProfile(probeProfile);
                     ent != nullptr && ent->outbound != nullptr) {
                     const auto addr = ent->outbound->GetAddress().trimmed();
                     if (!addr.isEmpty() && QHostAddress(addr).isNull()) serverName = addr;
