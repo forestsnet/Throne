@@ -11,6 +11,7 @@
 #include <QTimer>
 #include <QVBoxLayout>
 
+#include "include/database/GroupsRepo.h"
 #include "include/configs/sub/GroupUpdater.hpp"
 #include "include/global/Utils.hpp"
 #include "include/ui/fsnt/FsntTheme.hpp"
@@ -22,7 +23,7 @@ namespace {
 
 AddSubscriptionDialog::AddSubscriptionDialog(QWidget *parent) : QDialog(parent) {
     setObjectName("fsntDialog");
-    setWindowTitle(tr("Add subscription"));
+    setWindowTitle(tr("Add a server"));
     setModal(true);
     setMinimumWidth(460);
 
@@ -30,11 +31,12 @@ AddSubscriptionDialog::AddSubscriptionDialog(QWidget *parent) : QDialog(parent) 
     layout->setContentsMargins(24, 22, 24, 20);
     layout->setSpacing(10);
 
-    auto *title = new QLabel(tr("Add subscription"), this);
+    auto *title = new QLabel(tr("Add a server"), this);
     title->setObjectName("fsntDialogTitle");
     layout->addWidget(title);
 
-    auto *hint = new QLabel(tr("Paste the link your provider gave you."), this);
+    auto *hint = new QLabel(tr("Paste the subscription link your provider gave you, or a single "
+                               "server link such as vless:// or ss://."), this);
     hint->setObjectName("fsntDialogHint");
     hint->setWordWrap(true);
     layout->addWidget(hint);
@@ -135,6 +137,21 @@ void AddSubscriptionDialog::fail(const QString &message) {
     m_status->setText(message);
 }
 
+// Группа для серверов, которые человек добавил сам. Отличается от подписки
+// отсутствием ссылки: её не обновляют и, значит, не сверяют с сервером.
+int AddSubscriptionDialog::ownServersGroup() {
+    auto &groups = Configs::dataManager->groupsRepo;
+    for (const int gid : groups->GetGroupsTabOrder()) {
+        const auto group = groups->GetGroup(gid);
+        if (group != nullptr && group->url.trimmed().isEmpty()) return gid;
+    }
+
+    auto group = Configs::GroupsRepo::NewGroup();
+    group->name = tr("My servers");
+    if (!groups->AddGroup(group)) return -1;
+    return group->id;
+}
+
 void AddSubscriptionDialog::submit() {
     if (m_busy) return;
 
@@ -152,12 +169,32 @@ void AddSubscriptionDialog::submit() {
     }
 
     if (!text.startsWith("http://") && !text.startsWith("https://")) {
-        // Не ссылка — значит это сами профили текстом; провайдеры так тоже отдают.
+        // Не ссылка — значит это сами серверы ссылками или текстом: vless://,
+        // ss:// и прочее. Провайдеры так тоже отдают.
+        //
+        // Кладём в свою группу, а не в текущую. Текущая почти всегда подписка,
+        // а её обновление сверяет список с сервером и выбрасывает всё, чего там
+        // нет: добавленный вручную сервер молча исчезал при первом же
+        // обновлении. Группу без ссылки обновление не трогает вовсе.
+        const int gid = ownServersGroup();
+        if (gid < 0) {
+            m_status->setText(tr("Could not create a group for your own servers."));
+            return;
+        }
         setBusy(true);
+        m_status->setText(tr("Adding…"));
         m_guard->start();
-        Subscription::updater()->ImportText(text, -1, [this] {
-            QMetaObject::invokeMethod(this, [this] {
+        Subscription::updater()->ImportTextTo(gid, text, [this](const Subscription::UpdateOutcome &outcome) {
+            const bool ok = outcome.ok();
+            const auto error = outcome.error;
+            QMetaObject::invokeMethod(this, [this, ok, error] {
                 m_guard->stop();
+                if (!ok) {
+                    // Молча закрываться нельзя: человек вставил ссылку и ждёт
+                    // увидеть сервер, а не пустой список.
+                    fail(error.isEmpty() ? tr("Nothing here looks like a server link.") : error);
+                    return;
+                }
                 accept();
             }, Qt::QueuedConnection);
         });

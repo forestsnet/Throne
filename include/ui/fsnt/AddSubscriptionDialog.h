@@ -19,6 +19,8 @@ public:
 
 private:
     void submit();
+    // Своя группа для добавленных вручную серверов, -1 если завести не удалось.
+    int ownServersGroup();
     void pasteFromClipboard();
     void setBusy(bool busy);
     void fail(const QString &message);

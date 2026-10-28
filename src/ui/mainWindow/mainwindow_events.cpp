@@ -13,6 +13,18 @@
 #include "include/ui/widget/TrayProfileSelector.hpp"
 
 void MainWindow::trayClickEvent() {
+    // В простом режиме значок принадлежит окну простого режима. Поднимать по
+    // клику инженерное — это и есть то самое «оно само открыло расширенный
+    // режим»: человек жмёт значок и получает интерфейс, которого не просил.
+    if (auto *facade = GetFacadeWindow(); facade != nullptr) {
+        if (facade->isVisible() && !facade->isMinimized() && facade->isActiveWindow()) {
+            HideWindow(facade);
+        } else {
+            ActivateWindow(facade);
+        }
+        return;
+    }
+
     constexpr qint64 recentlyActiveMs = 350;
     const bool wasRecentlyActive = isActiveWindow() ||
         (sinceWindowDeactivated.isValid() && sinceWindowDeactivated.elapsed() <= recentlyActiveMs);

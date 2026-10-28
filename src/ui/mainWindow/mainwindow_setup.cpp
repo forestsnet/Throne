@@ -812,7 +812,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             trayClickEvent();
         }
     });
-    connect(tray, &TrayIcon::dockIconClicked, this, [=,this] { ActivateWindow(this); });
+    // Клик по иконке в Dock и повторный запуск из Finder: окно того режима, в
+    // котором человек работает, а не всегда инженерное.
+    connect(tray, &TrayIcon::dockIconClicked, this, [=,this] { ActivateUiWindow(); });
 
     syncSettingsMirrors();
     ui->actionStart_with_system->setChecked(AutoRun_IsEnabled());
@@ -822,7 +824,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->menu_open_dashboard, &QAction::triggered, this, [=,this] { OpenDashboard(); });
     connect(ui->actionRestart_Proxy, &QAction::triggered, this, [=,this] { supervisor()->resetCore(); });
     connect(ui->actionRestart_Program, &QAction::triggered, this, [=,this] { MW_dialog_message(MwMessage::RestartProgram, {}); });
-    connect(ui->actionShow_window, &QAction::triggered, this, [=,this] { ActivateWindow(this); });
+    connect(ui->actionShow_window, &QAction::triggered, this, [=,this] { ActivateUiWindow(); });
     connect(ui->actionRemember_last_proxy, &QAction::triggered, this, [=,this](bool checked) {
         Configs::dataManager->settingsRepo->remember_enable = checked;
         ui->actionRemember_last_proxy->setChecked(checked);
