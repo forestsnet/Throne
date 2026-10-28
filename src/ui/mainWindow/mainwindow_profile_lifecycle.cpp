@@ -1,7 +1,6 @@
 #include "include/ui/mainwindow.h"
 #include "include/configs/sub/ProviderPolicy.hpp"
 
-#include "include/global/SystemStateJournal.hpp"
 #include "include/database/GroupsRepo.h"
 #include "include/database/ProfilesRepo.h"
 #include "include/engine/connection/ConnectionManager.h"
@@ -43,17 +42,6 @@ void MainWindow::profile_start(int _id) {
 
     // Ядро могли удалить в любой момент, а не только до запуска приложения.
     if (!EnsureCorePresent()) return;
-
-#ifdef Q_OS_MACOS
-    // Под туннелем ядро само подменяет системный DNS на адрес внутри tun.
-    // Записываем это за него: иначе после обрыва сеанса о подмене не узнает
-    // никто, а резолвер останется смотреть в исчезнувший интерфейс.
-    if (Configs::dataManager->settingsRepo->spmode_vpn) {
-        Configs::SystemStateJournal::Record(
-            QStringLiteral("system-dns-tunnel"),
-            Configs::dataManager->settingsRepo->vpn_tun_ipv4_cidr.section('/', 0, 0).trimmed());
-    }
-#endif
 
     // Диалог живёт в mainwindow_conflicts.cpp: он модальный и держит запуск,
     // поэтому спрашивает не чаще одного раза за сеанс.

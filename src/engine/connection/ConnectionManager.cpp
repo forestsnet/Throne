@@ -1,6 +1,7 @@
 #include "include/engine/connection/ConnectionManager.h"
 
 #include "include/configs/sub/ProviderPolicy.hpp"
+#include "include/global/SystemStateJournal.hpp"
 
 #include "include/api/RPC.h"
 #include "include/api/remote/Server.hpp"
@@ -110,6 +111,19 @@ namespace Engine {
         // До сборки конфига: списки приложений и dns-from-json от провайдера
         // попадают прямо в него.
         applyProviderPolicy(resolved.profileId);
+
+#ifdef Q_OS_MACOS
+        // После политики: она могла только что включить туннель. Под туннелем
+        // ядро само подменяет системный DNS на адрес внутри tun, и записываем
+        // это за него — иначе после обрыва сеанса о подмене не узнает никто, а
+        // резолвер останется смотреть в исчезнувший интерфейс. Здесь, а не на
+        // пути запуска из окна: автозапуск поднимает туннель так же.
+        if (Configs::dataManager->settingsRepo->spmode_vpn) {
+            Configs::SystemStateJournal::Record(
+                QStringLiteral("system-dns-tunnel"),
+                Configs::dataManager->settingsRepo->vpn_tun_ipv4_cidr.section('/', 0, 0).trimmed());
+        }
+#endif
 
         // До всего остального: если прямой DNS молчит, поднимать туннель нельзя.
         if (!resolved.dnsChecked && deferStartForDns(resolved)) return;
@@ -424,6 +438,13 @@ namespace Engine {
             }
             if (!profile_stop_stage2(slowStop)) {
                 MW_show_log("<<<<<<<< " + MainWindowTr::tr("Failed to stop, please restart the program."));
+            } else {
+#ifdef Q_OS_MACOS
+                // Подмену снимает Stop внутри ядра, и запись о ней больше не
+                // соответствует действительности. Журнал, который врёт про
+                // оставленное в системе, хуже отсутствующего.
+                Configs::SystemStateJournal::Forget(QStringLiteral("system-dns-tunnel"));
+#endif
             }
 
             if (manual) Configs::dataManager->settingsRepo->UpdateStartedId(Configs::NoProfileId);
