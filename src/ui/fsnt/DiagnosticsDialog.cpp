@@ -178,11 +178,24 @@ void FsntDiagnosticsDialog::applyResult(const int index, const Fsnt::CheckResult
         row.fix->setText(result.fixLabel);
         row.fix->show();
         const auto fix = result.fix;
-        connect(row.fix, &QPushButton::clicked, this, [this, fix] {
-            fix();
-            // После починки прогоняем всё заново: одно исправление часто
-            // снимает и соседние красные строки.
-            m_again->click();
+        connect(row.fix, &QPushButton::clicked, this, [this, fix, index] {
+            Row &pressed = m_rows[index];
+            const QString label = pressed.fix->text();
+            pressed.fix->setEnabled(false);
+            pressed.fix->setText(tr("Working…"));
+
+            // Перезапуск проверок — только после того, как починка доложит о
+            // завершении. Подбор DNS отвечает через секунды, и запуск проверок
+            // сразу по нажатию читал ещё старый адрес: строка снова краснела, а
+            // человек видел кнопку, которая ничего не делает.
+            QPointer<FsntDiagnosticsDialog> self = this;
+            fix([self, index, label] {
+                if (self.isNull()) return;
+                Row &row = self->m_rows[index];
+                row.fix->setEnabled(true);
+                row.fix->setText(label);
+                self->m_again->click();
+            });
         }, Qt::UniqueConnection);
     }
 }

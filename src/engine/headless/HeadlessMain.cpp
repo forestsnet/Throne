@@ -404,6 +404,7 @@ namespace Engine {
             return code;
         }
         Configs::SetBasePath(dataDir.wd.absolutePath());
+        Configs::SetConfigPath(dataDir.configDir);
         const QString wdText = QDir::toNativeSeparators(dataDir.wd.absolutePath());
 
         // Client modes never take the lock, open the log or the database, or create anything.

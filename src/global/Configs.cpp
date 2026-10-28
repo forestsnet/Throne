@@ -213,7 +213,17 @@ namespace Configs {
 
     namespace {
         QString basePathOverride;
+        QString configPathOverride;
     } // namespace
+
+    void SetConfigPath(const QString &path) {
+        configPathOverride = path;
+    }
+
+    QString GetConfigPath() {
+        if (!configPathOverride.isEmpty()) return configPathOverride;
+        return GetBasePath();
+    }
 
     void SetBasePath(const QString &path) {
         basePathOverride = path;

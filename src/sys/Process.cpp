@@ -22,7 +22,9 @@ namespace {
     // строка не говорит ничего, а туннель просто не поднимается. Внутри файла
     // только кэш fakeip и DNS, терять там нечего: удаляем, ядро создаст заново.
     void coreDropUnusableCacheFile() {
-        const QString path = QDir(Configs::GetBasePath()).filePath("cache.db");
+        // Каталог настроек, а не рабочий: путь cache.db ядро определяет
+        // относительно своего текущего каталога, а он у него — config.
+        const QString path = QDir(Configs::GetConfigPath()).filePath("cache.db");
         const QFileInfo info(path);
         if (!info.exists() || info.isWritable()) return;
         // Если у ядра стоит setuid, оно всё равно пойдёт под root и файл ему
@@ -122,6 +124,7 @@ namespace Configs_sys {
         guard_identity = Configs::dataManager->settingsRepo->kill_switch && !Sys::KillSwitch::instance()->identityUnsupported();
         if (guard_identity) env.insert("THRONE_GUARD", "1");
         setProcessEnvironment(env);
+        coreDropUnusableCacheFile();
         IsolateChild(this);
         start(program, {});
     }

@@ -31,12 +31,12 @@ namespace {
     }
 
     CheckResult diagFailed(const QString &detail, const QString &fixLabel = {},
-                       std::function<void()> fix = {}) {
+                       std::function<void(const CheckResult::FixDone &)> fix = {}) {
         return {CheckResult::Failed, detail, fixLabel, std::move(fix)};
     }
 
     CheckResult diagWarn(const QString &detail, const QString &fixLabel = {},
-                     std::function<void()> fix = {}) {
+                     std::function<void(const CheckResult::FixDone &)> fix = {}) {
         return {CheckResult::Warning, detail, fixLabel, std::move(fix)};
     }
 
@@ -70,10 +70,11 @@ namespace Fsnt {
                 // подозрительно, и он уносит файл в карантин молча.
                 return diagFailed(QObject::tr("The core executable is missing. Antivirus software "
                                           "often quarantines it without asking."),
-                              QObject::tr("Download again"), [] {
+                              QObject::tr("Download again"), [](const auto &done) {
                                   if (auto *m = GetMainWindow(); m != nullptr) {
                                       m->EnsureCorePresent(true);
                                   }
+                                  done();
                               });
             }};
 
@@ -109,19 +110,27 @@ namespace Fsnt {
                     QObject::tr("%1 does not answer (%2). Names of the VPN servers are resolved "
                                 "through it, so nothing can connect until it does.")
                         .arg(address, why),
-                    QObject::tr("Find a working one"), [] {
+                    QObject::tr("Find a working one"), [](const auto &done) {
                         auto *select = new Configs::DnsAutoSelect(GetMainWindow());
                         QObject::connect(select, &Configs::DnsAutoSelect::Selected, select,
-                                         [select](const QString &found, bool) {
+                                         [select, done](const QString &found, bool) {
                                              select->deleteLater();
                                              auto &st = Configs::dataManager->settingsRepo;
                                              if (found.isEmpty()) {
-                                                 MW_show_log(QObject::tr("No DNS server answered."));
-                                                 return;
+                                                 // Молчать тут нельзя: человек
+                                                 // нажал кнопку и ждёт ответа, а
+                                                 // журнал он не видит.
+                                                 MessageBoxWarning(
+                                                     QObject::tr("Direct DNS"),
+                                                     QObject::tr("No DNS server answered. Check the "
+                                                                 "connection, or set your own address "
+                                                                 "in the settings."));
+                                             } else {
+                                                 st->direct_dns_effective = found;
+                                                 st->Save();
+                                                 MW_show_log(QObject::tr("Direct DNS switched to %1").arg(found));
                                              }
-                                             st->direct_dns_effective = found;
-                                             st->Save();
-                                             MW_show_log(QObject::tr("Direct DNS switched to %1").arg(found));
+                                             done();
                                          });
                         select->Start(Configs::dataManager->settingsRepo->direct_dns);
                     });
@@ -181,7 +190,7 @@ namespace Fsnt {
                     if (s->spmode_vpn) return diagOk();
                     return diagFailed(QObject::tr("Full tunnel is selected, but the tunnel mode is "
                                               "not active."),
-                                  QObject::tr("Apply"), [] { ApplyTransportMode(); });
+                                  QObject::tr("Apply"), [](const auto &done) { ApplyTransportMode(); done(); });
                 }
 #ifdef Q_OS_WIN
                 // Здесь уже ловили настоящую поломку: адрес прокси в реестре
@@ -193,12 +202,12 @@ namespace Fsnt {
                 if (ie.value(QStringLiteral("ProxyEnable"), 0).toInt() == 0) {
                     return diagFailed(QObject::tr("System proxy is selected, but Windows has it "
                                               "switched off, so traffic bypasses the VPN."),
-                                  QObject::tr("Turn on"), [] { ApplyTransportMode(); });
+                                  QObject::tr("Turn on"), [](const auto &done) { ApplyTransportMode(); done(); });
                 }
 #endif
                 if (s->spmode_system_proxy) return diagOk();
                 return diagFailed(QObject::tr("System proxy is selected, but it is not active."),
-                              QObject::tr("Apply"), [] { ApplyTransportMode(); });
+                              QObject::tr("Apply"), [](const auto &done) { ApplyTransportMode(); done(); });
             }};
 
         checks << Check{

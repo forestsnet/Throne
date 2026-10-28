@@ -47,6 +47,13 @@ namespace Configs {
     // Set once at startup to the resolved data dir; before that GetBasePath() falls back to the old guess.
     void SetBasePath(const QString &path);
 
+    // Каталог настроек — это подкаталог config рабочего, и живёт он отдельно от
+    // GetBasePath(): туда Bootstrap переводит текущий каталог процесса, и туда
+    // же ядро кладёт файлы, путь к которым определяется относительно него —
+    // прежде всего cache.db. Пока не задан, совпадает с GetBasePath().
+    void SetConfigPath(const QString &path);
+    QString GetConfigPath();
+
     QString GetBasePath();
 } // namespace Configs
 

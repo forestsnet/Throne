@@ -324,6 +324,7 @@ namespace Engine {
 
         const auto dataDir = Bootstrap::ResolveDataDir(arguments, launchCwd);
         Configs::SetBasePath(dataDir.wd.absolutePath());
+        Configs::SetConfigPath(dataDir.configDir);
 
         DataDirLock lock;
         switch (lock.tryAcquire(dataDir.configDir, "dump-configs")) {

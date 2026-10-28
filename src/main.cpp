@@ -153,6 +153,7 @@ int main(int argc, char* argv[]) {
     const auto dataDir = Engine::Bootstrap::ResolveDataDir(arguments, QDir(QCoreApplication::applicationDirPath()));
     const QDir &wd = dataDir.wd;
     Configs::SetBasePath(wd.absolutePath());
+    Configs::SetConfigPath(dataDir.configDir);
 
     const auto serverName = Engine::Bootstrap::InstanceServerName(wd);
     qDebug() << "server name: " << serverName;
