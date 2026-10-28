@@ -14,6 +14,7 @@ import (
 	"ThroneCore/internal/boxmain"
 	"ThroneCore/internal/process"
 	"ThroneCore/internal/sysdns"
+	"ThroneCore/internal/sysrelay"
 	"ThroneCore/internal/xray"
 
 	"github.com/google/shlex"
@@ -164,6 +165,15 @@ func (s *server) Start(ctx context.Context, in *gen.LoadConfigReq) (out *gen.Err
 		}
 
 		needUnsetDNS = true
+
+		if in.GetDisablePrivateRelay() {
+			if err := sysrelay.Disable(box.Network().InterfaceMonitor()); err != nil {
+				log.Println("Failed to switch iCloud Private Relay off:", err)
+			}
+			// И при ошибке: Disable помечает интерфейс до того, как его менять,
+			// так что вернуть может оказаться что.
+			needRestoreRelay = true
+		}
 	}
 
 	if in.GetTunIpv4Cidr() != "" {
@@ -217,6 +227,13 @@ func (s *server) Stop(ctx context.Context, in *gen.EmptyReq) (out *gen.ErrorResp
 		err := sysdns.SetSystemDNS("Empty", box.Network().InterfaceMonitor())
 		if err != nil {
 			log.Println("Failed to unset system DNS:", err)
+		}
+	}
+
+	if needRestoreRelay {
+		needRestoreRelay = false
+		if err := sysrelay.Restore(); err != nil {
+			log.Println("Failed to restore iCloud Private Relay:", err)
 		}
 	}
 	// Unpublished first, so a poll mid-teardown sees no instance rather than a dying one.

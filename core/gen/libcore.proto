@@ -86,6 +86,11 @@ message LoadConfigReq {
   repeated string xray_full_configs = 16;
   // Separate from xray_idle_seconds; 0 keeps them resident once started.
   optional int32 xray_full_idle_seconds = 17 [default = 0];
+  // macOS: switch iCloud Private Relay off on the interface traffic leaves by,
+  // for as long as the Tun is up. The relay does not step aside for a plain
+  // utun, so Safari keeps reaching sites through Apple instead of the country
+  // the user picked. Restored on Stop.
+  optional bool disable_private_relay = 18 [default = false];
 }
 
 message URLTestResp {

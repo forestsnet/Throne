@@ -177,6 +177,11 @@ namespace Engine {
             libcore::LoadConfigReq req;
             req.core_config = QJsonObject2QString(result->coreConfig, true).toStdString();
             req.tun_ipv4_cidr = result->tunIPv4CIDR.toStdString();
+#ifdef Q_OS_MACOS
+            // Выключатель реле дёргает ядро: ключ лежит в настройках
+            // SystemConfiguration, а писать их может только root.
+            req.disable_private_relay = Configs::dataManager->settingsRepo->block_private_relay;
+#endif
             req.disable_stats = Configs::dataManager->settingsRepo->disable_traffic_stats;
             req.xray_config = QJsonObject2QString(result->xrayConfig, true).toStdString();
             req.need_xray = !result->xrayConfig.isEmpty();

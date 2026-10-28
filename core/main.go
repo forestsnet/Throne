@@ -24,6 +24,7 @@ import (
 	"ThroneCore/internal/parentcheck"
 	"ThroneCore/internal/process"
 	"ThroneCore/internal/rpc"
+	"ThroneCore/internal/sysrelay"
 
 	C "github.com/sagernet/sing-box/constant"
 
@@ -100,6 +101,7 @@ func RunCore() {
 	}
 	guard.CleanupStale()
 	process.SweepStaleConfigDirs()
+	sysrelay.RepairLeftover()
 
 	go func() {
 		parent, err := os.FindProcess(parentcheck.ParentPID)
