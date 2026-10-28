@@ -191,24 +191,46 @@ bool MainWindow::requestCorePrivileges() {
 #endif
 
 #ifdef Q_OS_MACOS
-    if (Configs::isSetuidSet(Configs::FindCoreRealPath().toStdString()))
+    const auto corePath = Configs::FindCoreRealPath();
+    if (Configs::isSetuidSet(corePath.toStdString()))
     {
         StopVPNProcess();
         return true;
     }
-    auto n = QMessageBox::warning(GetMessageBoxParent(), software_name, tr("Please give the core root privileges"), QMessageBox::Yes | QMessageBox::No);
-    if (n == QMessageBox::Yes)
-    {
-        auto Command = QString("sudo chown root:wheel '%1' && sudo chmod u+s '%1'").arg(Configs::FindCoreRealPath());
-        auto ret = Mac_Run_Command(Command);
-        if (ret == 0) {
-            MessageBoxInfo(tr("Requesting permission"), tr("Please Enter your password in the opened terminal, then try again"));
-            return false;
-        } else {
-            MW_show_log(QString("Failed to run %1 with %2").arg(Command).arg(ret));
-            return false;
-        }
+
+    // Каждое обновление кладёт новый файл ядра, и право на туннель вместе со
+    // старым пропадает. Объясняем это прямо: иначе запрос пароля выглядит как
+    // то, что клиент почему-то спрашивает его снова и снова.
+    if (QMessageBox::warning(GetMessageBoxParent(), software_name,
+                             tr("The tunnel needs the core to run with system privileges. The update "
+                                "replaced the core, so the permission has to be granted once more."),
+                             QMessageBox::Yes | QMessageBox::No) != QMessageBox::Yes) {
+        return false;
     }
+
+    // Без sudo: do shell script … with administrator privileges уже выполняется
+    // от root, а sudo без терминала только мешает. Кавычки — одинарные, путь
+    // может содержать пробелы.
+    const auto quoted = QString(corePath).replace('\'', QStringLiteral("'\\''"));
+    const auto command = QStringLiteral("chown root:wheel '%1' && chmod u+s '%1'").arg(quoted);
+    const auto ret = Mac_Run_Command(command, tr("FSNT Client needs your password to let the tunnel start."));
+    if (ret != 0) {
+        // Отмена в окне пароля — не ошибка, молчим о ней.
+        if (ret != kMacAuthCancelled) {
+            MW_show_log(QStringLiteral("Failed to grant the core privileges, code %1").arg(ret));
+        }
+        return false;
+    }
+
+    // Проверяем итог, а не код возврата: прав могло и не прибавиться.
+    if (!Configs::isSetuidSet(corePath.toStdString())) {
+        MessageBoxWarning(software_name, tr("The permission was not applied. Try again, or grant it by hand."));
+        return false;
+    }
+    // Продолжаем сами: заставлять человека нажимать «Подключиться» заново
+    // незачем, разрешение уже есть.
+    StopVPNProcess();
+    return true;
 #endif
     return false;
 }
