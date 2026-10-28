@@ -216,6 +216,18 @@ namespace Configs {
         QString configPathOverride;
     } // namespace
 
+    bool ResumingAfterUpdate() {
+        static const bool resuming = [] {
+            auto &settings = Configs::dataManager->settingsRepo;
+            if (!settings->resume_after_update) return false;
+            settings->resume_after_update = false;
+            settings->Save();
+            LOG_INFO("resuming after an update: connecting once as if start-on-launch were on");
+            return true;
+        }();
+        return resuming;
+    }
+
     void SetConfigPath(const QString &path) {
         configPathOverride = path;
     }

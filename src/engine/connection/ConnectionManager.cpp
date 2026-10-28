@@ -494,10 +494,11 @@ namespace Engine {
                                 .arg(tunHoldWhy));
             }
         } else {
-            if (settings->remember_enable && settings->remember_system_proxy) {
+            const bool resume = settings->remember_enable || Configs::ResumingAfterUpdate();
+            if (resume && settings->remember_system_proxy) {
                 setSystemProxy(true, ModeChange{.save = false});
             }
-            if ((settings->remember_enable && settings->remember_tun) || settings->flag_restart_tun_on) {
+            if ((resume && settings->remember_tun) || settings->flag_restart_tun_on) {
                 setTun(true, ModeChange{.save = settings->flag_restart_tun_on});
                 settings->flag_restart_tun_on = false;
             }

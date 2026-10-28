@@ -305,7 +305,8 @@ namespace Engine {
             m_coreSupervisor->start(bootStart->profileId);
         } else {
             const auto &startSettings = Configs::dataManager->settingsRepo;
-            m_coreSupervisor->start(startSettings->remember_enable && startSettings->remember_id >= 0 ? startSettings->remember_id : -1);
+            const bool resume = startSettings->remember_enable || Configs::ResumingAfterUpdate();
+            m_coreSupervisor->start(resume && startSettings->remember_id >= 0 ? startSettings->remember_id : -1);
         }
 
         m_apiReady = true;
