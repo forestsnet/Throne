@@ -155,7 +155,6 @@ public:
     // Возвращает true, если ядро есть; иначе объясняет пользователю.
     bool EnsureCorePresent(bool interactive = true);
 
-    void applyProviderPolicy(int gid);
 
     // Whole poll snapshot in the lister's order, never a delta. UI thread only.
     void UpdateConnectionList(const QList<Stats::ConnectionMetadata>& connections);
@@ -518,7 +517,6 @@ private:
     bool usesTightLabels() const;
 
     QSize designMinimumSize;
-    bool m_applyingProviderPolicy = false;
 
     QTimer *m_proxyListRefreshDebounce = nullptr;
     void scheduleProxyListRefresh();

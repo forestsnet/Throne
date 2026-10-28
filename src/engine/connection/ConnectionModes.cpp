@@ -16,6 +16,8 @@
 #include "include/sys/KillSwitch.hpp"
 #include <QHostAddress>
 #include "include/database/ProfilesRepo.h"
+#include "include/configs/sub/ProviderPolicy.hpp"
+#include "include/database/GroupsRepo.h"
 #include "include/global/DnsAutoSelect.hpp"
 #include "include/global/SystemStateJournal.hpp"
 #include "include/sys/SystemProxy.hpp"
@@ -114,6 +116,41 @@ namespace Engine {
     // нельзя: маршруты уйдут ему, подключаться будет некуда, и машина останется
     // вообще без сети. Отсюда, а не из окна: автозапуск, перезапуск и remote API
     // поднимают профиль мимо кнопки, а последствия у них те же.
+    void ConnectionManager::applyProviderPolicy(int profileId) {
+        if (m_applyingProviderPolicy) return;
+
+        const auto ent = Configs::dataManager->profilesRepo->GetProfile(profileId);
+        const auto group = ent == nullptr ? nullptr : Configs::dataManager->groupsRepo->GetGroup(ent->gid);
+        if (group == nullptr) {
+            Subscription::ClearActiveProviderPolicy();
+            return;
+        }
+
+        const auto policy = Subscription::DeserializeProviderPolicy(group->provider_policy_json);
+        Subscription::SetActiveProviderPolicy(policy, group->id);
+        if (policy.isEmpty()) return;
+
+        m_applyingProviderPolicy = true;
+        auto &settings = Configs::dataManager->settingsRepo;
+
+        if (policy.alwaysHwid.has_value()) settings->sub_send_hwid = policy.alwaysHwid.value();
+        if (policy.autoUpdate.has_value()) {
+            group->skip_auto_update = !policy.autoUpdate.value();
+            Configs::dataManager->groupsRepo->Save(group);
+        }
+        if (policy.updateIntervalHours > 0) settings->sub_auto_update = policy.updateIntervalHours * 60;
+        settings->Save();
+
+        // Последним: перезапускает профиль, поэтому прочие настройки уже должны быть записаны.
+        if (policy.tunEnable.has_value() && policy.tunEnable.value() != settings->spmode_vpn) {
+            MW_show_log(QStringLiteral("[Policy] Provider requests TUN=%1")
+                            .arg(policy.tunEnable.value() ? "on" : "off"));
+            setTun(policy.tunEnable.value());
+        }
+
+        m_applyingProviderPolicy = false;
+    }
+
     bool ConnectionManager::deferStartForDns(const StartRequest &request) {
         const auto &settings = Configs::dataManager->settingsRepo;
         if (!settings->direct_dns_auto) return false;

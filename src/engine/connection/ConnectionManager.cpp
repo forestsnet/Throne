@@ -1,5 +1,7 @@
 #include "include/engine/connection/ConnectionManager.h"
 
+#include "include/configs/sub/ProviderPolicy.hpp"
+
 #include "include/api/RPC.h"
 #include "include/api/remote/Server.hpp"
 #include "include/configs/common/xrayStreamSetting.h"
@@ -104,6 +106,10 @@ namespace Engine {
 
         StartRequest resolved = request;
         resolved.profileId = ent->id;
+
+        // До сборки конфига: списки приложений и dns-from-json от провайдера
+        // попадают прямо в него.
+        applyProviderPolicy(resolved.profileId);
 
         // До всего остального: если прямой DNS молчит, поднимать туннель нельзя.
         if (!resolved.dnsChecked && deferStartForDns(resolved)) return;
@@ -339,6 +345,11 @@ namespace Engine {
     }
 
     void ConnectionManager::stop(const StopOptions &options) {
+        // Остановка снимает ограничения провайдера: из-под них человек должен
+        // иметь возможность выйти, не оставаясь в невосстановимом состоянии.
+        // До ранних выходов ниже: снимать их надо и когда останавливать уже нечего.
+        Subscription::ClearActiveProviderPolicy();
+
         const bool crash = options.crash;
         const bool block = options.block;
         const bool manual = options.manual;

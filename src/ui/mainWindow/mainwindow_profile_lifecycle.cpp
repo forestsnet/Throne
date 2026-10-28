@@ -59,10 +59,6 @@ void MainWindow::profile_start(int _id) {
     // поэтому спрашивает не чаще одного раза за сеанс.
     if (Configs::dataManager->settingsRepo->spmode_vpn && !ConfirmConflictingProcesses()) return;
 
-    if (const auto policyEnt = Configs::dataManager->profilesRepo->GetProfile(_id)) {
-        applyProviderPolicy(policyEnt->gid);
-    }
-
 #ifndef Q_OS_LINUX
     // Выбран полный туннель, а прав на него нет — дальше идти незачем. Ядро
     // поднялось бы, трафик пошёл бы мимо туннеля, а окно показывало бы
@@ -78,45 +74,6 @@ void MainWindow::profile_start(int _id) {
 #endif
 
     connection()->start(StartRequest{_id});
-}
-
-void MainWindow::applyProviderPolicy(int gid) {
-    // Политика может включить туннель, а это перезапускает профиль — без
-    // стража применение зацикливается.
-    if (m_applyingProviderPolicy) return;
-
-    const auto group = Configs::dataManager->groupsRepo->GetGroup(gid);
-    if (group == nullptr) {
-        Subscription::ClearActiveProviderPolicy();
-        return;
-    }
-
-    const auto policy = Subscription::DeserializeProviderPolicy(group->provider_policy_json);
-    Subscription::SetActiveProviderPolicy(policy, gid);
-    if (policy.isEmpty()) return;
-
-    m_applyingProviderPolicy = true;
-
-    if (policy.alwaysHwid.has_value()) {
-        Configs::dataManager->settingsRepo->sub_send_hwid = policy.alwaysHwid.value();
-    }
-    if (policy.autoUpdate.has_value()) {
-        group->skip_auto_update = !policy.autoUpdate.value();
-        Configs::dataManager->groupsRepo->Save(group);
-    }
-    if (policy.updateIntervalHours > 0) {
-        Configs::dataManager->settingsRepo->sub_auto_update = policy.updateIntervalHours * 60;
-    }
-    Configs::dataManager->settingsRepo->Save();
-
-    // Последним: перезапускает профиль, поэтому прочие настройки уже должны быть записаны.
-    if (policy.tunEnable.has_value()
-        && policy.tunEnable.value() != Configs::dataManager->settingsRepo->spmode_vpn) {
-        MW_show_log(QString("[Policy] Provider requests TUN=%1").arg(policy.tunEnable.value() ? "on" : "off"));
-        connection()->setTun(policy.tunEnable.value());
-    }
-
-    m_applyingProviderPolicy = false;
 }
 
 void MainWindow::profile_stop(bool crash, bool block, bool manual, bool interactive) {

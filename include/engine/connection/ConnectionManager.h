@@ -96,6 +96,12 @@ namespace Engine {
         // true — запуск отложен до конца подбора прямого DNS; он продолжит его сам.
         bool deferStartForDns(const StartRequest &request);
 
+        // Ограничения, присланные панелью вместе с подпиской. Применять надо до
+        // сборки конфига: списки приложений и dns-from-json попадают прямо в
+        // него. И здесь, а не на пути запуска из окна, потому что профиль
+        // поднимают ещё автозапуск, перезапуск после падения ядра и remote API.
+        void applyProviderPolicy(int profileId);
+
         bool ensureTunPrivileges(bool interactive);
 
         void disableKillSwitch();
@@ -202,6 +208,9 @@ namespace Engine {
 
         RuntimeOptions m_options;
         bool m_tunRestoreHeld = false;
+        // Политика может включить туннель, а это перезапускает профиль — без
+        // стража применение зацикливается.
+        bool m_applyingProviderPolicy = false;
         // Идущий подбор DNS; пока он жив, новые запуски к нему и присоединяются.
         QPointer<Configs::DnsAutoSelect> m_dnsSelect;
         QString m_tunBlockedCache;
