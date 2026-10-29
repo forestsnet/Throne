@@ -5,11 +5,38 @@
 #include "include/global/DnsProbe.hpp"
 #include "include/global/Logger.hpp"
 
+#include <algorithm>
+
 namespace Configs {
     namespace {
         // Круг идёт параллельно и укладывается в один таймаут, так что цена
-        // лишнего кандидата — сокет, а не ожидание. Но сокетов тоже не бесконечно.
-        constexpr int kMaxProbes = 16;
+        // лишнего кандидата — сокет, а не ожидание. Запас взят под весь каталог
+        // целиком: под туннелем из него остаётся больше двадцати адресов, и
+        // обрезать хвост значило бы выкинуть как раз тех, до кого доходит дело,
+        // когда ближние не отвечают.
+        constexpr int kMaxProbes = 32;
+
+        // Что ответило и за сколько — одной строкой. Это первое, что хочется
+        // увидеть в диагностике с чужой машины: у человека в РФ отвечает не то,
+        // что у нас, и гадать об этом бессмысленно.
+        QString roundSummary(const QList<DnsProbeResult> &results) {
+            QStringList answered;
+            int silent = 0;
+            for (const auto &result : results) {
+                if (result.ok) {
+                    answered << QString("%1 %2ms").arg(result.address).arg(result.latencyMs);
+                } else {
+                    ++silent;
+                }
+            }
+            std::sort(answered.begin(), answered.end(), [](const QString &a, const QString &b) {
+                return a.section(' ', -1).remove("ms").toInt() < b.section(' ', -1).remove("ms").toInt();
+            });
+            return QString("%1 answered of %2: %3")
+                .arg(answered.size())
+                .arg(results.size())
+                .arg(answered.isEmpty() ? QStringLiteral("none") : answered.join(", "));
+        }
     } // namespace
 
     DnsAutoSelect::DnsAutoSelect(QObject *parent) : QObject(parent) {}
@@ -46,6 +73,7 @@ namespace Configs {
         auto *probe = new DnsProbe(this);
         connect(probe, &DnsProbe::Finished, this, [this, probe](const QList<DnsProbeResult> &all) {
             probe->deleteLater();
+            LOG_INFO("direct DNS round: " + roundSummary(all));
 
             for (const auto &result : all) {
                 if (result.address != m_configured) continue;
