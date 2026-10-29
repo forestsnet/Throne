@@ -45,12 +45,14 @@ namespace Configs {
     // переживёт туннель), либо ответил отказом. В журнал, а не человеку.
     QString DnsAutoSelect::whyNotConfigured(const QList<DnsProbeResult> &results) const {
         if (m_configured.isEmpty()) return QStringLiteral("not set");
+        const auto underTunnel = QStringLiteral("port 53 or a name cannot be resolved under the tunnel");
         for (const auto &result : results) {
-            if (result.address == m_configured) return result.error;
+            if (result.address != m_configured) continue;
+            // Ответил и всё равно не подошёл — это не «не ответил», и в журнале
+            // должно стоять именно это, иначе причина читается как молчание.
+            return result.ok ? QStringLiteral("answered, but ") + underTunnel : result.error;
         }
-        if (!Fsnt::DnsUsableUnderTunnel(m_configured)) {
-            return QStringLiteral("port 53 or a name cannot be resolved under the tunnel");
-        }
+        if (!Fsnt::DnsUsableUnderTunnel(m_configured)) return underTunnel;
         return QStringLiteral("not probed");
     }
 
