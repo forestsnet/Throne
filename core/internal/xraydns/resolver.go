@@ -11,6 +11,8 @@ import (
 	"sync"
 	"time"
 
+	"ThroneCore/internal/dnspins"
+
 	"github.com/sagernet/sing-box/adapter"
 	C "github.com/sagernet/sing-box/constant"
 	E "github.com/sagernet/sing/common/exceptions"
@@ -46,6 +48,17 @@ func (r *resolver) LookupIP(domain string, option dnsfeature.IPOption) ([]net.IP
 	if !option.IPv4Enable && !option.IPv6Enable {
 		// Answering would defeat the dialer's own fallback pass.
 		return nil, 0, dnsfeature.ErrEmptyResponse
+	}
+	// Раньше коробки и раньше всего остального: имя уже разрешено приложением,
+	// спрашивать его второй раз неоткуда и незачем. Заодно снимает отказ
+	// «sing-box instance is not up yet» для самого важного имени — адреса
+	// сервера, который нужен как раз в тот момент, когда коробка ещё поднимается.
+	if pinned := dnspins.Lookup(domain, option.IPv4Enable, option.IPv6Enable); len(pinned) > 0 {
+		ips := make([]net.IP, 0, len(pinned))
+		for _, address := range pinned {
+			ips = append(ips, net.IP(address.Unmap().AsSlice()))
+		}
+		return ips, 0, nil
 	}
 	ctx := r.provider()
 	if ctx == nil {

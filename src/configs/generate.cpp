@@ -25,7 +25,6 @@
 
 
 #include "include/database/entities/Profile.h"
-#include "include/global/ServerAddressPins.hpp"
 #include "include/global/VpnCredentialOverride.hpp"
 #ifdef Q_OS_LINUX
 #include "include/sys/linux/systemChecks.h"
@@ -1194,37 +1193,6 @@ namespace Configs {
                 for (const auto &entry : predefined) {
                     emitFamily(entry.domain, entry.v4, "A");
                     emitFamily(entry.domain, entry.v6, "AAAA");
-                }
-            }
-
-            // Имя нашего же сервера разрешено до того, как туннель забрал
-            // маршруты. Отдаём ответ ядру готовым: под туннелем спрашивать его
-            // может быть уже не у кого, а соединение с сервером нужно каждое,
-            // а не только первое. Правило головное, то есть раньше всех прочих.
-            if (!ctx.forTest) {
-                const auto pins = ServerAddressPins();
-                for (auto pin = pins.cbegin(); pin != pins.cend(); ++pin) {
-                    QJsonArray v4;
-                    QJsonArray v6;
-                    for (const auto &address : pin.value()) {
-                        if (address.contains(':')) {
-                            v6 += QString("*. IN AAAA %1").arg(address);
-                        } else {
-                            v4 += QString("*. IN A %1").arg(address);
-                        }
-                    }
-                    const auto emitPinned = [&](const QJsonArray &answers, const QString &type) {
-                        if (answers.isEmpty()) return;
-                        headRules += QJsonObject{
-                            {"domain", pin.key()},
-                            {"action", "predefined"},
-                            {"query_type", type},
-                            {"rcode", "NOERROR"},
-                            {"answer", answers},
-                        };
-                    };
-                    emitPinned(v4, "A");
-                    emitPinned(v6, "AAAA");
                 }
             }
 

@@ -59,6 +59,12 @@ message ErrorResp {
   optional string error = 1 [default = ""];
 }
 
+// Имя и адреса, добытые приложением до того, как поднялся туннель.
+message PinnedDomain {
+  optional string domain = 1 [default = ""];
+  repeated string addresses = 2;
+}
+
 message LoadConfigReq {
   optional string core_config = 1 [default = ""];
   optional bool disable_stats = 2 [default = false];
@@ -92,6 +98,11 @@ message LoadConfigReq {
   // utun, so Safari keeps reaching sites through Apple instead of the country
   // the user picked. Restored on Stop.
   optional bool disable_private_relay = 18 [default = false];
+
+  // Имена, которые ядру разрешать не надо: приложение уже сделало это из сети
+  // человека, пока туннель не забрал маршруты. Под туннелем спрашивать бывает
+  // уже негде, а соединение с сервером нужно каждое, а не только первое.
+  repeated PinnedDomain pinned_domains = 19;
 }
 
 message URLTestResp {

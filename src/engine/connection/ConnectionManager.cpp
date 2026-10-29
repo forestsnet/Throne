@@ -189,6 +189,20 @@ namespace Engine {
             // SystemConfiguration, а писать их может только root.
             req.disable_private_relay = Configs::dataManager->settingsRepo->block_private_relay;
 #endif
+            // Имя сервера разрешено до того, как туннель забрал маршруты.
+            // Правилом DNS это не передать: и мост Xray, и domain_resolver
+            // нативного исходящего закрепляют транспорт, а роутер при
+            // закреплённом транспорте правила не смотрит вовсе. Поэтому
+            // таблица едет отдельным полем и лежит в ядре рядом с мостом.
+            // Копию берём один раз: два вызова дали бы два разных временных
+            // контейнера, и сравнение их итераторов — неопределённое поведение.
+            const auto pins = Configs::ServerAddressPins();
+            for (auto pin = pins.cbegin(); pin != pins.cend(); ++pin) {
+                libcore::PinnedDomain pinned;
+                pinned.domain = pin.key().toStdString();
+                for (const auto &address : pin.value()) pinned.addresses.push_back(address.toStdString());
+                req.pinned_domains.push_back(pinned);
+            }
             req.disable_stats = Configs::dataManager->settingsRepo->disable_traffic_stats;
             req.xray_config = QJsonObject2QString(result->xrayConfig, true).toStdString();
             req.need_xray = !result->xrayConfig.isEmpty();

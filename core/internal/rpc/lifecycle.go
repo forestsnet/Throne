@@ -11,6 +11,7 @@ import (
 
 	"ThroneCore/gen"
 	"ThroneCore/internal/boxmain"
+	"ThroneCore/internal/dnspins"
 	"ThroneCore/internal/process"
 	"ThroneCore/internal/sysdns"
 	"ThroneCore/internal/sysrelay"
@@ -132,6 +133,14 @@ func (s *server) Start(ctx context.Context, in *gen.LoadConfigReq) (out *gen.Err
 		closeXray()
 	}
 
+	// До создания коробки: Xray поднимается раньше неё и спрашивает адрес сервера
+	// сразу, а таблица на то и нужна, чтобы к этому моменту ответ уже лежал.
+	pinned := make(map[string][]string, len(in.GetPinnedDomains()))
+	for _, pin := range in.GetPinnedDomains() {
+		pinned[pin.GetDomain()] = pin.GetAddresses()
+	}
+	dnspins.Set(pinned)
+
 	// A macOS Tun whose system resolver cannot be pointed at it would start with every lookup scoped past it.
 	systemDNS := runtime.GOOS == "darwin" && in.GetTunIpv4Cidr() != ""
 	if systemDNS {
@@ -218,6 +227,10 @@ func (s *server) Stop(ctx context.Context, in *gen.EmptyReq) (out *gen.ErrorResp
 		stopEgressForwardingWatch()
 		stopEgressForwardingWatch = nil
 	}
+
+	// Прибитые адреса живут ровно одну сессию: подписка переезжает, и записанный
+	// вчера адрес сегодня соврёт.
+	dnspins.Clear()
 
 	// Before the box closes, so the system resolver never points at a listener that is already gone.
 	sysdns.Release()
