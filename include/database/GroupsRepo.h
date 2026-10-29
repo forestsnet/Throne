@@ -29,7 +29,7 @@ namespace Configs {
         
         void createTables() const;
 
-        bool groupsColumnExists(const char* columnName) const;
+        QSet<QString> groupsColumns() const;
 
         int NewGroupID() const;
     public:

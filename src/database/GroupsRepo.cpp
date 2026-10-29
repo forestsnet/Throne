@@ -1,5 +1,6 @@
 #include "include/database/entities/Group.h"
 #include "include/database/GroupsRepo.h"
+#include <QPair>
 #include "include/global/Utils.hpp"
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -47,21 +48,47 @@ namespace Configs {
                 updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
             )
         )");
-        // Migrate existing databases created before type_sort_by was added.
-        if (!groupsColumnExists("type_sort_by"))
-            db.exec("ALTER TABLE groups ADD COLUMN type_sort_by INTEGER NOT NULL DEFAULT 0");
-        if (!groupsColumnExists("sub_options_json"))
-            db.exec("ALTER TABLE groups ADD COLUMN sub_options_json TEXT NOT NULL DEFAULT '{}'");
-        if (!groupsColumnExists("sub_metadata_json"))
-            db.exec("ALTER TABLE groups ADD COLUMN sub_metadata_json TEXT NOT NULL DEFAULT '{}'");
-        if (!groupsColumnExists("endpoint_json"))
-            db.exec("ALTER TABLE groups ADD COLUMN endpoint_json TEXT NOT NULL DEFAULT '{}'");
-        if (!groupsColumnExists("sort_method"))
-            db.exec("ALTER TABLE groups ADD COLUMN sort_method INTEGER NOT NULL DEFAULT 0");
-        if (!groupsColumnExists("sort_descending"))
-            db.exec("ALTER TABLE groups ADD COLUMN sort_descending INTEGER NOT NULL DEFAULT 0");
-        if (!groupsColumnExists("provider_policy_json"))
-            db.exec("ALTER TABLE groups ADD COLUMN provider_policy_json TEXT NOT NULL DEFAULT ''");
+        // Схема выше описывает только новую базу. Старую доводит до неё этот
+        // список, и он обязан перечислять всё, что в CREATE TABLE, а не только
+        // последние добавленные столбцы. Раньше он начинался с type_sort_by, и
+        // базы, созданные до traffic_sort_by, разваливались целиком: чтение
+        // групп падало на «no such column», подписка не сохранялась, клиент
+        // уходил в цикл перезапусков.
+        //
+        // Значения по умолчанию здесь только константы: ALTER TABLE ADD COLUMN
+        // в SQLite выражения не принимает, поэтому у created_at и updated_at
+        // здесь нуль, а не strftime из CREATE TABLE.
+        static const QList<QPair<QString, QString>> columns = {
+            {"archive", "INTEGER NOT NULL DEFAULT 0"},
+            {"skip_auto_update", "INTEGER NOT NULL DEFAULT 0"},
+            {"name", "TEXT NOT NULL DEFAULT ''"},
+            {"url", "TEXT"},
+            {"info", "TEXT"},
+            {"sub_last_update", "INTEGER NOT NULL DEFAULT 0"},
+            {"front_proxy_id", "INTEGER NOT NULL DEFAULT -1"},
+            {"landing_proxy_id", "INTEGER NOT NULL DEFAULT -1"},
+            {"column_width_json", "TEXT"},
+            {"profiles_json", "TEXT NOT NULL DEFAULT '[]'"},
+            {"scroll_last_profile", "INTEGER NOT NULL DEFAULT -1"},
+            {"auto_clear_unavailable", "INTEGER NOT NULL DEFAULT 0"},
+            {"test_sort_by", "INTEGER NOT NULL DEFAULT 0"},
+            {"traffic_sort_by", "INTEGER NOT NULL DEFAULT 0"},
+            {"test_items_to_show", "INTEGER NOT NULL DEFAULT 0"},
+            {"type_sort_by", "INTEGER NOT NULL DEFAULT 0"},
+            {"sub_options_json", "TEXT NOT NULL DEFAULT '{}'"},
+            {"sub_metadata_json", "TEXT NOT NULL DEFAULT '{}'"},
+            {"endpoint_json", "TEXT NOT NULL DEFAULT '{}'"},
+            {"sort_method", "INTEGER NOT NULL DEFAULT 0"},
+            {"sort_descending", "INTEGER NOT NULL DEFAULT 0"},
+            {"provider_policy_json", "TEXT NOT NULL DEFAULT ''"},
+            {"created_at", "INTEGER NOT NULL DEFAULT 0"},
+            {"updated_at", "INTEGER NOT NULL DEFAULT 0"},
+        };
+        const auto existing = groupsColumns();
+        for (const auto &[name, definition] : columns) {
+            if (existing.contains(name)) continue;
+            db.exec(QStringLiteral("ALTER TABLE groups ADD COLUMN %1 %2").arg(name, definition).toStdString());
+        }
 
         db.exec(R"(
             CREATE TABLE IF NOT EXISTS groups_order (
@@ -71,13 +98,14 @@ namespace Configs {
         )");
     }
 
-    bool GroupsRepo::groupsColumnExists(const char* columnName) const {
+    QSet<QString> GroupsRepo::groupsColumns() const {
+        QSet<QString> columns;
         auto pragma = db.query("PRAGMA table_info(groups)");
-        if (!pragma) return false;
+        if (!pragma) return columns;
         while (pragma->executeStep()) {
-            if (pragma->getColumn(1).getText() == std::string(columnName)) return true;
+            columns.insert(QString::fromStdString(pragma->getColumn(1).getText()));
         }
-        return false;
+        return columns;
     }
 
     QJsonObject GroupsRepo::groupToJson(const Group* group) const {

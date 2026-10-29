@@ -37,7 +37,7 @@ namespace Configs {
         
         void createTables() const;
 
-        bool profilesColumnExists(const char* columnName) const;
+        QSet<QString> profilesColumns() const;
 
         int NewProfileID() const;
         // Contiguous block starting at the returned id; atomic in the DB, so no lock is required.

@@ -1,4 +1,5 @@
 #include "include/database/ProfilesRepo.h"
+#include <QPair>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
@@ -39,21 +40,48 @@ namespace Configs {
             )
         )");
 
-        if (!profilesColumnExists("latency_at"))
-            db.exec("ALTER TABLE profiles ADD COLUMN latency_at INTEGER NOT NULL DEFAULT 0");
-        if (!profilesColumnExists("endpoint_json"))
-            db.exec("ALTER TABLE profiles ADD COLUMN endpoint_json TEXT NOT NULL DEFAULT '{}'");
+        // Как и в GroupsRepo: список перечисляет всё, что есть в схеме, а не
+        // последние добавленные столбцы. ip_out, traffic_dl и traffic_up
+        // появились в CREATE TABLE без миграции, и база, созданная до них,
+        // падала на чтении профилей. latency_at живёт только здесь, в CREATE
+        // TABLE его нет — новая база получает его тем же путём.
+        //
+        // Значения по умолчанию только константы: выражение ALTER TABLE ADD
+        // COLUMN в SQLite не принимает.
+        static const QList<QPair<QString, QString>> columns = {
+            {"type", "TEXT"},
+            {"name", "TEXT"},
+            {"gid", "INTEGER NOT NULL DEFAULT 0"},
+            {"latency", "INTEGER NOT NULL DEFAULT 0"},
+            {"latency_at", "INTEGER NOT NULL DEFAULT 0"},
+            {"dl_speed", "TEXT"},
+            {"ul_speed", "TEXT"},
+            {"test_country", "TEXT"},
+            {"ip_out", "TEXT"},
+            {"outbound_json", "TEXT NOT NULL DEFAULT '{}'"},
+            {"traffic_dl", "INTEGER NOT NULL DEFAULT 0"},
+            {"traffic_up", "INTEGER NOT NULL DEFAULT 0"},
+            {"endpoint_json", "TEXT NOT NULL DEFAULT '{}'"},
+            {"created_at", "INTEGER NOT NULL DEFAULT 0"},
+            {"updated_at", "INTEGER NOT NULL DEFAULT 0"},
+        };
+        const auto existing = profilesColumns();
+        for (const auto &[name, definition] : columns) {
+            if (existing.contains(name)) continue;
+            db.exec(QStringLiteral("ALTER TABLE profiles ADD COLUMN %1 %2").arg(name, definition).toStdString());
+        }
 
         db.exec("CREATE INDEX IF NOT EXISTS idx_profiles_name ON profiles(name)");
     }
 
-    bool ProfilesRepo::profilesColumnExists(const char* columnName) const {
+    QSet<QString> ProfilesRepo::profilesColumns() const {
+        QSet<QString> columns;
         auto pragma = db.query("PRAGMA table_info(profiles)");
-        if (!pragma) return false;
+        if (!pragma) return columns;
         while (pragma->executeStep()) {
-            if (pragma->getColumn(1).getText() == std::string(columnName)) return true;
+            columns.insert(QString::fromStdString(pragma->getColumn(1).getText()));
         }
-        return false;
+        return columns;
     }
 
     std::shared_ptr<Profile> ProfilesRepo::profileFromJson(const QJsonObject& json) const {
