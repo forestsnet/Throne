@@ -10503,7 +10503,7 @@ Antivirus software often deletes it as a false positive. Add the application fol
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Обнаружены программы, которые могут помешать работе TUN режима:
+        <source>Programs that can get in the way of Tun mode are running:
 
 </source>
         <translation type="unfinished"></translation>
@@ -10511,34 +10511,30 @@ Antivirus software often deletes it as a false positive. Add the application fol
     <message>
         <source>
 
-Эти программы могут конфликтовать с виртуальным сетевым адаптером TUN.
+They can conflict with the virtual Tun network adapter.
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Рекомендуется закрыть эти программы перед запуском профиля в VPN режиме.
+        <source>Closing them before starting a profile in VPN mode is recommended.
 
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Продолжить запуск?</source>
+        <source>Start anyway?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Предупреждение о конфликтах</source>
+        <source>Possible conflict</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Больше не показывать</source>
+        <source>Do not show this again</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Продолжить</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Отмена</source>
+        <source>Continue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

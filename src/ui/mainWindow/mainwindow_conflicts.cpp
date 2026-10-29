@@ -341,22 +341,22 @@ bool MainWindow::ConfirmConflictingProcesses() {
     }
     askedThisSession = true;
 
-    QString message = tr("Обнаружены программы, которые могут помешать работе TUN режима:\n\n");
+    QString message = tr("Programs that can get in the way of Tun mode are running:\n\n");
     message += "• " + conflicting.join("\n• ");
-    message += tr("\n\nЭти программы могут конфликтовать с виртуальным сетевым адаптером TUN.\n");
-    message += tr("Рекомендуется закрыть эти программы перед запуском профиля в VPN режиме.\n\n");
-    message += tr("Продолжить запуск?");
+    message += tr("\n\nThey can conflict with the virtual Tun network adapter.\n");
+    message += tr("Closing them before starting a profile in VPN mode is recommended.\n\n");
+    message += tr("Start anyway?");
 
     QMessageBox msgBox(GetMessageBoxParent());
-    msgBox.setWindowTitle(tr("Предупреждение о конфликтах"));
+    msgBox.setWindowTitle(tr("Possible conflict"));
     msgBox.setText(message);
     msgBox.setIcon(QMessageBox::Warning);
 
-    auto *never = new QCheckBox(tr("Больше не показывать"), &msgBox);
+    auto *never = new QCheckBox(tr("Do not show this again"), &msgBox);
     msgBox.setCheckBox(never);
 
-    QPushButton *continueBtn = msgBox.addButton(tr("Продолжить"), QMessageBox::AcceptRole);
-    QPushButton *cancelBtn = msgBox.addButton(tr("Отмена"), QMessageBox::RejectRole);
+    QPushButton *continueBtn = msgBox.addButton(tr("Continue"), QMessageBox::AcceptRole);
+    QPushButton *cancelBtn = msgBox.addButton(tr("Cancel"), QMessageBox::RejectRole);
     msgBox.setDefaultButton(cancelBtn);
 
     msgBox.exec();

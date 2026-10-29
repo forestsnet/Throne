@@ -671,23 +671,23 @@ It stays a preference, not a lock: if that profile stops working the selector st
     </message>
     <message>
         <source>WebDAV</source>
-        <translation type="unfinished"></translation>
+        <translation>WebDAV</translation>
     </message>
     <message>
         <source>Keep backups on a WebDAV server such as Nextcloud, a NAS or Yandex Disk. Uploads include the parts checked under Create Backup.</source>
-        <translation type="unfinished"></translation>
+        <translation>Храните резервные копии на сервере WebDAV — Nextcloud, NAS или Яндекс Диск. Выгружается то, что отмечено в «Создать резервную копию».</translation>
     </message>
     <message>
         <source>WebDAV Settings...</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройки WebDAV...</translation>
     </message>
     <message>
         <source>Upload to WebDAV</source>
-        <translation type="unfinished"></translation>
+        <translation>Выгрузить на WebDAV</translation>
     </message>
     <message>
         <source>Restore from WebDAV...</source>
-        <translation type="unfinished"></translation>
+        <translation>Восстановить с WebDAV...</translation>
     </message>
     <message>
         <source>Security</source>
@@ -1271,15 +1271,15 @@ Select which parts to restore:</source>
     </message>
     <message>
         <source>Enter your WebDAV server in WebDAV Settings first.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сначала укажите свой сервер WebDAV в настройках WebDAV.</translation>
     </message>
     <message>
         <source>WebDAV Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройки WebDAV</translation>
     </message>
     <message>
         <source>Server URL</source>
-        <translation type="unfinished"></translation>
+        <translation>Адрес сервера</translation>
     </message>
     <message>
         <source>Username</source>
@@ -1291,11 +1291,11 @@ Select which parts to restore:</source>
     </message>
     <message>
         <source>Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Папка</translation>
     </message>
     <message>
         <source>Device name</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя устройства</translation>
     </message>
     <message>
         <source>Connect through the proxy</source>
@@ -1303,67 +1303,71 @@ Select which parts to restore:</source>
     </message>
     <message>
         <source>Test</source>
-        <translation type="unfinished"></translation>
+        <translation>Проверить</translation>
     </message>
     <message>
         <source>Testing the connection...</source>
-        <translation type="unfinished"></translation>
+        <translation>Проверяю подключение...</translation>
     </message>
     <message>
         <source>Connected. The backup folder is ready.</source>
-        <translation type="unfinished"></translation>
+        <translation>Подключение есть. Папка для копий готова.</translation>
     </message>
     <message>
         <source>Connection failed:
 %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Подключиться не удалось:
+%1</translation>
     </message>
     <message>
         <source>The server URL must start with http:// or https://.</source>
-        <translation type="unfinished"></translation>
+        <translation>Адрес сервера должен начинаться с http:// или https://.</translation>
     </message>
     <message>
         <source>Uploading the backup...</source>
-        <translation type="unfinished"></translation>
+        <translation>Выгружаю резервную копию...</translation>
     </message>
     <message>
         <source>Upload failed:
 %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Выгрузить не удалось:
+%1</translation>
     </message>
     <message>
         <source>Backup uploaded:
 %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Резервная копия выгружена:
+%1</translation>
     </message>
     <message>
         <source>Backup uploaded, but the backup list could not be updated: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Копия выгружена, но обновить список копий не удалось: %1</translation>
     </message>
     <message>
         <source>Restore from WebDAV</source>
-        <translation type="unfinished"></translation>
+        <translation>Восстановление с WebDAV</translation>
     </message>
     <message>
         <source>Loading the backup list...</source>
-        <translation type="unfinished"></translation>
+        <translation>Загружаю список копий...</translation>
     </message>
     <message>
         <source>Could not list the backups:
 %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Получить список копий не удалось:
+%1</translation>
     </message>
     <message>
         <source>The backup list could not be read: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Список копий прочитать не удалось: %1</translation>
     </message>
     <message>
         <source>There are no backups in the WebDAV folder yet.</source>
-        <translation type="unfinished"></translation>
+        <translation>В папке на WebDAV пока нет ни одной копии.</translation>
     </message>
     <message>
         <source>Created</source>
-        <translation type="unfinished"></translation>
+        <translation>Создана</translation>
     </message>
     <message>
         <source>Device</source>
@@ -1371,7 +1375,7 @@ Select which parts to restore:</source>
     </message>
     <message>
         <source>Platform</source>
-        <translation type="unfinished"></translation>
+        <translation>Платформа</translation>
     </message>
     <message>
         <source>Version</source>
@@ -1379,7 +1383,7 @@ Select which parts to restore:</source>
     </message>
     <message>
         <source>Parts</source>
-        <translation type="unfinished"></translation>
+        <translation>Состав</translation>
     </message>
     <message>
         <source>Size</source>
@@ -1391,11 +1395,11 @@ Select which parts to restore:</source>
     </message>
     <message>
         <source>Unknown device</source>
-        <translation type="unfinished"></translation>
+        <translation>Неизвестное устройство</translation>
     </message>
     <message>
         <source>%1 (this device)</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 (это устройство)</translation>
     </message>
     <message>
         <source>Unknown</source>
@@ -1403,35 +1407,39 @@ Select which parts to restore:</source>
     </message>
     <message>
         <source>Downloading the backup...</source>
-        <translation type="unfinished"></translation>
+        <translation>Скачиваю резервную копию...</translation>
     </message>
     <message>
         <source>Could not download the backup:
 %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Скачать копию не удалось:
+%1</translation>
     </message>
     <message>
         <source>Delete Backup</source>
-        <translation type="unfinished"></translation>
+        <translation>Удаление копии</translation>
     </message>
     <message>
         <source>Delete this backup from the WebDAV server? This cannot be undone.
 
 %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить эту копию с сервера WebDAV? Отменить это будет нельзя.
+
+%1</translation>
     </message>
     <message>
         <source>Deleting the backup...</source>
-        <translation type="unfinished"></translation>
+        <translation>Удаляю копию...</translation>
     </message>
     <message>
         <source>Could not delete the backup:
 %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить копию не удалось:
+%1</translation>
     </message>
     <message>
         <source>Backup deleted, but the backup list could not be updated: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Копия удалена, но обновить список копий не удалось: %1</translation>
     </message>
     <message>
         <source>Failed to create database snapshot: %1</source>
@@ -1479,7 +1487,7 @@ This backup may have been created with a newer version of the application.</sour
     </message>
     <message>
         <source>Created by: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Создано на: %1</translation>
     </message>
     <message>
         <source>Each selected part replaces the current data. This cannot be undone.
@@ -1556,15 +1564,15 @@ Throne will restart to complete the restore.</source>
     </message>
     <message>
         <source>The provider hides the subscription URL.</source>
-        <translation type="unfinished"></translation>
+        <translation>Провайдер скрывает адрес подписки.</translation>
     </message>
     <message>
         <source>Support: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Поддержка: %1</translation>
     </message>
     <message>
         <source>Refill date: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Дата пополнения: %1</translation>
     </message>
     <message>
         <source>No profile named &quot;%1&quot;. Pick one from the list.</source>
@@ -3739,7 +3747,7 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
     </message>
     <message>
         <source>It uses its own DNS servers: remote %1, direct %2.</source>
-        <translation type="unfinished"></translation>
+        <translation>У него свои серверы DNS: удалённый %1, прямой %2.</translation>
     </message>
     <message>
         <source>Use an IP address, for example 223.5.5.5 or tls://1.1.1.1: this server resolves the names of the others.</source>
@@ -9368,7 +9376,7 @@ You can change this later in settings.</source>
     </message>
     <message>
         <source>Ctrl+Shift+D</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+Shift+D</translation>
     </message>
     <message>
         <source>Remove Duplicates</source>
@@ -9540,22 +9548,25 @@ You can change this later in settings.</source>
     </message>
     <message>
         <source>Collecting debug information...</source>
-        <translation type="unfinished"></translation>
+        <translation>Собираю отладочные сведения...</translation>
     </message>
     <message>
         <source>Debug information saved to: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Отладочные сведения сохранены: %1</translation>
     </message>
     <message>
         <source>Debug information collected successfully!
 
 Saved to:
 %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Отладочные сведения собраны.
+
+Файл:
+%1</translation>
     </message>
     <message>
         <source>Failed to create debug archive</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось создать архив с отладочными сведениями</translation>
     </message>
     <message>
         <source>Error</source>
@@ -9563,7 +9574,7 @@ Saved to:
     </message>
     <message>
         <source>Failed to create debug information archive</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось собрать архив отладочных сведений</translation>
     </message>
     <message>
         <source>Url Test selected Group</source>
@@ -10498,43 +10509,46 @@ Antivirus software often deletes it as a false positive. Add the application fol
         <translation>Открыть страницу загрузок</translation>
     </message>
     <message>
-        <source>Обнаружены программы, которые могут помешать работе TUN режима:
+        <source>Programs that can get in the way of Tun mode are running:
 
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Запущены программы, которые могут помешать работе режима Tun:
+
+</translation>
     </message>
     <message>
         <source>
 
-Эти программы могут конфликтовать с виртуальным сетевым адаптером TUN.
+They can conflict with the virtual Tun network adapter.
 </source>
-        <translation type="unfinished"></translation>
+        <translation>
+
+Они могут конфликтовать с виртуальным сетевым адаптером Tun.
+</translation>
     </message>
     <message>
-        <source>Рекомендуется закрыть эти программы перед запуском профиля в VPN режиме.
+        <source>Closing them before starting a profile in VPN mode is recommended.
 
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Их стоит закрыть, прежде чем запускать профиль в режиме VPN.
+
+</translation>
     </message>
     <message>
-        <source>Продолжить запуск?</source>
-        <translation type="unfinished"></translation>
+        <source>Start anyway?</source>
+        <translation>Всё равно запустить?</translation>
     </message>
     <message>
-        <source>Предупреждение о конфликтах</source>
-        <translation type="unfinished"></translation>
+        <source>Possible conflict</source>
+        <translation>Возможен конфликт</translation>
     </message>
     <message>
-        <source>Больше не показывать</source>
+        <source>Do not show this again</source>
         <translation>Больше не показывать</translation>
     </message>
     <message>
-        <source>Продолжить</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Отмена</source>
-        <translation type="unfinished"></translation>
+        <source>Continue</source>
+        <translation>Продолжить</translation>
     </message>
     <message>
         <source>Downloading the update…</source>
@@ -10911,7 +10925,7 @@ Details: %3</source>
     </message>
     <message>
         <source>Request with proxy but the mixed inbound is disabled and Tun Mode is off.</source>
-        <translation type="unfinished"></translation>
+        <translation>Запрос требует прокси, но смешанный вход отключён, а режим Tun выключен.</translation>
     </message>
     <message>
         <source>Response larger than %1 MB</source>
@@ -10927,7 +10941,7 @@ Details: %3</source>
     </message>
     <message>
         <source>Could not create destination directory.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось создать папку назначения.</translation>
     </message>
     <message>
         <source>Could not open file.</source>
@@ -11117,15 +11131,15 @@ To fix this, share the hotspot from the throne-tun adapter instead of &quot;%1&q
     </message>
     <message>
         <source>Updater not found. Please update manually from GitHub.</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновлятор не найден. Обновитесь вручную с GitHub.</translation>
     </message>
     <message>
         <source>Open GitHub Releases</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть релизы на GitHub</translation>
     </message>
     <message>
         <source>Open Repository</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть репозиторий</translation>
     </message>
     <message>
         <source>Download Profiles</source>
@@ -11157,7 +11171,7 @@ To fix this, share the hotspot from the throne-tun adapter instead of &quot;%1&q
     </message>
     <message>
         <source>Version %1 is out. The client runs from an AppImage, so it cannot replace itself: download the new file and start it instead of this one.</source>
-        <translation type="unfinished"></translation>
+        <translation>Вышла версия %1. Клиент запущен из AppImage и заменить себя не может — скачайте новый файл и запускайте его вместо этого.</translation>
     </message>
     <message>
         <source>Download</source>
@@ -11253,19 +11267,19 @@ Release note:
     </message>
     <message>
         <source>Chain &quot;%1&quot; has a hop (profile id %2) that no longer exists, edit the chain to remove it</source>
-        <translation type="unfinished"></translation>
+        <translation>В цепочке «%1» есть звено (профиль %2), которого больше нет. Исправьте цепочку, убрав его</translation>
     </message>
     <message>
         <source>Group &quot;%1&quot; has a front proxy that has been deleted.</source>
-        <translation type="unfinished"></translation>
+        <translation>У группы «%1» входной прокси удалён.</translation>
     </message>
     <message>
         <source>Group &quot;%1&quot; has a landing proxy that has been deleted.</source>
-        <translation type="unfinished"></translation>
+        <translation>У группы «%1» выходной прокси удалён.</translation>
     </message>
     <message>
         <source>A proxy in the chain can no longer be found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Один из прокси в цепочке больше не находится.</translation>
     </message>
     <message>
         <source>The profile no longer exists</source>
@@ -12557,87 +12571,87 @@ Release note:
     </message>
     <message>
         <source>Enter the WebDAV server URL in the WebDAV settings.</source>
-        <translation type="unfinished"></translation>
+        <translation>Укажите адрес сервера WebDAV в настройках WebDAV.</translation>
     </message>
     <message>
         <source>The WebDAV server URL must start with http:// or https://.</source>
-        <translation type="unfinished"></translation>
+        <translation>Адрес сервера WebDAV должен начинаться с http:// или https://.</translation>
     </message>
     <message>
         <source>The server sent more than %1 MB.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сервер отдал больше %1 МБ.</translation>
     </message>
     <message>
         <source>Could not write the downloaded backup: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось записать скачанную копию: %1</translation>
     </message>
     <message>
         <source>The server did not answer in time.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сервер не ответил вовремя.</translation>
     </message>
     <message>
         <source>The server could not be reached.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сервер недоступен.</translation>
     </message>
     <message>
         <source>The server answered with a redirect (HTTP %1); check the server URL.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сервер ответил перенаправлением (HTTP %1) — проверьте адрес сервера.</translation>
     </message>
     <message>
         <source>The server redirected to %1; check the server URL.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сервер перенаправил на %1 — проверьте адрес сервера.</translation>
     </message>
     <message>
         <source>Wrong username or password.</source>
-        <translation type="unfinished"></translation>
+        <translation>Неверное имя пользователя или пароль.</translation>
     </message>
     <message>
         <source>Permission denied.</source>
-        <translation type="unfinished"></translation>
+        <translation>Доступ запрещён.</translation>
     </message>
     <message>
         <source>Not found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не найдено.</translation>
     </message>
     <message>
         <source>Server error (HTTP %1).</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка сервера (HTTP %1).</translation>
     </message>
     <message>
         <source>HTTP %1</source>
-        <translation type="unfinished"></translation>
+        <translation>HTTP %1</translation>
     </message>
     <message>
         <source>The server&apos;s folder listing could not be read.</source>
-        <translation type="unfinished"></translation>
+        <translation>Список файлов папки на сервере прочитать не удалось.</translation>
     </message>
     <message>
         <source>Could not create the folder on the server: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось создать папку на сервере: %1</translation>
     </message>
     <message>
         <source>The backup list kept changing while it was being updated.</source>
-        <translation type="unfinished"></translation>
+        <translation>Список копий менялся, пока его обновляли.</translation>
     </message>
     <message>
         <source>Could not read the backup file: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось прочитать файл копии: %1</translation>
     </message>
     <message>
         <source>Unknown device</source>
-        <translation type="unfinished"></translation>
+        <translation>Неизвестное устройство</translation>
     </message>
     <message>
         <source>The backup&apos;s file name is not safe to use.</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя файла копии небезопасно использовать.</translation>
     </message>
     <message>
         <source>Could not create a temporary file: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось создать временный файл: %1</translation>
     </message>
     <message>
         <source>The downloaded backup does not match the backup list; it may have been replaced or damaged.</source>
-        <translation type="unfinished"></translation>
+        <translation>Скачанная копия не совпадает со списком копий — возможно, её подменили или повредили.</translation>
     </message>
 </context>
 <context>
@@ -12667,7 +12681,7 @@ Release note:
     <name>Qv2ray::ui::widgets::AutoCompleteTextEdit</name>
     <message>
         <source>You can not input space characters here.</source>
-        <translation type="unfinished"></translation>
+        <translation>Пробелы здесь вводить нельзя.</translation>
     </message>
 </context>
 <context>
@@ -12858,27 +12872,27 @@ outbound и другие функции Throne могут не работать.
     <name>RouteDnsEditor</name>
     <message>
         <source>Use the global DNS settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Брать общие настройки DNS</translation>
     </message>
     <message>
         <source>The servers set in Routing Settings &gt; DNS.</source>
-        <translation type="unfinished"></translation>
+        <translation>Серверы, заданные в «Настройки маршрутизации → DNS».</translation>
     </message>
     <message>
         <source>Use custom DNS settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Задать свои настройки DNS</translation>
     </message>
     <message>
         <source>These servers replace the global ones while this routing profile is in use.</source>
-        <translation type="unfinished"></translation>
+        <translation>Эти серверы заменяют общие, пока используется этот профиль маршрутизации.</translation>
     </message>
     <message>
         <source>Routing Settings use a custom DNS object, so that object applies instead of the values below.</source>
-        <translation type="unfinished"></translation>
+        <translation>В настройках маршрутизации задан свой объект DNS, и применяется он, а не значения ниже.</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;examples:&lt;br/&gt;tls://8.8.8.8&lt;br/&gt;https://domain/path&lt;/p&gt;&lt;p&gt;tcp://8.8.8.8:1234&lt;/p&gt;&lt;p&gt;dhcp://auto&lt;/p&gt;&lt;p&gt;h3://domain/path&lt;/p&gt;&lt;p&gt;quic://domain:4632&lt;/p&gt;&lt;p&gt;localhost&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;примеры:&lt;br/&gt;tls://8.8.8.8&lt;br/&gt;https://domain/path&lt;/p&gt;&lt;p&gt;tcp://8.8.8.8:1234&lt;/p&gt;&lt;p&gt;dhcp://auto&lt;/p&gt;&lt;p&gt;h3://domain/path&lt;/p&gt;&lt;p&gt;quic://domain:4632&lt;/p&gt;&lt;p&gt;localhost&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Remote DNS</source>
@@ -12906,7 +12920,7 @@ outbound и другие функции Throne могут не работать.
     </message>
     <message>
         <source>Domains this profile sends direct are resolved with the direct DNS too.</source>
-        <translation type="unfinished"></translation>
+        <translation>Домены, которые этот профиль отправляет напрямую, и разрешаются прямым DNS.</translation>
     </message>
     <message>
         <source>Enable FakeIP</source>
@@ -12922,7 +12936,7 @@ outbound и другие функции Throne могут не работать.
     </message>
     <message>
         <source>Local Override, the hosts file, predefined answers and the advanced DNS settings always come from Routing Settings &gt; DNS.</source>
-        <translation type="unfinished"></translation>
+        <translation>Local Override, файл hosts, заранее заданные ответы и расширенные настройки DNS всегда берутся из «Настройки маршрутизации → DNS».</translation>
     </message>
 </context>
 <context>
@@ -13163,7 +13177,7 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
     <message>
         <source>Disabled: kept in the profile but left out of the generated config.</source>
-        <translation type="unfinished"></translation>
+        <translation>Отключено: остаётся в профиле, но в собираемую конфигурацию не попадает.</translation>
     </message>
     <message>
         <source>Invalid URL</source>
