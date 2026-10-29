@@ -99,11 +99,11 @@ AddSubscriptionDialog::AddSubscriptionDialog(QWidget *parent) : QDialog(parent) 
 void AddSubscriptionDialog::pasteFromClipboard() {
     const QString text = QApplication::clipboard()->text().trimmed();
     if (text.isEmpty()) {
-        m_status->setText(tr("The clipboard is empty."));
+        showStatus(tr("The clipboard is empty."));
         return;
     }
     m_input->setText(text);
-    m_status->clear();
+    showStatus({});
 }
 
 void AddSubscriptionDialog::setBusy(const bool busy) {
@@ -131,10 +131,22 @@ QString AddSubscriptionDialog::subscriptionFailureHint() {
               "for an anti-censorship tool or antivirus that filters traffic on this computer.");
 }
 
+// Самое нужное в объяснении стоит в конце — что именно искать на компьютере.
+// Метка переносит по словам, а высота переноса известна только когда известна
+// ширина: окно, размер которого посчитан по пустой метке, само под текст не
+// растёт, и хвост уезжает под кнопки. Поэтому высоту пересчитываем руками.
+void AddSubscriptionDialog::showStatus(const QString &text) {
+    m_status->setText(text);
+    if (!isVisible() || layout() == nullptr) return;
+    layout()->activate();
+    const int wanted = layout()->heightForWidth(width());
+    if (wanted > height()) resize(width(), wanted);
+}
+
 void AddSubscriptionDialog::fail(const QString &message) {
     m_guard->stop();
     setBusy(false);
-    m_status->setText(message);
+    showStatus(message);
 }
 
 // Группа для серверов, которые человек добавил сам. Отличается от подписки
@@ -157,7 +169,7 @@ void AddSubscriptionDialog::submit() {
 
     const QString text = m_input->text().trimmed();
     if (text.isEmpty()) {
-        m_status->setText(tr("Enter a link first."));
+        showStatus(tr("Enter a link first."));
         return;
     }
 
@@ -178,11 +190,11 @@ void AddSubscriptionDialog::submit() {
         // обновлении. Группу без ссылки обновление не трогает вовсе.
         const int gid = ownServersGroup();
         if (gid < 0) {
-            m_status->setText(tr("Could not create a group for your own servers."));
+            showStatus(tr("Could not create a group for your own servers."));
             return;
         }
         setBusy(true);
-        m_status->setText(tr("Adding…"));
+        showStatus(tr("Adding…"));
         m_guard->start();
         Subscription::updater()->ImportTextTo(gid, text, [this](const Subscription::UpdateOutcome &outcome) {
             const bool ok = outcome.ok();
@@ -202,7 +214,7 @@ void AddSubscriptionDialog::submit() {
     }
 
     setBusy(true);
-    m_status->setText(tr("Fetching the subscription…"));
+    showStatus(tr("Fetching the subscription…"));
     m_guard->start();
 
     // Колбэк приходит из рабочего потока обновлятора — возвращаемся в UI.

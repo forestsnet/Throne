@@ -24,6 +24,9 @@ private:
     void pasteFromClipboard();
     void setBusy(bool busy);
     void fail(const QString &message);
+    // Подсказку всегда через это: текст приходит после того, как размер окна
+    // уже посчитан, и окно надо растить под него.
+    void showStatus(const QString &text);
     // Почему подписка не открылась — словами, которые человеку что-то говорят.
     static QString subscriptionFailureHint();
 
