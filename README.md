@@ -23,6 +23,14 @@ sudo chmod u-s "/Applications/FSNT Client.app/Contents/MacOS/ThroneCore"
 
 While the tunnel is up, iCloud Private Relay is switched off for the network you are on. The relay does not step aside for a plain `utun` the way it does for a VPN with a system extension, so Safari would otherwise keep reaching sites through Apple instead of the country the profile picked. Whatever the setting was is put back when you disconnect, and there is a switch for the whole thing under DNS.
 
+### Note on the direct DNS
+
+Two resolvers are configured, one for names that travel through the tunnel and one for everything that goes direct. The direct one also turns the server's own hostname into an address, and it does that for every new connection rather than once at startup, so when it stops answering nothing connects at all while the client still reports itself as connected.
+
+Two things it therefore cannot be. Not port 53: strict route, which is on by default on Windows, installs a firewall filter that blocks port 53 on every interface except the tunnel, and the filter matches on the port, not on the process, so the core's own queries are blocked with everyone else's. And not a server named by hostname: that name would have to be resolved by the system resolver, which the tunnel has already captured, and it leads straight back to the server name we are trying to resolve. The default is therefore DoT to an address, and the server list in `res/dns_servers.json` keeps every entry that way. A file of the same name next to the settings overrides it.
+
+Before each connect the configured resolver and the alternatives are queried in parallel, with the hostname of the server about to be dialled rather than some neutral name, and whichever answers first is the one the session uses. A resolver that answers one probe and then falls apart is the normal case where this audience lives, so the round is run every time rather than only when the configured one has already failed. Turn it off with "Switch automatically when it stops answering" under DNS.
+
 ### GitHub Releases (Portable ZIP)
 
 [![GitHub All Releases](https://img.shields.io/github/downloads/throneproj/Throne/total?label=downloads-total&logo=github&style=flat-square)](https://github.com/throneproj/Throne/releases)

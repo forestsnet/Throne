@@ -29,10 +29,6 @@ namespace Configs {
         // вопросов в журналах и нигде не блокируется.
         const auto kProbeName = QStringLiteral("example.com");
 
-        quint16 kDefaultPort(const QString &type) {
-            return type == QLatin1String("tls") ? 853 : 53;
-        }
-
         void appendName(QByteArray &out, const QString &name) {
             for (const auto &label : name.split('.')) {
                 const auto bytes = label.toUtf8();
@@ -180,7 +176,7 @@ namespace Configs {
 
         const quint16 id = static_cast<quint16>(QRandomGenerator::global()->bounded(1, 0xfffe));
         const QByteArray query = BuildDnsQuery(m_probeName, id);
-        const quint16 port = parsed.port > 0 ? static_cast<quint16>(parsed.port) : kDefaultPort(parsed.type);
+        const quint16 port = static_cast<quint16>(parsed.port > 0 ? parsed.port : Fsnt::DefaultDnsPort(parsed.type));
 
         connect(timer, &QTimer::timeout, this, [done] { done(false, -1, QStringLiteral("превышено ожидание")); });
         timer->start();

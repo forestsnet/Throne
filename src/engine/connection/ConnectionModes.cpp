@@ -204,8 +204,11 @@ namespace Engine {
                         s->Save();
                     }
                     if (fellBack) {
-                        MW_show_log(MainWindowTr::tr("Direct DNS %1 did not answer, using %2")
-                                        .arg(s->direct_dns, address));
+                        // Не «не ответил»: заданный сервер мог ответить и всё
+                        // равно не подойти — на 53-м порту под туннелем он
+                        // замолчит. Причина уходит в журнал, человеку хватит
+                        // того, чем подключаемся.
+                        MW_show_log(MainWindowTr::tr("Direct DNS switched to %1").arg(address));
                     }
                     start(next);
                 });

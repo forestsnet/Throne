@@ -1,4 +1,5 @@
 #include "include/configs/DnsAddress.hpp"
+#include "include/configs/DnsCatalog.hpp"
 #include "include/global/Logger.hpp"
 #include "include/configs/XrayDnsStrip.hpp"
 #include "include/configs/generate.h"
@@ -1128,8 +1129,30 @@ namespace Configs {
             // же сервера разрешать нечем. Своему DNS профиля маршрутизации не мешаем.
             const bool autoDirectDns = !ctx.routeOwnsDns && settings.direct_dns_auto
                                        && !settings.direct_dns_effective.isEmpty();
-            auto directDnsObj = buildDnsObj(ctx, autoDirectDns ? settings.direct_dns_effective
-                                                               : ctx.dns.direct_dns);
+            auto directAddress = autoDirectDns ? settings.direct_dns_effective : ctx.dns.direct_dns;
+            // Под туннелем со strict_route на Windows 53-й порт закрыт фильтром
+            // самого же ядра, и своим запросам он тоже не делает исключения.
+            // Подбор такие адреса отбрасывает, но подбор можно выключить —
+            // тогда поднимаем транспорт сами: тот же сервер по DoT отвечает, а
+            // молча остаться без резолва хуже, чем сходить не тем портом.
+            if (!ctx.forTest && ctx.tunEnabled && ctx.os == Windows && settings.vpn_strict_route
+                && !Fsnt::DnsUsableUnderTunnel(directAddress)) {
+                const auto parsed = Fsnt::ParseDnsAddress(directAddress);
+                const auto upgraded = parsed.valid ? Fsnt::DnsAddressWithType(parsed, "tls") : QString();
+                if (!upgraded.isEmpty() && Fsnt::DnsUsableUnderTunnel(upgraded)) {
+                    MW_show_log(QObject::tr("Direct DNS %1 cannot work with the tunnel up, using %2")
+                                    .arg(directAddress, upgraded));
+                    directAddress = upgraded;
+                } else {
+                    // Остался адрес, который под туннелем не работает: чаще
+                    // всего это имя вместо адреса, и подставить за человека
+                    // чужой сервер мы не вправе.
+                    MW_show_log(QObject::tr("Direct DNS %1 may stop working with the tunnel up: "
+                                            "it needs port 53 or a name to resolve first.")
+                                    .arg(directAddress));
+                }
+            }
+            auto directDnsObj = buildDnsObj(ctx, directAddress);
             directDnsObj["tag"] = tags::dnsDirect;
             directDnsObj["domain_resolver"] = tags::dnsLocal;
             servers.append(directDnsObj);

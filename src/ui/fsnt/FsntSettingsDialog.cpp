@@ -244,19 +244,6 @@ void FsntSettingsDialog::updateRouteNote() {
 }
 
 namespace {
-    // Готовые серверы. Все по DoH или DoT: обычный DNS по 53 порту виден
-    // провайдеру целиком, и прятать трафик в туннель, оставляя запросы
-    // открытыми, бессмысленно.
-    struct DnsPreset { const char *label; const char *value; };
-    constexpr DnsPreset kDnsPresets[] = {
-        // Первым — тот, что стоит по умолчанию.
-        {"Quad9 (9.9.9.9)",      "https://9.9.9.9/dns-query"},
-        {"Cloudflare (1.1.1.1)", "https://1.1.1.1/dns-query"},
-        {"Google (8.8.8.8)",     "https://8.8.8.8/dns-query"},
-        {"AdGuard",              "https://dns.adguard-dns.com/dns-query"},
-        {"Yandex",               "tls://77.88.8.8"},
-    };
-
     // Как показать транспорт человеку. Схему в чистом виде показывать незачем:
     // «DoT» понятнее, чем «tls://», а разница между ними — ровно та, из-за
     // которой у людей и отваливается резолв.

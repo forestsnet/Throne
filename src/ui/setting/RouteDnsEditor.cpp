@@ -21,7 +21,11 @@ namespace DnsServerHistory {
     }
 
     const QStringList& DirectPresets() {
-        static const QStringList presets = {"localhost", "223.5.5.5", "119.29.29.29", "178.22.122.100", "77.88.8.8"};
+        // Адресами и мимо 53-го порта: под туннелем strict_route рубит 53-й, а
+        // имя самого DNS-сервера разрешать нечем. Обычный порт оставлен
+        // последним — он годится, пока туннеля нет.
+        static const QStringList presets = {"tls://77.88.8.8", "tls://1.1.1.1", "tls://9.9.9.9",
+                                            "https://77.88.8.8/dns-query", "localhost", "77.88.8.8"};
         return presets;
     }
 

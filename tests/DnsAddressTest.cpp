@@ -2,8 +2,10 @@
 
 #include "include/configs/DnsAddress.hpp"
 
+using Fsnt::DefaultDnsPort;
 using Fsnt::DnsAddress;
 using Fsnt::DnsAddressWithType;
+using Fsnt::DnsUsableUnderTunnel;
 using Fsnt::FormatDnsAddress;
 using Fsnt::ParseDnsAddress;
 
@@ -99,6 +101,44 @@ private slots:
         QCOMPARE(DnsAddressWithType(doh, "tls"), QStringLiteral("tls://dns.adguard-dns.com"));
 
         QVERIFY(DnsAddressWithType(ParseDnsAddress("local"), "udp").isEmpty());
+    }
+
+    // Что из этого выживет под туннелем. Проверять пробой нельзя: пока туннеля
+    // нет, отвечает всё, а strict_route потом рубит 53-й порт мимо туннеля.
+    void survivesTunnel() {
+        QCOMPARE(DefaultDnsPort("tls"), 853);
+        QCOMPARE(DefaultDnsPort("quic"), 853);
+        QCOMPARE(DefaultDnsPort("https"), 443);
+        QCOMPARE(DefaultDnsPort("h3"), 443);
+        QCOMPARE(DefaultDnsPort("udp"), 53);
+        QCOMPARE(DefaultDnsPort("tcp"), 53);
+
+        // Мимо 53-го порта и по адресу, а не по имени.
+        for (const auto *good : {"tls://77.88.8.8", "https://9.9.9.9/dns-query",
+                                 "tls://1.1.1.1:853", "udp://77.88.8.8:5353"}) {
+            QVERIFY2(DnsUsableUnderTunnel(good), good);
+        }
+
+        // 53-й порт: фильтр ядра глушит его и для самого ядра.
+        for (const auto *blocked : {"77.88.8.8", "udp://8.8.8.8", "tcp://1.1.1.1",
+                                    "tcp://9.9.9.9:53"}) {
+            QVERIFY2(!DnsUsableUnderTunnel(blocked), blocked);
+        }
+
+        // Имя: разрешать его под туннелем нечем, выйдет та же петля.
+        for (const auto *named : {"tls://dns.google", "https://dns.yandex.ru/dns-query",
+                                  "tls://dns.quad9.net"}) {
+            QVERIFY2(!DnsUsableUnderTunnel(named), named);
+        }
+
+        // Системный резолвер и адрес от маршрутизатора — оба петля или 53-й порт.
+        QVERIFY(!DnsUsableUnderTunnel("local"));
+        QVERIFY(!DnsUsableUnderTunnel("localhost"));
+        QVERIFY(!DnsUsableUnderTunnel("dhcp://auto"));
+        QVERIFY(!DnsUsableUnderTunnel(""));
+
+        // IPv6 литералом — тоже адрес.
+        QVERIFY(DnsUsableUnderTunnel("tls://[2a02:6b8::feed:0ff]"));
     }
 };
 

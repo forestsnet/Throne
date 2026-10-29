@@ -1,7 +1,10 @@
 #pragma once
 
+#include <QList>
 #include <QObject>
 #include <QString>
+
+#include "include/global/DnsProbe.hpp"
 
 namespace Configs {
     // Подбирает рабочий прямой DNS перед подключением.
@@ -16,9 +19,12 @@ namespace Configs {
     public:
         explicit DnsAutoSelect(QObject *parent = nullptr);
 
-        // configured — то, что стоит в настройках. Сначала проверяется он один:
-        // в обычном случае это ответ за доли секунды и никакой задержки при
-        // подключении. Вся цепочка опрашивается, только если он не ответил.
+        // configured — то, что стоит в настройках. Опрашивается не он один, а
+        // сразу вся цепочка кандидатов, одним кругом и параллельно: круг всё
+        // равно занимает один таймаут, а проверка заданного сервера в одиночку
+        // ровно то и давала, что сервер отвечал на единственную пробу и
+        // рассыпался в работе — подбор при этом не запускался никогда.
+        // Заданный сервер остаётся в приоритете: ответил — берём его.
         // probeName — имя сервера, к которому идёт подключение. Проверять надо
         // именно его: чужое имя резолвер может знать, а нужное — нет.
         void Start(const QString &configured, int timeoutMs = 2500, const QString &probeName = {});
@@ -29,6 +35,9 @@ namespace Configs {
         void Selected(const QString &address, bool fellBack);
 
     private:
+        // Для журнала: почему заданный сервер не подошёл.
+        [[nodiscard]] QString whyNotConfigured(const QList<DnsProbeResult> &results) const;
+
         QString m_configured;
         QString m_probeName;
         int m_timeoutMs = 2500;

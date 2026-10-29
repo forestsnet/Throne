@@ -10763,6 +10763,10 @@ Details: %3</source>
         <translation type="unfinished">Прямой DNS %1 не ответил, используется %2</translation>
     </message>
     <message>
+        <source>Direct DNS switched to %1</source>
+        <translation>Прямой DNS переключён на %1</translation>
+    </message>
+    <message>
         <source>System proxy: %1</source>
         <translation type="unfinished">Системный прокси: %1</translation>
     </message>
@@ -11260,6 +11264,14 @@ Release note:
     <message>
         <source>Skipped the Tun private range &quot;%1&quot;: it is not a valid IP address or CIDR.</source>
         <translation>Пропущен частный диапазон TUN &quot;%1&quot;: это недопустимый IP-адрес или CIDR.</translation>
+    </message>
+    <message>
+        <source>Direct DNS %1 cannot work with the tunnel up, using %2</source>
+        <translation>Прямой DNS %1 с поднятым туннелем не работает, используем %2</translation>
+    </message>
+    <message>
+        <source>Direct DNS %1 may stop working with the tunnel up: it needs port 53 or a name to resolve first.</source>
+        <translation>Прямой DNS %1 может перестать работать с поднятым туннелем: ему нужен 53-й порт или разрешение имени.</translation>
     </message>
     <message>
         <source>DNS address &quot;%1&quot; is invalid: %2</source>

@@ -15,7 +15,7 @@
 namespace Configs {
     namespace {
         const auto kFileName = QStringLiteral("dns_servers.json");
-        const auto kBuiltIn = QStringLiteral(":/neko/dns_servers.json");
+        const auto kBuiltIn = QStringLiteral(":/dns_servers.json");
 
         QList<DnsCatalogEntry> parse(const QByteArray &raw, QString *error) {
             QList<DnsCatalogEntry> entries;
@@ -107,10 +107,24 @@ namespace Configs {
         return true;
     }
 
+    bool PlainDnsBlockedByTunnel() {
+#ifdef Q_OS_WIN
+        const auto &settings = Configs::dataManager->settingsRepo;
+        return settings->spmode_vpn && settings->vpn_strict_route;
+#else
+        return false;
+#endif
+    }
+
     QStringList DnsCandidates(const QString &configured, bool direct) {
+        // Прямой DNS под туннелем живёт не всяким транспортом, и проба этого не
+        // покажет: пока туннеля нет, работает всё. Поэтому заведомо мёртвое не
+        // пробуем вовсе, иначе подбор остановится на самом быстром из них.
+        const bool filter = direct && PlainDnsBlockedByTunnel();
         QStringList candidates;
-        const auto add = [&candidates](const QString &address) {
+        const auto add = [&candidates, filter](const QString &address) {
             if (address.isEmpty()) return;
+            if (filter && !Fsnt::DnsUsableUnderTunnel(address)) return;
             if (candidates.contains(address, Qt::CaseInsensitive)) return;
             candidates << address;
         };

@@ -10,14 +10,17 @@ namespace Fsnt {
             return type == QLatin1String("https") || type == QLatin1String("h3");
         }
 
-        // Литерал адреса, а не имя. Хватает признака «нет ни одной буквы»:
-        // имена без букв не бывают, а QHostAddress тянул бы в разбор строки
-        // зависимость от Qt6::Network.
+        // Литерал адреса, а не имя. Двух признаков хватает: двоеточия в имени
+        // не бывает вовсе, а имени без букв не бывает. QHostAddress тянул бы в
+        // разбор строки зависимость от Qt6::Network.
         bool looksLikeIpLiteral(const QString &host) {
+            if (host.isEmpty()) return false;
+            // Литерал IPv6: буквы в нём как раз есть, hex.
+            if (host.contains(':')) return true;
             for (const auto ch : host) {
                 if (ch.isLetter()) return false;
             }
-            return !host.isEmpty();
+            return true;
         }
 
         DnsAddress invalid(const QString &why) {
@@ -174,5 +177,20 @@ namespace Fsnt {
             }
         }
         return FormatDnsAddress(copy);
+    }
+
+    int DefaultDnsPort(const QString &type) {
+        if (type == QLatin1String("tls") || type == QLatin1String("quic")) return 853;
+        if (type == QLatin1String("https") || type == QLatin1String("h3")) return 443;
+        return 53;
+    }
+
+    bool DnsUsableUnderTunnel(const QString &address) {
+        const auto parsed = ParseDnsAddress(address);
+        if (!parsed.valid) return false;
+        // Системный резолвер — та самая петля, адрес у маршрутизатора — 53-й порт.
+        if (parsed.isLocal() || parsed.isDhcp()) return false;
+        if ((parsed.port > 0 ? parsed.port : DefaultDnsPort(parsed.type)) == 53) return false;
+        return looksLikeIpLiteral(parsed.server);
     }
 } // namespace Fsnt

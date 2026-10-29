@@ -293,7 +293,15 @@ namespace Configs {
             // Переносим только тех, у кого он так и остался нетронутым: свой
             // выбор человека не трогаем.
             if (key == "direct_dns" && str == "https://9.9.9.9/dns-query") {
-                direct_dns = "77.88.8.8";
+                direct_dns = "tls://77.88.8.8";
+                continue;
+            }
+            // А следом умолчание было обычным 53-м портом, и под туннелем он
+            // не работает: strict_route на Windows блокирует 53-й мимо
+            // туннеля, и ядро глушит собственные запросы. Тот же сервер, тот
+            // же Яндекс, только DoT.
+            if (key == "direct_dns" && str == "77.88.8.8") {
+                direct_dns = "tls://77.88.8.8";
                 continue;
             }
             // Pre-1.14 DNS rule strategies: only the v4-only case survives as a filter, the rest were no-ops.

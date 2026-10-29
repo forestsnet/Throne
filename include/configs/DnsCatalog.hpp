@@ -34,5 +34,10 @@ namespace Configs {
     // каталог. Системный резолвер всегда последний: он работает почти всегда,
     // и поставь его раньше — подбор остановится на нём и не доберётся до
     // серверов, которые человек выбрал осознанно.
+    //
+    // Для прямого DNS список отфильтрован: см. Fsnt::DnsUsableUnderTunnel.
     QStringList DnsCandidates(const QString &configured, bool direct);
+
+    // Нужна ли эта фильтрация в текущем режиме: туннель с strict_route.
+    bool PlainDnsBlockedByTunnel();
 } // namespace Configs
