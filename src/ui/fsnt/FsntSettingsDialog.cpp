@@ -26,6 +26,10 @@
 #include "include/database/SettingsRepo.h"
 #include "include/global/Configs.hpp"
 #include "include/sys/AutoRun.hpp"
+#ifdef Q_OS_MACOS
+#include "include/sys/macos/CorePrivilege.h"
+#include "include/sys/macos/MacOS.h"
+#endif
 #include "include/ui/fsnt/FsntControls.h"
 #include "include/ui/fsnt/FsntTheme.hpp"
 #include "include/ui/fsnt/PingProbe.hpp"
@@ -191,6 +195,36 @@ void FsntSettingsDialog::buildConnection(QVBoxLayout *column, QWidget *host) {
             dialog->exec();
         });
     }
+
+#ifdef Q_OS_MACOS
+    // Снять постоянное разрешение надо там же, где его дали. Строка есть
+    // только когда служба стоит: иначе снимать нечего и спрашивать не о чем.
+    if (Sys::MacCorePrivilege::Installed()) {
+        auto *dropPrivilege = card.addAction(tr("Remove the permanent tunnel permission"));
+        auto *dropNote = card.addNote(tr("A system service keeps the core allowed to open the tunnel, so an "
+                                         "update no longer asks for your password. Remove it and the password "
+                                         "is asked again after every update."));
+        connect(dropPrivilege, &QPushButton::clicked, this, [this, dropPrivilege, dropNote] {
+            if (!Fsnt::Confirm(this, tr("Tunnel permission"),
+                               tr("Remove the service that keeps the tunnel permission? Your password will be "
+                                  "asked again after every update."),
+                               tr("Remove"))) {
+                return;
+            }
+            int code = 0;
+            if (Sys::MacCorePrivilege::Remove(Configs::FindCoreRealPath(),
+                                              tr("FSNT Client needs your password to remove the tunnel permission."),
+                                              &code)) {
+                dropPrivilege->hide();
+                dropNote->hide();
+                return;
+            }
+            if (code == kMacAuthCancelled) return;
+            MessageBoxWarning(tr("Tunnel permission"),
+                              tr("The service could not be removed. See the log for details."));
+        });
+    }
+#endif
 }
 
 void FsntSettingsDialog::updateRouteNote() {
@@ -338,9 +372,10 @@ void FsntSettingsDialog::buildDns(QVBoxLayout *column, QWidget *host) {
                                          settings->block_private_relay);
     card.addNote(tr("Apple hides the IP address of Safari behind its own relay, and it does not "
                     "step aside for this client the way it does for others, so pages see Apple's "
-                    "address instead of the country you picked. While this is on, the relay is "
-                    "told it is unavailable and Safari goes through the tunnel like everything "
-                    "else. Apple devices on the same network are affected too."));
+                    "address instead of the country you picked. While connected, the relay is "
+                    "switched off for the network you are on — the same switch as Limit IP Address "
+                    "Tracking in System Settings — and put back when you disconnect. Apple devices "
+                    "on the same network are affected too."));
 }
 
 void FsntSettingsDialog::buildSubscriptions(QVBoxLayout *column, QWidget *host) {

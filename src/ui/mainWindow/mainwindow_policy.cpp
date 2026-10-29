@@ -13,6 +13,9 @@
 #include "include/sys/linux/LinuxCap.h"
 #endif
 #ifdef Q_OS_MACOS
+#include <QThread>
+
+#include "include/sys/macos/CorePrivilege.h"
 #include "include/sys/macos/MacOS.h"
 #endif
 
@@ -198,14 +201,54 @@ bool MainWindow::requestCorePrivileges() {
         return true;
     }
 
-    // Каждое обновление кладёт новый файл ядра, и право на туннель вместе со
-    // старым пропадает. Объясняем это прямо: иначе запрос пароля выглядит как
-    // то, что клиент почему-то спрашивает его снова и снова.
-    if (QMessageBox::warning(GetMessageBoxParent(), software_name,
-                             tr("The tunnel needs the core to run with system privileges. The update "
-                                "replaced the core, so the permission has to be granted once more."),
-                             QMessageBox::Yes | QMessageBox::No) != QMessageBox::Yes) {
-        return false;
+    const auto prompt = tr("FSNT Client needs your password to let the tunnel start.");
+
+    // Служба следит за этим ядром, но setuid ещё не вернулся: обновление
+    // только что подменило файл, и launchd вот-вот отработает подмену. Ждём
+    // его, иначе возобновление сразу после обновления падает на ровном месте.
+    if (Sys::MacCorePrivilege::WatchesCore(corePath)) {
+        for (int waited = 0; waited < 3000 && !Configs::isSetuidSet(corePath.toStdString()); waited += 100) {
+            QThread::msleep(100);
+        }
+        if (Configs::isSetuidSet(corePath.toStdString())) {
+            StopVPNProcess();
+            return true;
+        }
+        MW_show_log(QStringLiteral("[Tun] The tunnel permission service watches the core, but the core is not setuid"));
+    }
+
+    // Почему спрашиваем вообще и почему можно спросить в последний раз. Цена
+    // постоянного разрешения названа здесь же: человек соглашается не на
+    // «меньше окон», а на то, что запись в бандл даёт root.
+    QMessageBox box(QMessageBox::Warning, software_name,
+                    tr("The tunnel needs the core to run with system privileges. Every update installs a new "
+                       "core, and the permission is lost together with the old one, so it has to be granted "
+                       "again — including after an update that installs itself while you are away.\n\n"
+                       "It can be granted for good instead: a system service puts the permission back whenever "
+                       "the core changes, and you are not asked again. While that service is installed, anyone "
+                       "who can write inside this application's folder gains system privileges without a "
+                       "password."),
+                    QMessageBox::NoButton, GetMessageBoxParent());
+    auto *forGood = box.addButton(tr("Grant for good"), QMessageBox::AcceptRole);
+    auto *once = box.addButton(tr("Only this time"), QMessageBox::ActionRole);
+    auto *cancel = box.addButton(QMessageBox::Cancel);
+    box.setDefaultButton(forGood);
+    box.setEscapeButton(cancel);
+    box.exec();
+    const auto *clicked = box.clickedButton();
+    if (clicked != forGood && clicked != once) return false;
+
+    if (clicked == forGood) {
+        int code = 0;
+        if (Sys::MacCorePrivilege::Install(corePath, prompt, &code)) {
+            StopVPNProcess();
+            return true;
+        }
+        if (code == kMacAuthCancelled) return false;
+        // Не тупик: разрешение на один раз всё ещё выдаётся ниже, и туннель
+        // поднимется. О том, что постоянного не вышло, пишем в журнал.
+        MW_show_log(QStringLiteral("Failed to install the tunnel permission service, code %1; granting this time only")
+                        .arg(code));
     }
 
     // Без sudo: do shell script … with administrator privileges уже выполняется
@@ -213,7 +256,7 @@ bool MainWindow::requestCorePrivileges() {
     // может содержать пробелы.
     const auto quoted = QString(corePath).replace('\'', QStringLiteral("'\\''"));
     const auto command = QStringLiteral("chown root:wheel '%1' && chmod u+s '%1'").arg(quoted);
-    const auto ret = Mac_Run_Command(command, tr("FSNT Client needs your password to let the tunnel start."));
+    const auto ret = Mac_Run_Command(command, prompt);
     if (ret != 0) {
         // Отмена в окне пароля — не ошибка, молчим о ней.
         if (ret != kMacAuthCancelled) {
