@@ -336,6 +336,12 @@ DialogBasicSettings::DialogBasicSettings(QWidget *parent)
     D_LOAD_BOOL(show_config_security)
     ui->language->setCurrentIndex(Configs::dataManager->settingsRepo->language);
     ui->ui_mode->setCurrentIndex(Configs::dataManager->settingsRepo->simple_mode ? 0 : 1);
+    // Выбор интерфейса у форка один и живёт в меню «Простой режим»: он
+    // перезапускает программу в фасаде. Этот список управляет складыванием
+    // upstream, которое здесь выключено, и предлагал бы второй «простой» с
+    // другим смыслом.
+    ui->ui_mode->setVisible(false);
+    ui->ui_mode_l->setVisible(false);
     connect(ui->language, &QComboBox::currentIndexChanged, this, [=,this](int index) {
         CACHE.needRestart = true;
     });

@@ -360,7 +360,9 @@ namespace Configs {
                 continue;
             }
         }
-        if (freshInstall) simple_mode = true;
+        // Простой режим форка живёт в ui_mode и включается сам (см.
+        // Fsnt::ResolveInitialUiMode). Складывание upstream здесь только
+        // пряталo бы настройки в расширенном окне у того, кто в него зашёл.
         // Builds before 1.2.1 saved the translated interval label ("5 мин.", "۱۰ دقیقه"), which the core rejects.
         if (!Validation::Duration(ntp_interval).isEmpty()) {
             QString minutes;

@@ -850,6 +850,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         MW_dialog_message(MwMessage::UpdateSettings, {});
     });
     connect(ui->actionAdvanced_Mode, &QAction::triggered, this, [=,this](bool checked) { setSimpleMode(!checked); });
+    // Складывание upstream в форке не действует (UiMode::Simple), а выключатель,
+    // который ничего не меняет, хуже отсутствующего. Палитра команд отбирает
+    // действия по видимости, так что отсюда он исчезает и из неё тоже.
+    ui->actionAdvanced_Mode->setVisible(false);
     applyUiMode();
     connect(ui->checkBox_VPN, &QCheckBox::clicked, this, [=,this](bool checked) { connection()->setTun(checked); });
     connect(ui->checkBox_SystemProxy, &QCheckBox::clicked, this, [=,this](bool checked) { connection()->setSystemProxy(checked); });
