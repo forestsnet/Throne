@@ -1,5 +1,6 @@
 #include "include/configs/DnsAddress.hpp"
 #include "include/configs/DnsCatalog.hpp"
+#include "include/global/ServerAddressPins.hpp"
 #include "include/global/Logger.hpp"
 #include "include/configs/XrayDnsStrip.hpp"
 #include "include/configs/generate.h"
@@ -59,6 +60,7 @@ namespace Configs {
 
             constexpr auto dnsRemote = "dns-remote";
             constexpr auto dnsDirect = "dns-direct";
+            constexpr auto dnsPinned = "dns-pinned";
             constexpr auto dnsLocal = "dns-local";
             constexpr auto dnsFake = "dns-fake";
             constexpr auto dnsTailscale = "dns-tailscale";
@@ -1163,6 +1165,26 @@ namespace Configs {
             directDnsObj["domain_resolver"] = tags::dnsLocal;
             servers.append(directDnsObj);
 
+            // Имена, которые приложение разрешило до туннеля. Транспорт hosts
+            // отдаёт сразу все адреса, поэтому запасные остаются при нас, а имя
+            // в исходящем менять не надо — значит и SNI остаётся прежним.
+            // Всё, чего здесь нет, он отвечает NXDOMAIN, и поэтому его ставят
+            // резолвером только тем узлам, чьё имя тут лежит.
+            if (!ctx.forTest) {
+                const auto pins = ServerAddressPins();
+                if (!pins.isEmpty()) {
+                    QJsonObject predefined;
+                    for (auto pin = pins.cbegin(); pin != pins.cend(); ++pin) {
+                        predefined[pin.key()] = QJsonArray::fromStringList(pin.value());
+                    }
+                    servers.append(QJsonObject{
+                        {"type", "hosts"},
+                        {"tag", tags::dnsPinned},
+                        {"predefined", predefined},
+                    });
+                }
+            }
+
             if (!ctx.forTest && settings.dns_predefined_enable) {
                 QList<PredefinedDNSEntry> predefined;
                 if (!ParsePredefinedDNS(settings.dns_predefined_rules, predefined)) predefined.clear();
@@ -1605,6 +1627,15 @@ namespace Configs {
             return ParseDnsAddress(resolver, &parsed) && parsed.type != "dhcp";
         }
 
+        // Лежит ли адрес этого узла в таблице прибитых. Сравниваем по тому же
+        // имени, которое уедет в ядро полем server.
+        bool serverIsPinned(const Profile &hop) {
+            if (hop.outbound == nullptr) return false;
+            const auto host = hop.outbound->server.trimmed().toLower();
+            if (host.isEmpty()) return false;
+            return ServerAddressPins().contains(host);
+        }
+
         // Without a static config the core fetches the ECH list over DNS first; via dns-remote that dials the same hop.
         void collectEchQueryName(BuildContext &ctx, const Profile &hop) {
             if (!hop.outbound->HasTLS()) return;
@@ -1669,6 +1700,17 @@ namespace Configs {
                 if (!nextTag.isEmpty() && opts.link && !ent->outbound->IsEndpoint() && !object.contains("domain_resolver") &&
                     resolvesHostnamesViaDnsRules(*ents[idx + 1]))
                     object["domain_resolver"] = directDomainResolver();
+                // Своё имя этот узел больше не разрешает: адрес уже добыт, пока
+                // туннеля не было. Резолвер ставим последним, чтобы перебить
+                // directDomainResolver выше, но не трогаем Realm — тот читает с
+                // этого же ключа свои хосты STUN, которых в таблице нет.
+                if (!ctx.forTest && !ent->outbound->IsEndpoint() && serverIsPinned(*ent)) {
+                    const auto *realm = ent->Hysteria();
+                    if (realm == nullptr || !realm->RealmActive()) {
+                        object["domain_resolver"] = QJsonObject{{"server", tags::dnsPinned}};
+                    }
+                }
+
                 if (ent->outbound->IsEndpoint())
                 {
                     ctx.endpoints.append(object);
