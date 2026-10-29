@@ -113,6 +113,7 @@ set(PROJECT_SOURCES
         include/global/OtpPlaceholder.hpp
         src/global/OtpPlaceholder.cpp
         include/global/VpnCredentialOverride.hpp
+        src/global/ServerAddressPins.cpp
         src/global/VpnCredentialOverride.cpp
         include/global/RunningProfiles.hpp
         src/global/RunningProfiles.cpp

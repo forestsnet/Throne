@@ -66,7 +66,7 @@ namespace Configs {
         if (candidates.size() > kMaxProbes) candidates = candidates.mid(0, kMaxProbes);
         if (candidates.isEmpty()) {
             LOG_WARN("direct DNS: nothing left to try");
-            emit Selected({}, true);
+            emit Selected({}, true, {});
             return;
         }
 
@@ -75,26 +75,68 @@ namespace Configs {
             probe->deleteLater();
             LOG_INFO("direct DNS round: " + roundSummary(all));
 
+            // Два разных вопроса к одному кругу. Первый: чем резолвить дальше —
+            // тут годится только то, что переживёт туннель. Второй: какой адрес
+            // у нашего сервера — тут годится ответ любого, кто ответил, потому
+            // что отвечали все до того, как туннель что-либо закрыл.
+            const bool mustSurvive = PlainDnsBlockedByTunnel();
+            const auto survives = [mustSurvive](const DnsProbeResult &result) {
+                return result.ok && (!mustSurvive || Fsnt::DnsUsableUnderTunnel(result.address));
+            };
+
+            QString chosen;
+            int chosenLatency = -1;
             for (const auto &result : all) {
-                if (result.address != m_configured) continue;
-                if (!result.ok) break;
-                LOG_INFO(QString("direct DNS %1 answered in %2 ms")
-                             .arg(m_configured)
-                             .arg(result.latencyMs));
-                emit Selected(m_configured, false);
-                return;
+                if (result.address == m_configured && survives(result)) {
+                    chosen = m_configured;
+                    chosenLatency = result.latencyMs;
+                    break;
+                }
+            }
+            if (chosen.isEmpty()) {
+                for (const auto &result : all) {
+                    if (!survives(result)) continue;
+                    if (chosenLatency >= 0 && result.latencyMs >= chosenLatency) continue;
+                    chosen = result.address;
+                    chosenLatency = result.latencyMs;
+                }
             }
 
-            const auto best = DnsProbe::Fastest(all);
-            if (best.isEmpty()) {
-                LOG_WARN("no direct DNS answered at all");
-                emit Selected({}, true);
+            m_resolved.clear();
+            for (const auto &result : all) {
+                if (result.address == chosen && !result.addresses.isEmpty()) {
+                    m_resolved = result.addresses;
+                    break;
+                }
+            }
+            if (m_resolved.isEmpty()) {
+                int best = -1;
+                for (const auto &result : all) {
+                    if (!result.ok || result.addresses.isEmpty()) continue;
+                    if (best >= 0 && result.latencyMs >= best) continue;
+                    best = result.latencyMs;
+                    m_resolved = result.addresses;
+                }
+            }
+            if (!m_resolved.isEmpty() && !m_probeName.isEmpty()) {
+                LOG_INFO(QString("%1 resolved before the tunnel: %2")
+                             .arg(m_probeName, m_resolved.join(", ")));
+            }
+
+            if (chosen.isEmpty()) {
+                LOG_WARN("no usable direct DNS answered");
+                emit Selected({}, true, m_resolved);
+                return;
+            }
+            if (chosen == m_configured) {
+                LOG_INFO(QString("direct DNS %1 answered in %2 ms").arg(m_configured).arg(chosenLatency));
+                emit Selected(m_configured, false, m_resolved);
                 return;
             }
             LOG_INFO(QString("direct DNS: %1 instead of %2 (%3)")
-                         .arg(best, m_configured.isEmpty() ? QStringLiteral("none") : m_configured,
+                         .arg(chosen, m_configured.isEmpty() ? QStringLiteral("none") : m_configured,
                               whyNotConfigured(all)));
-            emit Selected(best, true);
+            emit Selected(chosen, true, m_resolved);
         });
         probe->Start(candidates, m_timeoutMs, m_probeName);
     }

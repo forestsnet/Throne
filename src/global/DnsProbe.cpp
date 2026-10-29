@@ -74,6 +74,58 @@ namespace Configs {
         return true;
     }
 
+    QStringList ParseDnsAnswers(const QByteArray &payload) {
+        QStringList addresses;
+        if (payload.size() < 12) return addresses;
+        const auto byteAt = [&payload](int index) { return static_cast<quint8>(payload.at(index)); };
+        const int questions = (byteAt(4) << 8) | byteAt(5);
+        const int answers = (byteAt(6) << 8) | byteAt(7);
+
+        // Имя в записи либо кончается нулём, либо обрывается указателем на уже
+        // встреченное имя — сжатие. Нам читать имя не нужно, нужно только мимо
+        // него пройти, поэтому хватает двух этих случаев.
+        const auto skipName = [&](int offset) {
+            while (offset < payload.size()) {
+                const auto length = byteAt(offset);
+                if ((length & 0xc0) == 0xc0) return offset + 2;
+                if (length == 0) return offset + 1;
+                offset += length + 1;
+            }
+            return -1;
+        };
+
+        int offset = 12;
+        for (int i = 0; i < questions; ++i) {
+            offset = skipName(offset);
+            if (offset < 0 || offset + 4 > payload.size()) return addresses;
+            offset += 4; // тип и класс вопроса
+        }
+
+        for (int i = 0; i < answers; ++i) {
+            offset = skipName(offset);
+            if (offset < 0 || offset + 10 > payload.size()) return addresses;
+            const int type = (byteAt(offset) << 8) | byteAt(offset + 1);
+            const int dataLength = (byteAt(offset + 8) << 8) | byteAt(offset + 9);
+            offset += 10;
+            if (dataLength < 0 || offset + dataLength > payload.size()) return addresses;
+            if (type == 1 && dataLength == 4) {
+                addresses << QString("%1.%2.%3.%4")
+                                 .arg(byteAt(offset))
+                                 .arg(byteAt(offset + 1))
+                                 .arg(byteAt(offset + 2))
+                                 .arg(byteAt(offset + 3));
+            } else if (type == 28 && dataLength == 16) {
+                QStringList groups;
+                for (int part = 0; part < 16; part += 2) {
+                    groups << QString("%1").arg((byteAt(offset + part) << 8) | byteAt(offset + part + 1), 0, 16);
+                }
+                addresses << groups.join(':');
+            }
+            offset += dataLength;
+        }
+        return addresses;
+    }
+
     DnsProbe::DnsProbe(QObject *parent) : QObject(parent) {}
 
     QString DnsProbe::Fastest(const QList<DnsProbeResult> &results) {
@@ -105,13 +157,15 @@ namespace Configs {
         for (int i = 0; i < addresses.size(); ++i) probeOne(i, addresses.at(i), timeoutMs);
     }
 
-    void DnsProbe::complete(int index, bool ok, int latencyMs, const QString &error) {
+    void DnsProbe::complete(int index, bool ok, int latencyMs, const QString &error,
+                            const QStringList &addresses) {
         if (index < 0 || index >= m_results.size()) return;
         auto &slot = m_results[index];
         if (slot.latencyMs != -1 || slot.ok || !slot.error.isEmpty()) return; // уже закрыт
         slot.ok = ok;
         slot.latencyMs = ok ? latencyMs : -1;
         slot.error = ok ? QString() : (error.isEmpty() ? QStringLiteral("нет ответа") : error);
+        slot.addresses = addresses;
         if (--m_pending == 0) finishLater();
     }
 
@@ -152,12 +206,13 @@ namespace Configs {
         state->clock.start();
 
         const auto elapsed = [state] { return static_cast<int>(state->clock.elapsed()); };
-        const auto done = [this, index, timer, state](bool ok, int ms, const QString &err) {
+        const auto done = [this, index, timer, state](bool ok, int ms, const QString &err,
+                                                      const QStringList &addresses = {}) {
             if (state->finished) return;
             state->finished = true;
             timer->stop();
             timer->deleteLater();
-            complete(index, ok, ms, err);
+            complete(index, ok, ms, err, addresses);
         };
 
         if (parsed.isLocal()) {
@@ -167,7 +222,9 @@ namespace Configs {
                     done(false, -1, info.errorString());
                     return;
                 }
-                done(true, elapsed(), {});
+                QStringList addresses;
+                for (const auto &address : info.addresses()) addresses << address.toString();
+                done(true, elapsed(), {}, addresses);
             });
             connect(timer, &QTimer::timeout, this, [done] { done(false, -1, QStringLiteral("превышено ожидание")); });
             timer->start();
@@ -191,7 +248,7 @@ namespace Configs {
                 QString error;
                 const bool ok = IsDnsResponseFor(payload, id, &error);
                 socket->deleteLater();
-                done(ok, elapsed(), error);
+                done(ok, elapsed(), error, ok ? ParseDnsAnswers(payload) : QStringList{});
             });
             socket->connectToHost(parsed.server, port);
             socket->write(query);
@@ -228,7 +285,7 @@ namespace Configs {
                 manager->deleteLater();
                 QString error;
                 const bool ok = IsDnsResponseFor(payload, id, &error);
-                done(ok, elapsed(), error);
+                done(ok, elapsed(), error, ok ? ParseDnsAnswers(payload) : QStringList{});
             });
             return;
         }
@@ -251,10 +308,11 @@ namespace Configs {
             if (buffer->size() < 2) return;
             const int expected = (static_cast<quint8>(buffer->at(0)) << 8) | static_cast<quint8>(buffer->at(1));
             if (buffer->size() < expected + 2) return;
+            const auto message = buffer->mid(2, expected);
             QString error;
-            const bool ok = IsDnsResponseFor(buffer->mid(2, expected), id, &error);
+            const bool ok = IsDnsResponseFor(message, id, &error);
             socket->deleteLater();
-            done(ok, elapsed(), error);
+            done(ok, elapsed(), error, ok ? ParseDnsAnswers(message) : QStringList{});
         });
         connect(socket, &QAbstractSocket::errorOccurred, this, [socket, done](QAbstractSocket::SocketError) {
             const auto text = socket->errorString();

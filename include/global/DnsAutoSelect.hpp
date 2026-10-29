@@ -30,9 +30,13 @@ namespace Configs {
         void Start(const QString &configured, int timeoutMs = 2500, const QString &probeName = {});
 
     signals:
-        // address пуст, если не ответил никто: подключаться в этом случае нельзя.
+        // address пуст, если не ответил никто из тех, кто переживёт туннель:
+        // подключаться в этом случае нельзя.
         // fellBack — выбрали не то, что задано, и об этом стоит сказать.
-        void Selected(const QString &address, bool fellBack);
+        // serverAddresses — чем ответили по имени сервера, к которому идём.
+        // Их прибивают в конфиг, и тогда под туннелем это имя разрешать уже не
+        // надо. Пусты, если имя не задавали или не ответил вообще никто.
+        void Selected(const QString &address, bool fellBack, const QStringList &serverAddresses);
 
     private:
         // Для журнала: почему заданный сервер не подошёл.
@@ -41,5 +45,6 @@ namespace Configs {
         QString m_configured;
         QString m_probeName;
         int m_timeoutMs = 2500;
+        QStringList m_resolved;
     };
 } // namespace Configs

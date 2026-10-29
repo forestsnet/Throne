@@ -1,5 +1,7 @@
 #include "include/engine/connection/ConnectionManager.h"
 
+#include "include/global/ServerAddressPins.hpp"
+
 #include "include/configs/sub/ProviderPolicy.hpp"
 #include "include/global/SystemStateJournal.hpp"
 
@@ -368,6 +370,9 @@ namespace Engine {
         // иметь возможность выйти, не оставаясь в невосстановимом состоянии.
         // До ранних выходов ниже: снимать их надо и когда останавливать уже нечего.
         Subscription::ClearActiveProviderPolicy();
+        // Разрешённый адрес сервера живёт ровно одну сессию: подписка переезжает,
+        // и прибитый вчера адрес сегодня соврёт.
+        Configs::ClearServerAddressPins();
 
         const bool crash = options.crash;
         const bool block = options.block;

@@ -19,6 +19,7 @@
 #include "include/configs/sub/ProviderPolicy.hpp"
 #include "include/database/GroupsRepo.h"
 #include "include/global/DnsAutoSelect.hpp"
+#include "include/global/ServerAddressPins.hpp"
 #include "include/global/SystemStateJournal.hpp"
 #include "include/sys/SystemProxy.hpp"
 
@@ -175,9 +176,15 @@ namespace Engine {
         StartRequest next = request;
         next.dnsChecked = true;
         connect(select, &Configs::DnsAutoSelect::Selected, this,
-                [this, next, select](const QString &address, bool fellBack) {
+                [this, next, select, serverName](const QString &address, bool fellBack,
+                                                 const QStringList &serverAddresses) {
                     select->deleteLater();
                     auto &s = Configs::dataManager->settingsRepo;
+
+                    // Имя сервера уже разрешено, пока туннеля не было. Отдаём
+                    // адрес ядру готовым, иначе оно пойдёт спрашивать его снова
+                    // и снова, уже из-под туннеля, где спрашивать нечем.
+                    Configs::SetServerAddressPin(serverName, serverAddresses);
 
                     if (address.isEmpty()) {
                         const auto text = MainWindowTr::tr(

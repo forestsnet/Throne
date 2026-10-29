@@ -6,6 +6,7 @@ using Configs::BuildDnsQuery;
 using Configs::DnsProbe;
 using Configs::DnsProbeResult;
 using Configs::IsDnsResponseFor;
+using Configs::ParseDnsAnswers;
 
 class DnsProbeTest : public QObject {
     Q_OBJECT
@@ -17,6 +18,48 @@ class DnsProbeTest : public QObject {
         out.append(static_cast<char>(flagsHigh));
         out.append(static_cast<char>(flagsLow));
         out.append(8, '\0');
+        return out;
+    }
+
+    // Ответ с вопросом и записями: имя в записи сжато указателем на вопрос,
+    // как его и пишут настоящие резолверы.
+    static QByteArray answerFor(quint16 id, const QList<QByteArray> &records) {
+        QByteArray out;
+        out.append(static_cast<char>(id >> 8));
+        out.append(static_cast<char>(id & 0xff));
+        out.append('\x81').append('\x80');          // ответ, рекурсия
+        out.append('\0').append('\x01');            // один вопрос
+        out.append('\0').append(static_cast<char>(records.size()));
+        out.append('\0').append('\0');
+        out.append('\0').append('\0');
+        out.append(QByteArray("\7example\3com", 12));
+        out.append('\0');
+        out.append('\0').append('\x01');            // тип A
+        out.append('\0').append('\x01');            // класс IN
+        for (const auto &record : records) out.append(record);
+        return out;
+    }
+
+    static QByteArray rrA(quint8 a, quint8 b, quint8 c, quint8 d) {
+        QByteArray out;
+        out.append('\xc0').append('\x0c');          // указатель на имя из вопроса
+        out.append('\0').append('\x01');            // тип A
+        out.append('\0').append('\x01');            // класс IN
+        out.append(4, '\0');                        // ttl
+        out.append('\0').append('\x04');            // длина данных
+        out.append(static_cast<char>(a)).append(static_cast<char>(b));
+        out.append(static_cast<char>(c)).append(static_cast<char>(d));
+        return out;
+    }
+
+    static QByteArray rrCname() {
+        QByteArray out;
+        out.append('\xc0').append('\x0c');
+        out.append('\0').append('\x05');            // CNAME
+        out.append('\0').append('\x01');
+        out.append(4, '\0');
+        out.append('\0').append('\x02');            // длина данных
+        out.append('\xc0').append('\x0c');
         return out;
     }
 
@@ -104,6 +147,32 @@ private slots:
         QCOMPARE(results.size(), 1);
         QVERIFY(!results.first().ok);
         QVERIFY(!results.first().error.isEmpty());
+    }
+    // Ответ на пробу — это и есть адрес нашего сервера. Разбирать его отдельно
+    // не нужно: имя уже спрошено, и второй раз, под туннелем, спросить может
+    // быть негде.
+    void answersAreParsed() {
+        const auto payload = answerFor(0x1234, {rrA(207, 89, 20, 34), rrA(207, 89, 20, 53)});
+        QVERIFY(IsDnsResponseFor(payload, 0x1234, nullptr));
+        QCOMPARE(ParseDnsAnswers(payload), QStringList({"207.89.20.34", "207.89.20.53"}));
+    }
+
+    // Резолверы охотно присылают CNAME перед адресом. Пропускаем по длине
+    // данных, а не на глаз, иначе разбор съедет и выдаст мусор за адрес.
+    void recordsOfOtherTypesAreSkipped() {
+        const auto payload = answerFor(0x4321, {rrCname(), rrA(1, 2, 3, 4)});
+        QCOMPARE(ParseDnsAnswers(payload), QStringList({"1.2.3.4"}));
+    }
+
+    // Обрезанный или чужой ответ не должен ни падать, ни выдумывать адреса.
+    void brokenAnswersGiveNothing() {
+        QVERIFY(ParseDnsAnswers({}).isEmpty());
+        QVERIFY(ParseDnsAnswers(QByteArray(8, '\0')).isEmpty());
+        auto truncated = answerFor(0x1111, {rrA(8, 8, 8, 8)});
+        truncated.chop(3);
+        QVERIFY(ParseDnsAnswers(truncated).isEmpty());
+        const auto noAnswers = answerFor(0x2222, {});
+        QVERIFY(ParseDnsAnswers(noAnswers).isEmpty());
     }
 };
 

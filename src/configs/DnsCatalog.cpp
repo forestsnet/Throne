@@ -117,14 +117,16 @@ namespace Configs {
     }
 
     QStringList DnsCandidates(const QString &configured, bool direct) {
-        // Прямой DNS под туннелем живёт не всяким транспортом, и проба этого не
-        // покажет: пока туннеля нет, работает всё. Поэтому заведомо мёртвое не
-        // пробуем вовсе, иначе подбор остановится на самом быстром из них.
-        const bool filter = direct && PlainDnsBlockedByTunnel();
+        // Отсеивать негодные под туннелем здесь нельзя, хотя соблазн есть.
+        // Круг спрашивает имя нашего сервера, и ответ на него нужен сам по
+        // себе: его прибивают в конфиг, и тогда под туннелем это имя разрешать
+        // уже не придётся. До туннеля отвечает и обычный 53-й порт, и
+        // системный резолвер — выбрасывать их значит остаться без ответа там,
+        // где шифрованного DNS в сети нет. Кто переживёт туннель, решает тот,
+        // кто выбирает, а не тот, кто составляет список.
         QStringList candidates;
-        const auto add = [&candidates, filter](const QString &address) {
+        const auto add = [&candidates](const QString &address) {
             if (address.isEmpty()) return;
-            if (filter && !Fsnt::DnsUsableUnderTunnel(address)) return;
             if (candidates.contains(address, Qt::CaseInsensitive)) return;
             candidates << address;
         };

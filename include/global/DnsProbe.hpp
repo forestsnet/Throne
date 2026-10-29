@@ -12,6 +12,9 @@ namespace Configs {
         bool ok = false;
         int latencyMs = -1;
         QString error;
+        // Что он ответил по проверяемому имени. Это и есть адрес нашего же
+        // сервера: разрешать его второй раз, уже под туннелем, незачем.
+        QStringList addresses;
     };
 
     // Настоящий запрос к DNS-серверу, а не проверка «порт открыт». Открытый порт
@@ -48,7 +51,8 @@ namespace Configs {
 
         QString m_probeName;
         void finishLater();
-        void complete(int index, bool ok, int latencyMs, const QString &error);
+        void complete(int index, bool ok, int latencyMs, const QString &error,
+                      const QStringList &addresses = {});
 
         QList<DnsProbeResult> m_results;
         int m_pending = 0;
@@ -58,6 +62,10 @@ namespace Configs {
     // сетевую часть в тесте не погонять, а разбор ответа ошибается молча.
     QByteArray BuildDnsQuery(const QString &name, quint16 id);
     bool IsDnsResponseFor(const QByteArray &payload, quint16 id, QString *error);
+
+    // Адреса из секции ответов. Пустой список — законный ответ: имя может не
+    // иметь записей нужного типа, и сервер при этом жив.
+    QStringList ParseDnsAnswers(const QByteArray &payload);
 } // namespace Configs
 
 Q_DECLARE_METATYPE(Configs::DnsProbeResult)
