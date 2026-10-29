@@ -13,8 +13,6 @@
 #include "include/sys/linux/LinuxCap.h"
 #endif
 #ifdef Q_OS_MACOS
-#include <QThread>
-
 #include "include/sys/macos/CorePrivilege.h"
 #include "include/sys/macos/MacOS.h"
 #endif
@@ -204,17 +202,15 @@ bool MainWindow::requestCorePrivileges() {
     const auto prompt = tr("FSNT Client needs your password to let the tunnel start.");
 
     // Служба следит за этим ядром, но setuid ещё не вернулся: обновление
-    // только что подменило файл, и launchd вот-вот отработает подмену. Ждём
-    // его, иначе возобновление сразу после обновления падает на ровном месте.
+    // только что подменило файл. Будим службу и ждём её, иначе возобновление
+    // сразу после обновления падает на ровном месте, и человек получает запрос
+    // пароля там, где обещано его не спрашивать.
     if (Sys::MacCorePrivilege::WatchesCore(corePath)) {
-        for (int waited = 0; waited < 3000 && !Configs::isSetuidSet(corePath.toStdString()); waited += 100) {
-            QThread::msleep(100);
-        }
-        if (Configs::isSetuidSet(corePath.toStdString())) {
+        if (Sys::MacCorePrivilege::Reapply(corePath, 10000)) {
             StopVPNProcess();
             return true;
         }
-        MW_show_log(QStringLiteral("[Tun] The tunnel permission service watches the core, but the core is not setuid"));
+        MW_show_log(QStringLiteral("[Tun] The tunnel permission service watches the core, but the core did not become setuid"));
     }
 
     // Почему спрашиваем вообще и почему можно спросить в последний раз. Цена

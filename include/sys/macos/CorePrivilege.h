@@ -35,4 +35,11 @@ namespace Sys::MacCorePrivilege {
 
     // Снимает службу и забирает setuid у ядра.
     bool Remove(const QString &corePath, const QString &prompt, int *code = nullptr);
+
+    // Служба стоит, а setuid нет: обновление только что подменило файл.
+    // Будит работу и ждёт её до timeoutMs. Ждать приходится потому, что
+    // своего способа запустить работу немедленно у нас нет: launchctl
+    // kickstart в системном домене требует root, а вся затея ровно в том,
+    // чтобы root больше не спрашивать.
+    bool Reapply(const QString &corePath, int timeoutMs);
 } // namespace Sys::MacCorePrivilege
