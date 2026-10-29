@@ -608,6 +608,7 @@ namespace Configs {
         QMutexLocker locker(&mutex);
         identityMap[newId] = std::weak_ptr<RouteProfile>(routeProfile);
         saveToDatabase(routeProfile.get(), routeProfile->id);
+        ++revision;
         return true;
     }
 
@@ -639,6 +640,7 @@ namespace Configs {
         QMutexLocker locker(&mutex);
         identityMap.erase(id);
         db.exec("DELETE FROM route_profiles WHERE id = ?", id);
+        ++revision;
     }
 
     void RoutesRepo::UpdateRouteProfiles(const QList<std::shared_ptr<RouteProfile>>& routeProfiles) {
@@ -672,6 +674,7 @@ namespace Configs {
         if (!toDelete.empty()) {
             db.execDeleteByIdIn("route_profiles", "id", toDelete);
         }
+        ++revision;
     }
 
     QList<int> RoutesRepo::GetAllRouteProfileIds() const {
@@ -753,6 +756,7 @@ namespace Configs {
         QMutexLocker locker(&mutex);
         saveToDatabase(routeProfile.get(), routeProfile->id);
         identityMap[routeProfile->id] = std::weak_ptr<RouteProfile>(routeProfile);
+        ++revision;
         
         return true;
     }

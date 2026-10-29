@@ -93,5 +93,8 @@ namespace Engine {
         void stopFinished(int profileId);
 
         void connectionStateChanged(Engine::ConnectionState state);
+
+        // Main thread. Hints: a topic may be reported without a visible change.
+        void changed(Engine::ChangeTopics topics);
     };
 } // namespace Engine

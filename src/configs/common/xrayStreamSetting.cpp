@@ -11,8 +11,10 @@
 #include "include/global/Utils.hpp"
 
 #include <algorithm>
+#include <array>
 #include <climits>
 #include <cmath>
+#include <cstdint>
 #include <utility>
 
 namespace Configs {
@@ -29,6 +31,23 @@ namespace Configs {
             to = Validation::ToInt(dash < 0 ? t : t.mid(dash + 1)).value_or(0);
             if (from > to) std::swap(from, to);
             return true;
+        }
+
+        using XDriveTuning = std::array<std::pair<QString, qint64 xrayXDrive::*>, 8>;
+
+        const XDriveTuning& xdriveTuning()
+        {
+            static const XDriveTuning keys = {{
+                {QStringLiteral("segmentBytes"), &xrayXDrive::segmentBytes},
+                {QStringLiteral("flushIntervalMs"), &xrayXDrive::flushIntervalMs},
+                {QStringLiteral("pollIntervalMs"), &xrayXDrive::pollIntervalMs},
+                {QStringLiteral("maxPollIntervalMs"), &xrayXDrive::maxPollIntervalMs},
+                {QStringLiteral("sessionTtlSeconds"), &xrayXDrive::sessionTtlSeconds},
+                {QStringLiteral("concurrency"), &xrayXDrive::concurrency},
+                {QStringLiteral("eagerWindowMs"), &xrayXDrive::eagerWindowMs},
+                {QStringLiteral("holeTimeoutMs"), &xrayXDrive::holeTimeoutMs},
+            }};
+            return keys;
         }
 
         // Xray transport/internet/tls/tls.go: PresetFingerprints, ModernFingerprints and OtherFingerprints, matched lower-cased.
@@ -640,6 +659,22 @@ namespace Configs {
         return xrayStreamEditNamed(stream, QStringLiteral("sockopt"), xrayStreamStripDialerKeys);
     }
 
+    void UseXraySystemCA(QJsonObject& outbound)
+    {
+        // Xray reads tlsSettings only while security is tls.
+        const auto apply = [](const QList<XrayStreamNode>& streams) {
+            if (XrayLower(xrayStreamLast(streams, QStringLiteral("security"), false).toString()) != "tls") return;
+            xrayStreamEditLive(streams, QStringLiteral("tlsSettings"), true, [](const QList<XrayStreamNode>& tls) {
+                if (!xrayStreamLast(tls, QStringLiteral("useSystemCA"), false).isUndefined()) return;
+                tls.last().object->insert(QStringLiteral("useSystemCA"), true);
+            });
+        };
+        xrayStreamEditLive(xrayStreamRoot(outbound), QStringLiteral("streamSettings"), false, [&](const QList<XrayStreamNode>& streams) {
+            apply(streams);
+            xrayStreamEditDownloadLeg(streams, apply);
+        });
+    }
+
     bool xrayTLS::ParseFromLink(const QString &link) {
         auto url = QUrl(link);
         if (!url.isValid()) return false;
@@ -675,6 +710,7 @@ namespace Configs {
         }
         if (object.contains("cipherSuites")) cipherSuites = object["cipherSuites"].toString();
         if (object.contains("echConfigList")) echConfigList = object["echConfigList"].toString();
+        if (object.contains("useSystemCA")) useSystemCA = object["useSystemCA"].toBool();
         return true;
     }
 
@@ -723,6 +759,7 @@ namespace Configs {
         if (!fingerprint.isEmpty()) object["fingerprint"] = fingerprint;
         if (!cipherSuites.isEmpty()) object["cipherSuites"] = cipherSuites;
         if (!echConfigList.isEmpty()) object["echConfigList"] = echConfigList;
+        if (useSystemCA) object["useSystemCA"] = true;
         return object;
     }
 
@@ -812,7 +849,7 @@ namespace Configs {
         auto obj = ExportToJson();
         if (fingerprint.isEmpty() && !Configs::dataManager->settingsRepo->utlsFingerprint.isEmpty()) obj["fingerprint"] = Configs::dataManager->settingsRepo->utlsFingerprint;
         // REALITY needs a uTLS hello and fails on "unsafe"; Xray's own default (chrome) takes over.
-        if (obj.value("fingerprint").toString() == tlsUnsafeFingerprint) obj.remove("fingerprint");
+        if (obj.value("fingerprint").toString().toLower() == tlsUnsafeFingerprint) obj.remove("fingerprint");
         return {obj, ""};
     }
 
@@ -1171,6 +1208,51 @@ namespace Configs {
         return {ExportToJson(), ""};
     }
 
+    bool xrayXDrive::ParseFromLink(const QString &) {
+        return false;
+    }
+
+    bool xrayXDrive::ParseFromJson(const QJsonObject &object) {
+        if (object.isEmpty()) return false;
+        if (object.contains("service")) {
+            service = object["service"].toString();
+            if (service == QLatin1String("Google Drive")) service = QStringLiteral("google-drive");
+        }
+        if (object.contains("remoteFolder")) remoteFolder = object["remoteFolder"].toString();
+        if (object.contains("secrets")) secrets = JsonStringList(object["secrets"], "xdriveSettings.secrets");
+        if (object["template"].isObject()) templateSpec = object["template"].toObject();
+        for (const auto& [key, field] : xdriveTuning()) {
+            if (object.contains(key)) this->*field = object[key].toInteger();
+        }
+        if (object["xmux"].isObject()) xmux = object["xmux"].toObject();
+        return true;
+    }
+
+    bool xrayXDrive::ParseFromClash(const clash::Proxies&) {
+        return false;
+    }
+
+    QString xrayXDrive::ExportToLink() {
+        return {};
+    }
+
+    QJsonObject xrayXDrive::ExportToJson() {
+        QJsonObject obj;
+        obj["service"] = service;
+        if (!remoteFolder.isEmpty()) obj["remoteFolder"] = remoteFolder;
+        if (!secrets.isEmpty()) obj["secrets"] = QListStr2QJsonArray(secrets);
+        if (!templateSpec.isEmpty()) obj["template"] = templateSpec;
+        for (const auto& [key, field] : xdriveTuning()) {
+            if (this->*field != 0) obj[key] = this->*field;
+        }
+        if (!xmux.isEmpty()) obj["xmux"] = xmux;
+        return obj;
+    }
+
+    BuildResult xrayXDrive::Build() {
+        return {ExportToJson(), ""};
+    }
+
     bool xrayStreamSetting::ParseFromLink(const QString &link) {
         auto url = QUrl(link);
         if (!url.isValid()) return false;
@@ -1195,6 +1277,10 @@ namespace Configs {
         if (!Configs::XrayNetworks.contains(network)) {
             // A share link has no lossless fallback, unlike an Xray JSON outbound, which is then kept verbatim.
             ParseDiag::Error("type", Checks::XrayNetwork(network), network);
+            return false;
+        }
+        if (network == "xdrive") {
+            ParseDiag::Error("type", QCoreApplication::translate("Validation", "XDRIVE has no share-link format. Import the server's JSON configuration instead."), network);
             return false;
         }
         if (network == "raw" && query.queryItemValue("headerType") == "http") {
@@ -1250,6 +1336,11 @@ namespace Configs {
         if (network == "ws" && object["wsSettings"].isObject()) ws->ParseFromJson(object["wsSettings"].toObject());
         if (network == "httpupgrade" && object["httpupgradeSettings"].isObject()) httpupgrade->ParseFromJson(object["httpupgradeSettings"].toObject());
         if (network == "grpc" && object["grpcSettings"].isObject()) grpc->ParseFromJson(object["grpcSettings"].toObject());
+        if (network == "xdrive") {
+            if (object["xdriveSettings"].isObject()) xdrive->ParseFromJson(object["xdriveSettings"].toObject());
+            if (object.contains("address")) xdrive->frontAddress = object["address"].toString();
+            if (object.contains("port")) xdrive->frontPort = object["port"].toInt();
+        }
         return true;
     }
 
@@ -1318,6 +1409,11 @@ namespace Configs {
         if (network == "ws") object["wsSettings"] = ws->ExportToJson();
         if (network == "httpupgrade") object["httpupgradeSettings"] = httpupgrade->ExportToJson();
         if (network == "grpc") object["grpcSettings"] = grpc->ExportToJson();
+        if (network == "xdrive") {
+            object["xdriveSettings"] = xdrive->ExportToJson();
+            if (!xdrive->frontAddress.isEmpty()) object["address"] = toAceHost(xdrive->frontAddress);
+            if (xdrive->frontPort > 0) object["port"] = xdrive->frontPort;
+        }
         return object;
     }
 
@@ -1334,6 +1430,11 @@ namespace Configs {
             if (!TLS->fingerprint.isEmpty()) object["fingerprint"] = TLS->fingerprint;
             if (!TLS->echConfigList.isEmpty())
                 object["ech"] = TLS->echConfigList.contains("://") ? TLS->echConfigList : QStringLiteral("static");
+        }
+        // The VLESS address is nominal on XDRIVE; the storage is what tells two profiles apart.
+        if (network == "xdrive") {
+            object["service"] = xdrive->service;
+            if (!xdrive->remoteFolder.isEmpty()) object["folder"] = xdrive->remoteFolder;
         }
         return object;
     }
@@ -1362,7 +1463,10 @@ namespace Configs {
 
     BuildResult xrayStreamSetting::Build() {
         // Default-NIC binding and domain resolution are wired on at instance creation (ThroneWiring), not here.
-        return {ExportToJson(), ""};
+        auto object = ExportToJson();
+        if (security == "tls") object["tlsSettings"] = TLS->Build().object;
+        else if (security == "reality") object["realitySettings"] = reality->Build().object;
+        return {object, ""};
     }
 
     namespace Checks {
@@ -1370,7 +1474,7 @@ namespace Configs {
         {
             const auto t = network.trimmed();
             if (t.isEmpty() || XrayNetworks.contains(NormalizeXrayNetwork(t))) return {};
-            return QCoreApplication::translate("Validation", "Throne does not support the Xray transport \"%1\". Use raw, xhttp, ws, httpupgrade or grpc.").arg(t);
+            return QCoreApplication::translate("Validation", "Throne does not support the Xray transport \"%1\". Use raw, xhttp, ws, httpupgrade, grpc or xdrive.").arg(t);
         }
 
         QString XraySecurity(const QString& security)
@@ -1564,6 +1668,50 @@ namespace Configs {
                 xrayStreamEditDownloadLeg(streams, [&](const QList<XrayStreamNode>& leg) { xrayStreamDownloadEndpoint(issues, leg); });
             });
         }
+
+        QString XrayXDriveService(const QString& service)
+        {
+            if (XrayXDriveServices.contains(service.trimmed())) return {};
+            return QCoreApplication::translate("Validation", "Must be google-drive, template or local.");
+        }
+
+        QString XrayXDriveFolder(const QString& service, const QString& folder)
+        {
+            const auto s = service.trimmed();
+            if (!folder.trimmed().isEmpty() || (s != "google-drive" && s != "local")) return {};
+            if (s == "local") return QCoreApplication::translate("Validation", "Enter the directory both ends share.");
+            return QCoreApplication::translate("Validation", "Enter the ID of the Google Drive folder both ends share.");
+        }
+
+        QString XrayXDriveSecrets(const QString& service, const QStringList& secrets)
+        {
+            if (service.trimmed() != "google-drive") return {};
+            // Xray drive.go: exactly three, none empty.
+            if (secrets.size() == 3 && std::none_of(secrets.cbegin(), secrets.cend(), [](const QString& s) { return s.trimmed().isEmpty(); })) return {};
+            return QCoreApplication::translate("Validation", "Google Drive needs the client ID, client secret and refresh token.");
+        }
+
+        QString XrayXDriveTemplate(const QString& service, const QJsonObject& templateSpec)
+        {
+            if (service.trimmed() != "template" || !templateSpec.isEmpty()) return {};
+            return QCoreApplication::translate("Validation", "The template service needs a template describing the storage API.");
+        }
+
+        QString XrayXDriveTuning(const QString& text)
+        {
+            return Validation::Int(text, 0, UINT32_MAX);
+        }
+
+        QString XrayXDriveFrontPort(const QString& port)
+        {
+            return Validation::Port(port, Validation::Empty::Allowed);
+        }
+
+        QString XrayXDriveFrontPortAlone(const QString& address, const QString& port)
+        {
+            if (!address.trimmed().isEmpty() || Validation::ToInt(port.trimmed()).value_or(0) == 0) return {};
+            return QCoreApplication::translate("Validation", "The front port is used only together with a front address.");
+        }
     }
 
     void xrayStreamSetting::Validate(Validation::Issues& issues, const QString& serverAddress)
@@ -1598,6 +1746,22 @@ namespace Configs {
         const auto net = NormalizeXrayNetwork(network);
         if (net == "httpupgrade") {
             xrayStreamAdd(issues, Severity::Error, root + "httpupgradeSettings.headers", Checks::XrayHeadersHost(httpupgrade->headers));
+        }
+        if (net == "xdrive") {
+            const auto& d = *xdrive;
+            const QString key = root + "xdriveSettings.";
+            const auto frontPort = d.frontPort == 0 ? QString() : QString::number(d.frontPort);
+            xrayStreamAdd(issues, Severity::Error, key + "service", Checks::XrayXDriveService(d.service), d.service);
+            xrayStreamAdd(issues, Severity::Error, key + "remoteFolder", Checks::XrayXDriveFolder(d.service, d.remoteFolder));
+            xrayStreamAdd(issues, Severity::Error, key + "secrets", Checks::XrayXDriveSecrets(d.service, d.secrets));
+            xrayStreamAdd(issues, Severity::Error, key + "template", Checks::XrayXDriveTemplate(d.service, d.templateSpec));
+            for (const auto& [name, field] : xdriveTuning()) {
+                const auto value = QString::number(d.*field);
+                xrayStreamAdd(issues, Severity::Error, key + name, Checks::XrayXDriveTuning(value), value);
+            }
+            xrayStreamAdd(issues, Severity::Error, root + "port", Checks::XrayXDriveFrontPort(frontPort), frontPort);
+            xrayStreamAdd(issues, Severity::Warning, root + "port", Checks::XrayXDriveFrontPortAlone(d.frontAddress, frontPort), frontPort);
+            return;
         }
         if (net != "xhttp") return;
         const auto& x = *xhttp;

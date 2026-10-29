@@ -1,4 +1,5 @@
 #include "include/global/Utils.hpp"
+#include "include/global/LogBuffer.hpp"
 #include "include/global/Logger.hpp"
 
 #include "3rdparty/QThreadCreateThread.hpp"
@@ -67,6 +68,7 @@ namespace {
 
 void MW_show_log(const QString &line) {
     try {
+        Logging::BufferUserLog(line);
         if (const auto sink = loadSink(g_userLogSink)) {
             (*sink)(line);
         } else {

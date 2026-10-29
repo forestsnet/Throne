@@ -17,9 +17,10 @@ on:
         required: false
         default: "no"
 env:
-  # thronectl's source for the headless smoke test and the Docker image; the commit must be pushed to throneproj/Throne-api.
+  # thronectl's source for the Linux zips and packages, the Docker image and the tests; the commit must be pushed to
+  # throneproj/Throne-api.
   # A THRONE_API_REF repository variable overrides it.
-  THRONE_API_REF: ${{ vars.THRONE_API_REF || 'cd3e77bd2e60e025924fd7ba287f04aa71c4526c' }}
+  THRONE_API_REF: ${{ vars.THRONE_API_REF || '48b1d5354d121d41897cebc5fd48de01886d5287' }}
 jobs:
   lint:
     permissions:
@@ -30,6 +31,11 @@ jobs:
         uses: actions/checkout@v7.0.1
       - name: Checking the engine/UI boundary
         run: cmake -DROOT=${{ github.workspace }} -P cmake/EngineBoundary.cmake
+      - name: Checking the changelog
+        if: github.event.inputs.publish == 'r' || github.event.inputs.publish == 'p'
+        env:
+          TAG: ${{ github.event.inputs.tag }}
+        run: bash ./script/release_notes.sh "$TAG" > /dev/null
   build-go:
     permissions:
       contents: read
@@ -191,18 +197,21 @@ jobs:
             launcher: ccache
           - platform: macos-latest
             qt_version: "6.12.0"
+            osx_target: "14.4"
             target: x86_64
             dest_suffix: darwin-amd64
             common: darwin-amd64
             launcher: ccache
           - platform: macos-latest
             qt_version: "6.12.0"
+            osx_target: "14.4"
             target: arm64
             dest_suffix: darwin-arm64
             common: darwin-arm64
             launcher: ccache
           - platform: macos-15
             qt_version: "6.4.3"
+            osx_target: "10.15"
             target: x86_64
             dest_suffix: darwinlegacy-amd64
             common: darwinlegacy-amd64
@@ -350,7 +359,7 @@ jobs:
           mkdir build
           cd build
           curl -fLso srslist.h "https://raw.githubusercontent.com/throneproj/routeprofiles/rule-set/srslist.h"
-          cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DNKR_PACKAGE_MACOS=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 -DCMAKE_OSX_ARCHITECTURES=${{ matrix.target }} $LAUNCHER_ARGS ..
+          cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DNKR_PACKAGE_MACOS=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=${{ matrix.osx_target }} -DCMAKE_OSX_ARCHITECTURES=${{ matrix.target }} $LAUNCHER_ARGS ..
           ninja
           cd ..
           ./script/deploy_macos.sh
@@ -403,7 +412,14 @@ jobs:
             runner: ubuntu-latest
             artifacts: "*"
       fail-fast: false
+    env:
+      THRONECTL: ${{ github.workspace }}/throne-api/thronectl
     steps:
+      - name: Checking the Throne-api ref is pushed
+        if: startsWith(matrix.target, 'linux-')
+        run: |
+          git init -q "$RUNNER_TEMP/throne-api-ref"
+          git -C "$RUNNER_TEMP/throne-api-ref" fetch -q --depth=1 https://github.com/throneproj/Throne-api "$THRONE_API_REF" || { echo "::error::Throne-api $THRONE_API_REF is not on GitHub; push it first"; exit 1; }
       - name: Checking out sources
         uses: actions/checkout@v7.0.1
       - name: Download Artifacts
@@ -414,6 +430,29 @@ jobs:
       - name: Install packaging tools
         if: matrix.tools
         run: sudo apt install ${{ matrix.tools }}
+      # thronectl ships in the Linux zip and packages. No -X main.version: release builds set it to a tag, while
+      # THRONE_API_REF is a commit, so Go's VCS stamping names it (the tag when the commit has one), as in the image.
+      - name: Checking out Throne-api
+        if: startsWith(matrix.target, 'linux-')
+        uses: actions/checkout@v7.0.1
+        with:
+          repository: throneproj/Throne-api
+          ref: ${{ env.THRONE_API_REF }}
+          path: throne-api
+          persist-credentials: false
+      - name: Install Golang
+        if: startsWith(matrix.target, 'linux-')
+        uses: actions/setup-go@v7.0.0
+        with:
+          go-version: "1.27.2"
+          cache-dependency-path: |
+            throne-api/go.sum
+      - name: Building thronectl
+        if: startsWith(matrix.target, 'linux-')
+        working-directory: throne-api
+        env:
+          TARGET: ${{ matrix.target }}
+        run: CGO_ENABLED=0 GOOS=linux GOARCH="${TARGET#linux-}" go build -trimpath -ldflags "-s -w" -o "$THRONECTL" ./cmd/thronectl
       - name: Pack
         shell: bash
         run: bash ./script/pack_release.sh ${{ matrix.target }} "${{ github.event.inputs.tag }}"
@@ -528,6 +567,11 @@ jobs:
               echo "::error::Throne --headless --version printed \"$version\", not \"Throne $TAG\""
               exit 1
             fi
+            version=$(thronectl version) || { echo "::error::thronectl version failed in $IMAGE"; exit 1; }
+            echo "$version"
+            for file in /usr/lib/systemd/system/throne-web.service /etc/throne/web.env; do
+              [ -f "$file" ] || { echo "::error::the package installs no $file"; exit 1; }
+            done
           '
   # Builds the headless image for linux/amd64 and linux/arm64 from the packed linux zips and runs both; pushes it to
   # ghcr.io only when publishing: the tag for p and r, plus latest for r.
@@ -570,7 +614,7 @@ jobs:
             mv "$RUNNER_TEMP/zip-$arch/Throne" "$CONTEXT/linux-$arch"
             # The amd64 runner would run a misplaced amd64 binary natively in the arm64 image, so --version cannot tell.
             machine=$([ "$arch" = amd64 ] && echo x86-64 || echo aarch64)
-            for bin in Throne ThroneCore; do
+            for bin in Throne ThroneCore thronectl; do
               case "$(file -b "$CONTEXT/linux-$arch/$bin")" in
               *"$machine"*) ;;
               *)
@@ -635,10 +679,10 @@ jobs:
             docker run --rm --platform "linux/$arch" --entrypoint thronectl "throne-ci:$arch" version
           done
       # amd64 only: under QEMU the arm64 start is too slow for a stable deadline.
-      - name: Starting the amd64 image, connecting thronectl, stopping it
+      - name: Starting the amd64 image, connecting thronectl and the web UI, stopping it
         shell: bash
         run: |
-          docker run -d --name throne-ci --platform linux/amd64 throne-ci:amd64
+          docker run -d --name throne-ci --platform linux/amd64 -e 'THRONE_WEB_LISTEN=*:9096' throne-ci:amd64
           trap 'echo "::group::Container log"; docker logs throne-ci 2>&1; echo "::endgroup::"' EXIT
           deadline=$((SECONDS + 90))
           until docker exec throne-ci /opt/Throne/Throne --health >/dev/null 2>&1; do
@@ -651,6 +695,25 @@ jobs:
           done
           docker exec throne-ci /opt/Throne/Throne --health
           docker exec throne-ci sh -c 'eval "$(/opt/Throne/Throne --print-connection)" && thronectl status'
+          # THRONE_WEB_LISTEN makes the entrypoint run the web UI beside Throne; the image has no curl, so the runner
+          # reaches it on the container's address (HTTPS, self-signed).
+          web="https://$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' throne-ci):9096"
+          deadline=$((SECONDS + 30))
+          until curl -fsk -o /dev/null "$web/auth/state"; do
+            if ((SECONDS >= deadline)); then
+              echo "::error::thronectl web did not answer on $web within 30 s"
+              exit 1
+            fi
+            sleep 1
+          done
+          password=$(docker logs throne-ci 2>&1 | sed -n 's/^thronectl web: created the web UI password: //p' | tail -n1)
+          [ -n "$password" ] || { echo "::error::the container log has no created web UI password"; exit 1; }
+          jar="$RUNNER_TEMP/web-cookies"
+          jq -nc --arg password "$password" '{password: $password}' |
+            curl -fsSk -c "$jar" -H 'Content-Type: application/json' --data @- "$web/auth/login" |
+            jq -e '.authenticated == true' >/dev/null || { echo "::error::POST /auth/login did not sign in"; exit 1; }
+          curl -fsSk -b "$jar" "$web/api/v1/status" |
+            jq -e '.capabilities.headless == true' >/dev/null || { echo "::error::GET /api/v1/status through the web UI failed"; exit 1; }
           docker stop --time 45 throne-ci
           code=$(docker inspect -f '{{.State.ExitCode}}' throne-ci)
           if [ "$code" != 0 ]; then
@@ -779,13 +842,17 @@ jobs:
         run: |
           curl -Lo - https://github.com/tcnksm/ghr/releases/download/v0.17.0/ghr_v0.17.0_linux_amd64.tar.gz | tar xzv
           mv ghr*linux_amd64/ghr .
-      # The changelog is written above the generated download table after publishing.
       - name: Generating release notes
+        if: github.event.inputs.publish == 'r' || github.event.inputs.publish == 'p'
         env:
           TAG: ${{ github.event.inputs.tag }}
           REPO: ${{ github.repository }}
         run: |
-          sed "s|{{TAG}}|$TAG|g; s|{{REPO}}|$REPO|g" .github/release_template.md > "$RUNNER_TEMP/release.md"
+          {
+            bash ./script/release_notes.sh "$TAG"
+            echo
+            sed "s|{{TAG}}|$TAG|g; s|{{REPO}}|$REPO|g" .github/release_template.md
+          } > "$RUNNER_TEMP/release.md"
       - name: PreRelease
         if: github.event.inputs.publish == 'p'
         run: |

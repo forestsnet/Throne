@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"net/netip"
 	"runtime"
 	"strings"
 	"time"
@@ -18,6 +17,7 @@ import (
 	"ThroneCore/internal/xray"
 
 	"github.com/google/shlex"
+	"github.com/sagernet/sing-box/option"
 	E "github.com/sagernet/sing/common/exceptions"
 )
 
@@ -31,7 +31,7 @@ func (s *server) Start(ctx context.Context, in *gen.LoadConfigReq) (out *gen.Err
 		out = &gen.ErrorResp{}
 		if err != nil {
 			out.Error = To(err.Error())
-			setBoxInstance(nil, nil)
+			setBoxInstance(nil, nil, nil)
 			autoRedirectMark.Store(0)
 		}
 	}()
@@ -123,56 +123,53 @@ func (s *server) Start(ctx context.Context, in *gen.LoadConfigReq) (out *gen.Err
 		setXrayFullGates(gates)
 	}
 
-	box, cancel, err := boxmain.Create([]byte(*in.CoreConfig), boxCtx.publish)
-	if err != nil {
+	stopSidecars := func() {
+		sysdns.Release()
 		if extraProcess != nil {
 			extraProcess.Stop()
 			extraProcess = nil
 		}
 		closeXray()
+	}
+
+	// A macOS Tun whose system resolver cannot be pointed at it would start with every lookup scoped past it.
+	systemDNS := runtime.GOOS == "darwin" && in.GetTunIpv4Cidr() != ""
+	if systemDNS {
+		if e := sysdns.Prepare(); e != nil {
+			stopSidecars()
+			err = E.Cause(e, "set up the system DNS")
+			return
+		}
+	}
+
+	var routeRules []option.Rule
+	box, cancel, err := boxmain.Create([]byte(*in.CoreConfig), boxCtx.publish, func(options *option.Options) {
+		if options.Route != nil {
+			routeRules = options.Route.Rules
+		}
+	})
+	if err != nil {
+		stopSidecars()
 		return
 	}
-	setBoxInstance(box, cancel)
+	setBoxInstance(box, cancel, routeRules)
 
-	if runtime.GOOS == "darwin" && in.GetTunIpv4Cidr() != "" {
-		stopAllCores := func() {
+	if systemDNS {
+		if e := sysdns.Apply(box.Network().InterfaceMonitor()); e != nil {
+			sysdns.Release()
 			box.CloseWithTimeout(cancel, time.Second*2, log.Println, true)
-			setBoxInstance(nil, nil)
-			if extraProcess != nil {
-				extraProcess.Stop()
-				extraProcess = nil
-			}
-			closeXray()
-		}
-
-		tunCIDR := in.GetTunIpv4Cidr()
-		tunPrefix, parseErr := netip.ParsePrefix(tunCIDR)
-		if parseErr != nil || !tunPrefix.Addr().Is4() {
-			err = fmt.Errorf("invalid tun_ipv4_cidr %q", tunCIDR)
-			stopAllCores()
+			stopSidecars()
+			err = E.Cause(e, "set the system DNS")
 			return
 		}
-
-		tunDNS := tunPrefix.Addr()
-		if !tunDNS.IsValid() || !tunDNS.Is4() {
-			err = fmt.Errorf("got invalid DNS IP from tun_ipv4_cidr: %s", tunDNS)
-			stopAllCores()
-			return
-		}
-
-		if err := sysdns.SetSystemDNS(tunDNS.String(), box.Network().InterfaceMonitor()); err != nil {
-			log.Println("Failed to set system DNS:", err)
-		}
-
-		needUnsetDNS = true
 
 		if in.GetDisablePrivateRelay() {
-			if err := sysrelay.Disable(box.Network().InterfaceMonitor()); err != nil {
-				log.Println("Failed to switch iCloud Private Relay off:", err)
+			// Ошибка здесь не повод не подключаться: реле выключается ради
+			// честного адреса, а не ради работы туннеля. Вернуть его всё
+			// равно попробуем — метку Disable ставит до того, как менять.
+			if e := sysrelay.Disable(box.Network().InterfaceMonitor()); e != nil {
+				log.Println("Failed to switch iCloud Private Relay off:", e)
 			}
-			// И при ошибке: Disable помечает интерфейс до того, как его менять,
-			// так что вернуть может оказаться что.
-			needRestoreRelay = true
 		}
 	}
 
@@ -222,22 +219,15 @@ func (s *server) Stop(ctx context.Context, in *gen.EmptyReq) (out *gen.ErrorResp
 		stopEgressForwardingWatch = nil
 	}
 
-	if needUnsetDNS {
-		needUnsetDNS = false
-		err := sysdns.SetSystemDNS("Empty", box.Network().InterfaceMonitor())
-		if err != nil {
-			log.Println("Failed to unset system DNS:", err)
-		}
-	}
-
-	if needRestoreRelay {
-		needRestoreRelay = false
-		if err := sysrelay.Restore(); err != nil {
-			log.Println("Failed to restore iCloud Private Relay:", err)
-		}
+	// Before the box closes, so the system resolver never points at a listener that is already gone.
+	sysdns.Release()
+	// Без метки это пустой вызов, поэтому спрашивать, выключали ли мы реле,
+	// не нужно: отдельный флаг на это только расходился бы с правдой.
+	if err := sysrelay.Restore(); err != nil {
+		log.Println("Failed to restore iCloud Private Relay:", err)
 	}
 	// Unpublished first, so a poll mid-teardown sees no instance rather than a dying one.
-	setBoxInstance(nil, nil)
+	setBoxInstance(nil, nil, nil)
 	box.CloseWithTimeout(cancel, time.Second*2, log.Println, true)
 
 	if extraProcess != nil {

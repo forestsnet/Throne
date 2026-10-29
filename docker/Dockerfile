@@ -45,14 +45,31 @@ COPY --from=thronectl /out/thronectl /usr/local/bin/thronectl
 # A missing library fails the build here rather than in the first container's dynamic loader.
 RUN missing=$(ldd /opt/Throne/Throne /opt/Throne/ThroneCore 2>&1 | grep -F 'not found'); \
     if [ -n "$missing" ]; then echo "$missing" >&2; exit 1; fi
+# With THRONE_WEB_LISTEN set, thronectl web runs beside Throne in this container, so it shares Throne's network and
+# restarts with it; it starts once --print-connection finds the API, and again whenever it exits.
+RUN printf '%s\n' '#!/bin/sh' \
+        'if [ -n "${THRONE_WEB_LISTEN:-}" ]; then' \
+        '    (' \
+        '        while :; do' \
+        '            if conn=$(/opt/Throne/Throne --print-connection 2>/dev/null); then' \
+        '                (eval "$conn" && exec thronectl web)' \
+        '            fi' \
+        '            sleep 3' \
+        '        done' \
+        '    ) &' \
+        'fi' \
+        'exec /opt/Throne/Throne --headless "$@"' >/usr/local/bin/throne-entrypoint \
+ && chmod 0755 /usr/local/bin/throne-entrypoint
 
 # Change the data dir with THRONE_DATA_DIR, not --data-dir: the health check finds the instance through it.
 ENV THRONE_DATA_DIR=/var/lib/throne \
     THRONE_RESTART_MODE=exit \
+    THRONE_WEB_STATE_DIR=/var/lib/throne/web \
     HOME=/var/lib/throne
 VOLUME /var/lib/throne
 # --health exits 0 healthy, 1 unhealthy or starting, 2 no instance; Docker counts any non-zero as a failed probe.
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s CMD ["/opt/Throne/Throne", "--health"]
 STOPSIGNAL SIGTERM
-# tini without -g: SIGTERM reaches Throne alone, which then stops the core and the kill switch in order.
-ENTRYPOINT ["/usr/bin/tini", "--", "/opt/Throne/Throne", "--headless"]
+# tini without -g: SIGTERM reaches Throne alone (the entrypoint execs it), which then stops the core and the kill switch
+# in order.
+ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/throne-entrypoint"]

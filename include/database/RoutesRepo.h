@@ -3,6 +3,7 @@
 #include "Database.h"
 #include "include/database/entities/RouteProfile.h"
 #include <3rdparty/SQLiteCpp/include/SQLiteCpp.h>
+#include <atomic>
 #include <memory>
 #include <mutex>
 #include <map>
@@ -19,6 +20,7 @@ namespace Configs {
         Database& db;
         mutable std::mutex mutex;
         mutable std::map<int, std::weak_ptr<RouteProfile>> identityMap;
+        std::atomic<quint64> revision{0};
 
         QJsonObject routeRuleToJson(const RouteRule* rule) const;
         
@@ -76,5 +78,8 @@ namespace Configs {
         
         // No-op unless id >= 0.
         bool Save(const std::shared_ptr<RouteProfile>& routeProfile);
+
+        // Any thread; moves with every write.
+        quint64 Revision() const { return revision.load(); }
     };
 }

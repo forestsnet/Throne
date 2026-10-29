@@ -149,6 +149,8 @@ namespace Engine {
 
         void construct();
 
+        void connectChangeTopics();
+
         void registerPeriodicJobs();
 
         std::unique_ptr<PolicyRelay> m_policy;

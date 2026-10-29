@@ -69,6 +69,7 @@ namespace RemoteApi {
 
         jobs_.prepend(job);
         while (jobs_.size() > RouterJobs::kKeptJobs) jobs_.removeLast();
+        noteChanged(Engine::ChangeTopic::Tests);
         if (!options.wait) {
             respond(Response::Ok(jobJson(*job, false), 202));
             return;
@@ -127,6 +128,7 @@ namespace RemoteApi {
         if (job == nullptr || job->state != QStringLiteral("running")) return;
         job->state = stopped || job->cancelRequested ? QStringLiteral("cancelled") : QStringLiteral("done");
         job->finishedAt = QDateTime::currentSecsSinceEpoch();
+        noteChanged(Engine::ChangeTopic::Tests | Engine::ChangeTopic::Profiles);
         const auto response = jobResponse(*job);
         for (const auto &waiter : std::exchange(job->waiters, {})) answer(waiter, response);
     }

@@ -10,7 +10,8 @@ cask "throne" do
   desc "Cross-platform GUI proxy utility powered by sing-box"
   homepage "https://github.com/throneproj/Throne"
 
-  depends_on macos: :ventura
+  # The app needs macOS 14.4 (Qt 6.12); Homebrew has no minor-version floor, and LSMinimumSystemVersion refuses 14.0-14.3.
+  depends_on macos: :sonoma
 
   app "Throne/Throne.app"
 

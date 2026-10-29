@@ -18,7 +18,11 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QRegularExpression>
 #include <QThread>
+#include <QUrl>
+#include <array>
+#include <optional>
 
 #include "include/api/RPC.h"
 #include "include/api/remote/Server.hpp"
@@ -45,6 +49,7 @@
 #include <QSettings>
 #include "include/ui/mainWindow/MainWindowInternal.h"
 
+#include "include/ui/app/dialog_update.h"
 #include "include/ui/group/dialog_manage_groups.h"
 #include "include/ui/setting/dialog_basic_settings.h"
 #include "include/ui/setting/dialog_integration.h"
@@ -71,11 +76,11 @@ void MainWindow::on_menu_manage_groups_triggered() {
 
 void MainWindow::on_menu_routing_settings_triggered() {
     if (dialog_is_using) return;
-    dialog_is_using = true;
+    setDialogInUse(true);
     auto dialog = new DialogManageRoutes(this);
     connect(dialog, &QDialog::finished, this, [=,this] {
         dialog->deleteLater();
-        dialog_is_using = false;
+        setDialogInUse(false);
     });
     dialog->show();
 }
@@ -85,7 +90,7 @@ void MainWindow::openRouteProfileEditor(int routeId) {
     if (dialog_is_using) return;
     const auto profile = Configs::dataManager->routesRepo->GetRouteProfile(routeId);
     if (profile == nullptr) return;
-    dialog_is_using = true;
+    setDialogInUse(true);
 
     const auto onSaved = [this](const std::shared_ptr<Configs::RouteProfile>& chain) {
         if (!Configs::dataManager->routesRepo->Save(chain)) return;
@@ -104,7 +109,7 @@ void MainWindow::openRouteProfileEditor(int routeId) {
     }
     connect(editor, &QDialog::finished, this, [=, this] {
         editor->deleteLater();
-        dialog_is_using = false;
+        setDialogInUse(false);
     });
     editor->setWindowModality(Qt::ApplicationModal);
     editor->show();
@@ -124,12 +129,12 @@ void MainWindow::on_menu_otp_manager_triggered() {
 
 void MainWindow::on_menu_integration_settings_triggered() {
     if (dialog_is_using) return;
-    dialog_is_using = true;
+    setDialogInUse(true);
     auto dialog = new DialogIntegration(this, getActionsForShortcut());
     connect(dialog, &QDialog::finished, this, [=,this]
     {
         dialog->deleteLater();
-        dialog_is_using = false;
+        setDialogInUse(false);
     });
     dialog->show();
 }

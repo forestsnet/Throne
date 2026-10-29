@@ -33,6 +33,7 @@
 #include "include/database/RoutesRepo.h"
 #include "include/ui/setting/RawRouteItem.h"
 #include "include/ui/setting/RouteDnsEditor.h"
+#include "include/ui/utils/UiMode.h"
 
 namespace {
     constexpr auto defaultWarpApiHost = "api.cloudflareclient.com";
@@ -514,13 +515,21 @@ DialogManageRoutes::DialogManageRoutes(QWidget *parent) : QDialog(parent), ui(ne
     ui->warp_masque_sni->setText(Configs::dataManager->settingsRepo->warp_masque_sni);
     ui->warp_masque_http_mode->setCurrentIndex(std::clamp(Configs::dataManager->settingsRepo->warp_masque_http_mode, 0, 2));
     auto showWarpMode = [this](int index) {
-        ui->warp_wg_box->setVisible(index == 0);
-        ui->warp_masque_box->setVisible(index == 1);
+        UiMode::SetVisible(ui->warp_wg_box, index == 0);
+        UiMode::SetVisible(ui->warp_masque_box, index == 1);
     };
     showWarpMode(ui->warp_mode->currentIndex());
     connect(ui->warp_mode, &QComboBox::currentIndexChanged, this, showWarpMode);
     connect(ui->warp_autogen, &QPushButton::clicked, this, &DialogManageRoutes::generate_warp_config);
     connect(ui->warp_api_hosts_btn, &QPushButton::clicked, this, [this] { editWarpApiHosts(this); });
+
+    // A custom DNS object greys out the DNS fields, so Simple mode keeps its switch beside them while it is on.
+    if (ui->use_dns_object->isChecked()) {
+        UiMode::Unmark(ui->groupBox);
+        UiMode::Unmark(ui->simple_dns_box);
+    }
+    UiMode::Apply(this);
+    UiMode::Fold(this);
 
     form->bind(ui->remote_dns, manageRoutesDnsProblem).label(ui->label_9->text());
     form->bind(ui->direct_dns, manageRoutesDnsProblem).label(ui->label_8->text());
@@ -560,6 +569,15 @@ DialogManageRoutes::DialogManageRoutes(QWidget *parent) : QDialog(parent), ui(ne
     };
     connect(ui->enable_warp, &QCheckBox::toggled, form, revalidateWarp);
     connect(ui->warp_mode, &QComboBox::currentIndexChanged, form, revalidateWarp);
+    // Simple mode hides the fields above, and hidden fields are not validated.
+    form->addRule({ui->enable_warp, ui->warp_mode}, [this] {
+        if (!UiMode::Simple() || !ui->enable_warp->isChecked()) return QString();
+        const QList<QLineEdit *> fields = ui->warp_mode->currentIndex() == 1
+            ? QList<QLineEdit *>{ui->warp_masque_ep, ui->warp_masque_private_key, ui->warp_masque_peer_public_key, ui->warp_masque_ifc_addrs}
+            : QList<QLineEdit *>{ui->warp_ep, ui->warp_private_key, ui->warp_public_key, ui->warp_ifc_addrs};
+        const bool missing = std::any_of(fields.cbegin(), fields.cend(), [](const QLineEdit *edit) { return edit->text().trimmed().isEmpty(); });
+        return missing ? tr("WARP has no config yet: click Generate Warp Config.") : QString();
+    }, nullptr, Validation::Severity::Error, ui->enable_warp->text());
     form->markAll();
 
     ADD_ASTERISK(this)
@@ -603,6 +621,7 @@ void DialogManageRoutes::generate_warp_config() {
                 dialog->ui->warp_ifc_addrs->setText(addrs.join(","));
                 dialog->ui->warp_reserved->setText(QListInt2QListString(conf->reserved).join(","));
             }
+            dialog->form->refresh();
             dialog->ui->warp_autogen->setText(tr("Success!"));
             setTimeout([dialog, originalText] {
                 dialog->ui->warp_autogen->setText(originalText);

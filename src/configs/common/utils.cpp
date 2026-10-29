@@ -188,6 +188,7 @@ namespace Configs
                || dataManager->settingsRepo->xray_vless_preference == Xray::AllVLESS
                || rawHttpOverTls
                || transport == "xhttp"
+               || transport == "xdrive"
                || (security == "reality" && dataManager->settingsRepo->xray_vless_preference == Xray::XhttpAndReality);
     }
 

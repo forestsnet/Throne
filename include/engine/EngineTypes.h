@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QFlags>
 #include <QtGlobal>
 
 namespace Engine {
@@ -92,4 +93,15 @@ namespace Engine {
         Ip,
         Speed,
     };
+
+    // The topics of the Throne API's GET /v1/events, in the order it lists them.
+    enum class ChangeTopic {
+        Status = 0x1,
+        Groups = 0x2,
+        Profiles = 0x4,
+        Tests = 0x8,
+        Settings = 0x10,
+    };
+    Q_DECLARE_FLAGS(ChangeTopics, ChangeTopic)
+    Q_DECLARE_OPERATORS_FOR_FLAGS(ChangeTopics)
 } // namespace Engine

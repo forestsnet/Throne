@@ -28,14 +28,18 @@ PKG=$(mktemp -d)
 trap 'rm -rf "$PKG"' EXIT
 chmod 0755 "$PKG"
 
-mkdir -p "$PKG/DEBIAN" "$PKG/opt" "$PKG/usr/lib/systemd/system" "$PKG/etc/throne"
+[ -x "linux-$ARCH$SUFFIX/thronectl" ] || { echo "linux-$ARCH$SUFFIX has no thronectl" >&2; exit 1; }
+mkdir -p "$PKG/DEBIAN" "$PKG/opt" "$PKG/usr/bin" "$PKG/usr/lib/systemd/system" "$PKG/etc/throne"
 cp -r "linux-$ARCH$SUFFIX" "$PKG/opt/Throne"
 rm -f "$PKG/opt/Throne/Throne.debug"
+ln -s /opt/Throne/thronectl "$PKG/usr/bin/thronectl"
 
-# headless service: shipped disabled, never enabled or started by the package
+# headless service and web UI: shipped disabled, never enabled or started by the package
 install -m 0644 "$DIST/throne.service" "$PKG/usr/lib/systemd/system/throne.service"
+install -m 0644 "$DIST/throne-web.service" "$PKG/usr/lib/systemd/system/throne-web.service"
 install -m 0644 "$DIST/throne.env" "$PKG/etc/throne/throne.env"
-echo /etc/throne/throne.env >"$PKG/DEBIAN/conffiles"
+install -m 0644 "$DIST/throne-web.env" "$PKG/etc/throne/web.env"
+printf '%s\n' /etc/throne/throne.env /etc/throne/web.env >"$PKG/DEBIAN/conffiles"
 
 # basic
 cat >"$PKG/DEBIAN/control" <<-EOF
@@ -68,20 +72,21 @@ update-desktop-database >/dev/null 2>&1 || true
 if [ "$1" = configure ] && [ -d /run/systemd/system ]; then
     systemctl daemon-reload >/dev/null 2>&1 || true
     if [ -n "$2" ]; then
-        systemctl try-restart throne.service >/dev/null 2>&1 || true
+        systemctl try-restart throne.service throne-web.service >/dev/null 2>&1 || true
     fi
 fi
 exit 0
 EOF
 
-# An upgrade keeps the service running on the old files until postinst restarts it.
+# An upgrade keeps the services running on the old files until postinst restarts them.
 cat >"$PKG/DEBIAN/prerm" <<-'EOF'
 #!/bin/sh
 if [ "$1" = remove ]; then
     if [ -d /run/systemd/system ]; then
-        systemctl stop throne.service >/dev/null 2>&1 || true
+        systemctl stop throne-web.service throne.service >/dev/null 2>&1 || true
     fi
     if command -v systemctl >/dev/null 2>&1; then
+        systemctl --no-reload disable throne-web.service >/dev/null 2>&1 || true
         systemctl --no-reload disable throne.service >/dev/null 2>&1 || true
     fi
 fi

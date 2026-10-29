@@ -193,6 +193,7 @@ namespace RemoteApi {
         });
         // The service logs every outcome, so a late one needs no log line here.
         const auto refused = Engine::ImportService::Import(importRequest, [this, waiter](const Subscription::UpdateOutcome &outcome) {
+            noteChanged(Engine::ChangeTopic::Groups | Engine::ChangeTopic::Profiles);
             answer(waiter, outcome.ok() ? Response::Ok(RouterManageImpl::importJson(outcome)) : RouterManageImpl::importFailure(outcome));
         }, gid.get());
         if (refused) answer(waiter, serviceError(*refused));
@@ -232,6 +233,7 @@ namespace RemoteApi {
             respond(serviceError(*refused));
             return;
         }
+        noteChanged(Engine::ChangeTopic::Groups | Engine::ChangeTopic::Profiles);
 
         const auto groupValue = [gid] {
             const auto group = Configs::dataManager->groupsRepo->GetGroup(gid);
@@ -339,6 +341,7 @@ namespace RemoteApi {
                 fail(waiter, serviceError(*refused));
                 return;
             }
+            noteChanged(Engine::ChangeTopic::Groups | Engine::ChangeTopic::Profiles);
             if (usedByRunning) engine_->noteRestartNeeded(Engine::RestartReason::Group);
             answer(waiter, Response::Ok(QJsonObject{{"deleted", id}}));
         });
@@ -376,6 +379,7 @@ namespace RemoteApi {
             const bool usedByRunning = RouterManageImpl::anyRunningUses(ids);
             int deleted = 0;
             const auto refused = Engine::ProfileService::Delete(ids, &deleted);
+            if (deleted > 0) noteChanged(Engine::ChangeTopic::Groups | Engine::ChangeTopic::Profiles);
             if (usedByRunning && deleted > 0) engine_->noteRestartNeeded(Engine::RestartReason::Profile);
             if (refused) {
                 fail(waiter, serviceError(*refused));
@@ -422,6 +426,7 @@ namespace RemoteApi {
             return;
         }
         if (result.restartNeeded) engine_->noteRestartNeeded(Engine::RestartReason::Settings);
+        if (!result.changed.isEmpty()) noteChanged(Engine::ChangeTopic::Settings | Engine::ChangeTopic::Status);
         respond(Response::Ok(QJsonObject{
             {"settings", Engine::SettingsRegistry::Values()},
             {"changed", QJsonArray::fromStringList(result.changed)},

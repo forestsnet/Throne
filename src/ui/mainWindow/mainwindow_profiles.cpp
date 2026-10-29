@@ -32,6 +32,7 @@
 
 #include "include/ui/utils/ScreenQrScanner.h"
 
+#include "include/api/RPC.h"
 #include "include/configs/generate.h"
 #include "include/configs/sub/GroupUpdater.hpp"
 #include "include/database/GroupsRepo.h"
@@ -464,24 +465,74 @@ void MainWindow::on_menu_remove_insecure_triggered() {
     }
 }
 
+void MainWindow::resolve_profile_domains(const QList<std::shared_ptr<Configs::Profile>> &profiles, const std::function<void()> &onFinished) {
+    QList<std::shared_ptr<Configs::Profile>> pending;
+    QStringList domains;
+    for (const auto &profile : profiles) {
+        if (profile == nullptr || profile->outbound == nullptr) continue;
+        const auto address = profile->outbound->GetAddress();
+        if (address.isEmpty() || IsIpAddress(address)) continue;
+        pending << profile;
+        domains << address;
+    }
+    domains.removeDuplicates();
+    if (pending.isEmpty()) {
+        onFinished();
+        return;
+    }
+    const auto probe = Configs::BuildTestConfig({});
+    if (!probe->error.isEmpty()) {
+        MW_show_log(tr("Failed to resolve domains: %1").arg(probe->error));
+        onFinished();
+        return;
+    }
+    const auto config = QJsonObject2QString(probe->coreConfig, false);
+
+    QPointer<MainWindow> self(this);
+    runOnNewThread([self, pending, domains, config, onFinished] {
+        bool rpcOK = false;
+        QString coreError;
+        const auto reply = API::defaultClient->ResolveDomains(&rpcOK, domains, config, &coreError);
+        runOnUiThread([self, pending, rpcOK, coreError, reply, onFinished] {
+            if (self == nullptr) return;
+            QHash<QString, QString> resolved;
+            if (!rpcOK) {
+                MW_show_log(tr("Failed to resolve domains: %1").arg(coreError.isEmpty() ? tr("the core did not answer") : coreError));
+            }
+            for (const auto &result : reply.results) {
+                const auto domain = QString::fromStdString(result.domain.value_or(""));
+                if (!result.addresses.empty()) {
+                    resolved.insert(domain, QString::fromStdString(result.addresses.front()));
+                } else {
+                    MW_show_log(tr("Failed to resolve %1: %2").arg(domain, QString::fromStdString(result.error.value_or(""))));
+                }
+            }
+            QList<int> changed;
+            for (const auto &profile : pending) {
+                const auto address = resolved.value(profile->outbound->GetAddress());
+                if (address.isEmpty()) continue;
+                profile->outbound->SetAddress(address);
+                Configs::dataManager->profilesRepo->Save(profile);
+                changed << profile->id;
+            }
+            if (!changed.isEmpty()) self->refresh_proxy_list(changed);
+            onFinished();
+        });
+    });
+}
+
 void MainWindow::on_menu_resolve_selected_triggered() {
     auto profiles = get_now_selected_list();
     if (profiles.isEmpty()) return;
 
     if (mw_sub_updating) return;
     mw_sub_updating = true;
-    Configs::dataManager->settingsRepo->resolve_count = profiles.count();
 
     auto ents = Configs::dataManager->profilesRepo->GetProfileBatch(profiles);
-    for (const auto &profile: ents) {
-        profile->outbound->ResolveDomainToIP([=,this] {
-            Configs::dataManager->profilesRepo->Save(profile);
-            refresh_proxy_list({profile->id});
-            if (--Configs::dataManager->settingsRepo->resolve_count != 0) return;
-            mw_sub_updating = false;
-            Configs::RepositionLater(ents, Configs::SortInput::Config);
-        });
-    }
+    resolve_profile_domains(ents, [ents] {
+        mw_sub_updating = false;
+        Configs::RepositionLater(ents, Configs::SortInput::Config);
+    });
 }
 
 void MainWindow::on_menu_resolve_domain_triggered() {
@@ -498,18 +549,12 @@ void MainWindow::on_menu_resolve_domain_triggered() {
     }
     if (mw_sub_updating) return;
     mw_sub_updating = true;
-    Configs::dataManager->settingsRepo->resolve_count = profiles.count();
 
-    for (const auto id: profiles) {
-        auto profile = Configs::dataManager->profilesRepo->GetProfile(id);
-        profile->outbound->ResolveDomainToIP([=,this] {
-            Configs::dataManager->profilesRepo->Save(profile);
-            refresh_proxy_list({profile->id});
-            if (--Configs::dataManager->settingsRepo->resolve_count != 0) return;
-            mw_sub_updating = false;
-            Configs::RepositionLater(QHash<int, QList<int>>{{currGroup->id, profiles}}, Configs::SortInput::Config);
-        });
-    }
+    const int groupId = currGroup->id;
+    resolve_profile_domains(Configs::dataManager->profilesRepo->GetProfileBatch(profiles), [groupId, profiles] {
+        mw_sub_updating = false;
+        Configs::RepositionLater(QHash<int, QList<int>>{{groupId, profiles}}, Configs::SortInput::Config);
+    });
 }
 
 void MainWindow::on_profilesTableView_customContextMenuRequested(const QPoint &pos) {

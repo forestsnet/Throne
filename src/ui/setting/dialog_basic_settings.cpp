@@ -12,6 +12,7 @@
 #include "include/database/entities/Group.h"
 #include "include/engine/services/AssetUpdates.h"
 #include "include/engine/services/BackupArchive.h"
+#include "include/ui/utils/UiMode.h"
 #include "include/ui/utils/ValidationForm.h"
 
 #include <QStyleFactory>
@@ -53,6 +54,7 @@
 #include "include/configs/sub/ProviderPolicy.hpp"
 #include "include/ui/mainwindow.h"
 #include "include/ui/setting/DiagnosticsTab.h"
+#include "include/ui/utils/NativeFileDialog.h"
 
 namespace {
     constexpr int kBasicSettingsMinAutoUpdate = 30;
@@ -295,17 +297,7 @@ DialogBasicSettings::DialogBasicSettings(QWidget *parent)
                        tr("Could not register the handler for throne:// links."));
     connectAssociation(Association::ConfigFiles, ui->file_assoc_auto_register, ui->file_assoc_install, ui->file_assoc_uninstall,
                        tr("Could not register the config file associations."));
-#ifdef Q_OS_MACOS
-    // LaunchServices registers the scheme from the bundle's Info.plist, so there is nothing of ours to add or take back.
-    ui->url_scheme_install->hide();
-    ui->url_scheme_uninstall->hide();
-#endif
-    if (!UrlScheme_IsSupported(Association::ConfigFiles)) {
-        ui->file_assoc_auto_register->hide();
-        ui->file_assoc_status->hide();
-        ui->file_assoc_install->hide();
-        ui->file_assoc_uninstall->hide();
-    }
+    for (auto *widget : UnavailableWidgets(ui)) widget->hide();
     ui->url_scheme_box->setEnabled(UrlScheme_IsSupported(Association::Links));
     refreshUrlSchemeStatus();
 
@@ -326,12 +318,6 @@ DialogBasicSettings::DialogBasicSettings(QWidget *parent)
         }
     });
 
-#ifndef Q_OS_WIN
-    ui->proxy_scheme_l->hide();
-    ui->proxy_scheme->hide();
-    ui->windows_no_admin->hide();
-#endif
-
     ui->max_log_line->setText(QString::number(Configs::dataManager->settingsRepo->max_log_line));
     ui->log_level->setCurrentText(Configs::dataManager->settingsRepo->log_level);
     ui->xray_loglevel->setCurrentText(Configs::dataManager->settingsRepo->xray_log_level);
@@ -349,6 +335,7 @@ DialogBasicSettings::DialogBasicSettings(QWidget *parent)
     ui->skip_delete_confirm->setChecked(Configs::dataManager->settingsRepo->skip_delete_confirmation);
     D_LOAD_BOOL(show_config_security)
     ui->language->setCurrentIndex(Configs::dataManager->settingsRepo->language);
+    ui->ui_mode->setCurrentIndex(Configs::dataManager->settingsRepo->simple_mode ? 0 : 1);
     connect(ui->language, &QComboBox::currentIndexChanged, this, [=,this](int index) {
         CACHE.needRestart = true;
     });
@@ -393,7 +380,7 @@ DialogBasicSettings::DialogBasicSettings(QWidget *parent)
     connect(ui->select_custom_icon, &QPushButton::clicked, this, [=, this] {
         auto n = QMessageBox::information(this, "Custom Icon Manual", tr(Configs::Information::CustomIconManual.toStdString().c_str()), QMessageBox::Open | QMessageBox::Cancel);
         if (n == QMessageBox::Open) {
-            auto fileNames = QFileDialog::getOpenFileNames(this,
+            auto fileNames = NativeFileDialog::getOpenFileNames(this,
                 tr("Select png icons"), QDir::homePath(), tr("Image Files (*.png)"));
             QString errors;
             for (const auto& fileName : fileNames) {
@@ -511,11 +498,22 @@ DialogBasicSettings::DialogBasicSettings(QWidget *parent)
     ui->disable_priv_req->setChecked(Configs::dataManager->settingsRepo->disable_privilege_req);
     ui->windows_no_admin->setChecked(Configs::dataManager->settingsRepo->disable_run_admin);
     ui->mozilla_cert->setChecked(Configs::dataManager->settingsRepo->use_mozilla_certs);
+    D_LOAD_BOOL(xray_use_system_ca)
     D_LOAD_BOOL(kill_switch)
 
     D_LOAD_BOOL(skip_cert)
 
     ui->tabWidget->addTab(new DiagnosticsTab(ui->tabWidget), tr("Diagnostics"));
+    if (ui->random_listen_port->isChecked()) UiMode::Unmark(ui->random_listen_port);
+    if (ui->disable_mixed_inbound->isChecked()) UiMode::Unmark(ui->disable_mixed_inbound);
+    if (ui->enable_custom_icon->isChecked()) {
+        for (QWidget *widget : {static_cast<QWidget *>(ui->enable_custom_icon), static_cast<QWidget *>(ui->select_custom_icon),
+                                static_cast<QWidget *>(ui->follow_status_in_taskbar)}) {
+            UiMode::Unmark(widget);
+        }
+    }
+    UiMode::Apply(this);
+    UiMode::Fold(this);
     bindValidation();
 
     // The .ui geometry underruns real font metrics/translations and Qt then overlaps the rows (#1671).
@@ -606,6 +604,21 @@ void DialogBasicSettings::bindValidation() {
     form->markAll();
 }
 
+QList<QWidget *> DialogBasicSettings::UnavailableWidgets(const Ui::DialogBasicSettings *ui) {
+    QList<QWidget *> widgets;
+#ifdef Q_OS_MACOS
+    // LaunchServices registers the scheme from the bundle's Info.plist, so there is nothing of ours to add or take back.
+    widgets << ui->url_scheme_install << ui->url_scheme_uninstall;
+#endif
+    if (!UrlScheme_IsSupported(Association::ConfigFiles)) {
+        widgets << ui->file_assoc_auto_register << ui->file_assoc_status << ui->file_assoc_install << ui->file_assoc_uninstall;
+    }
+#ifndef Q_OS_WIN
+    widgets << ui->proxy_scheme_l << ui->proxy_scheme << ui->windows_no_admin;
+#endif
+    return widgets;
+}
+
 void DialogBasicSettings::refreshUrlSchemeStatus() {
     const auto &tk = themeManager()->tokens;
     const auto show = [&](QLabel *status, Association a) {
@@ -680,6 +693,9 @@ void DialogBasicSettings::accept() {
     Configs::dataManager->settingsRepo->enable_stats = ui->connection_statistics->isChecked();
     Configs::dataManager->settingsRepo->disable_traffic_aggregation = ui->disable_traffic_aggregation->isChecked();
     Configs::dataManager->settingsRepo->language = ui->language->currentIndex();
+    const bool simpleMode = ui->ui_mode->currentIndex() == 0;
+    const bool uiModeChanged = Configs::dataManager->settingsRepo->simple_mode != simpleMode;
+    Configs::dataManager->settingsRepo->simple_mode = simpleMode;
     auto oldUseCustomIcon = Configs::dataManager->settingsRepo->use_custom_icons;
     Configs::dataManager->settingsRepo->use_custom_icons = ui->enable_custom_icon->isChecked();
     if (oldUseCustomIcon != Configs::dataManager->settingsRepo->use_custom_icons) CACHE.updateTrayIcon = true;
@@ -749,6 +765,7 @@ void DialogBasicSettings::accept() {
     if (Configs::dataManager->settingsRepo->disable_run_admin != ui->windows_no_admin->isChecked()) CACHE.updateDisableAdmin = true;
     Configs::dataManager->settingsRepo->disable_run_admin = ui->windows_no_admin->isChecked();
     Configs::dataManager->settingsRepo->use_mozilla_certs = ui->mozilla_cert->isChecked();
+    D_SAVE_BOOL(xray_use_system_ca)
     const bool killSwitchChanged = Configs::dataManager->settingsRepo->kill_switch != ui->kill_switch->isChecked();
     D_SAVE_BOOL(kill_switch)
 
@@ -762,6 +779,7 @@ void DialogBasicSettings::accept() {
     if (profileListDisplayChanged) changes << MwArg::ProfileListDisplay;
     if (killSwitchChanged) changes << MwArg::KillSwitch;
     if (logFontChanged) changes << MwArg::LogFont;
+    if (uiModeChanged) changes << MwArg::UiMode;
     MW_dialog_message(MwMessage::UpdateSettings, changes);
     QDialog::accept();
 }
@@ -847,7 +865,7 @@ void DialogBasicSettings::on_backup_create_clicked() {
 
     Engine::BackupArchive::Prepare(parts);
 
-    QString filePath = QFileDialog::getSaveFileName(
+    QString filePath = NativeFileDialog::getSaveFileName(
         this,
         tr("Create Backup"),
         QDir::homePath() + "/Throne-backup.thrbackup",
@@ -875,7 +893,7 @@ void DialogBasicSettings::on_backup_create_clicked() {
 
 void DialogBasicSettings::on_backup_restore_clicked() {
     if (webDavBusy) return;
-    QString filePath = QFileDialog::getOpenFileName(
+    QString filePath = NativeFileDialog::getOpenFileName(
         this,
         tr("Restore Backup"),
         QDir::homePath(),

@@ -863,4 +863,27 @@ namespace API {
         }
     }
 
+    libcore::ResolveDomainsResponse Client::ResolveDomains(bool *rpcOK, const QStringList &domains, const QString &config,
+                                                           QString *coreError) const
+    {
+        libcore::ResolveDomainsRequest request;
+        for (const auto &domain : domains) request.domains.push_back(domain.toStdString());
+        request.config = config.toStdString();
+        libcore::ResolveDomainsResponse reply;
+        std::vector<uint8_t> resp;
+        // The core may start a probe box first, then runs 16 lookups at a time with 5 s each.
+        const int timeoutMs = 30000 + static_cast<int>((domains.size() + 15) / 16) * 5000;
+        auto status = channel->Call("ResolveDomains", spb::pb::serialize<std::string>(request), resp, timeoutMs);
+
+        if (status == LocalSocketChannel::CallOK && tryDeserialize(resp, reply)) {
+            *rpcOK = true;
+            return reply;
+        } else {
+            if (coreError && !resp.empty())
+                *coreError = QString::fromUtf8(reinterpret_cast<const char *>(resp.data()), static_cast<int>(resp.size()));
+            NOT_OK
+            return {};
+        }
+    }
+
 } // namespace API

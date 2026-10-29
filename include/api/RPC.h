@@ -129,6 +129,10 @@ namespace API {
         // Returns the error text; empty on success.
         QString ParseRuleSet(bool *rpcOK, const QByteArray &content, QStringList *cidrs, int *skippedRules = nullptr) const;
 
+        // Through the core's dns-direct; config is the probe box it starts when the running profile has none.
+        libcore::ResolveDomainsResponse ResolveDomains(bool *rpcOK, const QStringList &domains, const QString &config,
+                                                       QString *coreError = nullptr) const;
+
     private:
         class LocalSocketChannel;
         std::unique_ptr<LocalSocketChannel> channel;

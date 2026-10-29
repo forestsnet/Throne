@@ -142,6 +142,25 @@ bool MainWindow::offerCoreReset(const QString &error) {
     return msg.clickedButton() == reset;
 }
 
+bool MainWindow::offerLeftoverTunAdapterRetry(const QString &error) {
+    QMessageBox msg(
+        QMessageBox::Information,
+        tr("Leftover Tun adapter"),
+        tr("Windows was still holding the Tun adapter from an earlier session that did not close cleanly. "
+           "Starting the profile again usually works; if it keeps failing, restart Windows.\n\nError: %1").arg(error),
+        QMessageBox::NoButton,
+        this
+    );
+    auto startAgain = msg.addButton(tr("Start Again"), QMessageBox::AcceptRole);
+    auto cancel = msg.addButton(tr("Cancel"), QMessageBox::RejectRole);
+
+    msg.setDefaultButton(startAgain);
+    msg.setEscapeButton(cancel);
+
+    msg.exec();
+    return msg.clickedButton() == startAgain;
+}
+
 void MainWindow::stopFailed(const QString &error) {
     MessageBoxWarning(tr("Stop return error"), error);
 }

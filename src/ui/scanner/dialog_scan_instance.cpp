@@ -57,6 +57,7 @@
 #include "include/ui/setting/ThemeManager.hpp"
 #include "include/ui/utils/NoWheelComboBox.h"
 #include "include/ui/utils/ValidationForm.h"
+#include "include/ui/utils/NativeFileDialog.h"
 
 namespace {
     constexpr int kScanInstanceResultsPreview = 50000;
@@ -1481,8 +1482,8 @@ void DialogScanInstance::exportResults() {
     if (scan->result_list_id < 0 || resultCount == 0 || resultsBusy) return;
     QString fileName = scan->name;
     fileName.replace(QRegularExpression(QStringLiteral("[\\\\/:*?\"<>|]")), QStringLiteral("_"));
-    const auto path = QFileDialog::getSaveFileName(this, tr("Export results"), QDir::homePath() + QLatin1Char('/') + fileName + QStringLiteral(".txt"),
-                                                   tr("Text files (*.txt);;All files (*)"));
+    const auto path = NativeFileDialog::getSaveFileName(this, tr("Export results"), QDir::homePath() + QLatin1Char('/') + fileName + QStringLiteral(".txt"),
+                                                        tr("Text files (*.txt);;All files (*)"));
     if (path.isEmpty() || resultsBusy) return;
 
     const int listId = scan->result_list_id;

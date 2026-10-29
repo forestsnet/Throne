@@ -7,6 +7,7 @@
 #include "include/configs/sub/RouteUpdater.hpp"
 #include "include/ui/setting/RouteDnsEditor.h"
 #include "include/ui/setting/ThemeManager.hpp"
+#include "include/ui/utils/UiMode.h"
 
 #include <srslist.h>
 
@@ -66,6 +67,23 @@ static void routeItemShowDisabled(QListWidgetItem* row, bool disabled) {
     // Cleared rather than set to an empty brush, which the delegate would paint the text with.
     row->setData(Qt::ForegroundRole, disabled ? QVariant(QBrush(themeManager()->tokens.muted)) : QVariant());
     row->setToolTip(disabled ? RouteItem::tr("Disabled: kept in the profile but left out of the generated config.") : QString());
+}
+
+// The DNS hijack rule a new profile starts with.
+static bool routeItemIsStockDnsRule(const Configs::RouteRule& rule) {
+    if (rule.type != Configs::custom || rule.effective_action() != "hijack-dns" || rule.protocol != "dns" || !rule.validate().isEmpty()) return false;
+    static const auto attrs = Configs::RouteRule::get_attributes();
+    return std::all_of(attrs.cbegin(), attrs.cend(), [&rule](const QString& attr) {
+        return attr == "protocol" || attr == "outbound" || Configs::RouteRule::is_attribute_at_default(rule, attr);
+    });
+}
+
+// A rule the Basic tab cannot show as it applies, which Simple mode must not hide with the Advanced tab.
+static bool routeItemNeedsRulesTab(const Configs::RouteProfile& profile) {
+    return std::any_of(profile.Rules.cbegin(), profile.Rules.cend(), [](const std::shared_ptr<Configs::RouteRule>& rule) {
+        if (rule->disabled || rule->type == Configs::endpointPreferredBy) return true;
+        return rule->type == Configs::custom && !routeItemIsStockDnsRule(*rule);
+    });
 }
 
 void adjustComboBoxWidth(const QComboBox *comboBox) {
@@ -321,6 +339,12 @@ RouteItem::RouteItem(QWidget *parent, const std::shared_ptr<Configs::RouteProfil
     ui->tabWidget->addTab(dnsEditor, tr("DNS"));
     dnsEditor->bindTo(form);
 
+    if (UiMode::Simple()) {
+        ui->tabWidget->setTabVisible(ui->tabWidget->indexOf(ui->tab), routeItemNeedsRulesTab(*chain));
+        ui->tabWidget->setTabVisible(ui->tabWidget->indexOf(dnsEditor), chain->customDns);
+    }
+    UiMode::Apply(this);
+
     updateRuleSection();
     form->markAll();
     refreshIssueIcons();
@@ -473,7 +497,7 @@ void RouteItem::setupEndpointsSection() {
 
     syncEndpointRules();
 
-    if (endpointCandidates.isEmpty() && ui->endpointList->count() == 0) {
+    if ((endpointCandidates.isEmpty() || UiMode::Simple()) && ui->endpointList->count() == 0) {
         ui->tabWidget->setTabVisible(ui->tabWidget->indexOf(ui->endpointsTab), false);
         return;
     }
@@ -663,6 +687,7 @@ void RouteItem::reloadRuleViewsFromChain() {
     currentIndex = -1;
     ui->route_name->setText(chain->name);
     syncEndpointRules();
+    if (routeItemNeedsRulesTab(*chain)) ui->tabWidget->setTabVisible(ui->tabWidget->indexOf(ui->tab), true);
     rejectedSimpleLines.clear();
     loadSimpleEditors();
     simpleTextsAtLeave = simpleRuleTexts();

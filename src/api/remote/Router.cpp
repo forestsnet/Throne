@@ -193,6 +193,7 @@ namespace RemoteApi {
             if (state == Engine::ConnectionState::Connecting) return;
             for (const auto &waiter : std::exchange(settling_, {})) answer(waiter, Response::Ok(statusJson()));
         });
+        setupFeeds();
     }
 
     void Router::dispatch(const Request &request, const Responder &respond) {
@@ -241,6 +242,8 @@ namespace RemoteApi {
             {"POST", "/v1/geo-assets/update", &Router::postGeoAssetsUpdate},
             {"POST", "/v1/restart", &Router::postRestart, true},
             {"POST", "/v1/shutdown", &Router::postShutdown, true},
+            {"GET", "/v1/logs", &Router::getLogs, true},
+            {"GET", "/v1/events", &Router::getEvents},
         };
 
         const auto &settings = Configs::dataManager->settingsRepo;

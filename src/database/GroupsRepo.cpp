@@ -332,6 +332,7 @@ namespace Configs {
             group->id,
             maxOrder + 1
         );
+        ++revision;
         return true;
     }
 
@@ -378,6 +379,7 @@ namespace Configs {
             // Only an id that existed: ids past the counter are still to be handed out.
             if (group != nullptr) tombstones.insert(id);
             deletedIds = profileIds.values();
+            ++revision;
             return true;
         });
     }
@@ -426,6 +428,7 @@ namespace Configs {
             pairs.push_back(position++);
         }
         if (!pairs.empty()) db.execBatchInsertIntPairs("groups_order", "group_id", "display_order", pairs);
+        ++revision;
     }
 
     bool GroupsRepo::Save(const std::shared_ptr<Group>& group) {
@@ -442,6 +445,7 @@ namespace Configs {
             if (!tombstones.contains(group->id)) {
                 saveToDatabase(group.get(), group->id);
                 memMap[group->id] = group;
+                ++revision;
                 return true;
             }
         }

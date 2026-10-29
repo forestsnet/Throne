@@ -95,6 +95,8 @@ set(PROJECT_SOURCES
         src/main.cpp
         src/global/Configs.cpp
         src/global/Utils.cpp
+        include/global/LogBuffer.hpp
+        src/global/LogBuffer.cpp
         include/global/Validation.hpp
         src/global/Validation.cpp
         include/global/Logger.hpp
@@ -158,6 +160,7 @@ set(PROJECT_SOURCES
         src/api/remote/RouterTests.cpp
         src/api/remote/RouterManage.cpp
         src/api/remote/RouterBackup.cpp
+        src/api/remote/RouterFeeds.cpp
 
         src/stats/traffic/TrafficLooper.cpp
         include/stats/traffic/TrafficLine.hpp
@@ -221,6 +224,7 @@ set(PROJECT_SOURCES
         src/ui/mainWindow/mainwindow_debuginfo.cpp
         src/ui/mainWindow/mainwindow_log.cpp
         src/ui/mainWindow/mainwindow_hotkeys.cpp
+        src/ui/mainWindow/mainwindow_palette.cpp
         src/ui/mainWindow/mainwindow_profile_lifecycle.cpp
         src/ui/mainWindow/mainwindow_scanner.cpp
         src/ui/mainWindow/mainwindow_engine_control.cpp
@@ -244,6 +248,8 @@ set(PROJECT_SOURCES
         src/ui/widget/SeriesBuffer.cpp
         include/ui/widget/LiveChart.h
         src/ui/widget/LiveChart.cpp
+        include/ui/widget/MuxSettingsWidget.h
+        src/ui/widget/MuxSettingsWidget.cpp
         include/ui/widget/json/JsonTree.h
         src/ui/widget/json/JsonTree.cpp
         include/ui/widget/json/JsonValidator.h
@@ -269,6 +275,7 @@ set(PROJECT_SOURCES
         src/ui/utils/ProfilesTableVerticalHeader.cpp
         include/ui/utils/ProfilesTableFilterHeader.h
         include/ui/utils/ConnectionsFilterHeader.h
+        include/ui/utils/HeaderSortArrow.h
         include/ui/utils/ConnectionsTreeModel.h
         src/ui/utils/ConnectionsTreeModel.cpp
         include/ui/utils/ConnectionsTreeFilterProxyModel.h
@@ -279,12 +286,19 @@ set(PROJECT_SOURCES
         include/ui/utils/GuiUtils.hpp
         include/ui/utils/ValidationForm.h
         src/ui/utils/ValidationForm.cpp
+        include/ui/utils/CommandPalette.h
+        src/ui/utils/CommandPalette.cpp
+        include/ui/utils/SettingsIndex.h
+        src/ui/utils/SettingsIndex.cpp
+        include/ui/utils/UiMode.h
+        src/ui/utils/UiMode.cpp
 
         include/ui/profile/dialog_edit_profile.h
         src/ui/profile/dialog_edit_profile.cpp
         src/ui/profile/dialog_edit_profile_singbox.cpp
         src/ui/profile/dialog_edit_profile_xray.cpp
         src/ui/profile/dialog_edit_profile_xhttp.cpp
+        src/ui/profile/dialog_edit_profile_xdrive.cpp
         include/ui/profile/dialog_edit_profile.ui
         include/ui/group/dialog_edit_group.h
         src/ui/group/dialog_edit_group.cpp
@@ -787,6 +801,10 @@ set(PROJECT_SOURCES
         src/global/Common.cpp
         include/ui/app/GuiStartup.h
         src/ui/app/GuiStartup.cpp
+        include/ui/app/dialog_about.h
+        src/ui/app/dialog_about.cpp
+        include/ui/app/dialog_update.h
+        src/ui/app/dialog_update.cpp
 )
 
 if (NOT APPLE AND Qt6_VERSION VERSION_GREATER_EQUAL 6.9.0)

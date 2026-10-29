@@ -9,6 +9,7 @@ import (
 	"ThroneCore/internal/xray"
 
 	"github.com/sagernet/sing-box/log"
+	"github.com/sagernet/sing-box/option"
 )
 
 const (
@@ -143,9 +144,24 @@ var _ log.PlatformWriter = platformLogWriter{}
 // Always handed to box.New for the main instance, sink or not: a non-nil PlatformLogWriter is what
 // switches on trafficcontrol, clash mode and the cache file, which Status()/Groups()/QueryOutboundStats()
 // read. Probe boxes pass nil so they never share cache.db or pay for accounting, and get a testLogWriter.
-type platformLogWriter struct{}
+// Like testLogWriter it applies the config's own level, so lines the sink would drop never cross into Kotlin.
+type platformLogWriter struct {
+	level log.Level
+}
 
-func (platformLogWriter) WriteMessage(level log.Level, message string) {
+// log.New's level: unset means trace, and an unknown level fails box.New anyway.
+func newPlatformLogWriter(options *option.LogOptions) platformLogWriter {
+	if options == nil || options.Level == "" {
+		return platformLogWriter{level: log.LevelTrace}
+	}
+	level, _ := log.ParseLevel(options.Level)
+	return platformLogWriter{level: level}
+}
+
+func (w platformLogWriter) WriteMessage(level log.Level, message string) {
+	if level > w.level {
+		return
+	}
 	pump.push(int32(level), message)
 }
 

@@ -483,9 +483,8 @@ void MainWindow::refresh_proxy_list_impl(const QList<int>& ids, bool mayNeedRese
 void MainWindow::refresh_sort_indicator() {
     const auto group = Configs::dataManager->groupsRepo->CurrentGroup();
     const int column = group == nullptr ? -1 : ProfilesTableModel::columnOfSort(group->sort.method);
-    const auto order = group != nullptr && group->sort.descending ? Qt::DescendingOrder : Qt::AscendingOrder;
-    // Section -1 hides the indicator.
-    ui->profilesTableView->horizontalHeader()->setSortIndicator(column, order);
+    auto *header = static_cast<ProfilesTableFilterHeader*>(ui->profilesTableView->horizontalHeader());
+    if (header->setSortSection(column, group != nullptr && group->sort.descending)) refresh_proxy_list_column_size();
 }
 
 void MainWindow::sortCurrentGroup(GroupSortAction action) {

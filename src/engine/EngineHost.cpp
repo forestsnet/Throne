@@ -81,6 +81,10 @@ namespace Engine {
             return target(__func__)->offerCoreReset(error);
         }
 
+        bool offerLeftoverTunAdapterRetry(const QString &error) override {
+            return target(__func__)->offerLeftoverTunAdapterRetry(error);
+        }
+
         void stopFailed(const QString &error) override {
             target(__func__)->stopFailed(error);
         }
@@ -239,6 +243,8 @@ namespace Engine {
         auto *ipLists = Scanner::IpListUpdater::instance();
         connect(ipLists, &Scanner::IpListUpdater::listsChanged, this, [] { Configs::InvalidateEndpointDisplayCache(); }, Qt::QueuedConnection);
         connect(ipLists, &Scanner::IpListUpdater::listUpdated, this, [] { Configs::InvalidateEndpointDisplayCache(); }, Qt::QueuedConnection);
+
+        connectChangeTopics();
 
         runOnNewThread([] { GetDeviceDetails(); });
 
@@ -510,6 +516,32 @@ namespace Engine {
 
     bool EngineHost::runningTun() const {
         return m_connection->runningTun();
+    }
+
+    void EngineHost::connectChangeTopics() {
+        const auto relay = [this](ChangeTopics topics) { return [this, topics] { emit changed(topics); }; };
+        connect(m_connection, &ConnectionManager::startFinished, this, relay(ChangeTopic::Status), Qt::DirectConnection);
+        connect(m_connection, &ConnectionManager::stopFinished, this, relay(ChangeTopic::Status), Qt::DirectConnection);
+        connect(m_connection, &ConnectionManager::connectionStateChanged, this, relay(ChangeTopic::Status));
+        connect(m_connection, &ConnectionManager::statusChanged, this, relay(ChangeTopic::Status));
+        connect(m_connection, &ConnectionManager::busyChanged, this, relay(ChangeTopic::Status));
+        connect(m_connection, &ConnectionManager::restartReasonsChanged, this, relay(ChangeTopic::Status));
+        connect(m_connection, &ConnectionManager::profileRowsChanged, this, relay(ChangeTopic::Status | ChangeTopic::Profiles));
+        connect(m_coreSupervisor, &CoreSupervisor::stateChanged, this, relay(ChangeTopic::Status));
+        connect(m_vpnAuth, &VpnAuthController::exitStateChanged, this, relay(ChangeTopic::Status));
+        connect(Sys::KillSwitch::instance(), &Sys::KillSwitch::stateChanged, this, relay(ChangeTopic::Status));
+        connect(this, &EngineHost::statusChanged, this, relay(ChangeTopic::Status | ChangeTopic::Settings));
+        connect(this, &EngineHost::testResultsCleared, this, relay(ChangeTopic::Profiles));
+
+        // AutoConnection: emits from worker threads arrive queued on the main thread.
+        auto *events = EngineEvents::instance();
+        connect(events, &EngineEvents::subscriptionNewGroup, this, relay(ChangeTopic::Groups | ChangeTopic::Profiles));
+        connect(events, &EngineEvents::subscriptionFinished, this, relay(ChangeTopic::Groups | ChangeTopic::Profiles));
+        connect(events, &EngineEvents::subscriptionGroupChanged, this, relay(ChangeTopic::Groups | ChangeTopic::Profiles));
+        connect(events, &EngineEvents::groupOrderChanged, this, relay(ChangeTopic::Profiles));
+        connect(events, &EngineEvents::groupsChanged, this, relay(ChangeTopic::Groups | ChangeTopic::Profiles));
+        connect(events, &EngineEvents::profilesRemoved, this, relay(ChangeTopic::Groups | ChangeTopic::Profiles));
+        connect(events, &EngineEvents::settingsChanged, this, relay(ChangeTopic::Status | ChangeTopic::Settings));
     }
 
     void EngineHost::registerPeriodicJobs() {

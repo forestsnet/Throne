@@ -50,6 +50,7 @@
 
 namespace Configs {
     enum simpleAction : int;
+    struct SimpleTarget;
 }
 
 namespace Engine {
@@ -67,8 +68,10 @@ class GlobalHotkeys;
 class DialogVpnAuth;
 class DialogScanner;
 class DialogIpLists;
+class CommandPalette;
 
 namespace Qv2ray::ui { class SyntaxHighlighter; }
+namespace SettingsIndex { struct Item; }
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -489,6 +492,9 @@ private:
 
     void refresh_proxy_list_impl_refresh_data(const QList<int>& ids = {}, bool mayNeedReset = false);
 
+    // Replaces each server domain with the first address the core's dns-direct returns.
+    void resolve_profile_domains(const QList<std::shared_ptr<Configs::Profile>> &profiles, const std::function<void()> &onFinished);
+
     void parseQrImage(const QPixmap *image);
 
     void importFromFiles(const QStringList &paths);
@@ -539,6 +545,27 @@ private:
 
     void loadShortcuts();
 
+    QPointer<CommandPalette> commandPalette;
+    QAction *commandPaletteAction = nullptr;
+    QHash<QString, QAction *> settingsDialogOpeners;
+
+    void setupCommandPalette();
+
+    void createCommandPalette();
+
+    void fillPaletteSettings();
+
+    void showCommandPalette();
+
+    void revealSetting(const SettingsIndex::Item &item);
+
+    void applyUiMode();
+
+    void setSimpleMode(bool simple);
+
+    // Takes or frees the one-settings-dialog slot (dialog_is_using) and lets an open command palette catch up.
+    void setDialogInUse(bool inUse);
+
     void url_test_current();
 
     void show_startstop_menu();
@@ -569,8 +596,8 @@ private:
 
     enum class RuleToggle { Failed, Added, Moved, Removed };
 
-    // Adds rawRule to the action's simple rules of the current profile, or takes it out when it is already there.
-    RuleToggle toggleRuleInCurrentRoute(const QString &rawRule, Configs::simpleAction action);
+    // Adds rawRule to the target's rules in the current profile, or takes it out when it is already there.
+    RuleToggle toggleRuleInCurrentRoute(const QString &rawRule, const Configs::SimpleTarget &target);
 
     void setupConnectionFilter();
 
@@ -614,6 +641,8 @@ private:
     void strictRouteUnavailable(const QString &error) override;
 
     bool offerCoreReset(const QString &error) override;
+
+    bool offerLeftoverTunAdapterRetry(const QString &error) override;
 
     void stopFailed(const QString &error) override;
 

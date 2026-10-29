@@ -24,6 +24,7 @@ import (
 	"ThroneCore/internal/parentcheck"
 	"ThroneCore/internal/process"
 	"ThroneCore/internal/rpc"
+	"ThroneCore/internal/sysdns"
 	"ThroneCore/internal/sysrelay"
 
 	C "github.com/sagernet/sing-box/constant"
@@ -101,6 +102,7 @@ func RunCore() {
 	}
 	guard.CleanupStale()
 	process.SweepStaleConfigDirs()
+	sysdns.RestoreStale()
 	sysrelay.RepairLeftover()
 
 	go func() {
@@ -116,6 +118,9 @@ func RunCore() {
 				time.Sleep(time.Second * 10)
 				err = parent.Signal(syscall.Signal(0))
 				if err != nil {
+					// Не Fatalln: откат живёт в teardown, и системный DNS
+					// с реле возвращает он же. Выйти, не позвав его, значит
+					// оставить и то, и другое на машине человека.
 					shutdown(1, fmt.Sprintln("parent exited:", err))
 				}
 			}
@@ -153,6 +158,7 @@ func RunCore() {
 
 	fmt.Println("Core Has Successfully Connected to Throne!")
 	rpc.Serve(conn, debug)
+	sysdns.Release()
 	log.Fatal("IPC connection dropped, exiting")
 }
 
@@ -179,6 +185,11 @@ func shutdown(code int, reason string) {
 	os.Exit(code)
 }
 
+func printVersions() {
+	fmt.Println("sing-box:", C.Version)
+	fmt.Println("Xray-core:", core.Version())
+	fmt.Println("Go:", runtime.Version())}
+
 func main() {
 	// Before anything prints: stdout is the guard's protocol channel and the --check line.
 	if len(os.Args) > 1 {
@@ -193,6 +204,13 @@ func main() {
 				os.Exit(1)
 			}
 			os.Exit(0)
+		case "--restore-dns":
+			parentcheck.CheckParentProcess()
+			sysdns.RestoreStale()
+			os.Exit(0)
+		case "--version":
+			printVersions()
+			os.Exit(0)
 		}
 	}
 
@@ -203,8 +221,7 @@ func main() {
 			os.Exit(2)
 		}
 	}()
-	fmt.Println("sing-box:", C.Version)
-	fmt.Println("Xray-core:", core.Version())
+	printVersions()
 	fmt.Println()
 	runtimeDebug.SetMemoryLimit(memoryLimit)
 	go watchMemory()

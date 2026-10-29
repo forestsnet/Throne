@@ -28,6 +28,7 @@ namespace Configs {
         QMap<QString, int*>         intMap;
         QMap<QString, QString*>     stringMap;
         QMap<QString, QStringList*> stringListMap;
+        std::atomic<quint64> revision{0};
 
         void initMaps();
         void createTables() const;
@@ -41,6 +42,9 @@ namespace Configs {
         
         bool Save();
         
+        // Any thread; moves with every Save(), bookkeeping ones such as the traffic graph's state included.
+        quint64 Revision() const { return revision.load(); }
+
         // Runtime state and flags below are never persisted.
         QString core_socket_name = "";
         int started_id = NoProfileId;
@@ -53,7 +57,6 @@ namespace Configs {
         int imported_count = 0;
         bool refreshing_group_list = false;
         bool refreshing_group = false;
-        std::atomic<int> resolve_count = 0;
 
         QStringList argv = {};
         bool flag_use_appdata = false;
@@ -103,7 +106,14 @@ namespace Configs {
         int current_group = 0;
         QString mux_protocol = "smux";
         bool mux_padding = false;
+        // "max_streams" pools by mux_concurrency streams per connection, "max_connections" by the two below.
+        QString mux_mode = "max_streams";
         int mux_concurrency = 8;
+        int mux_max_connections = 4;
+        int mux_min_streams = 4;
+        bool mux_brutal = false;
+        int mux_brutal_up_mbps = 0;
+        int mux_brutal_down_mbps = 0;
         bool mux_default_on = false;
         // "built-in" = sing-box tls.fragment, "custom" = hiddify dialer-level tls_fragment.
         QString fragment_implementation = "built-in";
@@ -181,6 +191,8 @@ namespace Configs {
         bool follow_status_in_taskbar = true;
         bool skip_delete_confirmation = false;
         bool show_config_security = false;
+        // UI only: config generation never reads it. A fresh install starts simple, an upgraded one advanced.
+        bool simple_mode = false;
         // -1 until a filter column has been used.
         int last_filter_column = -1;
 
@@ -393,7 +405,12 @@ namespace Configs {
         // Xray
         QString xray_log_level = "info";
         int xray_mux_concurrency = 8;
+        int xray_mux_max_connections = 0;
+        int xray_mux_xudp_concurrency = 16;
+        QString xray_mux_xudp_proxy_udp443 = "reject";
         bool xray_mux_default_on = false;
+        // Xray otherwise trusts only its built-in root certificates.
+        bool xray_use_system_ca = false;
         Xray::XrayVlessPreference xray_vless_preference = Xray::XhttpAndReality;
         // Fetched on demand into GetBasePath(), which the core exposes to Xray via XRAY_LOCATION_ASSET.
         QString xray_geoip_url = "https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geoip.dat";

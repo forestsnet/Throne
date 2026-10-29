@@ -17,6 +17,7 @@ SUFFIX=""
 [[ "$VARIANT" == "systemqt" ]] && SUFFIX="-system-qt"
 SRC_DIR="$PWD/linux-$ARCH$SUFFIX"
 DIST="$(cd "$(dirname "$0")/../dist/linux" && pwd)"
+[ -x "$SRC_DIR/thronectl" ] || { echo "$SRC_DIR has no thronectl" >&2; exit 1; }
 
 DEPENDS=""
 if [[ "$VARIANT" == "systemqt" ]]; then
@@ -74,8 +75,9 @@ Type=Application
 Categories=Network;Application;
 EOF
 
-# Scriptlets: POSIX sh, never fail the transaction, never enable or start throne.service, and touch systemd only
-# when it is running (not in a chroot or container). On upgrade the new %post runs after the new files are in place.
+# Scriptlets: POSIX sh, never fail the transaction, never enable or start throne.service or throne-web.service, and
+# touch systemd only when it is running (not in a chroot or container). On upgrade the new %post runs after the new
+# files are in place.
 cat >"$WORK/Throne.spec" <<-EOF
 Name: throne
 Version: ${RPM_VERSION}
@@ -100,32 +102,40 @@ cp -a ${SRC_DIR}/. %{buildroot}/opt/Throne/
 rm -f %{buildroot}/opt/Throne/Throne.debug
 mkdir -p %{buildroot}/usr/share/applications
 cp ${WORK}/Throne.desktop %{buildroot}/usr/share/applications/Throne.desktop
+mkdir -p %{buildroot}/usr/bin
+ln -s /opt/Throne/thronectl %{buildroot}/usr/bin/thronectl
 mkdir -p %{buildroot}/usr/lib/systemd/system %{buildroot}/etc/throne
 install -m 0644 ${DIST}/throne.service %{buildroot}/usr/lib/systemd/system/throne.service
+install -m 0644 ${DIST}/throne-web.service %{buildroot}/usr/lib/systemd/system/throne-web.service
 install -m 0644 ${DIST}/throne.env %{buildroot}/etc/throne/throne.env
+install -m 0644 ${DIST}/throne-web.env %{buildroot}/etc/throne/web.env
 
 %files
 /opt/Throne
+/usr/bin/thronectl
 /usr/share/applications/Throne.desktop
 /usr/lib/systemd/system/throne.service
+/usr/lib/systemd/system/throne-web.service
 %dir /etc/throne
 %config(noreplace) /etc/throne/throne.env
+%config(noreplace) /etc/throne/web.env
 
 %post
 update-desktop-database >/dev/null 2>&1 || :
 if [ -d /run/systemd/system ]; then
     systemctl daemon-reload >/dev/null 2>&1 || :
     if [ "\$1" -gt 1 ]; then
-        systemctl try-restart throne.service >/dev/null 2>&1 || :
+        systemctl try-restart throne.service throne-web.service >/dev/null 2>&1 || :
     fi
 fi
 
 %preun
 if [ "\$1" -eq 0 ]; then
     if [ -d /run/systemd/system ]; then
-        systemctl stop throne.service >/dev/null 2>&1 || :
+        systemctl stop throne-web.service throne.service >/dev/null 2>&1 || :
     fi
     if command -v systemctl >/dev/null 2>&1; then
+        systemctl --no-reload disable throne-web.service >/dev/null 2>&1 || :
         systemctl --no-reload disable throne.service >/dev/null 2>&1 || :
     fi
 fi

@@ -15,6 +15,7 @@
 #include "include/global/RunningProfiles.hpp"
 #include "include/global/Validation.hpp"
 #include "include/ui/group/dialog_edit_group_advanced.h"
+#include "include/ui/utils/UiMode.h"
 #include "include/ui/utils/ValidationForm.h"
 
 
@@ -236,7 +237,9 @@ DialogEditGroup::DialogEditGroup(const std::shared_ptr<Configs::Group> &ent, QWi
         QStringList links;
         auto profiles = Configs::dataManager->profilesRepo->GetProfileBatch(ent->Profiles());
         for (const auto &profile: profiles) {
-            links += profile->outbound->ExportToLink();
+            auto link = profile->outbound->ExportToLink();
+            if (link.isEmpty()) link = profile->outbound->ExportJsonLink();
+            links += link;
         }
         QApplication::clipboard()->setText(links.join("\n"));
         MessageBoxInfo(software_name, tr("Copied"));
@@ -251,6 +254,7 @@ DialogEditGroup::DialogEditGroup(const std::shared_ptr<Configs::Group> &ent, QWi
         MessageBoxInfo(software_name, tr("Copied"));
     });
 
+    UiMode::Apply(this);
     ui->name->setFocus();
     form->markAll();
 

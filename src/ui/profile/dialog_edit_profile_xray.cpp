@@ -1,9 +1,11 @@
 #include "include/ui/profile/dialog_edit_profile.h"
 
 #include "include/configs/common/utils.h"
+#include "include/configs/outbounds/xrayVless.h"
 #include "include/database/DatabaseManager.h"
 #include "include/global/Utils.hpp"
 #include "include/ui/utils/ValidationForm.h"
+#include "include/ui/widget/MuxSettingsWidget.h"
 #include "include/ui/widget/json/JsonEditorDialog.h"
 
 #include <QSignalBlocker>
@@ -11,12 +13,12 @@
 #include <climits>
 
 namespace {
-constexpr int kXrayXHTTPNetworkMinWidth = 760;
+constexpr int kXrayPanelNetworkMinWidth = 760;
+}
 
 // A stored value the combo does not offer is shown, and flagged by its rule, instead of being rewritten on save.
-void keepXrayComboValue(QComboBox *combo, const QString &value) {
+void DialogEditProfile::keepXrayComboValue(QComboBox *combo, const QString &value) {
     if (!value.isEmpty() && combo->findText(value) < 0) combo->addItem(value);
-}
 }
 
 void DialogEditProfile::setupXrayStream() {
@@ -25,6 +27,7 @@ void DialogEditProfile::setupXrayStream() {
     ui->xray_fp->addItems(Configs::tlsFingerprints);
     ui->xray_ed_length->setValidator(new QIntValidator(0, INT_MAX, this));
     setupXrayXHTTPControls();
+    setupXrayXDriveControls();
 
     connect(ui->xray_network, &QComboBox::currentTextChanged, this, [this](const QString &network) {
         loadXrayNetwork(network);
@@ -33,6 +36,10 @@ void DialogEditProfile::setupXrayStream() {
     connect(ui->xray_security, &QComboBox::currentTextChanged, this, [this] { relayout(); });
     connect(ui->xray_mode, &QComboBox::currentTextChanged, this, [this] { relayout(); });
     connect(ui->xray_xpadding_obfs_mode, &QCheckBox::toggled, this, [this] { relayout(); });
+    connect(ui->xray_mux, &QComboBox::currentIndexChanged, this, [this] { relayout(); });
+    connect(ui->xray_mux_custom, &QPushButton::clicked, this, [this] {
+        XrayMuxSettingsWidget::openDialog(this, CACHE.xrayMux, [this](const Configs::XrayMuxSettings &settings) { CACHE.xrayMux = settings; });
+    });
     bindXrayStream();
 }
 
@@ -49,6 +56,9 @@ void DialogEditProfile::bindXrayStream() {
     form->addRule({ui->xray_security}, [this] { return Checks::XraySecurity(ui->xray_security->currentText()); });
     form->addRule({ui->xray_security, ui->xray_network}, [this] {
         return Checks::XrayRealityNetwork(ui->xray_security->currentText(), ui->xray_network->currentText());
+    });
+    form->addRule({ui->xray_mux, ui->xray_network}, [this] {
+        return Checks::XrayXDriveMux(ui->xray_mux->currentIndex(), ui->xray_network->currentText());
     });
 
     form->bind(ui->xray_sni, Checks::ServerName).warning();
@@ -75,6 +85,7 @@ void DialogEditProfile::bindXrayStream() {
     });
     form->bind(ui->xray_ed_length, Validation::Rules::Int(0, INT_MAX));
     bindXrayXHTTP();
+    bindXrayXDrive();
 }
 
 void DialogEditProfile::loadXrayStream() {
@@ -84,6 +95,8 @@ void DialogEditProfile::loadXrayStream() {
     loadXrayXHTTP(*stream->xhttp);
     CACHE.XrayDownloadSettings = stream->xhttp->downloadSettings;
     CACHE.XrayFinalmask = stream->finalmask;
+    CACHE.XrayXDriveTemplate = stream->xdrive->templateSpec;
+    loadXrayXDrive(*stream->xdrive);
     {
         const QSignalBlocker blocker(ui->xray_network);
         const auto network = Configs::NormalizeXrayNetwork(stream->network);
@@ -93,7 +106,10 @@ void DialogEditProfile::loadXrayStream() {
     loadXrayNetwork(ui->xray_network->currentText());
     if (const auto security = stream->security.toLower(); security != "none") keepXrayComboValue(ui->xray_security, security);
     selectComboText(ui->xray_security, stream->security.toLower());
-    ui->xray_mux->setCurrentIndex(ent->outbound->GetXrayMultiplex()->getMuxState());
+    const auto mux = ent->outbound->GetXrayMultiplex();
+    ui->xray_mux->setCurrentIndex(mux->getMuxState());
+    offerCustomMux(ui->xray_mux, Configs::kXrayMuxCustom);
+    CACHE.xrayMux = mux->CustomSettings();
 
     const bool tls = stream->security == "tls";
     ui->xray_sni->setText(tls ? stream->TLS->serverName : stream->reality->serverName);
@@ -144,7 +160,10 @@ void DialogEditProfile::saveXrayStream() {
     stream->network = ui->xray_network->currentText().trimmed();
     stream->security = ui->xray_security->currentText().trimmed();
     stream->finalmask = CACHE.XrayFinalmask;
-    ent->outbound->GetXrayMultiplex()->saveMuxState(ui->xray_mux->currentIndex());
+    const auto mux = ent->outbound->GetXrayMultiplex();
+    const int muxState = ui->xray_mux->currentIndex();
+    mux->saveMuxState(muxState);
+    if (muxState == Configs::kXrayMuxCustom) mux->SetCustomSettings(CACHE.xrayMux);
 
     const auto sni = ui->xray_sni->text().trimmed();
     const auto fingerprint = ui->xray_fp->currentText().trimmed();
@@ -186,6 +205,8 @@ void DialogEditProfile::saveXrayStream() {
         stream->httpupgrade->path = path;
         stream->httpupgrade->ed = ui->xray_ed_length->text().trimmed().toInt();
         stream->httpupgrade->headers = Configs::parseHeaderPairs(ui->xray_headers->text());
+    } else if (stream->network == "xdrive") {
+        saveXrayXDrive(*stream->xdrive);
     }
 }
 
@@ -204,14 +225,19 @@ void DialogEditProfile::updateXrayRows() {
     const auto network = ui->xray_network->currentText();
     const bool xhttp = network == "xhttp";
     const bool grpc = network == "grpc";
+    const bool xdrive = network == "xdrive";
     const bool networkBox = hasStream && network != "raw";
     ui->xray_network_box->setVisible(networkBox);
+    ui->xray_common_box->setVisible(!xdrive);
     ui->xray_xhttp_box->setVisible(xhttp);
-    ui->xray_network_scroll->setMinimumWidth(xhttp ? kXrayXHTTPNetworkMinWidth : 0);
+    ui->xray_xdrive_box->setVisible(xdrive);
+    ui->xray_network_scroll->setMinimumWidth(xhttp || xdrive ? kXrayPanelNetworkMinWidth : 0);
     setRowVisible(ui->xray_ed_label, ui->xray_ed_length, !xhttp && !grpc);
     setRowVisible(ui->xray_headers_l, ui->xray_headers, !grpc);
     ui->xray_multi_mode->setVisible(grpc);
+    ui->xray_mux_custom->setVisible(ui->xray_mux->currentIndex() == Configs::kXrayMuxCustom);
     updateXrayXHTTPControls();
+    updateXrayXDriveControls();
 
     ui->xray_widget->setVisible(securityBox || networkBox);
 }

@@ -450,7 +450,7 @@ namespace Subscription {
                     {"serverName", V::Text, true, false}, {"pinnedPeerCertSha256", V::Text, true, true},
                     {"verifyPeerCertByName", V::Text, true, true}, {"alpn", V::TextOrList, true, false},
                     {"fingerprint", V::Text, true, false}, {"cipherSuites", V::Text, true, false},
-                    {"echConfigList", V::Text, true, true}, {"allowInsecure", V::Flag, false, false},
+                    {"echConfigList", V::Text, true, true}, {"useSystemCA", V::Flag, true, false}, {"allowInsecure", V::Flag, false, false},
                     {"minVersion", V::Text, false, false}, {"maxVersion", V::Text, false, false},
                     {"curvePreferences", V::TextOrList, false, false}}, found);
             } else if (security == "reality") {

@@ -56,6 +56,22 @@ namespace Configs {
             if ((normalized.isEmpty() || normalized == "raw") && (security == "tls" || security == "reality")) return {};
             return QCoreApplication::translate("Validation", "XTLS Vision needs the raw network with TLS or REALITY, or VLESS encryption: change the network or security, or clear the flow.");
         }
+
+        QString XrayXDriveEncryption(const QString &encryption, const QString &network) {
+            if (NormalizeXrayNetwork(network.trimmed()) != "xdrive" || IsVlessEncrypted(encryption.trimmed())) return {};
+            return QCoreApplication::translate("Validation", "XDRIVE needs VLESS encryption: enter the mlkem768x25519plus string the server gives.");
+        }
+
+        QString XrayXDriveFlow(const QString &flow, const QString &network) {
+            const auto f = flow.trimmed();
+            if (NormalizeXrayNetwork(network.trimmed()) != "xdrive" || f.isEmpty() || f.compare("none", Qt::CaseInsensitive) == 0) return {};
+            return QCoreApplication::translate("Validation", "XDRIVE does not support a flow; clear it.");
+        }
+
+        QString XrayXDriveMux(int muxState, const QString &network) {
+            if (NormalizeXrayNetwork(network.trimmed()) != "xdrive" || muxState != 2) return {};
+            return QCoreApplication::translate("Validation", "XDRIVE needs Mux: set it to On or Keep Default.");
+        }
     }
 
     bool xrayVless::ParseFromLink(const QString &link) {
@@ -113,6 +129,8 @@ namespace Configs {
     }
 
     QString xrayVless::ExportToLink() {
+        // Callers fall back to ExportJsonLink, which keeps the storage settings a vless:// link cannot carry.
+        if (NormalizeXrayNetwork(streamSetting->network) == "xdrive") return {};
         QUrl url;
         QUrlQuery query;
         url.setScheme("vless");
@@ -169,7 +187,17 @@ namespace Configs {
         if (!streamObj.isEmpty()) object["streamSettings"] = streamObj;
         // Not in ExportToJson: a copied interface would outlive clearing the bind in the Advanced dialog.
         BindXrayDownloadLeg(object, dialFields->bind_interface);
-        if (auto muxObj = multiplex->Build().object; !muxObj.isEmpty()) object["mux"] = muxObj;
+        // Xray refuses XDRIVE without Mux, so Keep Default turns it on there.
+        const bool muxRequired = NormalizeXrayNetwork(streamSetting->network) == "xdrive";
+        if (auto muxObj = multiplex->BuildMux(muxRequired || Configs::dataManager->settingsRepo->xray_mux_default_on); !muxObj.isEmpty()) {
+            // It also refuses any traffic leaving the mux there, which a preset may ask for.
+            if (muxRequired) {
+                if (muxObj["concurrency"].toInt() < 0) muxObj.remove("concurrency");
+                if (muxObj["xudpConcurrency"].toInt() < 0) muxObj.remove("xudpConcurrency");
+                if (muxObj["xudpProxyUDP443"].toString() == "skip") muxObj.remove("xudpProxyUDP443");
+            }
+            object["mux"] = muxObj;
+        }
         return {object, ""};
     }
 
@@ -217,6 +245,15 @@ namespace Configs {
             issues.append({Severity::Error, "flow", message, flow});
         } else if (auto message = Checks::XrayVlessVision(flow, encryption, streamSetting->network, streamSetting->security); !message.isEmpty()) {
             issues.append({Severity::Error, "flow", message, flow});
+        } else if (auto message = Checks::XrayXDriveFlow(flow, streamSetting->network); !message.isEmpty()) {
+            issues.append({Severity::Error, "flow", message, flow});
         }
+        if (auto message = Checks::XrayXDriveEncryption(encryption, streamSetting->network); !message.isEmpty()) {
+            issues.append({Severity::Error, "encryption", message});
+        }
+        if (auto message = Checks::XrayXDriveMux(multiplex->getMuxState(), streamSetting->network); !message.isEmpty()) {
+            issues.append({Severity::Error, "mux", message});
+        }
+        multiplex->Validate(issues);
     }
 }

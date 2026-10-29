@@ -121,7 +121,7 @@ func NewInstance(platform PlatformInterface, options *StartOptions) (*Instance, 
 	boxInstance, err := box.New(box.Options{
 		Context:           ctx,
 		Options:           boxOptions,
-		PlatformLogWriter: platformLogWriter{},
+		PlatformLogWriter: newPlatformLogWriter(boxOptions.Log),
 	})
 	if err != nil {
 		cancel()
