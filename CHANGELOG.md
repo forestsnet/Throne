@@ -1,3 +1,28 @@
+#### 1.4.4
+
+* Fix a connection that reported itself connected and carried nothing **1**
+* Choose the direct resolver out of eight instead of one, and say in the log what answered **2**
+* Resolve the server's own address before the tunnel and never ask for it again **3**
+* Fix groups and profiles failing to load on a database carried over from an older version **4**
+* Show the whole explanation when a subscription will not open
+* One interface mode in the client, not two **5**
+* Everything upstream brought along: the Ctrl+K command palette, the about window, XDRIVE, per-profile Mux settings, native file pickers, better macOS Tun DNS handling and the rest
+
+**1**:
+The direct resolver turns our own server name into an address, and it does that for every new connection rather than once at startup. Since 1.3.15 it defaulted to plain port 53, and on Windows strict route has the core install a firewall filter that blocks port 53 on every interface except the tunnel's - the core's own queries included. So the tunnel came up, nothing resolved behind it, and the client went on reporting itself connected while every attempt timed out and started again. The default is an encrypted resolver addressed by number again, and installs still holding the old one are moved with it.
+
+**2**:
+The round that picks the resolver used to run only after the configured one had failed a single probe, which is no use against a resolver that answers once and falls apart in use. Every candidate is now asked at once, and asked for the name of the server about to be dialled rather than some neutral one, so a resolver that cannot answer for it is not chosen. Nothing that cannot survive the tunnel is chosen either. Which of them answered, and how fast, goes to the log - on someone else's machine that is the first thing worth knowing.
+
+**3**:
+The address is learned from that same round, before the tunnel has taken the routes and while everything still works, and handed to the core. Afterwards the name is answered without a single query leaving the machine, which is what keeps a session alive when the resolver behind it stops answering. A subscription moves, so it is learned again on every connect and kept for exactly one session.
+
+**4**:
+A column added to the schema needs a migration beside it, or databases made before it never get one. Four columns in the groups table and three in profiles had none, so a database old enough to predate them failed on every read, the subscription could not be saved, and the client sat in a restart loop.
+
+**5**:
+Upstream added a simple mode of its own, which hides the advanced options inside the advanced window, and it starts switched on. Anyone who left this client's simple interface for the advanced one arrived to find options missing and nothing on screen to say why. Someone who opens the advanced window has asked for the options, so the client keeps one mode - its own.
+
 #### 1.4.0-beta.4
 
 * Add DNS settings to route profiles
