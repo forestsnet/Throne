@@ -65,6 +65,45 @@
     </message>
 </context>
 <context>
+    <name>CommandPalette</name>
+    <message>
+        <source>Search Settings</source>
+        <translation>Поиск настроек</translation>
+    </message>
+    <message>
+        <source>Search settings</source>
+        <translation>Поиск настроек</translation>
+    </message>
+    <message>
+        <source>↑↓ move · Enter run · Esc close · &gt; commands only · @ settings only</source>
+        <translation>↑↓ выбор · Enter выполнить · Esc закрыть · &gt; только команды · @ только настройки</translation>
+    </message>
+    <message>
+        <source>Commands</source>
+        <translation>Команды</translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished">Настройки</translation>
+    </message>
+    <message>
+        <source>Settings in Advanced mode</source>
+        <translation>Настройки расширенного режима</translation>
+    </message>
+    <message>
+        <source>Nothing found</source>
+        <translation>Ничего не нашлось</translation>
+    </message>
+    <message>
+        <source> (on)</source>
+        <translation> (вкл)</translation>
+    </message>
+    <message>
+        <source> (off)</source>
+        <translation> (выкл)</translation>
+    </message>
+</context>
+<context>
     <name>ConnectPanel</name>
     <message>
         <source>The tunnel needs administrator rights</source>
@@ -159,6 +198,10 @@ You can try again — the password window will come back. Or connect through the
     <message>
         <source>System</source>
         <translation>Система</translation>
+    </message>
+    <message>
+        <source>Matched: %1 → %2</source>
+        <translation>Сработало: %1 → %2</translation>
     </message>
     <message>
         <source>Process: %1
@@ -302,6 +345,29 @@ Outbound: %4</translation>
     <message>
         <source>Recording… %1 left</source>
         <translation>Запись… Осталось %1</translation>
+    </message>
+</context>
+<context>
+    <name>DialogAbout</name>
+    <message>
+        <source>About Throne</source>
+        <translation>О программе</translation>
+    </message>
+    <message>
+        <source>Version:</source>
+        <translation>Версия:</translation>
+    </message>
+    <message>
+        <source>Open-source and cross platform Desktop Proxy management utility developed as a successor to Nekoray.</source>
+        <translation>Открытая кроссплатформенная программа для управления прокси, продолжение Nekoray.</translation>
+    </message>
+    <message>
+        <source>Support Throne</source>
+        <translation>Поддержать Throne</translation>
+    </message>
+    <message>
+        <source>Unknown</source>
+        <translation type="unfinished">Неизвестно</translation>
     </message>
 </context>
 <context>
@@ -704,6 +770,14 @@ The local network stays reachable unless Private Range Bypass is turned off in T
         <translation>Kill switch</translation>
     </message>
     <message>
+        <source>Xray verifies servers only against its built-in root certificates. Turn this on to also trust the certificates installed in the system, such as a company or self-signed root. A profile or Xray config that sets useSystemCA itself keeps its own value.</source>
+        <translation>Xray проверяет серверы только по встроенным корневым сертификатам. Включите, чтобы он доверял и тем, что установлены в системе, — например, корпоративному или самоподписанному корню. Профиль или конфигурация Xray, где useSystemCA задан явно, сохраняет своё значение.</translation>
+    </message>
+    <message>
+        <source>Trust System Certificates in Xray</source>
+        <translation>Доверять системным сертификатам в Xray</translation>
+    </message>
+    <message>
         <source>Skip TLS certificate authentication by default (allowInsecure)</source>
         <translation>Не проверять TLS-сертификаты по умолчанию (allowInsecure)</translation>
     </message>
@@ -882,6 +956,22 @@ The local network stays reachable unless Private Range Bypass is turned off in T
     <message>
         <source>Follow Status Icon in Taskbar</source>
         <translation>Показывать иконку статуса на панели задач</translation>
+    </message>
+    <message>
+        <source>Simple hides the advanced options. They keep their values and still apply.</source>
+        <translation>Простой режим прячет расширенные настройки. Значения сохраняются и продолжают действовать.</translation>
+    </message>
+    <message>
+        <source>Interface</source>
+        <translation type="unfinished">Интерфейс</translation>
+    </message>
+    <message>
+        <source>Simple</source>
+        <translation>Простой</translation>
+    </message>
+    <message>
+        <source>Advanced</source>
+        <translation>Дополнительно</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When enabled, a window listing added / updated / deleted profiles is shown after a manual subscription update. The same information is always written to the log.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -2205,20 +2295,20 @@ Throne will restart to complete the restore.</source>
         <translation>Выкл.</translation>
     </message>
     <message>
-        <source>Brutal Download Speed</source>
-        <translation>Скорость скачивания (Brutal)</translation>
-    </message>
-    <message>
-        <source>Brutal Upload Speed</source>
-        <translation>Скорость отдачи (Brutal)</translation>
-    </message>
-    <message>
         <source>Advanced Settings</source>
         <translation>Доп. настройки</translation>
     </message>
     <message>
         <source>Finalmask</source>
         <translation>Finalmask</translation>
+    </message>
+    <message>
+        <source>Custom</source>
+        <translation>Свой</translation>
+    </message>
+    <message>
+        <source>Configure</source>
+        <translation>Настроить</translation>
     </message>
     <message>
         <source>Network Settings (%1)</source>
@@ -2457,6 +2547,82 @@ Throne will restart to complete the restore.</source>
         <translation>hKeepAlivePeriod</translation>
     </message>
     <message>
+        <source>Storage</source>
+        <translation>Хранилище</translation>
+    </message>
+    <message>
+        <source>Service</source>
+        <translation>Служба</translation>
+    </message>
+    <message>
+        <source>Folder</source>
+        <translation type="unfinished">Папка</translation>
+    </message>
+    <message>
+        <source>Client ID</source>
+        <translation>Client ID</translation>
+    </message>
+    <message>
+        <source>Client Secret</source>
+        <translation>Client Secret</translation>
+    </message>
+    <message>
+        <source>Refresh Token</source>
+        <translation>Refresh Token</translation>
+    </message>
+    <message>
+        <source>Secrets</source>
+        <translation>Секреты</translation>
+    </message>
+    <message>
+        <source>Template</source>
+        <translation>Шаблон</translation>
+    </message>
+    <message>
+        <source>Front Address</source>
+        <translation>Адрес прикрытия</translation>
+    </message>
+    <message>
+        <source>Front Port</source>
+        <translation>Порт прикрытия</translation>
+    </message>
+    <message>
+        <source>Tuning</source>
+        <translation>Тонкая настройка</translation>
+    </message>
+    <message>
+        <source>Segment Bytes</source>
+        <translation>Размер куска, байт</translation>
+    </message>
+    <message>
+        <source>Flush Interval</source>
+        <translation>Интервал сброса</translation>
+    </message>
+    <message>
+        <source>Poll Interval</source>
+        <translation>Интервал опроса</translation>
+    </message>
+    <message>
+        <source>Max Poll Interval</source>
+        <translation>Наибольший интервал опроса</translation>
+    </message>
+    <message>
+        <source>Eager Window</source>
+        <translation>Окно частого опроса</translation>
+    </message>
+    <message>
+        <source>Hole Timeout</source>
+        <translation>Ожидание пропущенного куска</translation>
+    </message>
+    <message>
+        <source>Session TTL</source>
+        <translation>Время жизни сессии</translation>
+    </message>
+    <message>
+        <source>Concurrency</source>
+        <translation type="unfinished">Кол-во потоков</translation>
+    </message>
+    <message>
         <source>Max Concurrency</source>
         <translation>Max Concurrency</translation>
     </message>
@@ -2559,22 +2725,6 @@ Throne will restart to complete the restore.</source>
     <message>
         <source>Already set</source>
         <translation>Уже задано</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Overrides mux to On&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Принудительно включает мультиплексирование&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Enable TCP Brutal</source>
-        <translation>Включить TCP Brutal</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Server to Client TCP Brutal Speed&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Скорость TCP Brutal от сервера к клиенту&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Mb/s</source>
-        <translation>Мбит/с</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -2833,6 +2983,82 @@ Throne will restart to complete the restore.</source>
     <message>
         <source>The short ID has no effect without a Reality public key, so Reality stays off.</source>
         <translation>Short ID не действует без публичного ключа Reality, поэтому Reality остается выключенным.</translation>
+    </message>
+    <message>
+        <source>Where both ends exchange the stream: google-drive uses a Google Drive folder, template any HTTP storage API described by Template, local a folder on this machine.</source>
+        <translation>Где стороны обмениваются потоком: google-drive — папка Google Drive, template — любое хранилище с HTTP API, описанное шаблоном, local — папка на этой машине.</translation>
+    </message>
+    <message>
+        <source>google-drive: the folder ID. local: a directory path. template: read as {folder}.</source>
+        <translation>google-drive: идентификатор папки. local: путь к каталогу. template: читается как {folder}.</translation>
+    </message>
+    <message>
+        <source>The Google Drive OAuth client ID.</source>
+        <translation>Идентификатор клиента OAuth для Google Drive.</translation>
+    </message>
+    <message>
+        <source>The Google Drive OAuth client secret.</source>
+        <translation>Секрет клиента OAuth для Google Drive.</translation>
+    </message>
+    <message>
+        <source>The OAuth refresh token for the Google account that owns the folder.</source>
+        <translation>Refresh-токен OAuth для учётной записи Google, которой принадлежит папка.</translation>
+    </message>
+    <message>
+        <source>Values the template reads as {secret0}, {secret1}, …, separated by commas.</source>
+        <translation>Значения, которые шаблон читает как {secret0}, {secret1} и далее, через запятую.</translation>
+    </message>
+    <message>
+        <source>The storage API&apos;s auth, put, get, list and delete operations, as JSON.</source>
+        <translation>Операции auth, put, get, list и delete у хранилища, в виде JSON.</translation>
+    </message>
+    <message>
+        <source>Optional domain front: the storage API is dialed at this address while TLS still names the API host.</source>
+        <translation>Необязательное прикрытие домена: к хранилищу подключаемся по этому адресу, а в TLS остаётся имя его API.</translation>
+    </message>
+    <message>
+        <source>Port of the front address. Default: 443.</source>
+        <translation>Порт адреса прикрытия. По умолчанию 443.</translation>
+    </message>
+    <message>
+        <source>Largest upload per file, in bytes. Default: 524288; Xray caps it at 16 MiB.</source>
+        <translation>Наибольший объём одной загрузки, в байтах. По умолчанию 524288, предел Xray — 16 МиБ.</translation>
+    </message>
+    <message>
+        <source>How long writes are gathered before an upload, in milliseconds. Default: 20.</source>
+        <translation>Сколько записи копятся перед отправкой, в миллисекундах. По умолчанию 20.</translation>
+    </message>
+    <message>
+        <source>Shortest wait between checks for new files, in milliseconds. Default: 50.</source>
+        <translation>Наименьшая пауза между проверками новых файлов, в миллисекундах. По умолчанию 50.</translation>
+    </message>
+    <message>
+        <source>Longest wait between checks while the stream is idle, in milliseconds. Default: 500.</source>
+        <translation>Наибольшая пауза между проверками, пока поток простаивает, в миллисекундах. По умолчанию 500.</translation>
+    </message>
+    <message>
+        <source>How long after traffic polling stays at the shortest wait, in milliseconds. Default: 2000.</source>
+        <translation>Сколько после трафика опрос держит наименьшую паузу, в миллисекундах. По умолчанию 2000.</translation>
+    </message>
+    <message>
+        <source>How long a missing segment is waited for before the stream fails, in milliseconds. Default: 30000.</source>
+        <translation>Сколько ждать пропущенный кусок, прежде чем оборвать поток, в миллисекундах. По умолчанию 30000.</translation>
+    </message>
+    <message>
+        <source>How long an idle session lives before its files are cleaned up, in seconds. Default: 300.</source>
+        <translation>Сколько простаивающая сессия живёт до уборки её файлов, в секундах. По умолчанию 300.</translation>
+    </message>
+    <message>
+        <source>Parallel storage requests per stream. Default: 8; Xray caps it at 64.</source>
+        <translation>Сколько запросов к хранилищу идёт параллельно на поток. По умолчанию 8, предел Xray — 64.</translation>
+    </message>
+    <message>
+        <source>Google Drive folder ID</source>
+        <translation>Идентификатор папки Google Drive</translation>
+    </message>
+    <message>
+        <source>A directory path</source>
+        <translation>Путь к каталогу</translation>
     </message>
 </context>
 <context>
@@ -3806,6 +4032,10 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
         <translation>Обязательно, пока включен WARP: нажмите «Сгенерировать конфигурацию Warp» или заполните поле вручную.</translation>
     </message>
     <message>
+        <source>WARP has no config yet: click Generate Warp Config.</source>
+        <translation>У WARP ещё нет конфигурации — нажмите «Создать конфигурацию WARP».</translation>
+    </message>
+    <message>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
@@ -4154,14 +4384,6 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
     <message>
         <source>Multiplex</source>
         <translation>Мультиплексирование</translation>
-    </message>
-    <message>
-        <source>Protocol</source>
-        <translation>Протокол</translation>
-    </message>
-    <message>
-        <source>Concurrency</source>
-        <translation>Кол-во потоков</translation>
     </message>
     <message>
         <source>Default On</source>
@@ -5021,6 +5243,38 @@ Close without saving?</source>
     <message>
         <source>App</source>
         <translation>Приложение</translation>
+    </message>
+</context>
+<context>
+    <name>DialogUpdate</name>
+    <message>
+        <source>Update (Pre-release)</source>
+        <translation>Обновление (предварительный выпуск)</translation>
+    </message>
+    <message>
+        <source>Update</source>
+        <translation>Обновление</translation>
+    </message>
+    <message>
+        <source>Throne %1 is available, you are using %2.</source>
+        <translation>Вышла версия %1, у вас %2.</translation>
+    </message>
+    <message>
+        <source>Release notes are unavailable.</source>
+        <translation>Описание выпуска недоступно.</translation>
+    </message>
+    <message>
+        <source>Update</source>
+        <comment>button</comment>
+        <translation>Обновить</translation>
+    </message>
+    <message>
+        <source>Open in browser</source>
+        <translation type="unfinished">Открыть в браузере</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished">Закрыть</translation>
     </message>
 </context>
 <context>
@@ -9399,6 +9653,14 @@ You can change this later in settings.</source>
         <translation>Запоминать последний профиль</translation>
     </message>
     <message>
+        <source>Advanced Mode</source>
+        <translation>Расширенный режим</translation>
+    </message>
+    <message>
+        <source>Show every option. Simple mode hides the advanced ones; they keep their values and still apply.</source>
+        <translation>Показывать все настройки. Простой режим прячет расширенные — значения сохраняются и продолжают действовать.</translation>
+    </message>
+    <message>
         <source>Allow other devices to connect</source>
         <translation>Разрешить подключаться другим устройствам</translation>
     </message>
@@ -9461,6 +9723,10 @@ You can change this later in settings.</source>
     <message>
         <source>Update all subscriptions</source>
         <translation>Обновить все подписки</translation>
+    </message>
+    <message>
+        <source>About</source>
+        <translation>О программе</translation>
     </message>
     <message>
         <source>Update Rule-Sets</source>
@@ -9787,6 +10053,22 @@ Download them now?</source>
         <translation>Geo-файлы установлены</translation>
     </message>
     <message>
+        <source>Leftover Tun adapter</source>
+        <translation>Остался адаптер Tun</translation>
+    </message>
+    <message>
+        <source>Windows was still holding the Tun adapter from an earlier session that did not close cleanly. Starting the profile again usually works; if it keeps failing, restart Windows.
+
+Error: %1</source>
+        <translation>Windows всё ещё держал адаптер Tun от прошлой сессии, которая завершилась неправильно. Обычно хватает запустить профиль ещё раз, а если не помогает — перезагрузить Windows.
+
+Ошибка: %1</translation>
+    </message>
+    <message>
+        <source>Start Again</source>
+        <translation>Запустить снова</translation>
+    </message>
+    <message>
         <source>FSNT Client needs your password to let the tunnel start.</source>
         <translation>FSNT Client просит пароль, чтобы поднять туннель.</translation>
     </message>
@@ -9985,6 +10267,18 @@ Error: %1</source>
     <message>
         <source>Remove %1 insecure config(s)?</source>
         <translation>Удалить %1 небезопасных конфигураций?</translation>
+    </message>
+    <message>
+        <source>Failed to resolve domains: %1</source>
+        <translation>Не удалось разрешить имена: %1</translation>
+    </message>
+    <message>
+        <source>the core did not answer</source>
+        <translation>ядро не ответило</translation>
+    </message>
+    <message>
+        <source>Failed to resolve %1: %2</source>
+        <translation>Не удалось разрешить %1: %2</translation>
     </message>
     <message>
         <source>Replace domain server addresses with their resolved IPs?</source>
@@ -10261,12 +10555,40 @@ Name: %1</source>
         <translation>Изменить правила</translation>
     </message>
     <message>
+        <source>Specific server</source>
+        <translation>Отдельный сервер</translation>
+    </message>
+    <message>
+        <source>Route through another server</source>
+        <translation>Направить через другой сервер</translation>
+    </message>
+    <message>
+        <source>There are no servers to route to.</source>
+        <translation>Направлять некуда — серверов нет.</translation>
+    </message>
+    <message>
         <source>%1 rules</source>
         <translation>Правила «%1»</translation>
     </message>
     <message>
+        <source>Specific server rules</source>
+        <translation>Правила отдельного сервера</translation>
+    </message>
+    <message>
         <source>Routing profile &quot;%1&quot;. Checked targets go %2; unchecking one removes its rule.</source>
         <translation>Профиль маршрутизации &quot;%1&quot;. Отмеченные цели попадают в правила «%2»; снятие флажка удаляет правило.</translation>
+    </message>
+    <message>
+        <source>Routing profile &quot;%1&quot;. Checked targets go through the chosen server; unchecking one removes its rule.</source>
+        <translation>Профиль маршрутизации «%1». Отмеченные цели идут через выбранный сервер, снятая отметка убирает правило.</translation>
+    </message>
+    <message>
+        <source>Server (type part of its name to search):</source>
+        <translation>Сервер (начните вводить имя для поиска):</translation>
+    </message>
+    <message>
+        <source>Search servers</source>
+        <translation>Поиск серверов</translation>
     </message>
     <message>
         <source>in %1</source>
@@ -10759,10 +11081,6 @@ Details: %3</source>
         <translation>DNS для прямых запросов</translation>
     </message>
     <message>
-        <source>Direct DNS %1 did not answer, using %2</source>
-        <translation type="unfinished">Прямой DNS %1 не ответил, используется %2</translation>
-    </message>
-    <message>
         <source>Direct DNS switched to %1</source>
         <translation>Прямой DNS переключён на %1</translation>
     </message>
@@ -10817,6 +11135,69 @@ Details: %3</source>
     <message>
         <source>routing profiles</source>
         <translation type="unfinished">профилей маршрутизации</translation>
+    </message>
+    <message>
+        <source>Search Settings</source>
+        <translation>Поиск настроек</translation>
+    </message>
+    <message>
+        <source>close the open settings window first</source>
+        <translation>сначала закройте открытое окно настроек</translation>
+    </message>
+    <message>
+        <source>close &quot;%1&quot; first</source>
+        <translation>сначала закройте «%1»</translation>
+    </message>
+</context>
+<context>
+    <name>MuxSettingsWidget</name>
+    <message>
+        <source>Protocol</source>
+        <translation type="unfinished">Протокол</translation>
+    </message>
+    <message>
+        <source>Max Streams</source>
+        <translation>Наибольшее число потоков</translation>
+    </message>
+    <message>
+        <source>Max Connections</source>
+        <translation type="unfinished">Max Connections</translation>
+    </message>
+    <message>
+        <source>Mode</source>
+        <translation type="unfinished">Режим</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Max Streams&lt;/b&gt;: reuse a connection until it carries this many streams, then open another.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Max Connections&lt;/b&gt;: keep at most this many connections, and open a new one only while the least busy connection already carries Min Streams streams.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Наибольшее число потоков&lt;/b&gt;: соединение используется повторно, пока не наберёт столько потоков, после чего открывается следующее.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Наибольшее число соединений&lt;/b&gt;: держать не больше такого числа соединений, и открывать новое только когда самое свободное из них уже несёт наименьшее число потоков.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Min Streams</source>
+        <translation>Наименьшее число потоков</translation>
+    </message>
+    <message>
+        <source>Padding</source>
+        <translation>Набивка</translation>
+    </message>
+    <message>
+        <source>TCP Brutal</source>
+        <translation>TCP Brutal</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TCP Brutal congestion control at the speeds below; the server must support it. Every stream then shares one connection, so the mode is ignored.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Управление перегрузкой TCP Brutal на скоростях ниже, сервер должен его поддерживать. Все потоки при этом идут в одном соединении, так что режим не учитывается.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Upload (Mb/s)</source>
+        <translation>Отдача (Мбит/с)</translation>
+    </message>
+    <message>
+        <source>Download (Mb/s)</source>
+        <translation>Приём (Мбит/с)</translation>
+    </message>
+    <message>
+        <source>Custom Multiplex</source>
+        <translation>Свой мультиплекс</translation>
     </message>
 </context>
 <context>
@@ -14417,12 +14798,8 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Резолвер для имен серверов Throne выбирает сам.</translation>
     </message>
     <message>
-        <source>A missing, 0 or negative speed is sent as 1 Mbps. Enter your speed in Mbps, for example 100.</source>
-        <translation>Отсутствующая, нулевая или отрицательная скорость отправляется как 1 Мбит/с. Укажите скорость в Мбит/с, например 100.</translation>
-    </message>
-    <message>
-        <source>TCP Brutal only works with multiplex on. Set Multiplex to On.</source>
-        <translation>TCP Brutal работает только с включенным мультиплексированием. Установите для «Мультиплексирование» значение «Вкл.».</translation>
+        <source>TCP Brutal only works with a custom multiplex. Set Multiplex to Custom.</source>
+        <translation>TCP Brutal работает только со своим мультиплексом. Выберите в мультиплексе «Свой».</translation>
     </message>
     <message>
         <source>TCP Brutal needs both speeds; a missing one is sent as 1 Mbps.</source>
@@ -14633,8 +15010,12 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Значение finalmask проигнорировано: оно должно быть объектом JSON.</translation>
     </message>
     <message>
-        <source>Throne does not support the Xray transport &quot;%1&quot;. Use raw, xhttp, ws, httpupgrade or grpc.</source>
-        <translation>Throne не поддерживает транспорт Xray &quot;%1&quot;. Используйте raw, xhttp, ws, httpupgrade или grpc.</translation>
+        <source>XDRIVE has no share-link format. Import the server&apos;s JSON configuration instead.</source>
+        <translation>У XDRIVE нет формата ссылки. Импортируйте конфигурацию сервера в JSON.</translation>
+    </message>
+    <message>
+        <source>Throne does not support the Xray transport &quot;%1&quot;. Use raw, xhttp, ws, httpupgrade, grpc or xdrive.</source>
+        <translation>Throne не поддерживает транспорт Xray «%1». Возьмите raw, xhttp, ws, httpupgrade, grpc или xdrive.</translation>
     </message>
     <message>
         <source>Xray does not support the security &quot;%1&quot;. Use none, tls or reality.</source>
@@ -14707,6 +15088,30 @@ Paste the link your provider gave you and the servers will appear here.</source>
     <message>
         <source>Set either Max Connections or Max Concurrency, not both.</source>
         <translation>Укажите либо «Max Connections», либо «Max Concurrency», но не оба.</translation>
+    </message>
+    <message>
+        <source>Must be google-drive, template or local.</source>
+        <translation>Допустимо google-drive, template или local.</translation>
+    </message>
+    <message>
+        <source>Enter the directory both ends share.</source>
+        <translation>Укажите каталог, общий для обеих сторон.</translation>
+    </message>
+    <message>
+        <source>Enter the ID of the Google Drive folder both ends share.</source>
+        <translation>Укажите идентификатор папки Google Drive, общей для обеих сторон.</translation>
+    </message>
+    <message>
+        <source>Google Drive needs the client ID, client secret and refresh token.</source>
+        <translation>Для Google Drive нужны идентификатор клиента, секрет клиента и refresh-токен.</translation>
+    </message>
+    <message>
+        <source>The template service needs a template describing the storage API.</source>
+        <translation>Службе template нужен шаблон, описывающий API хранилища.</translation>
+    </message>
+    <message>
+        <source>The front port is used only together with a front address.</source>
+        <translation>Порт прикрытия работает только вместе с адресом прикрытия.</translation>
     </message>
     <message>
         <source>The DNS address is empty.</source>
@@ -15521,6 +15926,18 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>XTLS Vision требует сеть raw с TLS или REALITY либо шифрование VLESS: измените сеть или безопасность либо очистите flow.</translation>
     </message>
     <message>
+        <source>XDRIVE needs VLESS encryption: enter the mlkem768x25519plus string the server gives.</source>
+        <translation>XDRIVE требует шифрования VLESS — вставьте строку mlkem768x25519plus, которую даёт сервер.</translation>
+    </message>
+    <message>
+        <source>XDRIVE does not support a flow; clear it.</source>
+        <translation>XDRIVE не поддерживает flow — очистите его.</translation>
+    </message>
+    <message>
+        <source>XDRIVE needs Mux: set it to On or Keep Default.</source>
+        <translation>XDRIVE требует мультиплекс — включите его или оставьте по умолчанию.</translation>
+    </message>
+    <message>
         <source>Expected a whole number; ignored.</source>
         <translation>Ожидалось целое число; игнорируется.</translation>
     </message>
@@ -16311,6 +16728,61 @@ Paste the link your provider gave you and the servers will appear here.</source>
     <message>
         <source>Warnings:</source>
         <translation>Предупреждения:</translation>
+    </message>
+</context>
+<context>
+    <name>XrayMuxSettingsWidget</name>
+    <message>
+        <source>Concurrency</source>
+        <translation type="unfinished">Кол-во потоков</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Streams one connection carries before another opens. 0 uses Xray&apos;s 8, and -1 sends TCP outside the mux.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Сколько потоков несёт одно соединение, прежде чем откроется следующее. 0 — восемь, как у Xray, -1 — вести TCP мимо мультиплекса.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>No limit</source>
+        <translation type="unfinished">Без ограничения</translation>
+    </message>
+    <message>
+        <source>Max Connections</source>
+        <translation type="unfinished">Max Connections</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Keep at most this many connections, for TCP and for XUDP each. Once every one carries Concurrency streams, new streams join the least busy one.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Держать не больше такого числа соединений, отдельно для TCP и для XUDP. Когда все они набрали заданную параллельность, новые потоки идут в самое свободное.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>XUDP Concurrency</source>
+        <translation>Параллельность XUDP</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;UDP streams per connection, on connections of their own. 0 carries UDP on the TCP connections, and -1 sends it outside the mux.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Сколько потоков UDP несёт одно соединение, на отдельных соединениях. 0 — вести UDP по соединениям TCP, -1 — мимо мультиплекса.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Reject</source>
+        <translation>Отклонять</translation>
+    </message>
+    <message>
+        <source>Allow</source>
+        <translation>Пропускать</translation>
+    </message>
+    <message>
+        <source>Skip</source>
+        <translation type="unfinished">Пропустить</translation>
+    </message>
+    <message>
+        <source>UDP/443</source>
+        <translation>UDP/443</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;UDP to port 443, mostly QUIC. &lt;b&gt;Reject&lt;/b&gt; makes browsers fall back to TCP (Xray&apos;s default), &lt;b&gt;Allow&lt;/b&gt; carries it through the mux, and &lt;b&gt;Skip&lt;/b&gt; sends it outside the mux.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;UDP на порт 443, почти всегда QUIC. &lt;b&gt;Отклонять&lt;/b&gt; — браузеры откатятся на TCP (так по умолчанию у Xray), &lt;b&gt;Пропускать&lt;/b&gt; — вести через мультиплекс, &lt;b&gt;Пропустить мимо&lt;/b&gt; — вести мимо мультиплекса.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Custom Mux</source>
+        <translation>Свой мультиплекс</translation>
     </message>
 </context>
 </TS>
