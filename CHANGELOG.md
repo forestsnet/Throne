@@ -1,3 +1,18 @@
+#### 1.4.5
+
+* Keep the log of the session that broke instead of truncating it at the next start **1**
+* Make the direct DNS fix in the diagnostics apply the address it finds **2**
+* Fix the Docker image never reaching ghcr.io **3**
+
+**1**:
+Every start opened throne.log with truncation, and only a crash set the previous session aside. The run in which something went wrong was therefore gone as soon as the client was restarted, which is exactly what people do before collecting a report - support had taken to telling them not to. The previous session now rotates to throne.log.1 the way the size limit already did, and five are kept rather than three, since a rotation happens per run now and not only per four megabytes.
+
+**2**:
+The button wrote the address it found into the picked-resolver setting, which nothing reads while the automatic switch is off. The round ran, the configured address stayed where it was, the check went red again, and from the outside the button did nothing at all. It now writes the address itself, clears the picked one the way the settings dialog does on a manual change, and reports the result in a message box, since the log behind it cannot be seen from the simple window. The diagnostics report carries the state of the automatic switch and the last picked address as well.
+
+**3**:
+The image is built for ghcr.io, but the job never got that far. Its smoke test signed in to the web UI and then called /api/v1/status with the session cookie alone, which the API refuses - a browser would send that cookie from another site too, so the session's CSRF token has to come back in X-CSRF-Token. The call returned 401, the job failed, and the push step behind it never ran.
+
 #### 1.4.4
 
 * Fix a connection that reported itself connected and carried nothing **1**
