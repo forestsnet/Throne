@@ -162,30 +162,9 @@ void MainWindow::on_menu_profile_debug_info_triggered() {
             processFile.close();
         }
         
-        // 6. Логи ядра (последние 1500 строк)
-        QString coreLogsPath = tempDir + "/06_core_logs.txt";
-        QString logFilePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/sing-box.log";
-        QFile logFile(logFilePath);
-        if (logFile.exists() && logFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            QTextStream in(&logFile);
-            QStringList allLines;
-            while (!in.atEnd()) {
-                allLines.append(in.readLine());
-            }
-            logFile.close();
-            
-            // Берем последние 1500 строк
-            int startLine = qMax(0, allLines.size() - 1500);
-            QStringList last1500 = allLines.mid(startLine);
-            
-            QFile coreLogsFile(coreLogsPath);
-            if (coreLogsFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-                QTextStream out(&coreLogsFile);
-                out << last1500.join("\n");
-                coreLogsFile.close();
-            }
-        }
-        
+        // 6. Отдельного файла для логов ядра нет: ядро пишет в общий журнал
+        // приложения, и всё его видно в 07_app_throne.log с меткой [ui].
+
         // 7. Логи приложения (пишутся подсистемой Logging: ротация + логи прошлых сессий)
         const QString logDir = Logging::LogDir();
         if (!logDir.isEmpty()) {
@@ -222,6 +201,11 @@ void MainWindow::on_menu_profile_debug_info_triggered() {
             stream << "Remote DNS strategy: " << (settings->remote_dns_disable_ipv6 ? "ipv4_only" : "auto") << "\n";
             stream << "Direct DNS: " << settings->direct_dns << "\n";
             stream << "Direct DNS strategy: " << (settings->direct_dns_disable_ipv6 ? "ipv4_only" : "auto") << "\n";
+            stream << "Direct DNS auto switch: " << (settings->direct_dns_auto ? "Yes" : "No") << "\n";
+            stream << "Direct DNS picked: "
+                   << (settings->direct_dns_effective.isEmpty() ? QStringLiteral("(configured one)")
+                                                                : settings->direct_dns_effective)
+                   << "\n";
             stream << "Use DNS object: " << (settings->use_dns_object ? "Yes" : "No") << "\n";
             stream << "DNS final out: " << settings->dns_final_out << "\n";
             stream << "Domain strategy: " << settings->resolve_domain_strategy << "\n";

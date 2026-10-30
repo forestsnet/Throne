@@ -12787,6 +12787,10 @@ Release note:
         <translation>Прямой DNS переключён на %1</translation>
     </message>
     <message>
+        <source>Direct DNS switched to %1.</source>
+        <translation>Прямой DNS переключён на %1.</translation>
+    </message>
+    <message>
         <source>No servers in the current subscription. Add the link your provider gave you, or refresh the subscription.</source>
         <translation>В текущей подписке нет серверов. Добавьте ссылку от провайдера или обновите подписку.</translation>
     </message>

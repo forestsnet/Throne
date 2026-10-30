@@ -141,9 +141,22 @@ namespace Fsnt {
                                                                  "connection, or set your own address "
                                                                  "in the settings."));
                                              } else {
-                                                 st->direct_dns_effective = found;
+                                                 // В сам адрес, а не в подобранный на сессию: с
+                                                 // выключенным автопереключением подобранный не
+                                                 // читает никто, и кнопка выглядела мёртвой —
+                                                 // круг отрабатывал, в настройках оставался
+                                                 // прежний адрес, и проверка краснела снова.
+                                                 st->direct_dns = found;
+                                                 // Как и выбор руками в настройках: подбор прошлой
+                                                 // сессии относится уже не к этому адресу.
+                                                 st->direct_dns_effective.clear();
                                                  st->Save();
                                                  MW_show_log(QObject::tr("Direct DNS switched to %1").arg(found));
+                                                 // Журнала человек в простом окне не видит, а
+                                                 // ответа на своё нажатие ждёт здесь же.
+                                                 MessageBoxInfo(QObject::tr("Direct DNS"),
+                                                                QObject::tr("Direct DNS switched to %1.")
+                                                                    .arg(found));
                                              }
                                              done();
                                          });
