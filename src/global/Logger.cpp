@@ -27,7 +27,7 @@
 namespace Logging {
     namespace {
         constexpr qint64 MAX_FILE_BYTES = 4 * 1024 * 1024;
-        constexpr int MAX_ROTATED_FILES = 3;
+        constexpr int MAX_ROTATED_FILES = 5;
         constexpr int MAX_CRASH_LOGS = 5;
         constexpr int MAX_CRASH_DUMPS = 5;
         constexpr int RING_CAPACITY = MAX_RECENT_LINES;
@@ -207,8 +207,7 @@ namespace Logging {
         }
 
         // Caller holds g_mutex. throne.log -> throne.log.1 -> ..., oldest dropped.
-        void rotateLocked() {
-            g_file.close();
+        void shiftRotatedLocked() {
             const QString oldest = g_logPath + "." + QString::number(MAX_ROTATED_FILES);
             QFile::remove(oldest);
             for (int i = MAX_ROTATED_FILES - 1; i >= 1; --i) {
@@ -217,6 +216,12 @@ namespace Logging {
                 if (QFile::exists(from)) QFile::rename(from, to);
             }
             QFile::rename(g_logPath, g_logPath + ".1");
+        }
+
+        // Caller holds g_mutex.
+        void rotateLocked() {
+            g_file.close();
+            shiftRotatedLocked();
             if (!openTruncated(g_file, g_logPath)) return;
             g_fileBytes = 0;
         }
@@ -382,6 +387,13 @@ namespace Logging {
             if (QFile::rename(g_logPath, preserved)) g_previousSessionLog = preserved;
             pruneOldest(g_logDir, {"crashed-*.log"}, MAX_CRASH_LOGS);
         }
+
+        // Журнал прошлой сессии уходит в .1, а не под нож. Раньше каждый запуск
+        // открывал его с обрезанием, и к тому часу, когда человек собирает
+        // диагностику, разбирать было уже нечего: сессия, в которой всё и
+        // сломалось, затиралась первым же перезапуском клиента. Падение сюда не
+        // доходит — его журнал забрали выше, и g_logPath уже нет.
+        if (QFileInfo(g_logPath).size() > 0) shiftRotatedLocked();
 
         if (!openTruncated(g_file, g_logPath)) {
             g_preInit.clear();
