@@ -709,10 +709,14 @@ jobs:
           password=$(docker logs throne-ci 2>&1 | sed -n 's/^thronectl web: created the web UI password: //p' | tail -n1)
           [ -n "$password" ] || { echo "::error::the container log has no created web UI password"; exit 1; }
           jar="$RUNNER_TEMP/web-cookies"
-          jq -nc --arg password "$password" '{password: $password}' |
-            curl -fsSk -c "$jar" -H 'Content-Type: application/json' --data @- "$web/auth/login" |
-            jq -e '.authenticated == true' >/dev/null || { echo "::error::POST /auth/login did not sign in"; exit 1; }
-          curl -fsSk -b "$jar" "$web/api/v1/status" |
+          login=$(jq -nc --arg password "$password" '{password: $password}' |
+            curl -fsSk -c "$jar" -H 'Content-Type: application/json' --data @- "$web/auth/login")
+          jq -e '.authenticated == true' >/dev/null <<<"$login" || { echo "::error::POST /auth/login did not sign in"; exit 1; }
+          # /api refuses a cookie on its own, since a browser would send it from another site too: the
+          # session's CSRF token has to come back in X-CSRF-Token.
+          csrf=$(jq -r '.csrf // empty' <<<"$login")
+          [ -n "$csrf" ] || { echo "::error::POST /auth/login returned no CSRF token"; exit 1; }
+          curl -fsSk -b "$jar" -H "X-CSRF-Token: $csrf" "$web/api/v1/status" |
             jq -e '.capabilities.headless == true' >/dev/null || { echo "::error::GET /api/v1/status through the web UI failed"; exit 1; }
           docker stop --time 45 throne-ci
           code=$(docker inspect -f '{{.State.ExitCode}}' throne-ci)
