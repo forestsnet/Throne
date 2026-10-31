@@ -1625,6 +1625,14 @@ Throne will restart to complete the restore.</source>
         <source>Advanced</source>
         <translation>پیشرفته</translation>
     </message>
+    <message>
+        <source>Allow other devices to connect</source>
+        <translation>به دستگاه های دیگر اجازه اتصال دهید</translation>
+    </message>
+    <message>
+        <source>Lets other devices on your network use this DNS server, for example a router that sends its DNS through this computer. Anyone who can reach this port can then resolve names through your DNS settings.</source>
+        <translation>به دستگاه‌های دیگر شبکه اجازه می‌دهد از این سرور DNS استفاده کنند، مثلاً روتری که DNS خود را از طریق این رایانه می‌فرستد. هر کسی که به این پورت دسترسی داشته باشد می‌تواند نام‌ها را با تنظیمات DNS شما ترجمه کند.</translation>
+    </message>
 </context>
 <context>
     <name>DialogEditGroup</name>
