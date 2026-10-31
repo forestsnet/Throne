@@ -44,6 +44,8 @@ namespace Configs {
                 sort_method INTEGER NOT NULL DEFAULT 0,
                 sort_descending INTEGER NOT NULL DEFAULT 0,
                 provider_policy_json TEXT NOT NULL DEFAULT '',
+                route_id INTEGER NOT NULL DEFAULT -1,
+                import_sub_route INTEGER NOT NULL DEFAULT 0,
                 created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
                 updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
             )
@@ -81,6 +83,8 @@ namespace Configs {
             {"sort_method", "INTEGER NOT NULL DEFAULT 0"},
             {"sort_descending", "INTEGER NOT NULL DEFAULT 0"},
             {"provider_policy_json", "TEXT NOT NULL DEFAULT ''"},
+            {"route_id", "INTEGER NOT NULL DEFAULT -1"},
+            {"import_sub_route", "INTEGER NOT NULL DEFAULT 0"},
             {"created_at", "INTEGER NOT NULL DEFAULT 0"},
             {"updated_at", "INTEGER NOT NULL DEFAULT 0"},
         };
@@ -124,6 +128,8 @@ namespace Configs {
         json["endpoint"] = group->endpoint.ToJson();
         json["front_proxy_id"] = group->front_proxy_id;
         json["landing_proxy_id"] = group->landing_proxy_id;
+        json["route_id"] = group->route_id;
+        json["import_sub_route"] = group->import_sub_route;
         json["column_width"] = QListInt2QJsonArray(group->column_width);
         json["profiles"] = QListInt2QJsonArray(group->profiles);
         json["scroll_last_profile"] = group->scroll_last_profile;
@@ -155,6 +161,8 @@ namespace Configs {
         group->endpoint = EndpointSource::FromJson(json["endpoint"].toObject());
         group->front_proxy_id = json["front_proxy_id"].toInt();
         group->landing_proxy_id = json["landing_proxy_id"].toInt();
+        group->route_id = json["route_id"].toInt(-1);
+        group->import_sub_route = json["import_sub_route"].toBool();
         group->column_width = QJsonArray2QListInt(json["column_width"].toArray());
         group->profiles = QJsonArray2QListInt(json["profiles"].toArray());
         group->scroll_last_profile = json["scroll_last_profile"].toInt(-1);
@@ -190,8 +198,8 @@ namespace Configs {
              front_proxy_id, landing_proxy_id,
              column_width_json, profiles_json, scroll_last_profile, test_sort_by, traffic_sort_by, test_items_to_show,
              type_sort_by, sub_options_json, sub_metadata_json, endpoint_json, sort_method, sort_descending,
-             provider_policy_json)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             provider_policy_json, route_id, import_sub_route)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
                 archive = excluded.archive, skip_auto_update = excluded.skip_auto_update,
                 auto_clear_unavailable = excluded.auto_clear_unavailable, name = excluded.name,
@@ -204,6 +212,7 @@ namespace Configs {
                 sub_metadata_json = excluded.sub_metadata_json, endpoint_json = excluded.endpoint_json,
                 sort_method = excluded.sort_method, sort_descending = excluded.sort_descending,
                 provider_policy_json = excluded.provider_policy_json,
+                route_id = excluded.route_id, import_sub_route = excluded.import_sub_route,
                 updated_at = strftime('%s', 'now')
         )",
             id,
@@ -228,7 +237,9 @@ namespace Configs {
             endpointJson.toStdString(),
             static_cast<int>(group->sort.method),
             group->sort.descending ? 1 : 0,
-            group->provider_policy_json.toStdString()
+            group->provider_policy_json.toStdString(),
+            group->route_id,
+            group->import_sub_route ? 1 : 0
         );
     }
 
@@ -238,7 +249,7 @@ namespace Configs {
                    front_proxy_id, landing_proxy_id,
                    column_width_json, profiles_json, scroll_last_profile, test_sort_by, traffic_sort_by, test_items_to_show,
                    type_sort_by, sub_options_json, sub_metadata_json, endpoint_json, sort_method, sort_descending,
-                   provider_policy_json
+                   provider_policy_json, route_id, import_sub_route
             FROM groups WHERE id = ?
         )", id);
         if (!query || !query->executeStep()) {
@@ -293,6 +304,8 @@ namespace Configs {
         json["sort_method"] = query->getColumn(20).getInt();
         json["sort_descending"] = query->getColumn(21).getInt() != 0;
         json["provider_policy_json"] = QString::fromStdString(query->getColumn(22).getText());
+        json["route_id"] = query->getColumn(23).getInt();
+        json["import_sub_route"] = query->getColumn(24).getInt() != 0;
 
         auto group = groupFromJson(json);
         // Refreshes could map several identical servers onto one id, leaving it in the persisted list once per server (#1775).

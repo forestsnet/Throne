@@ -37,6 +37,7 @@
 #include "include/global/HTTPRequestHelper.hpp"
 #include "include/global/LocalNetwork.hpp"
 #include "include/global/Logger.hpp"
+#include "include/global/RunningProfiles.hpp"
 #include "include/global/SystemStateJournal.hpp"
 #include "include/scanner/ScanManager.h"
 #include "include/sys/HostPresence.hpp"
@@ -94,7 +95,7 @@ void MainWindow::openRouteProfileEditor(int routeId) {
 
     const auto onSaved = [this](const std::shared_ptr<Configs::RouteProfile>& chain) {
         if (!Configs::dataManager->routesRepo->Save(chain)) return;
-        if (chain->id == Configs::dataManager->settingsRepo->current_route_id)
+        if (chain->id == Configs::ActiveRouteId())
             connection()->noteRestartNeeded(Engine::RestartReason::Routing);
     };
     QDialog* editor;

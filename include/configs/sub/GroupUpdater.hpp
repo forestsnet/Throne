@@ -143,9 +143,11 @@ namespace Subscription {
         void afterUrlTest(int gid);
         // emptyReason replaces the generic "nothing found" when no profile is imported; quiet never shows a report box.
         UpdateOutcome importDocuments(int gid, QList<QByteArray> documents, const QString &emptyReason = {}, bool quiet = false);
-        // policyJson: заголовки политики провайдера, сериализованные; пусто, если их не прислали.
+        // policyJson: заголовки политики провайдера, сериализованные. Пусто, если их не прислали.
+        // *routing gets the "routing" header (a Happ routing link), empty when absent.
         bool fetch(const QString &url, const QString &name, const RequestIdentity &identity, QByteArray &body,
-                   Configs::SubUserInfo &subInfo, QString *error = nullptr, QString *policyJson = nullptr);
+                   Configs::SubUserInfo &subInfo, QString *error = nullptr, QString *policyJson = nullptr,
+                   QString *routing = nullptr);
         [[nodiscard]] qint64 autoUpdateDue(const Configs::Group &group, qint64 interval) const;
 
         // UI thread only: in-memory, so a restart retries a failing group once.
