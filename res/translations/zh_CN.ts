@@ -6348,6 +6348,14 @@ rendezvous service. Replaces the server address and port.</source>
         <source>Gecko obfuscation needs a password. Without one, obfuscation is off.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>None</source>
+        <translation>无</translation>
+    </message>
+    <message>
+        <source>Obfuscation needs a password; without one, it is off.</source>
+        <translation>混淆需要密码；没有密码时混淆关闭。</translation>
+    </message>
 </context>
 <context>
     <name>EditHysteriaRealm</name>
