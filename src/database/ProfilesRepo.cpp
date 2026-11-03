@@ -72,6 +72,7 @@ namespace Configs {
         }
 
         db.exec("CREATE INDEX IF NOT EXISTS idx_profiles_name ON profiles(name)");
+        db.exec("CREATE INDEX IF NOT EXISTS idx_profiles_type ON profiles(type)");
     }
 
     QSet<QString> ProfilesRepo::profilesColumns() const {
