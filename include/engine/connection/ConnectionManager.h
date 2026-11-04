@@ -100,7 +100,7 @@ namespace Engine {
         // сборки конфига: списки приложений и dns-from-json попадают прямо в
         // него. И здесь, а не на пути запуска из окна, потому что профиль
         // поднимают ещё автозапуск, перезапуск после падения ядра и remote API.
-        void applyProviderPolicy(int profileId);
+        void applyProviderPolicy(int profileId, bool interactive);
 
         bool ensureTunPrivileges(bool interactive);
 

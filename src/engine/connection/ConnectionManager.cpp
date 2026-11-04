@@ -117,7 +117,7 @@ namespace Engine {
 
         // До сборки конфига: списки приложений и dns-from-json от провайдера
         // попадают прямо в него.
-        applyProviderPolicy(resolved.profileId);
+        applyProviderPolicy(resolved.profileId, resolved.interactive);
 
 #ifdef Q_OS_MACOS
         // После политики: она могла только что включить туннель. Под туннелем

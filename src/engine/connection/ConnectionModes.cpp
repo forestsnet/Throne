@@ -117,7 +117,7 @@ namespace Engine {
     // нельзя: маршруты уйдут ему, подключаться будет некуда, и машина останется
     // вообще без сети. Отсюда, а не из окна: автозапуск, перезапуск и remote API
     // поднимают профиль мимо кнопки, а последствия у них те же.
-    void ConnectionManager::applyProviderPolicy(int profileId) {
+    void ConnectionManager::applyProviderPolicy(int profileId, const bool interactive) {
         if (m_applyingProviderPolicy) return;
 
         const auto ent = Configs::dataManager->profilesRepo->GetProfile(profileId);
@@ -142,11 +142,22 @@ namespace Engine {
         if (policy.updateIntervalHours > 0) settings->sub_auto_update = policy.updateIntervalHours * 60;
         settings->Save();
 
-        // Последним: перезапускает профиль, поэтому прочие настройки уже должны быть записаны.
+        // Последним: меняет режим туннеля, поэтому прочие настройки уже должны
+        // быть записаны.
+        //
+        // restart = false: мы внутри start(), и профиль поднимет он сам уже с
+        // новым режимом. С перезапуском по умолчанию setTun заводил свой
+        // start(), тот уходил в рабочий поток, не отпустив mu_starting, и
+        // нажатие человека следом получало «Another profile is starting...» —
+        // он выбирал сервер B и оставался на A.
+        //
+        // interactive берём у запроса: по умолчанию он true, и запуск из
+        // автозапуска или по удалённому API мог выбросить запрос повышения
+        // прав, которого никто не нажимал.
         if (policy.tunEnable.has_value() && policy.tunEnable.value() != settings->spmode_vpn) {
             MW_show_log(QStringLiteral("[Policy] Provider requests TUN=%1")
                             .arg(policy.tunEnable.value() ? "on" : "off"));
-            setTun(policy.tunEnable.value());
+            setTun(policy.tunEnable.value(), ModeChange{.interactive = interactive, .restart = false});
         }
 
         m_applyingProviderPolicy = false;
