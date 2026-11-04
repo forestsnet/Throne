@@ -3782,6 +3782,14 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
         <translation>نمایه مسیریابی نمی‌تواند خالی باشد</translation>
     </message>
     <message>
+        <source>Routing</source>
+        <translation type="unfinished">مسیریابی</translation>
+    </message>
+    <message>
+        <source>A routing profile was added while this window was open. Close it and open it again, then apply the changes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Structured profile</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8873,6 +8881,12 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <source>Once a day</source>
         <translation type="unfinished"></translation>
     </message>
+    <message numerus="yes">
+        <source>Every %n minute(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
     <message>
         <source>Auto update</source>
         <translation type="unfinished"></translation>
@@ -9866,12 +9880,28 @@ You can change this later in settings.</source>
         <translation>حذف %1 مورد؟</translation>
     </message>
     <message>
+        <source>Remove duplicates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The subscription changed while the question was open. Try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Copied %1 item(s)</source>
         <translation>%1 مورد کپی شد</translation>
     </message>
     <message>
         <source>QR Code not found</source>
         <translation>کد QR یافت نشد</translation>
+    </message>
+    <message>
+        <source>Remove invalid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The core is unreachable, so nothing could be checked. Nothing was removed.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>No insecure configs found.</source>

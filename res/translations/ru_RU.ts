@@ -4080,6 +4080,14 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
         <translation>У WARP ещё нет конфигурации — нажмите «Создать конфигурацию WARP».</translation>
     </message>
     <message>
+        <source>Routing</source>
+        <translation>Маршрутизация</translation>
+    </message>
+    <message>
+        <source>A routing profile was added while this window was open. Close it and open it again, then apply the changes.</source>
+        <translation>Пока это окно было открыто, добавился профиль маршрутизации. Закройте окно, откройте заново и примените изменения.</translation>
+    </message>
+    <message>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
@@ -8995,6 +9003,14 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <source>Apple hides the IP address of Safari behind its own relay, and it does not step aside for this client the way it does for others, so pages see Apple&apos;s address instead of the country you picked. While connected, the relay is switched off for the network you are on — the same switch as Limit IP Address Tracking in System Settings — and put back when you disconnect. Apple devices on the same network are affected too.</source>
         <translation>Apple прячет адрес Safari за своим реле и нашему клиенту дорогу не уступает, как уступает другим, поэтому страницы видят адрес Apple вместо выбранной страны. Пока подключение держится, реле выключается для текущей сети — тот же переключатель, что «Ограничить отслеживание IP-адреса» в системных настройках, — и возвращается при отключении. Устройства Apple в этой же сети это тоже затронет.</translation>
     </message>
+    <message numerus="yes">
+        <source>Every %n minute(s)</source>
+        <translation>
+            <numerusform>Каждую %n минуту</numerusform>
+            <numerusform>Каждые %n минуты</numerusform>
+            <numerusform>Каждые %n минут</numerusform>
+        </translation>
+    </message>
     <message>
         <source>No subscriptions to update.</source>
         <translation>Обновлять нечего: подписок нет.</translation>
@@ -10122,12 +10138,28 @@ URL: %2</translation>
         <translation>Удалить %1 записей?</translation>
     </message>
     <message>
+        <source>Remove duplicates</source>
+        <translation>Удаление повторов</translation>
+    </message>
+    <message>
+        <source>The subscription changed while the question was open. Try again.</source>
+        <translation>Пока висел вопрос, подписка изменилась. Попробуйте ещё раз.</translation>
+    </message>
+    <message>
         <source>Copied %1 item(s)</source>
         <translation>Скопировано %1 записей</translation>
     </message>
     <message>
         <source>QR Code not found</source>
         <translation>QR-код не найден</translation>
+    </message>
+    <message>
+        <source>Remove invalid</source>
+        <translation>Удаление нерабочих</translation>
+    </message>
+    <message>
+        <source>The core is unreachable, so nothing could be checked. Nothing was removed.</source>
+        <translation>Ядро недоступно, проверить не удалось ничего. Ничего не удалено.</translation>
     </message>
     <message>
         <source>New logs are held while the view is scrolled up</source>

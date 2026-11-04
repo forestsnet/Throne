@@ -3950,6 +3950,14 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Routing</source>
+        <translation type="unfinished">路由</translation>
+    </message>
+    <message>
+        <source>A routing profile was added while this window was open. Close it and open it again, then apply the changes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Structured profile</source>
         <translation>结构化配置档</translation>
     </message>
@@ -8902,6 +8910,12 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <source>Once a day</source>
         <translation type="unfinished"></translation>
     </message>
+    <message numerus="yes">
+        <source>Every %n minute(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
     <message>
         <source>Auto update</source>
         <translation type="unfinished">自动更新</translation>
@@ -10624,6 +10638,14 @@ Error: %1</source>
         <translation>删除 %1 项吗？</translation>
     </message>
     <message>
+        <source>Remove duplicates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The subscription changed while the question was open. Try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Copied %1 item(s)</source>
         <translation>复制了 %1 项</translation>
     </message>
@@ -10642,6 +10664,14 @@ Error: %1</source>
     <message>
         <source>Unable to capture screen</source>
         <translation>无法捕获屏幕</translation>
+    </message>
+    <message>
+        <source>Remove invalid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The core is unreachable, so nothing could be checked. Nothing was removed.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Remove %1 Invalid item(s) ?</source>
