@@ -422,15 +422,11 @@ namespace Engine {
                 });
             };
 
-            std::shared_ptr<Configs::Group> currentGroup;
             QHash<int, QList<int>> tested;
             for (int i = 0; i < profileIDs.length(); i += kTestRunnerBatchSize) {
                 if (stopRequested_.load()) break;
                 const auto profileIDsSlice = profileIDs.mid(i, kTestRunnerBatchSize);
                 auto profiles = Configs::dataManager->profilesRepo->GetProfileBatch(profileIDsSlice);
-                if (isUrl && !currentGroup && !profiles.isEmpty()) {
-                    currentGroup = Configs::dataManager->groupsRepo->GetGroup(profiles[0]->gid);
-                }
                 for (const auto& profile : profiles) tested[profile->gid] << profile->id;
                 runBatch(profiles, profileIDsSlice);
             }
@@ -442,11 +438,21 @@ namespace Engine {
             session_.unlock();
             finish();
 
-            if (currentGroup != nullptr && currentGroup->auto_clear_unavailable) {
-                MW_show_log("URL test finished, clearing unavailable profiles...");
-                runOnUiThread([=] {
-                   ProfileService::RemoveUnavailable(profileIDs);
-                });
+            // Охват брали у первого профиля первой партии, а чистили весь
+            // проверенный список: серверы групп, где галочку никто не ставил,
+            // сносились заодно. Теперь по группам, и только по тем, где она
+            // стоит. И не после обрыва: прерванный замер оставляет остальным
+            // latency -1, то есть «недоступен».
+            if (isUrl && !stopRequested_.load()) {
+                QList<int> clearable;
+                for (auto it = tested.cbegin(); it != tested.cend(); ++it) {
+                    const auto group = Configs::dataManager->groupsRepo->GetGroup(it.key());
+                    if (group != nullptr && group->auto_clear_unavailable) clearable += it.value();
+                }
+                if (!clearable.isEmpty()) {
+                    MW_show_log("URL test finished, clearing unavailable profiles...");
+                    runOnUiThread([clearable] { ProfileService::RemoveUnavailable(clearable); });
+                }
             }
             MW_show_log(isUrl ? MainWindowTr::tr("URL test finished!") : MainWindowTr::tr("IP test finished!"));
         });
