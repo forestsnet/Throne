@@ -22,7 +22,11 @@ namespace Fsnt {
             return settings->spmode_vpn;
         }
         if (settings->spmode_vpn) engine->setTun(false, {});
-        if (!settings->spmode_system_proxy) engine->setSystemProxy(true, {});
+        // По возврату, как и в ветке туннеля выше. setSystemProxy отказывает в
+        // headless и когда выключен смешанный вход, а здесь возврат
+        // отбрасывался и режим всегда объявлялся применённым: кнопка горела
+        // «Подключено» на трафике, который идёт мимо прокси.
+        if (!settings->spmode_system_proxy && !engine->setSystemProxy(true, {})) return false;
         return true;
     }
 } // namespace Fsnt
