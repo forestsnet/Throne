@@ -19,7 +19,9 @@ import (
 func parseConfig(ctx context.Context, configContent []byte) (*option.Options, error) {
 	options, err := json.UnmarshalExtendedContext[option.Options](ctx, configContent)
 	if err != nil {
-		return nil, E.Cause(err, "decode config at ", string(configContent))
+		// Без самого конфига: он уезжает в throne.log, а оттуда в архив для
+		// поддержки, и в нём UUID, пароли и ключи Reality всех профилей.
+		return nil, E.Cause(err, "decode config")
 	}
 	return &options, nil
 }
