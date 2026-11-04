@@ -11,6 +11,7 @@
 * Say why the connection dropped, not only that it did **9**
 * Let go of the windows that would not close **10**
 * Report what used to answer to the log alone **11**
+* Stop the engine from refusing the starts it asks for itself **12**
 
 **1**:
 geoip.dat and geosite.dat are not shipped with the client, and without geosite.dat no Xray config builds at all. On a fresh install the first thing anyone does - measure the latency, or connect - therefore failed, offered to download the files, and left the measurement that triggered it to finish against a config that could not be built: every server came back as no answer. Waiting for the download and pressing the same button again worked, which is not something a person should have to work out. A start now fetches whatever is missing in the background without asking, the latency test waits for that download and runs itself when it ends, and a start that the prompt did download the files for continues on its own instead of needing a second press.
@@ -46,6 +47,11 @@ Three windows in a row were written to refuse to close while they worked. The su
 
 **11**:
 Switching to the system proxy mode reported success whatever happened, although it refuses in headless mode and when the mixed inbound is off, so the button read Connected over traffic going straight out. Pressing the provider's button again for a subscription that is already there, which is how most people update, sent its refresh to the log alone - a captcha or a device limit left the same list on screen without a word. A deletion whose transaction fell through was reported as a deletion. Changing autostart printed a fixed line about the Windows elevation prompt rather than the reason the system gave, which someone on macOS read about a system they are not running.
+
+**12**:
+start() returns while still holding its lock - the lock is released at the end of the worker that brings the profile up - so any start taken from inside another one is certain to make the next fail. Three places did that: restoring the remembered system proxy and the remembered Tun when the core comes up, and a provider policy that changes the tunnel mode. Each asked for a restart it did not need, since the start they run inside was about to do the work, and the request the person actually made came back as "Another profile is starting...". The first of them happened on every launch that resumed a connection.
+
+The other refusals in that family: a start deferred behind another server's DNS lookup was never answered at all, a stop arriving during a profile switch was dropped without a word, the one retry after the routing data arrives was spent by checks that refused it, a ranking in flight had its own flag cleared by the next start and then moved the connection back to its pool by itself, and the mark that says a restart is answering an authentication challenge was not cleared when that restart was refused - so credentials given for one session were kept for the next. The url test method is also set under the session that reads it now, rather than on whichever thread asked for the test.
 
 #### 1.4.5
 
