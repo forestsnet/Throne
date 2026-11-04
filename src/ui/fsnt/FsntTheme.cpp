@@ -180,6 +180,16 @@ namespace Fsnt {
                 padding: 7px 9px;
             }
 
+            QProgressBar#fsntBusyBar {
+                background: @border;
+                border: none;
+                border-radius: 3px;
+            }
+            QProgressBar#fsntBusyBar::chunk {
+                background: @accent;
+                border-radius: 3px;
+            }
+
             QProgressBar#fsntTrafficBar {
                 background: @border;
                 border: none;

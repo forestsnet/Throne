@@ -432,6 +432,10 @@ set(PROJECT_SOURCES
 
         include/ui/fsnt/BusyButton.h
 
+        src/ui/fsnt/BusyDialog.cpp
+
+        include/ui/fsnt/BusyDialog.h
+
         src/ui/fsnt/FsntWindow.cpp
 
         include/ui/fsnt/FsntWindow.h

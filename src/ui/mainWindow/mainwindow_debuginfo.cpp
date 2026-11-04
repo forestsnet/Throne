@@ -7,7 +7,7 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
-#include <QMessageBox>
+#include <QPointer>
 #include <QProcess>
 #include <QStandardPaths>
 #include <QSysInfo>
@@ -19,6 +19,7 @@
 #include "include/database/GroupsRepo.h"
 #include "include/global/Configs.hpp"
 #include "include/global/Logger.hpp"
+#include "include/ui/fsnt/BusyDialog.h"
 #include "include/ui/mainWindow/MainWindowInternal.h"
 
 // Сбор отладочной информации в один архив (Ctrl+Shift+D или пункт меню).
@@ -26,8 +27,27 @@
 
 void MainWindow::on_menu_profile_debug_info_triggered() {
     MW_show_log(tr("Collecting debug information..."));
-    
+
+    // Опрос системы и упаковка архива занимают на Windows до полуминуты.
+    // Без окна человек видел только закрывшееся меню: нажал — и ничего, ни
+    // строки, ни полосы, непонятно даже, сработала ли кнопка.
+    auto *progress = new FsntBusyDialog(
+        tr("Support report"),
+        tr("Collecting what support needs: system and network settings, the routing table and the "
+           "client's own logs. It all goes into one archive on the desktop."),
+        8, GetMessageBoxParent());
+    progress->setAttribute(Qt::WA_DeleteOnClose);
+    progress->show();
+
+    const QPointer<FsntBusyDialog> watcher(progress);
+    const auto stage = [watcher](const QString &text) {
+        runOnUiThread([watcher, text] {
+            if (!watcher.isNull()) watcher->setStage(text);
+        });
+    };
+
     runOnNewThread([=, this] {
+        stage(tr("System information…"));
         QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
         QString timestamp = QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss");
         QString tempDir = QDir::temp().filePath("throne_debug_" + timestamp);
@@ -54,6 +74,7 @@ void MainWindow::on_menu_profile_debug_info_triggered() {
         }
         
         // 2. Сетевая информация
+        stage(tr("Network settings…"));
         QString networkInfoPath = tempDir + "/02_network_info.txt";
         QProcess networkInfo;
 #ifdef Q_OS_WIN
@@ -71,6 +92,7 @@ void MainWindow::on_menu_profile_debug_info_triggered() {
         }
         
         // 3. Таблица маршрутизации
+        stage(tr("Routing table…"));
         QString routingInfoPath = tempDir + "/03_routing_table.txt";
         QProcess routingInfo;
 #ifdef Q_OS_WIN
@@ -88,6 +110,7 @@ void MainWindow::on_menu_profile_debug_info_triggered() {
         }
         
         // 4. Информация о версиях приложения
+        stage(tr("Versions…"));
         QString appInfoPath = tempDir + "/04_app_version.txt";
         QFile appFile(appInfoPath);
         if (appFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -128,6 +151,7 @@ void MainWindow::on_menu_profile_debug_info_triggered() {
         }
         
         // 5. Информация о пользователе
+        stage(tr("Account and running processes…"));
         QString userInfoPath = tempDir + "/05_user_info.txt";
         QProcess userInfo;
 #ifdef Q_OS_WIN
@@ -166,6 +190,7 @@ void MainWindow::on_menu_profile_debug_info_triggered() {
         // приложения, и всё его видно в 07_app_throne.log с меткой [ui].
 
         // 7. Логи приложения (пишутся подсистемой Logging: ротация + логи прошлых сессий)
+        stage(tr("Client logs…"));
         const QString logDir = Logging::LogDir();
         if (!logDir.isEmpty()) {
             QDir src(logDir);
@@ -180,6 +205,7 @@ void MainWindow::on_menu_profile_debug_info_triggered() {
         }
         
         // 8. Информация о настройках (без паролей)
+        stage(tr("Settings and subscriptions…"));
         QString settingsInfoPath = tempDir + "/08_settings_info.txt";
         QFile settingsFile(settingsInfoPath);
         if (settingsFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -379,6 +405,7 @@ void MainWindow::on_menu_profile_debug_info_triggered() {
         QThread::msleep(200);
         
         // Создаем ZIP архив
+        stage(tr("Packing the archive…"));
         QProcess zipProcess;
 #ifdef Q_OS_WIN
         // Используем PowerShell для создания ZIP на Windows
@@ -398,14 +425,17 @@ void MainWindow::on_menu_profile_debug_info_triggered() {
         QDir(tempDir).removeRecursively();
         
         runOnUiThread([=, this] {
-            if (QFile::exists(zipPath)) {
-                MW_show_log(tr("Debug information saved to: %1").arg(zipPath));
-                QMessageBox::information(this, tr("Debug Info"), 
-                                       tr("Debug information collected successfully!\n\nSaved to:\n%1").arg(zipPath));
-            } else {
-                MW_show_log(tr("Failed to create debug archive"));
-                QMessageBox::warning(this, tr("Error"), tr("Failed to create debug information archive"));
+            const bool ok = QFile::exists(zipPath);
+            const QString shown = QDir::toNativeSeparators(zipPath);
+            MW_show_log(ok ? tr("Debug information saved to: %1").arg(zipPath)
+                           : tr("Failed to create debug archive"));
+            if (!watcher.isNull()) {
+                if (ok) watcher->succeed(tr("The report is ready: %1").arg(shown), zipPath);
+                else watcher->fail(tr("Could not build the report archive."));
+                return;
             }
+            if (ok) MessageBoxInfo(tr("Support report"), tr("The report is ready: %1").arg(shown));
+            else MessageBoxWarning(tr("Support report"), tr("Could not build the report archive."));
         });
     });
 }
