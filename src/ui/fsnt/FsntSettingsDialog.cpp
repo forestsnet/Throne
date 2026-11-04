@@ -5,11 +5,19 @@
 
 #include <QAction>
 #include <QComboBox>
+#include <QCoreApplication>
 #include <QHBoxLayout>
 #include <QInputDialog>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QPointer>
+#include <QTimer>
+
+#include "include/engine/EngineHost.h"
+#include "include/engine/services/AssetUpdates.h"
+#include "include/engine/connection/ConnectionManager.h"
+#include "include/ui/fsnt/BusyButton.h"
 #include <QScrollArea>
 #include <QVBoxLayout>
 
@@ -41,6 +49,10 @@
 namespace {
     // Интервалы автообновления подписок в минутах, как их хранит sub_auto_update.
     constexpr int kAutoUpdateMinutes[] = {0, 30, 60, 120, 360, 720, 1440};
+
+    // Сколько окно ждёт конца перезапуска, прежде чем сказать, что ответа не
+    // было. С запасом: на холодном старте ядру случается подниматься долго.
+    constexpr int kRestartGuardMs = 90000;
 
     FsntSelect *makeSelect(QWidget *parent) {
         auto *box = new FsntSelect(parent);
@@ -92,16 +104,32 @@ FsntSettingsDialog::FsntSettingsDialog(QWidget *parent) : QDialog(parent) {
     cancel->setCursor(Qt::PointingHandCursor);
     connect(cancel, &QPushButton::clicked, this, &QDialog::reject);
 
-    auto *ok = new QPushButton(tr("Save"), this);
+    m_saveStatus = new QLabel(this);
+    m_saveStatus->setWordWrap(true);
+    layout->addWidget(m_saveStatus);
+    m_restartGuard = new QTimer(this);
+    m_restartGuard->setSingleShot(true);
+    // Срок задаём здесь, иначе вызовы start() без аргумента живут на интервале,
+    // который им случайно оставил предыдущий start(ms).
+    m_restartGuard->setInterval(kRestartGuardMs);
+    connect(m_restartGuard, &QTimer::timeout, this, [this] {
+        finishRestart(tr("Settings were saved, but the connection restart has not finished. Check the connection before trying again."));
+    });
+
+    auto *ok = m_save = new QPushButton(tr("Save"), this);
     ok->setObjectName("fsntPrimary");
     ok->setCursor(Qt::PointingHandCursor);
     ok->setDefault(true);
     connect(ok, &QPushButton::clicked, this, [this] {
-        save();
-        accept();
+        if (!m_saving) save();
     });
 
     auto *buttons = new QHBoxLayout;
+    // Вертушка стоит слева от распорки: появись она рядом с кнопками, «Отмена»
+    // и «Сохранить» прыгнули бы вбок прямо под курсором.
+    m_saveBusy = new BusyButton(Fsnt::Glyph::Refresh, this);
+    m_saveBusy->hide();
+    buttons->addWidget(m_saveBusy);
     buttons->addStretch();
     buttons->addWidget(cancel);
     buttons->addWidget(ok);
@@ -394,8 +422,47 @@ void FsntSettingsDialog::buildSubscriptions(QVBoxLayout *column, QWidget *host) 
     card.addNote(tr("Providers count devices by it. With it off a subscription may come back "
                     "empty, and the reason will not be obvious."));
 
-    connect(card.addAction(tr("Update all now")), &QPushButton::clicked, this,
-            [] { Subscription::updater()->RefreshAll(); });
+    auto *update = new BusyButton(Fsnt::Glyph::Refresh, host);
+    update->setAccessibleName(tr("Update all now"));
+    card.addControl(tr("Update all now"), update);
+    auto *status = card.addNote({});
+    connect(update, &QAbstractButton::clicked, this, [this, update, status] {
+        QList<int> groups;
+        for (const int gid : Configs::dataManager->groupsRepo->GetGroupsTabOrder()) {
+            const auto group = Configs::dataManager->groupsRepo->GetGroup(gid);
+            if (group && !group->url.isEmpty() && !group->archive) groups.append(gid);
+        }
+        if (groups.isEmpty()) {
+            status->setText(tr("No subscriptions to update."));
+            return;
+        }
+        update->setBusy(true);
+        status->setText(tr("Updating subscriptions…"));
+        struct Progress { int remaining; int failed = 0; QStringList errors; };
+        auto progress = std::make_shared<Progress>();
+        progress->remaining = groups.size();
+        const QPointer<FsntSettingsDialog> guard(this);
+        // Результат приходит с рабочего потока. Проверяем диалог уже в UI,
+        // чтобы его закрытие не гонялось с доставкой ответа к виджетам.
+        for (const int gid : groups) {
+            Subscription::updater()->RefreshWithOutcome(gid, Subscription::GroupUpdater::Surface::Log,
+                [guard, update, status, progress](const Subscription::UpdateOutcome &outcome) {
+                    QMetaObject::invokeMethod(QCoreApplication::instance(), [guard, update, status, progress, ok = outcome.ok(), error = outcome.error] {
+                        if (!guard) return;
+                        if (!ok) {
+                            ++progress->failed;
+                            if (!error.isEmpty()) progress->errors.append(error);
+                        }
+                        if (--progress->remaining != 0) return;
+                        update->setBusy(false);
+                        status->setText(progress->failed == 0
+                            ? tr("All subscriptions updated successfully.")
+                            : tr("Subscription update finished. Failed: %1.").arg(progress->failed)
+                                + (progress->errors.isEmpty() ? QString() : QStringLiteral("\n") + progress->errors.join(QStringLiteral("\n"))));
+                    }, Qt::QueuedConnection);
+                });
+        }
+    });
 
     // Закреплённую подписку удалить нельзя — не показываем и кнопку, иначе
     // пользователь жмёт её и получает отказ без объяснений.
@@ -484,6 +551,7 @@ void FsntSettingsDialog::buildNotifications(QVBoxLayout *column, QWidget *host) 
 }
 
 void FsntSettingsDialog::save() {
+    m_saveStatus->clear();
     auto &settings = Configs::dataManager->settingsRepo;
 
     const int transport = m_transport->currentData().toInt();
@@ -561,12 +629,69 @@ void FsntSettingsDialog::save() {
     // работающем профиле смена транспорта не делала ничего — перезапуск просто
     // гасил соединение.
     if (modeChanged) {
-        Fsnt::ApplyTransportMode();
-        if (const int running = settings->started_id; running >= 0) {
-            if (auto *mw = GetMainWindow(); mw != nullptr) mw->profile_start(running);
+        const int running = settings->started_id;
+        // Ранний возврат отсюда уносил с собой UpdateSettings ниже, и смена
+        // адреса приёма или маршрута оставалась в настройках, не доезжая до
+        // конфига ядра. Поэтому отказ только пишет строку и идёт дальше.
+        if (!Fsnt::ApplyTransportMode()) {
+            m_saveStatus->setText(tr("Settings were saved, but the connection mode could not be applied."));
+        } else if (running >= 0) {
+            auto *mw = GetMainWindow();
+            auto *engine = Engine::host();
+            if (mw == nullptr || engine == nullptr) {
+                m_saveStatus->setText(tr("Settings were saved, but the connection could not be restarted."));
+            } else {
+                m_saving = true;
+                m_save->setEnabled(false);
+                m_saveBusy->show();
+                m_saveBusy->setBusy(true);
+                m_saveStatus->setText(tr("Settings saved. Restarting the connection…"));
+                // Подписываемся до запуска: отказ может прийти синхронно.
+                m_restartConnection = connect(engine->connection(), &Engine::ConnectionManager::startFinished, this,
+                    [this, running](quint64, int profileId, Engine::StartOutcome outcome, const QString &error) {
+                        if (profileId != running) return;
+                        // Режим мог уже заказать свой перезапуск. Его вытеснение
+                        // нашим запросом не является результатом новой попытки.
+                        if (outcome == Engine::StartOutcome::Superseded) return;
+                        if (outcome == Engine::StartOutcome::GeoAssetsMissing &&
+                            (!Engine::AssetUpdates::GeoAssetsPresent() || Engine::AssetUpdates::GeoUpdateRunning())) {
+                            m_saveStatus->setText(tr("Downloading the routing data…"));
+                            m_restartGuard->start();
+                            return;
+                        }
+                        finishRestart(outcome == Engine::StartOutcome::Started ? QString()
+                            : (error.isEmpty() ? tr("Settings were saved, but the connection restart failed. Please reconnect.") : error));
+                    });
+                m_restartGuard->start();
+                mw->profile_start(running);
+            }
         }
     }
 
     // Смена адреса приёма и маршрута требует пересборки конфига ядра.
     if (MW_dialog_message) MW_dialog_message(MwMessage::UpdateSettings, {});
+    if (!m_saving && m_saveStatus->text().isEmpty()) accept();
+}
+
+void FsntSettingsDialog::reject() {
+    // Ждать перезапуска окно умеет, а запирать в себе человека — нет. Отказ он
+    // всё равно увидит: кольцо подключения показывает исход само, а здесь после
+    // «Сохранить» осталось одно ожидание.
+    if (m_saving) {
+        disconnect(m_restartConnection);
+        m_restartGuard->stop();
+        m_saving = false;
+    }
+    QDialog::reject();
+}
+
+void FsntSettingsDialog::finishRestart(const QString &error) {
+    disconnect(m_restartConnection);
+    m_restartGuard->stop();
+    m_saving = false;
+    m_save->setEnabled(true);
+    m_saveBusy->setBusy(false);
+    m_saveBusy->hide();
+    if (error.isEmpty()) accept();
+    else m_saveStatus->setText(error);
 }

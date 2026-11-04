@@ -2,9 +2,12 @@
 
 #include <QDialog>
 
+class BusyButton;
 class FsntSwitch;
 class FsntSelect;
 class QLineEdit;
+class QPushButton;
+class QTimer;
 class QLabel;
 class QVBoxLayout;
 
@@ -22,6 +25,14 @@ public:
 
 private:
     void save();
+    void reject() override;
+    void finishRestart(const QString &error = {});
+    QPushButton *m_save = nullptr;
+    BusyButton *m_saveBusy = nullptr;
+    QLabel *m_saveStatus = nullptr;
+    QTimer *m_restartGuard = nullptr;
+    QMetaObject::Connection m_restartConnection;
+    bool m_saving = false;
 
     void buildConnection(QVBoxLayout *column, QWidget *host);
     void buildSubscriptions(QVBoxLayout *column, QWidget *host);
