@@ -29,6 +29,9 @@ private:
     void showStatus(const QString &text);
     // Почему подписка не открылась — словами, которые человеку что-то говорят.
     static QString subscriptionFailureHint();
+    // Очередь обновлятора одна на всех и строго по порядку: пока впереди идёт
+    // обновление десятка подписок, наше задание даже не начато.
+    static bool queueBusy();
 
     QLineEdit *m_input = nullptr;
     QLabel *m_status = nullptr;
@@ -37,5 +40,7 @@ private:
     // Обновление идёт в фоне и о неуспехе молчит: без сторожа диалог завис бы
     // в состоянии «добавляем» навсегда.
     QTimer *m_guard = nullptr;
+    // Кругов ожидания, пока очередь обновлятора занята чужими заданиями.
+    int m_guardRounds = 0;
     bool m_busy = false;
 };

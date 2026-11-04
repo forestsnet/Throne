@@ -4,6 +4,8 @@
 
 #include <QApplication>
 #include <QClipboard>
+#include <QCoreApplication>
+#include <QPointer>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
@@ -19,6 +21,9 @@
 namespace {
     // Подписка тянется по сети и может упереться в таймаут HTTP-клиента.
     constexpr int kAddSubGuardMs = 45000;
+    // Сколько раз ждём ещё один круг, пока очередь занята чужими заданиями.
+    // Без предела окно висело бы в ожидании вечно, если ответ потерялся.
+    constexpr int kAddSubGuardRetries = 2;
 }
 
 AddSubscriptionDialog::AddSubscriptionDialog(QWidget *parent) : QDialog(parent) {
@@ -89,11 +94,27 @@ AddSubscriptionDialog::AddSubscriptionDialog(QWidget *parent) : QDialog(parent) 
     m_guard->setSingleShot(true);
     m_guard->setInterval(kAddSubGuardMs);
     connect(m_guard, &QTimer::timeout, this, [this] {
-        fail(tr("The provider did not answer. Check the link and your connection."));
+        // Сам запрос столько длиться не может — у HTTP-клиента таймаут десять
+        // секунд. Значит задание всё ещё стоит в очереди за чужим обновлением,
+        // и винить провайдера не за что: ждём дальше и говорим об этом. Но не
+        // бесконечно: потерянный ответ не отличить от занятой очереди, а окно
+        // без выхода хуже неточной причины.
+        if (queueBusy() && m_guardRounds < kAddSubGuardRetries) {
+            ++m_guardRounds;
+            showStatus(tr("Other subscriptions are still updating. Waiting for them to finish…"));
+            m_guard->start();
+            return;
+        }
+        fail(queueBusy() ? tr("The other subscriptions are taking too long. Try again in a minute.")
+                         : tr("The provider did not answer. Check the link and your connection."));
     });
 
     setStyleSheet(Fsnt::BuildStyleSheet());
     m_input->setFocus();
+}
+
+bool AddSubscriptionDialog::queueBusy() {
+    return !Subscription::updater()->IsIdle();
 }
 
 void AddSubscriptionDialog::pasteFromClipboard() {
@@ -109,7 +130,9 @@ void AddSubscriptionDialog::pasteFromClipboard() {
 void AddSubscriptionDialog::setBusy(const bool busy) {
     m_busy = busy;
     m_input->setEnabled(!busy);
-    m_cancel->setEnabled(!busy);
+    // «Отмена» остаётся живой: она закрывает окно, а не запрос. Запрос уйдёт
+    // своим чередом, подписка появится в списке сама. Отключённая кнопка
+    // вместе с запертым Esc делала окно без выхода, если ответ потерялся.
     m_add->setEnabled(!busy);
     m_add->setText(busy ? tr("Adding…") : tr("Add"));
 }
@@ -197,20 +220,28 @@ void AddSubscriptionDialog::submit() {
             return;
         }
         setBusy(true);
+        m_guardRounds = 0;
         showStatus(tr("Adding…"));
         m_guard->start();
-        Subscription::updater()->ImportTextTo(gid, text, [this](const Subscription::UpdateOutcome &outcome) {
+        // QPointer: колбэк приходит из рабочего потока, а окно к тому времени
+        // может быть закрыто и удалено вместе с родителем.
+        QPointer<AddSubscriptionDialog> self(this);
+        Subscription::updater()->ImportTextTo(gid, text, [self](const Subscription::UpdateOutcome &outcome) {
             const bool ok = outcome.ok();
             const auto error = outcome.error;
-            QMetaObject::invokeMethod(this, [this, ok, error] {
-                m_guard->stop();
+            // Контекст — приложение, а не окно: QPointer не потокобезопасен, и
+            // проверять его надо уже на UI-потоке, внутри самой лямбды.
+            QMetaObject::invokeMethod(QCoreApplication::instance(), [self, ok, error] {
+                if (self.isNull()) return;
+                auto *const dialog = self.data();
+                dialog->m_guard->stop();
                 if (!ok) {
                     // Молча закрываться нельзя: человек вставил ссылку и ждёт
                     // увидеть сервер, а не пустой список.
-                    fail(error.isEmpty() ? tr("Nothing here looks like a server link.") : error);
+                    dialog->fail(error.isEmpty() ? tr("Nothing here looks like a server link.") : error);
                     return;
                 }
-                accept();
+                dialog->accept();
             }, Qt::QueuedConnection);
         });
         return;
@@ -226,19 +257,26 @@ void AddSubscriptionDialog::submit() {
     }
 
     setBusy(true);
-    showStatus(tr("Fetching the subscription…"));
+    m_guardRounds = 0;
+    // Говорим то, что происходит на самом деле: задание может ещё стоять в
+    // очереди, и «тянем подписку» было бы неправдой.
+    showStatus(queueBusy() ? tr("Other subscriptions are still updating. Waiting for them to finish…")
+                           : tr("Fetching the subscription…"));
     m_guard->start();
 
     // Колбэк приходит из рабочего потока обновлятора — возвращаемся в UI.
-    Subscription::updater()->SubscribeUrlWithOutcome(link, [this](const Subscription::UpdateOutcome &outcome) {
+    QPointer<AddSubscriptionDialog> self(this);
+    Subscription::updater()->SubscribeUrlWithOutcome(link, [self](const Subscription::UpdateOutcome &outcome) {
         const bool ok = outcome.ok();
-        QMetaObject::invokeMethod(this, [this, ok] {
-            m_guard->stop();
+        QMetaObject::invokeMethod(QCoreApplication::instance(), [self, ok] {
+            if (self.isNull()) return;
+            auto *const dialog = self.data();
+            dialog->m_guard->stop();
             if (!ok) {
-                fail(subscriptionFailureHint());
+                dialog->fail(subscriptionFailureHint());
                 return;
             }
-            accept();
+            dialog->accept();
         }, Qt::QueuedConnection);
     });
 }
