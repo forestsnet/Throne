@@ -8669,6 +8669,17 @@ Improves hole-punching reliability. Requires IPv4.</source>
     </message>
 </context>
 <context>
+    <name>FsntBusyDialog</name>
+    <message>
+        <source>Show the file</source>
+        <translation>Показать файл</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>Закрыть</translation>
+    </message>
+</context>
+<context>
     <name>FsntDiagnosticsDialog</name>
     <message>
         <source>Diagnostics</source>
@@ -9817,18 +9828,56 @@ You can change this later in settings.</source>
         <translation>Собираю отладочные сведения...</translation>
     </message>
     <message>
+        <source>Support report</source>
+        <translation>Отчёт для поддержки</translation>
+    </message>
+    <message>
+        <source>Collecting what support needs: system and network settings, the routing table and the client&apos;s own logs. It all goes into one archive on the desktop.</source>
+        <translation>Собираем то, что нужно поддержке: настройки системы и сети, таблицу маршрутов и журналы самого клиента. Всё уйдёт в один архив на рабочем столе.</translation>
+    </message>
+    <message>
+        <source>System information…</source>
+        <translation>Сведения о системе…</translation>
+    </message>
+    <message>
+        <source>Network settings…</source>
+        <translation>Настройки сети…</translation>
+    </message>
+    <message>
+        <source>Routing table…</source>
+        <translation>Таблица маршрутов…</translation>
+    </message>
+    <message>
+        <source>Versions…</source>
+        <translation>Версии…</translation>
+    </message>
+    <message>
+        <source>Account and running processes…</source>
+        <translation>Учётная запись и запущенные процессы…</translation>
+    </message>
+    <message>
+        <source>Client logs…</source>
+        <translation>Журналы клиента…</translation>
+    </message>
+    <message>
+        <source>Settings and subscriptions…</source>
+        <translation>Настройки и подписки…</translation>
+    </message>
+    <message>
+        <source>Packing the archive…</source>
+        <translation>Упаковываем архив…</translation>
+    </message>
+    <message>
         <source>Debug information saved to: %1</source>
         <translation>Отладочные сведения сохранены: %1</translation>
     </message>
     <message>
-        <source>Debug information collected successfully!
-
-Saved to:
-%1</source>
-        <translation>Отладочные сведения собраны.
-
-Файл:
-%1</translation>
+        <source>The report is ready: %1</source>
+        <translation>Отчёт готов: %1</translation>
+    </message>
+    <message>
+        <source>Could not build the report archive.</source>
+        <translation>Не удалось собрать архив с отчётом.</translation>
     </message>
     <message>
         <source>Failed to create debug archive</source>
@@ -9837,10 +9886,6 @@ Saved to:
     <message>
         <source>Error</source>
         <translation>Ошибка</translation>
-    </message>
-    <message>
-        <source>Failed to create debug information archive</source>
-        <translation>Не удалось собрать архив отладочных сведений</translation>
     </message>
     <message>
         <source>Url Test selected Group</source>
@@ -14300,6 +14345,18 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>Favorites</source>
         <translation>Избранное</translation>
+    </message>
+    <message>
+        <source>Could not download the routing data: %1</source>
+        <translation>Не удалось скачать данные маршрутизации: %1</translation>
+    </message>
+    <message>
+        <source>The routing data is still downloading. Try again in a moment.</source>
+        <translation>Данные маршрутизации ещё качаются. Попробуйте через минуту.</translation>
+    </message>
+    <message>
+        <source>Downloading the routing data, the test will start on its own…</source>
+        <translation>Качаем данные маршрутизации, замер начнётся сам…</translation>
     </message>
     <message numerus="yes">
         <source>Deleted %n subscription(s); %1 pinned by the provider left in place</source>

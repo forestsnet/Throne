@@ -8604,6 +8604,17 @@ Improves hole-punching reliability. Requires IPv4.</source>
     </message>
 </context>
 <context>
+    <name>FsntBusyDialog</name>
+    <message>
+        <source>Show the file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished">关闭</translation>
+    </message>
+</context>
+<context>
     <name>FsntDiagnosticsDialog</name>
     <message>
         <source>Diagnostics</source>
@@ -10989,22 +11000,59 @@ Details: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Support report</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Collecting what support needs: system and network settings, the routing table and the client&apos;s own logs. It all goes into one archive on the desktop.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>System information…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Network settings…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Routing table…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Versions…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Account and running processes…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Client logs…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings and subscriptions…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Packing the archive…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Debug information saved to: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Debug information collected successfully!
-
-Saved to:
-%1</source>
+        <source>The report is ready: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not build the report archive.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Failed to create debug archive</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to create debug information archive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -12663,6 +12711,10 @@ Release note:
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Direct DNS switched to %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Subscription</source>
         <translation type="unfinished">订阅</translation>
     </message>
@@ -14121,6 +14173,18 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
     <message>
         <source>Favorites</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not download the routing data: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The routing data is still downloading. Try again in a moment.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Downloading the routing data, the test will start on its own…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
