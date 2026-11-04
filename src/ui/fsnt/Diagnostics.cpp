@@ -7,6 +7,9 @@
 #include <QEventLoop>
 #include <QNetworkInterface>
 #include <QSettings>
+#include <QTimer>
+
+#include <memory>
 
 #include "include/database/GroupsRepo.h"
 #include "include/global/Configs.hpp"
@@ -16,6 +19,8 @@
 #include "include/database/ProfilesRepo.h"
 #include "include/global/DnsProbe.hpp"
 #include <QHostAddress>
+#include "include/engine/EngineHost.h"
+#include "include/engine/connection/ConnectionManager.h"
 #include "include/ui/fsnt/Transport.hpp"
 #include "include/ui/mainwindow.h"
 
@@ -56,6 +61,83 @@ namespace {
         }
         return {};
     }
+
+    // Сколько ждём конца перезапуска, прежде чем отпустить кнопку всё равно.
+    // Та же мера, что у панели подключения: дольше ядро всё равно не
+    // поднимается, а без страховки не пришедший сигнал оставил бы кнопку в
+    // «Working…» навсегда.
+    constexpr int kDiagRestartTimeoutMs = 25000;
+
+    // Отказ приходил молча: ApplyTransportMode возвращает false, возврат
+    // выбрасывали, и починка докладывала об удаче — строка оставалась красной,
+    // а кнопка выглядела мёртвой. Журнала человек в простом окне не видит,
+    // отвечать надо здесь же.
+    void diagReportTransportRefused() {
+        MessageBoxWarning(QObject::tr("Connection mode"),
+                          QObject::tr("The mode was not applied. The full tunnel needs "
+                                      "administrator rights to create its network adapter, and "
+                                      "without them traffic keeps going outside the tunnel."));
+    }
+
+    // Перестановка режимов транспорта с ожиданием настоящего конца перезапуска.
+    //
+    // ApplyTransportMode переставляет флаги синхронно, а профиль поднимается
+    // заново уже после её возврата. Доложить о починке сразу означало бы
+    // запустить проверки посреди перезапуска ядра: человек нажимал кнопку и
+    // тут же получал свежий красный диагноз «ядро не запущено».
+    void diagApplyTransport(const CheckResult::FixDone &done) {
+        auto *engine = Engine::host();
+        auto *connection = engine == nullptr ? nullptr : engine->connection();
+
+        // Читаем до перестановки: setTun и setSystemProxy смотрят на это же
+        // значение и без запущенного профиля только меняют флаги. Ждать
+        // сигнала в этом случае — четверть минуты «Working…» впустую.
+        const bool expectRestart =
+            connection != nullptr && Configs::dataManager->settingsRepo->started_id >= 0;
+        if (!expectRestart) {
+            if (!Fsnt::ApplyTransportMode()) diagReportTransportRefused();
+            done();
+            return;
+        }
+
+        // done по контракту вызывается ровно один раз, а дёрнуть его могут и
+        // сигнал, и сторожевой таймер, и сама ApplyTransportMode: запуск умеет
+        // ответить отказом синхронно, ещё до её возврата.
+        const auto settled = std::make_shared<bool>(false);
+        const auto link = std::make_shared<QMetaObject::Connection>();
+        auto *guard = new QTimer(connection);
+        guard->setSingleShot(true);
+
+        const auto settle = [done, settled, link, guard] {
+            if (*settled) return;
+            *settled = true;
+            // Подписка одноразовая: иначе каждая починка оставляла бы на
+            // движке ещё одного слушателя до конца работы программы.
+            QObject::disconnect(*link);
+            guard->stop();
+            guard->deleteLater();
+            done();
+        };
+
+        // Контекстом берём сам таймер: он уйдёт вместе с починкой и унесёт
+        // подписку, даже если settle до неё не доберётся.
+        *link = QObject::connect(
+            connection, &Engine::ConnectionManager::startFinished, guard,
+            [settle](quint64, int, const Engine::StartOutcome outcome, const QString &) {
+                // Попытку сменила следующая — конец будет у неё. Переход в
+                // туннель сперва гасит системный прокси, и первый перезапуск
+                // здесь штатно отменяется вторым.
+                if (outcome == Engine::StartOutcome::Superseded) return;
+                settle();
+            });
+        QObject::connect(guard, &QTimer::timeout, guard, settle);
+        guard->start(kDiagRestartTimeoutMs);
+
+        if (!Fsnt::ApplyTransportMode()) {
+            diagReportTransportRefused();
+            settle();
+        }
+    }
 }
 
 namespace Fsnt {
@@ -70,9 +152,13 @@ namespace Fsnt {
                 if (mw->EnsureCorePresent(false)) return diagOk();
                 // Самый частый виновник — антивирус: ядро для него выглядит
                 // подозрительно, и он уносит файл в карантин молча.
+                // Кнопка не качает: EnsureCorePresent(true) открывает окно с
+                // путём к пропавшему файлу и ссылкой на страницу загрузки.
+                // Подпись «Download again» обещала загрузку, и закрытое окно
+                // с красной строкой выглядело как сорвавшееся скачивание.
                 return diagFailed(QObject::tr("The core executable is missing. Antivirus software "
                                           "often quarantines it without asking."),
-                              QObject::tr("Download again"), [](const auto &done) {
+                              QObject::tr("How to fix this"), [](const auto &done) {
                                   if (auto *m = GetMainWindow(); m != nullptr) {
                                       m->EnsureCorePresent(true);
                                   }
@@ -218,7 +304,7 @@ namespace Fsnt {
                     if (s->spmode_vpn) return diagOk();
                     return diagFailed(QObject::tr("Full tunnel is selected, but the tunnel mode is "
                                               "not active."),
-                                  QObject::tr("Apply"), [](const auto &done) { ApplyTransportMode(); done(); });
+                                  QObject::tr("Apply"), [](const auto &done) { diagApplyTransport(done); });
                 }
 #ifdef Q_OS_WIN
                 // Здесь уже ловили настоящую поломку: адрес прокси в реестре
@@ -230,12 +316,12 @@ namespace Fsnt {
                 if (ie.value(QStringLiteral("ProxyEnable"), 0).toInt() == 0) {
                     return diagFailed(QObject::tr("System proxy is selected, but Windows has it "
                                               "switched off, so traffic bypasses the VPN."),
-                                  QObject::tr("Turn on"), [](const auto &done) { ApplyTransportMode(); done(); });
+                                  QObject::tr("Turn on"), [](const auto &done) { diagApplyTransport(done); });
                 }
 #endif
                 if (s->spmode_system_proxy) return diagOk();
                 return diagFailed(QObject::tr("System proxy is selected, but it is not active."),
-                              QObject::tr("Apply"), [](const auto &done) { ApplyTransportMode(); done(); });
+                              QObject::tr("Apply"), [](const auto &done) { diagApplyTransport(done); });
             }};
 
         checks << Check{
