@@ -133,6 +133,7 @@ public:
 
     // Строка поверх окна простого режима; в инженерном ничего не делает.
     void showFacadeNotice(const QString &text, int milliseconds = 5000);
+    void hideFacadeNotice();
 
     void start_select_mode(QObject *context, const std::function<void(int)> &callback);
 

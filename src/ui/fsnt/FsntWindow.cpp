@@ -460,6 +460,10 @@ void FsntWindow::showNotice(const QString &text, int milliseconds) {
     if (m_toast != nullptr) m_toast->show(text, milliseconds);
 }
 
+void FsntWindow::hideNotice() {
+    if (m_toast != nullptr) m_toast->dismiss();
+}
+
 void FsntWindow::announce(Fsnt::NotifyKind kind, const QString &title, const QString &body,
                           const QString &inWindow, const std::function<void()> &onActivated) {
     if (!Fsnt::NotifyEnabled(kind)) return;

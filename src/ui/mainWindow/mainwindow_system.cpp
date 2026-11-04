@@ -284,6 +284,11 @@ void MainWindow::showFacadeNotice(const QString &text, int milliseconds) {
                               Q_ARG(int, milliseconds));
 }
 
+void MainWindow::hideFacadeNotice() {
+    auto *facade = GetFacadeWindow();
+    if (facade == nullptr) return;
+    QMetaObject::invokeMethod(facade, "hideNotice", Qt::QueuedConnection);
+}
 
 void MainWindow::ClearStaleSystemProxy() {
     auto &settings = Configs::dataManager->settingsRepo;
@@ -697,6 +702,9 @@ void MainWindow::ReportPreviousUpdate() {
 }
 
 void MainWindow::CheckUpdate(bool autoInstall) {
+    // Сеть может молчать до таймаута: показываем работу сразу и убираем
+    // строку только после ответа, а не по придуманному сроку.
+    runOnUiThread([this] { showFacadeNotice(tr("Checking for updates…"), 0); });
     QString search;
 #ifdef Q_OS_WIN
 #  ifdef Q_PROCESSOR_ARM_64
@@ -728,6 +736,7 @@ void MainWindow::CheckUpdate(bool autoInstall) {
 #endif
     if (search.isEmpty()) {
         runOnUiThread([=,this] {
+            hideFacadeNotice();
             MessageBoxWarning(QObject::tr("Update"), QObject::tr("Not official support platform"));
         });
         return;
@@ -737,6 +746,7 @@ void MainWindow::CheckUpdate(bool autoInstall) {
     HttpGetOptions options;
     options.strictTls = true;
     auto resp = NetworkRequestHelper::HttpGet("https://api.github.com/repos/forestsnet/Throne/releases", options);
+    runOnUiThread([this] { hideFacadeNotice(); });
     if (!resp.error.isEmpty()) {
         runOnUiThread([=,this] {
             MessageBoxWarning(QObject::tr("Update"), QObject::tr("Requesting update error: %1").arg(resp.error + "\n" + resp.data));
@@ -814,7 +824,6 @@ void MainWindow::CheckUpdate(bool autoInstall) {
         int picked = -1;
         if (autoInstall) {
             picked = 0;
-            showFacadeNotice(tr("Downloading the update…"), 120000);
         } else if (GetFacadeWindow() != nullptr) {
             picked = Fsnt::Choose(GetMessageBoxParent(), updateTitle, updateBody,
                                   {QObject::tr("Update"), QObject::tr("Open in browser"), QObject::tr("Close")});
@@ -829,9 +838,12 @@ void MainWindow::CheckUpdate(bool autoInstall) {
             else if (box.clickedButton() == btn2) picked = 1;
         }
         if (picked == 0 && allow_updater) {
+            // Одна и та же индикация нужна и после ручного выбора обновления.
+            showFacadeNotice(tr("Downloading the update…"), 0);
             runOnNewThread([=,this] {
                 if (!mu_download_update.tryLock()) {
                     runOnUiThread([=,this](){
+                        hideFacadeNotice();
                         MessageBoxWarning(tr("Cannot start"), tr("Last download request has not finished yet"));
                     });
                     return;
@@ -840,6 +852,7 @@ void MainWindow::CheckUpdate(bool autoInstall) {
                 if (!PrepareUpdateEnvironment()) {
                     mu_download_update.unlock();
                     runOnUiThread([=,this](){
+                        hideFacadeNotice();
                         MessageBoxWarning(tr("Update"), tr("Failed to prepare update environment!"));
                     });
                     return;
@@ -859,6 +872,7 @@ void MainWindow::CheckUpdate(bool autoInstall) {
                 }
                 mu_download_update.unlock();
                 runOnUiThread([=,this] {
+                    hideFacadeNotice();
                     if (errors.isEmpty()) {
                         const QString readyTitle = QObject::tr("Update");
                         const QString readyBody = QObject::tr("Update is ready, restart to install?");

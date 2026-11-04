@@ -31,7 +31,13 @@ public:
 public slots:
     // Строка поверх окна. Зовётся и из MainWindow — там про простой режим
     // знают только через QMetaObject, поэтому это слот, а не обычный метод.
+    //
+    // milliseconds <= 0 — работа без известного срока: строка висит, пока её не
+    // сменят или не уберут hideNotice.
     void showNotice(const QString &text, int milliseconds);
+
+    // Убрать строку. Нужна показавшему её без срока: сама она не уйдёт.
+    void hideNotice();
 
 signals:
     // Строка журнала. Окно перехватывает MW_show_log один раз и раздаёт

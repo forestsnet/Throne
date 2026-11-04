@@ -18,6 +18,8 @@ namespace {
     constexpr int kToastTopMargin = 12;
     constexpr int kToastMaxWidth = 520;
     constexpr int kToastTickMs = 40;
+    constexpr int kToastTravelMs = 1600;
+    constexpr qreal kToastArcShare = 0.22;
 }
 
 FsntToast::FsntToast(QWidget *parent) : QWidget(parent) {
@@ -37,20 +39,43 @@ FsntToast::FsntToast(QWidget *parent) : QWidget(parent) {
         update();
     });
     connect(m_countdown, &QVariantAnimation::finished, this, [this] { QWidget::hide(); });
+
+    m_travel = new QVariantAnimation(this);
+    m_travel->setStartValue(0.0);
+    m_travel->setEndValue(1.0);
+    m_travel->setDuration(kToastTravelMs);
+    m_travel->setLoopCount(-1);
+    connect(m_travel, &QVariantAnimation::valueChanged, this, [this](const QVariant &value) {
+        m_progress = value.toReal();
+        update();
+    });
 }
 
 void FsntToast::show(const QString &text, const int milliseconds) {
     m_text = text;
     m_progress = 0.0;
+    m_indefinite = milliseconds <= 0;
     relayout();
 
     m_countdown->stop();
-    m_countdown->setDuration(qMax(kToastTickMs, milliseconds));
-    m_countdown->start();
+    m_travel->stop();
+    if (m_indefinite) {
+        m_travel->start();
+    } else {
+        m_countdown->setDuration(qMax(kToastTickMs, milliseconds));
+        m_countdown->start();
+    }
 
     raise();
     QWidget::show();
     update();
+}
+
+void FsntToast::dismiss() {
+    m_countdown->stop();
+    m_travel->stop();
+    m_indefinite = false;
+    QWidget::hide();
 }
 
 void FsntToast::relayout() {
@@ -82,15 +107,25 @@ void FsntToast::paintEvent(QPaintEvent *event) {
     painter.setBrush(p.card);
     painter.drawRoundedRect(card, kToastRadius, kToastRadius);
 
-    // Рамка-отсчёт. Частичный контур скруглённого прямоугольника рисуем штриховым
-    // пером: длина штриха — остаток, длина пропуска — всё остальное. Считать
-    // точки пути вручную здесь незачем.
+    // Рамка. Частичный контур скруглённого прямоугольника рисуем штриховым
+    // пером: длина штриха — видимая часть, длина пропуска — всё остальное.
+    // Считать точки пути вручную здесь незачем.
     QPainterPath ring;
     ring.addRoundedRect(card, kToastRadius, kToastRadius);
     const qreal perimeter = ring.length();
-    const qreal remaining = perimeter * (1.0 - m_progress);
 
-    if (remaining > 1.0) {
+    if (m_indefinite) {
+        // Срока нет, и показывать его длиной рамки было бы выдумкой: дуга
+        // постоянной длины бежит по кругу и говорит ровно одно — «идёт».
+        const qreal arc = perimeter * kToastArcShare;
+        QPen pen(p.accent, kToastBorderWidth, Qt::CustomDashLine, Qt::FlatCap);
+        pen.setDashPattern({arc / kToastBorderWidth,
+                            qMax(0.01, (perimeter - arc) / kToastBorderWidth)});
+        pen.setDashOffset(-m_progress * perimeter / kToastBorderWidth);
+        painter.setPen(pen);
+        painter.setBrush(Qt::NoBrush);
+        painter.drawPath(ring);
+    } else if (const qreal remaining = perimeter * (1.0 - m_progress); remaining > 1.0) {
         // Цвет гаснет от акцента к границе: время видно и краем глаза, без
         // считывания длины.
         const qreal fade = m_progress;
@@ -126,8 +161,7 @@ void FsntToast::paintEvent(QPaintEvent *event) {
 
 void FsntToast::mousePressEvent(QMouseEvent *event) {
     if (closeRect().contains(event->pos())) {
-        m_countdown->stop();
-        QWidget::hide();
+        dismiss();
         return;
     }
     QWidget::mousePressEvent(event);
