@@ -641,7 +641,13 @@ void ServerListPanel::deleteSubscription(int gid) {
             mw->profile_stop(false, true, false);
         }
     }
-    Configs::dataManager->groupsRepo->DeleteGroup(gid);
+    // По возврату, а не по факту вызова: сорвавшаяся транзакция считалась
+    // удалением, и человек читал, что подписки больше нет. В оптовом удалении
+    // это учтено, одиночное шло мимо.
+    if (!Configs::dataManager->groupsRepo->DeleteGroup(gid)) {
+        emit notice(tr("%1 could not be deleted").arg(group->name));
+        return;
+    }
     MW_dialog_message(MwMessage::GroupsChanged, {});
     reloadGroups();
     emit notice(tr("Subscription deleted"));
