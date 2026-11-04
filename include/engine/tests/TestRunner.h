@@ -75,7 +75,7 @@ namespace Engine {
             bool testCurrent = false;
         };
 
-        bool runLatencyGroup(LatencyKind kind, const QList<int>& requestedIDs,
+        bool runLatencyGroup(LatencyKind kind, const QList<int>& requestedIDs, const QString& urlMethod,
                              const std::function<void()>& onFinished, bool waitForSession = false, bool interactive = true);
 
         void runUrlProbe(const Target& target);
@@ -116,6 +116,11 @@ namespace Engine {
         // The running session's flag: an unattended session never prompts for geo assets.
         std::atomic<bool> interactive_ = true;
         // Ставится перед началом прогона: сеансы не идут параллельно.
+        // Пишется только тем, кто уже владеет session_, читается пробами того
+        // же сеанса. Снаружи сеанса к нему не прикасаются: раньше вызывающий
+        // ставил его у себя в потоке до захвата сеанса, и очистка из
+        // queueUrlTests ложилась поверх строки, которую в это время читали
+        // пробы идущего замера.
         QString urlMethod_;
 
         // Tests bypass the clash tracker, so their bytes are counted only here, diffed per tag.

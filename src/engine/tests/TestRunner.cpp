@@ -329,20 +329,18 @@ namespace Engine {
 
     bool TestRunner::runUrlTests(const QList<int>& profileIDs, const std::function<void()>& onFinished, bool interactive,
                                  const QString& method) {
-        urlMethod_ = method;
-        return runLatencyGroup(LatencyKind::Url, profileIDs, onFinished, false, interactive);
+        return runLatencyGroup(LatencyKind::Url, profileIDs, method, onFinished, false, interactive);
     }
 
     void TestRunner::queueUrlTests(const QList<int>& profileIDs, const std::function<void()>& onFinished, bool interactive) {
-        urlMethod_.clear();
-        runOnNewThread([=, this] { runLatencyGroup(LatencyKind::Url, profileIDs, onFinished, true, interactive); });
+        runOnNewThread([=, this] { runLatencyGroup(LatencyKind::Url, profileIDs, {}, onFinished, true, interactive); });
     }
 
     bool TestRunner::runIpTests(const QList<int>& profileIDs, const std::function<void()>& onFinished, bool interactive) {
-        return runLatencyGroup(LatencyKind::Ip, profileIDs, onFinished, false, interactive);
+        return runLatencyGroup(LatencyKind::Ip, profileIDs, {}, onFinished, false, interactive);
     }
 
-    bool TestRunner::runLatencyGroup(LatencyKind kind, const QList<int>& requestedIDs,
+    bool TestRunner::runLatencyGroup(LatencyKind kind, const QList<int>& requestedIDs, const QString& urlMethod,
                                      const std::function<void()>& onFinished, bool waitForSession, bool interactive) {
         const bool isUrl = kind == LatencyKind::Url;
         const auto panelKind = isUrl ? TestKind::Latency : TestKind::Ip;
@@ -367,6 +365,9 @@ namespace Engine {
             return false;
         }
         sessionGen_.fetch_add(1);
+        // Под сеансом: писать метод до его захвата означало класть строку под
+        // пробы чужого прогона, которые читают её из потоков пула.
+        urlMethod_ = urlMethod;
         // Reset here, not on the worker: a stop() that lands before the worker runs must still count.
         stopRequested_.store(false);
         interactive_.store(interactive);
