@@ -24,6 +24,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Other subscriptions are still updating. Waiting for them to finish…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The other subscriptions are taking too long. Try again in a minute.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>The provider did not answer. Check the link and your connection.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -154,6 +162,38 @@ You can try again — the password window will come back. Or connect through the
     <message>
         <source>Cancel</source>
         <translation type="unfinished">لغو کردن</translation>
+    </message>
+    <message>
+        <source>No server to connect to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The core is not answering</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not build the configuration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not bring the tunnel up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The kill switch is not armed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Another connection is still finishing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The routing data lacks what this server needs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Downloading the routing data</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Connected</source>
@@ -8547,6 +8587,14 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Connecting…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disconnecting…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>FSNT Client — %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8593,10 +8641,6 @@ Improves hole-punching reliability. Requires IPv4.</source>
     </message>
     <message>
         <source>The client checks itself and says what to fix. Everything here runs on this computer; nothing is sent anywhere.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>checking…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -8664,6 +8708,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
     <message>
         <source>Cancel</source>
         <translation type="unfinished">لغو کردن</translation>
+    </message>
+    <message>
+        <source>Settings were saved, but the connection restart has not finished. Check the connection before trying again.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Save</source>
@@ -8834,6 +8882,22 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>No subscriptions to update.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Updating subscriptions…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All subscriptions updated successfully.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Subscription update finished. Failed: %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>This subscription is pinned by your provider and cannot be removed while it is connected.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8911,6 +8975,26 @@ Improves hole-punching reliability. Requires IPv4.</source>
     </message>
     <message>
         <source>Could not change the autostart entry. The system refused it: on Windows this is usually the elevation prompt being dismissed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings were saved, but the connection mode could not be applied.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings were saved, but the connection could not be restarted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings saved. Restarting the connection…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Downloading the routing data…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings were saved, but the connection restart failed. Please reconnect.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -10413,6 +10497,10 @@ It can be granted for good instead: a system service puts the permission back wh
         <source>The update to %1 did not install: the program is still %2. This usually means an antivirus stopped the updater. Download the new version from the release page and install it over the current one.
 
 Details: %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Checking for updates…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -12106,6 +12194,10 @@ Release note:
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>the core is not available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Subscription settings</source>
         <translation type="unfinished"></translation>
     </message>
@@ -12149,10 +12241,6 @@ Release note:
     </message>
     <message>
         <source>The core executable is missing. Antivirus software often quarantines it without asking.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Download again</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -12225,6 +12313,14 @@ Release note:
     </message>
     <message>
         <source>Connection mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The mode was not applied. The full tunnel needs administrator rights to create its network adapter, and without them traffic keeps going outside the tunnel.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>How to fix this</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -12301,6 +12397,14 @@ Release note:
     </message>
     <message>
         <source>Skipped</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>in queue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>checking…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -14122,7 +14226,23 @@ Remove that endpoint from this routing profile as well?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Stop the measurement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Measurement cancelled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stopping the measurement…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Measurement stopped</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A measurement is already running</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -14150,10 +14270,54 @@ Remove that endpoint from this routing profile as well?</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <source>Deleted %n subscription(s); %1 pinned by the provider left in place</source>
+        <source>Deleted %n subscription(s), %1 could not be deleted</source>
         <translation type="unfinished">
             <numerusform></numerusform>
         </translation>
+    </message>
+    <message numerus="yes">
+        <source>Deleted %n subscription(s), %1 pinned by the provider left in place</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <source>Deleted %n subscription(s), the last one is kept — the list needs something</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>%1 is gone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 did not answer, the server list is unchanged</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 returned no servers, the list is unchanged</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 could not be updated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 updated, nothing changed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 updated: %2 new</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 updated: %2 removed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 updated: %2 new, %3 changed, %4 removed</source>
+        <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
         <source>Deleted %n subscription(s)</source>
@@ -14232,22 +14396,6 @@ Paste the link your provider gave you and the servers will appear here.</source>
     </message>
     <message>
         <source>%1 of %2 servers responded</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Subscription updated, nothing changed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Subscription updated: %1 new</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Subscription updated: %1 removed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Subscription updated: %1 new, %2 removed</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

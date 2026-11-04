@@ -32,6 +32,14 @@
         <translation>Добавить</translation>
     </message>
     <message>
+        <source>Other subscriptions are still updating. Waiting for them to finish…</source>
+        <translation>Другие подписки ещё обновляются. Ждём, пока они закончат…</translation>
+    </message>
+    <message>
+        <source>The other subscriptions are taking too long. Try again in a minute.</source>
+        <translation>Другие подписки затянулись. Попробуйте через минуту.</translation>
+    </message>
+    <message>
         <source>The provider did not answer. Check the link and your connection.</source>
         <translation>Провайдер не ответил. Проверьте ссылку и соединение.</translation>
     </message>
@@ -128,6 +136,38 @@ You can try again — the password window will come back. Or connect through the
     <message>
         <source>Cancel</source>
         <translation>Отмена</translation>
+    </message>
+    <message>
+        <source>No server to connect to</source>
+        <translation>Нет сервера для подключения</translation>
+    </message>
+    <message>
+        <source>The core is not answering</source>
+        <translation>Ядро не отвечает</translation>
+    </message>
+    <message>
+        <source>Could not build the configuration</source>
+        <translation>Не удалось собрать конфигурацию</translation>
+    </message>
+    <message>
+        <source>Could not bring the tunnel up</source>
+        <translation>Не удалось поднять туннель</translation>
+    </message>
+    <message>
+        <source>The kill switch is not armed</source>
+        <translation>Аварийный выключатель не взведён</translation>
+    </message>
+    <message>
+        <source>Another connection is still finishing</source>
+        <translation>Другое подключение ещё завершается</translation>
+    </message>
+    <message>
+        <source>The routing data lacks what this server needs</source>
+        <translation>В данных маршрутизации нет того, что нужно этому серверу</translation>
+    </message>
+    <message>
+        <source>Downloading the routing data</source>
+        <translation>Загружаем данные маршрутизации</translation>
     </message>
     <message>
         <source>Connected</source>
@@ -8641,6 +8681,14 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Не подключено</translation>
     </message>
     <message>
+        <source>Connecting…</source>
+        <translation>Подключение…</translation>
+    </message>
+    <message>
+        <source>Disconnecting…</source>
+        <translation>Отключение…</translation>
+    </message>
+    <message>
         <source>FSNT Client — %1</source>
         <translation>FSNT Client — %1</translation>
     </message>
@@ -8688,10 +8736,6 @@ Improves hole-punching reliability. Requires IPv4.</source>
     <message>
         <source>The client checks itself and says what to fix. Everything here runs on this computer; nothing is sent anywhere.</source>
         <translation>Клиент проверяет себя сам и говорит, что чинить. Всё это выполняется на вашем компьютере, никуда ничего не отправляется.</translation>
-    </message>
-    <message>
-        <source>checking…</source>
-        <translation>проверяю…</translation>
     </message>
     <message>
         <source>Run again</source>
@@ -8872,6 +8916,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Системный</translation>
     </message>
     <message>
+        <source>Settings were saved, but the connection restart has not finished. Check the connection before trying again.</source>
+        <translation>Настройки сохранены, но перезапуск подключения так и не завершился. Проверьте подключение, прежде чем пробовать снова.</translation>
+    </message>
+    <message>
         <source>Reconnect on start</source>
         <translation>Подключаться при запуске</translation>
     </message>
@@ -8940,6 +8988,22 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Apple прячет адрес Safari за своим реле и нашему клиенту дорогу не уступает, как уступает другим, поэтому страницы видят адрес Apple вместо выбранной страны. Пока подключение держится, реле выключается для текущей сети — тот же переключатель, что «Ограничить отслеживание IP-адреса» в системных настройках, — и возвращается при отключении. Устройства Apple в этой же сети это тоже затронет.</translation>
     </message>
     <message>
+        <source>No subscriptions to update.</source>
+        <translation>Обновлять нечего: подписок нет.</translation>
+    </message>
+    <message>
+        <source>Updating subscriptions…</source>
+        <translation>Обновляем подписки…</translation>
+    </message>
+    <message>
+        <source>All subscriptions updated successfully.</source>
+        <translation>Все подписки обновлены.</translation>
+    </message>
+    <message>
+        <source>Subscription update finished. Failed: %1.</source>
+        <translation>Обновление подписок закончено. С ошибкой: %1.</translation>
+    </message>
+    <message>
         <source>Dark</source>
         <translation>Тёмная</translation>
     </message>
@@ -8986,6 +9050,26 @@ Improves hole-punching reliability. Requires IPv4.</source>
     <message>
         <source>Could not change the autostart entry. The system refused it: on Windows this is usually the elevation prompt being dismissed.</source>
         <translation>Не удалось изменить автозапуск: система отказала. В Windows так обычно выглядит закрытый запрос прав администратора.</translation>
+    </message>
+    <message>
+        <source>Settings were saved, but the connection mode could not be applied.</source>
+        <translation>Настройки сохранены, но режим подключения применить не удалось.</translation>
+    </message>
+    <message>
+        <source>Settings were saved, but the connection could not be restarted.</source>
+        <translation>Настройки сохранены, но перезапустить подключение не удалось.</translation>
+    </message>
+    <message>
+        <source>Settings saved. Restarting the connection…</source>
+        <translation>Настройки сохранены. Перезапускаем подключение…</translation>
+    </message>
+    <message>
+        <source>Downloading the routing data…</source>
+        <translation>Загружаем данные маршрутизации…</translation>
+    </message>
+    <message>
+        <source>Settings were saved, but the connection restart failed. Please reconnect.</source>
+        <translation>Настройки сохранены, но перезапуск подключения не удался. Подключитесь заново.</translation>
     </message>
     <message>
         <source>Language changes apply after restarting the application.</source>
@@ -10456,6 +10540,10 @@ Please try again.</source>
     <message>
         <source>Update</source>
         <translation>Обновление</translation>
+    </message>
+    <message>
+        <source>Checking for updates…</source>
+        <translation>Проверяем обновления…</translation>
     </message>
     <message>
         <source>Last download request has not finished yet</source>
@@ -12788,6 +12876,14 @@ Release note:
         <translation>Не нужно</translation>
     </message>
     <message>
+        <source>in queue</source>
+        <translation>в очереди</translation>
+    </message>
+    <message>
+        <source>checking…</source>
+        <translation>проверяем…</translation>
+    </message>
+    <message>
         <source>Subscription</source>
         <translation>Подписка</translation>
     </message>
@@ -12810,10 +12906,6 @@ Release note:
     <message>
         <source>The core executable is missing. Antivirus software often quarantines it without asking.</source>
         <translation>Файл ядра отсутствует. Чаще всего его молча уносит в карантин антивирус.</translation>
-    </message>
-    <message>
-        <source>Download again</source>
-        <translation>Скачать заново</translation>
     </message>
     <message>
         <source>Set by hand in the DNS object.</source>
@@ -12882,6 +12974,14 @@ Release note:
     <message>
         <source>System proxy is selected, but Windows has it switched off, so traffic bypasses the VPN.</source>
         <translation>Выбран системный прокси, но в Windows он выключен — трафик идёт мимо VPN.</translation>
+    </message>
+    <message>
+        <source>The mode was not applied. The full tunnel needs administrator rights to create its network adapter, and without them traffic keeps going outside the tunnel.</source>
+        <translation>Режим не применён. Полному туннелю нужны права администратора, чтобы создать сетевой адаптер, а без них трафик продолжает идти мимо туннеля.</translation>
+    </message>
+    <message>
+        <source>How to fix this</source>
+        <translation>Как это исправить</translation>
     </message>
     <message>
         <source>Direct DNS</source>
@@ -13010,6 +13110,10 @@ Release note:
     <message>
         <source>URL test (GET)</source>
         <translation>URL-тест (GET)</translation>
+    </message>
+    <message>
+        <source>the core is not available</source>
+        <translation>ядро недоступно</translation>
     </message>
     <message>
         <source>Enter the WebDAV server URL in the WebDAV settings.</source>
@@ -14279,6 +14383,22 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>Подписка</translation>
     </message>
     <message>
+        <source>Stop the measurement</source>
+        <translation>Остановить замер</translation>
+    </message>
+    <message>
+        <source>Measurement cancelled</source>
+        <translation>Замер прерван</translation>
+    </message>
+    <message>
+        <source>Stopping the measurement…</source>
+        <translation>Останавливаем замер…</translation>
+    </message>
+    <message>
+        <source>A measurement is already running</source>
+        <translation>Замер уже идёт</translation>
+    </message>
+    <message>
         <source>Copy link</source>
         <translation>Скопировать ссылку</translation>
     </message>
@@ -14294,9 +14414,65 @@ Remove that endpoint from this routing profile as well?</source>
         <source>Delete subscription</source>
         <translation>Удалить подписку</translation>
     </message>
+    <message numerus="yes">
+        <source>Deleted %n subscription(s), %1 could not be deleted</source>
+        <translation>
+            <numerusform>Удалена %n подписка, %1 удалить не удалось</numerusform>
+            <numerusform>Удалено %n подписки, %1 удалить не удалось</numerusform>
+            <numerusform>Удалено %n подписок, %1 удалить не удалось</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <source>Deleted %n subscription(s), %1 pinned by the provider left in place</source>
+        <translation>
+            <numerusform>Удалена %n подписка, %1 закреплено провайдером и оставлено</numerusform>
+            <numerusform>Удалено %n подписки, %1 закреплено провайдером и оставлено</numerusform>
+            <numerusform>Удалено %n подписок, %1 закреплено провайдером и оставлено</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <source>Deleted %n subscription(s), the last one is kept — the list needs something</source>
+        <translation>
+            <numerusform>Удалена %n подписка, последняя оставлена — список не может быть пустым</numerusform>
+            <numerusform>Удалено %n подписки, последняя оставлена — список не может быть пустым</numerusform>
+            <numerusform>Удалено %n подписок, последняя оставлена — список не может быть пустым</numerusform>
+        </translation>
+    </message>
     <message>
         <source>Delete «%1» along with its servers?</source>
         <translation>Удалить «%1» вместе с её серверами?</translation>
+    </message>
+    <message>
+        <source>%1 is gone</source>
+        <translation>%1 больше нет</translation>
+    </message>
+    <message>
+        <source>%1 did not answer, the server list is unchanged</source>
+        <translation>%1 не ответила, список серверов прежний</translation>
+    </message>
+    <message>
+        <source>%1 returned no servers, the list is unchanged</source>
+        <translation>%1 вернула пустой список, прежний оставлен</translation>
+    </message>
+    <message>
+        <source>%1 could not be updated</source>
+        <translation>%1: обновить не удалось</translation>
+    </message>
+    <message>
+        <source>%1 updated, nothing changed</source>
+        <translation>%1 обновлена, изменений нет</translation>
+    </message>
+    <message>
+        <source>%1 updated: %2 new</source>
+        <translation>%1 обновлена: %2 новых</translation>
+    </message>
+    <message>
+        <source>%1 updated: %2 removed</source>
+        <translation>%1 обновлена: %2 удалено</translation>
+    </message>
+    <message>
+        <source>%1 updated: %2 new, %3 changed, %4 removed</source>
+        <translation>%1 обновлена: %2 новых, %3 изменено, %4 удалено</translation>
     </message>
     <message>
         <source>Delete</source>
@@ -14359,14 +14535,6 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>Качаем данные маршрутизации, замер начнётся сам…</translation>
     </message>
     <message numerus="yes">
-        <source>Deleted %n subscription(s); %1 pinned by the provider left in place</source>
-        <translation>
-            <numerusform>Удалена %n подписка. Закреплённых провайдером оставлено: %1</numerusform>
-            <numerusform>Удалено %n подписки. Закреплённых провайдером оставлено: %1</numerusform>
-            <numerusform>Удалено %n подписок. Закреплённых провайдером оставлено: %1</numerusform>
-        </translation>
-    </message>
-    <message numerus="yes">
         <source>Deleted %n subscription(s)</source>
         <translation>
             <numerusform>Удалена %n подписка</numerusform>
@@ -14411,22 +14579,6 @@ Paste the link your provider gave you and the servers will appear here.</source>
     <message>
         <source>%1 of %2 servers responded</source>
         <translation>Ответили %1 из %2 серверов</translation>
-    </message>
-    <message>
-        <source>Subscription updated, nothing changed</source>
-        <translation>Подписка обновлена, изменений нет</translation>
-    </message>
-    <message>
-        <source>Subscription updated: %1 new</source>
-        <translation>Подписка обновлена: %1 новых</translation>
-    </message>
-    <message>
-        <source>Subscription updated: %1 removed</source>
-        <translation>Подписка обновлена: %1 удалено</translation>
-    </message>
-    <message>
-        <source>Subscription updated: %1 new, %2 removed</source>
-        <translation>Подписка обновлена: %1 новых, %2 удалено</translation>
     </message>
     <message>
         <source>Measure latency</source>
