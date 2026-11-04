@@ -14,6 +14,7 @@
 * Stop the engine from refusing the starts it asks for itself **12**
 * Keep the credentials out of the support report **13**
 * Stop losing what was never asked to be deleted **14**
+* Apply a subscription refresh as one transaction **15**
 
 **1**:
 geoip.dat and geosite.dat are not shipped with the client, and without geosite.dat no Xray config builds at all. On a fresh install the first thing anyone does - measure the latency, or connect - therefore failed, offered to download the files, and left the measurement that triggered it to finish against a config that could not be built: every server came back as no answer. Waiting for the download and pressing the same button again worked, which is not something a person should have to work out. A start now fetches whatever is missing in the background without asking, the latency test waits for that download and runs itself when it ends, and a start that the prompt did download the files for continues on its own instead of needing a second press.
@@ -60,6 +61,9 @@ The report masks the subscription URL, and then copies the whole log directory i
 
 **14**:
 Inserting profiles returned nothing and swallowed its errors, so a subscription refresh that cleared the group first and then failed to write the new rows reported "Added N profiles" over an empty list. Remove invalid asked the core about every profile and read "the core is not answering" as "invalid", emptying the group. Remove repeated worked from a list read before its own confirmation dialog, and wrote servers that arrived meanwhile out of the group. Clearing unavailable servers after a latency test took its scope from the first profile of the first batch and ran over everything tested, including groups whose owner never asked for it, and ran after an interrupted test as well. Deleting a subscription from the simple window left the started profile id naming a row that no longer exists, so auto-connect went nowhere on the next launch. Two modeless dialogs wrote their opening snapshot back over changes made elsewhere: the kill switch, the LAN inbound address, a routing profile imported while the window was open, and an update interval set by a provider policy that the list did not recognise.
+
+**15**:
+With sub_clear on, which is the default, a refresh deleted every profile of the group and committed that, then inserted the new ones in chunks of its own. A process that died in between - a quit, a shutdown, a crash during an automatic update - left the subscription empty, and the next launch showed a list with nothing in it. The two go together now. The parse moved ahead of the transaction, because the survivors of the clear can be worked out without deleting anything and holding the write lock across a parse would freeze the window on every refresh. Stopping a running profile of the group moved ahead of it too, since that call goes into the engine and waits on another thread. And transactions nest, because the delete and the insert each open one and SQLite takes no second BEGIN.
 
 #### 1.4.5
 
