@@ -59,11 +59,15 @@ FsntBusyDialog::FsntBusyDialog(const QString &title, const QString &hint, const 
     m_reveal->setCursor(Qt::PointingHandCursor);
     m_reveal->hide();
 
-    m_close = new QPushButton(tr("Close"), this);
+    // Кнопка живёт с самого начала. Сбор отчёта на Windows — это под минуту
+    // жёстких таймаутов подряд, и окно без выхода всё это время стояло поверх
+    // всего: крестик и Escape шли в заблокированный reject, а показать эту
+    // кнопку мог только конец работы. Отменить сам сбор нечем, но прятать
+    // окно человек вправе — итог его дождётся сообщением.
+    m_close = new QPushButton(tr("Hide"), this);
     m_close->setObjectName("fsntPrimary");
     m_close->setCursor(Qt::PointingHandCursor);
     m_close->setDefault(true);
-    m_close->hide();
     connect(m_close, &QPushButton::clicked, this, &QDialog::accept);
 
     auto *buttons = new QHBoxLayout;
@@ -98,14 +102,10 @@ void FsntBusyDialog::settle(const QString &text, const bool ok) {
     m_settled = true;
     m_bar->setValue(ok ? m_steps : m_bar->value());
     m_stage->setText(text);
+    m_close->setText(tr("Close"));
     m_close->show();
     m_close->setFocus();
     fitHeight();
-}
-
-void FsntBusyDialog::reject() {
-    if (!m_settled) return;
-    QDialog::reject();
 }
 
 void FsntBusyDialog::succeed(const QString &text, const QString &openPath) {

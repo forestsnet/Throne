@@ -33,7 +33,6 @@ public:
 
 protected:
     // Esc и крестик во время работы ничего не отменяют, а итог человеку нужен.
-    void reject() override;
 
 private:
     void settle(const QString &text, bool ok);
