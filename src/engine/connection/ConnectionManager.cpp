@@ -566,11 +566,18 @@ namespace Engine {
             }
         } else {
             const bool resume = settings->remember_enable || Configs::ResumingAfterUpdate();
+            // restart = false, как в безоконной ветке выше: профиль поднимает
+            // блок ниже. С перезапуском по умолчанию setSystemProxy и setTun
+            // заводили свой start() на started_id, тот возвращался, держа
+            // mu_starting до конца работы в рабочем потоке, и загрузочный
+            // запрос следом получал Busy с «Another profile is starting...».
+            // Случалось это на каждом запуске после выхода из подключённого
+            // состояния, то есть у всех, кто держит автоподключение.
             if (resume && settings->remember_system_proxy) {
-                setSystemProxy(true, ModeChange{.save = false});
+                setSystemProxy(true, ModeChange{.save = false, .restart = false});
             }
             if ((resume && settings->remember_tun) || settings->flag_restart_tun_on) {
-                setTun(true, ModeChange{.save = settings->flag_restart_tun_on});
+                setTun(true, ModeChange{.save = settings->flag_restart_tun_on, .restart = false});
                 settings->flag_restart_tun_on = false;
             }
         }
