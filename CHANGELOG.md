@@ -3,6 +3,11 @@
 * Download the routing databases on a fresh install before anything asks for them **1**
 * Strip the invisible characters a pasted subscription link brings with it **2**
 * Show what the support report is doing while it is being built **3**
+* Stop the latency test from animating over a batch that never ran **4**
+* Report the real end of connecting and disconnecting, and the reason a start failed **5**
+* End the update download's progress when the download ends, not two minutes later **6**
+* Show the work behind the buttons that used to go quiet **7**
+* Say which diagnostic check is running and which is still waiting its turn **8**
 
 **1**:
 geoip.dat and geosite.dat are not shipped with the client, and without geosite.dat no Xray config builds at all. On a fresh install the first thing anyone does - measure the latency, or connect - therefore failed, offered to download the files, and left the measurement that triggered it to finish against a config that could not be built: every server came back as no answer. Waiting for the download and pressing the same button again worked, which is not something a person should have to work out. A start now fetches whatever is missing in the background without asking, the latency test waits for that download and runs itself when it ends, and a start that the prompt did download the files for continues on its own instead of needing a second press.
@@ -12,6 +17,21 @@ A link copied out of a messenger or a document carries characters that are not s
 
 **3**:
 Building the report polls the system and packs an archive, which on Windows takes the better part of a minute. The menu closed and nothing else happened - no line, no bar, no way to tell whether the button had worked at all - until a message box appeared at the end. It now opens a window that names the step it is on and fills a bar across the eight of them, and that same window reports the finished archive with a button that opens the folder it is in.
+
+**4**:
+Without geosite.dat the latency test dies in about a millisecond - the generated DNS section names geosite:private, the config will not load, and the whole batch fails at once. The button went on spinning and the dots went on moving for twelve seconds anyway, because the panel cleared that state on a timer instead of on the end of the run. It now waits for the run to report itself finished, which it does in the same millisecond the batch does, and writes to the log how many of the servers answered. A long measurement can be stopped by pressing the button again, which the code offered already but could never reach, since a button disabled while busy receives no clicks. A test started before the routing data is there waits for the download and runs itself when it arrives.
+
+**5**:
+The ring around the connect button ran on a timer of its own. A start that failed - no server to connect to, the core not answering, a configuration that would not build, the kill switch not armed - left the ring finishing its turn and then showed the same idle state as before, with the reason nowhere on screen. The panel now follows the engine's own start and stop signals, holds the waiting state until the transition really ends, and keeps the failure's reason until something else happens rather than letting the next refresh wipe it. Switching servers while connected no longer cancels its own wait. The tray menu shows the same two states and refuses to toggle the connection or change the server in the middle of a transition.
+
+**6**:
+The notice shown while an update downloads is drawn with a countdown ring, and it was asked for exactly 120 seconds - an animated indicator of a download that nobody was measuring, which ran out long before a slow download finished and kept turning long after a fast one had. None of the ways out cleared it either, so a download that failed to start left "Downloading the update…" counting down on top of the error box. The notice now has a mode with no deadline, where a short arc travels around the card for as long as the work runs, and it is cleared when the download ends, on every path out of it.
+
+**7**:
+Update all now queued its work with no result handler at all, so the window stayed exactly as it was and the errors went only to the log, which the simple window does not show. Save closed the window while the tunnel it had just asked to restart was still going down, so a restart that failed was reported nowhere. Check for updates sat silent for up to ten seconds against an API that is often unreachable from where this client is used. Each of them now shows that it is working and says what came of it, and each one ends on the event rather than on a timer. The add-subscription dialog says when it is waiting behind another subscription's update, and it can still be closed while it waits.
+
+**8**:
+The checks run one after another, and every one of them showed the same waiting state from the moment the window opened, so there was no telling which one the window was on. Each row now says whether it is in queue or being checked, and the buttons that fix something report what they did. A transport change the system refuses - the full tunnel needs administrator rights to create its network adapter, and without them traffic keeps going outside the tunnel - now says so, where before it looked no different from one that worked.
 
 #### 1.4.5
 
