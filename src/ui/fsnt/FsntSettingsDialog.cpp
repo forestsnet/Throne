@@ -407,12 +407,21 @@ void FsntSettingsDialog::buildSubscriptions(QVBoxLayout *column, QWidget *host) 
     m_subAutoUpdate->addItem(tr("Once a day"), 1440);
     // Интервал хранится знаковым, отрицательное значение — та же периодичность.
     const int stored = qAbs(settings->sub_auto_update);
+    int chosen = -1;
     for (int index = 0; index < static_cast<int>(std::size(kAutoUpdateMinutes)); ++index) {
         if (kAutoUpdateMinutes[index] == stored) {
-            m_subAutoUpdate->setCurrentIndex(index);
+            chosen = index;
             break;
         }
     }
+    // Значение вне списка ставит политика провайдера. Раньше оно не находилось,
+    // список оставался на «Off», и «Сохранить» молча выключало автообновление
+    // подписок — человеку, пришедшему сюда совсем за другим.
+    if (chosen < 0 && stored > 0) {
+        m_subAutoUpdate->addItem(tr("Every %n minute(s)", nullptr, stored), stored);
+        chosen = m_subAutoUpdate->count() - 1;
+    }
+    if (chosen >= 0) m_subAutoUpdate->setCurrentIndex(chosen);
     card.addControl(tr("Auto update"), m_subAutoUpdate);
 
     // Провайдеры считают устройства по этому идентификатору. Без него панель
