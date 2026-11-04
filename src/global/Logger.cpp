@@ -269,7 +269,15 @@ namespace Logging {
             out += "  os        : " + QSysInfo::prettyProductName() + " (kernel " + QSysInfo::kernelVersion() + ")\n";
             out += "  arch      : " + QSysInfo::currentCpuArchitecture() + "\n";
             out += "  pid       : " + QString::number(QCoreApplication::applicationPid()) + "\n";
-            const auto args = QCoreApplication::arguments();
+            // Дип-линк приходит аргументом, и в throne://subscribe?url=… лежит
+            // ссылка подписки целиком, то есть оплаченный доступ. Шапка пишется
+            // прямо в файл, минуя уровни, остаётся в ротированных копиях и
+            // уезжает в отчёт для поддержки — класть её сюда нельзя.
+            QStringList args;
+            for (const QString &arg : QCoreApplication::arguments()) {
+                const int scheme = arg.indexOf(QStringLiteral("://"));
+                args << (scheme > 0 ? arg.left(scheme + 3) + QStringLiteral("[redacted]") : arg);
+            }
             out += "  args      : " + (args.isEmpty() ? QStringLiteral("(none)") : args.join(' ')) + "\n";
             out += "  log dir   : " + g_logDir + "\n";
             out += "================================";
