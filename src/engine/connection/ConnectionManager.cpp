@@ -528,6 +528,8 @@ namespace Engine {
     }
 
     void ConnectionManager::failStart(const StartRequest &request, StartOutcome outcome, const QString &title, const QString &error) {
+        // Перезапуск, если он был заказан ради авторизации, не состоялся.
+        m_vpnAuth->noteStartRefused(request.profileId);
         emit startFinished(request.serial, request.profileId, outcome, error);
         if (request.interactive) {
             policy()->startFailed(request, outcome, title, error);

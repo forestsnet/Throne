@@ -103,6 +103,10 @@ namespace Engine {
         m_vpnChallengeTimer->start();
     }
 
+    void VpnAuthController::noteStartRefused(const int profileId) {
+        if (profileId == m_vpnAuthRestartID) m_vpnAuthRestartID = -1;
+    }
+
     void VpnAuthController::noteRunStopped(int profileId, bool manual) {
         // start() stops the old run first, so only a stop outside a restart is the user's.
         const bool restartingForAuth = manual && profileId == m_vpnAuthRestartID;

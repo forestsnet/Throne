@@ -39,6 +39,12 @@ namespace Engine {
         // Main thread, from the stop teardown before mu_stopping is released.
         void noteRunStopped(int profileId, bool manual);
 
+        // Запуск, заказанный ради авторизации, не состоялся. Без этого отметка
+        // оставалась заряженной, и следующий ручной стоп того же профиля
+        // читался как стоп внутри перезапуска: разовые учётные данные
+        // переживали сеанс, хотя обещано обратное.
+        void noteStartRefused(int profileId);
+
         // Main thread; returns at once. done runs on the main thread with the core's error, empty when accepted.
         void answer(const QString &endpointTag, const QString &challengeId, const VpnAuthAnswer &reply,
                     const std::function<void(const QString &error)> &done = {});
