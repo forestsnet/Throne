@@ -10568,6 +10568,10 @@ Details: %3</source>
         <translation>کاربر درخواست دسترسی را غیرفعال کرده است، برخی ویژگی‌ها ممکن است کار نکنند</translation>
     </message>
     <message>
+        <source>The address of another server is still being resolved.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>No DNS server answered, so the address of the VPN server cannot be resolved. Check the connection or set another DNS in the settings.</source>
         <translation type="unfinished"></translation>
     </message>

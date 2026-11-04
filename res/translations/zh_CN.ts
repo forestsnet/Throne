@@ -10774,6 +10774,10 @@ Error: %1</source>
         <translation>用户选择无权限请求，某些功能可能不起作用</translation>
     </message>
     <message>
+        <source>The address of another server is still being resolved.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>No DNS server answered, so the address of the VPN server cannot be resolved. Check the connection or set another DNS in the settings.</source>
         <translation type="unfinished"></translation>
     </message>

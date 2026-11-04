@@ -11214,6 +11214,10 @@ Details: %3</source>
         <translation type="unfinished">Пользователь решил не запрашивать привилегии, некоторые функции могут не работать</translation>
     </message>
     <message>
+        <source>The address of another server is still being resolved.</source>
+        <translation>Сейчас разрешается адрес другого сервера.</translation>
+    </message>
+    <message>
         <source>No DNS server answered, so the address of the VPN server cannot be resolved. Check the connection or set another DNS in the settings.</source>
         <translation>Ни один DNS-сервер не ответил, поэтому адрес VPN-сервера определить нельзя. Проверьте подключение или укажите другой DNS в настройках.</translation>
     </message>
