@@ -156,6 +156,14 @@ QString TrimInvisible(const QString &raw) {
     return raw.mid(from, to - from);
 }
 
+QString RedactLink(const QString &link) {
+    const QString trimmed = link.trimmed();
+    if (trimmed.isEmpty()) return QStringLiteral("[empty]");
+    const int scheme = trimmed.indexOf(QStringLiteral("://"));
+    const QString head = scheme > 0 ? trimmed.left(scheme + 3) : QString();
+    return head + QStringLiteral("[redacted, %1 chars]").arg(trimmed.size());
+}
+
 QString CleanPastedLink(const QString &raw) {
     QString clean;
     clean.reserve(raw.size());

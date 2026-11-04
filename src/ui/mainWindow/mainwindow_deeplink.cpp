@@ -94,7 +94,7 @@ void MainWindow::importFromFiles(const QStringList &paths)
                 continue;
             }
             for (const QString &text : texts) {
-                MW_show_log("QR Code Result:\n" + text);
+                MW_show_log("QR decoded: " + RedactLink(text));
                 payloads << text.trimmed();
             }
             continue;

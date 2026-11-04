@@ -328,7 +328,7 @@ void MainWindow::parseQrImage(const QPixmap *image)
         MessageBoxInfo(software_name, tr("QR Code not found"));
     } else {
         for (const QString &text : texts) {
-            MW_show_log("QR Code Result:\n" + text);
+            MW_show_log("QR decoded: " + RedactLink(text));
             import_text(text);
         }
     }
@@ -347,7 +347,7 @@ void MainWindow::on_menu_scan_qr_triggered() {
         return;
     }
     for (const QString &text : texts) {
-        MW_show_log("QR Code Result:\n" + text);
+        MW_show_log("QR decoded: " + RedactLink(text));
         import_text(text);
     }
 }

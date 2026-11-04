@@ -160,6 +160,14 @@ QStringList SplitAndTrim(const QString& raw, const QString& seperator, bool keep
 QString TrimInvisible(const QString &raw);
 QString CleanPastedLink(const QString &raw);
 
+// Ссылка без того, что в ней секретно: остаётся схема и длина.
+//
+// Журнал целиком уезжает в отчёт для поддержки, а отчёт человек отправляет в
+// мессенджер. В vless:// и ему подобных лежат UUID, пароль, ключ Reality и
+// short id, в ссылке подписки — токен, то есть оплаченный доступ целиком. По
+// схеме и длине видно, что именно пришло, и этого для разбора хватает.
+QString RedactLink(const QString &link);
+
 QByteArray DecodeB64IfValid(const QString &input, QByteArray::Base64Options options = QByteArray::Base64Option::Base64Encoding);
 
 class QUrlQuery;
