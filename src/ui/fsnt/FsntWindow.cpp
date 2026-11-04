@@ -169,9 +169,19 @@ void FsntWindow::observeEngine() {
     // «не подключено» не отличить упавшую попытку от ещё идущей.
     connect(engine->connection(), &Engine::ConnectionManager::connectionStateChanged, this,
             [this](Engine::ConnectionState state) {
+                if (m_connectPanel != nullptr) m_connectPanel->onConnectionState(state);
                 refreshConnectionState();
                 if (state == Engine::ConnectionState::Running && m_probe != nullptr) m_probe->start();
             });
+    // Итог попытки. Без него неудавшийся запуск не менял состояния вовсе, и
+    // панели нечего было дождаться: кольцо крутилось до сторожевого таймера.
+    connect(engine->connection(), &Engine::ConnectionManager::startFinished, this,
+            [this](quint64, int profileId, Engine::StartOutcome outcome, const QString &error) {
+                if (m_connectPanel != nullptr) m_connectPanel->onStartFinished(profileId, outcome, error);
+            });
+    connect(engine->connection(), &Engine::ConnectionManager::stopFinished, this, [this](int) {
+        if (m_connectPanel != nullptr) m_connectPanel->onStopFinished();
+    });
     connect(engine->supervisor(), &Engine::CoreSupervisor::coreExited, this, [this](bool wasConnected) {
         if (wasConnected && m_connectPanel != nullptr) m_connectPanel->reportFailure();
         refreshConnectionState();

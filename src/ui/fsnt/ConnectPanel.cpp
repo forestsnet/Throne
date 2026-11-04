@@ -15,6 +15,9 @@
 #include "include/ui/fsnt/FsntTheme.hpp"
 #include "include/ui/fsnt/PowerButton.h"
 #include "include/ui/fsnt/Transport.hpp"
+#include "include/engine/EngineHost.h"
+#include "include/engine/connection/ConnectionManager.h"
+#include "include/engine/services/AssetUpdates.h"
 #include "include/ui/mainwindow.h"
 
 namespace {
@@ -84,7 +87,8 @@ ConnectPanel::ConnectPanel(QWidget *parent) : QWidget(parent) {
         refresh();
         // Состояние не изменилось — значит операция и правда не удалась.
         if (isConnected() == wasStopping) {
-            setStatus(wasStopping ? tr("Could not disconnect") : tr("Could not connect"), "bad");
+            m_failure = wasStopping ? tr("Could not disconnect") : tr("Could not connect");
+            setStatus(m_failure, "bad");
         }
     });
 
@@ -93,6 +97,17 @@ ConnectPanel::ConnectPanel(QWidget *parent) : QWidget(parent) {
     connect(m_statePoll, &QTimer::timeout, this, &ConnectPanel::refresh);
 
     refresh();
+}
+
+// Настоящее состояние перехода. «Подключено» для этого не годится: на
+// переключении сервера туннель поднят всё время, и ожидание закрывалось бы в
+// том же кадре, в котором началось.
+Engine::ConnectionState ConnectPanel::tunnelState() {
+    auto *engine = Engine::host();
+    if (engine == nullptr || engine->connection() == nullptr) {
+        return isConnected() ? Engine::ConnectionState::Running : Engine::ConnectionState::Idle;
+    }
+    return engine->connection()->connectionState();
 }
 
 bool ConnectPanel::isConnected() {
@@ -158,7 +173,7 @@ void ConnectPanel::switchServer(const int profileId) {
     if (mw == nullptr) return;
     // Ядро переключается на новый профиль само, отдельная остановка не нужна:
     // она оставила бы пользователя без связи на время пересборки конфига.
-    beginPending(false, tr("Connecting"));
+    beginPending(false, tr("Connecting"), profileId);
     mw->profile_start(profileId);
 }
 
@@ -184,7 +199,7 @@ void ConnectPanel::onButtonClicked() {
         return;
     }
 
-    beginPending(false, tr("Connecting"));
+    beginPending(false, tr("Connecting"), id);
 
     // Одна кнопка: режим клиент выбирает сам. По умолчанию TUN, но пользователь
     // может переключиться на системный прокси в настройках простого режима.
@@ -230,7 +245,10 @@ void ConnectPanel::offerWayWithoutRights(int profileId) {
     QTimer::singleShot(0, this, [this] { onButtonClicked(); });
 }
 
-void ConnectPanel::beginPending(const bool stopping, const QString &status) {
+void ConnectPanel::beginPending(const bool stopping, const QString &status, const int profileId) {
+    // Новая попытка отменяет прошлую причину: о ней уже рассказали.
+    m_failure.clear();
+    m_pendingProfileId = profileId;
     m_pending = true;
     m_button->setState(stopping ? PowerButton::State::Stopping : PowerButton::State::Connecting);
     setStatus(status, "busy");
@@ -248,10 +266,104 @@ void ConnectPanel::reportFailure() {
     if (!m_pending) return;
     const bool wasStopping = m_button->state() == PowerButton::State::Stopping;
     endPending();
-    refresh();
     // Падение ядра во время остановки — это и есть успешная остановка,
     // сообщать об ошибке незачем.
-    if (!wasStopping) setStatus(tr("Could not connect"), "bad");
+    if (!wasStopping) m_failure = tr("Could not connect");
+    refresh();
+}
+
+QString ConnectPanel::startFailureText(const Engine::StartOutcome outcome) {
+    switch (outcome) {
+        case Engine::StartOutcome::NotFound:
+        case Engine::StartOutcome::GroupUnavailable:
+            return tr("No server to connect to");
+        case Engine::StartOutcome::CoreUnavailable:
+            return tr("The core is not answering");
+        case Engine::StartOutcome::BuildFailed:
+            return tr("Could not build the configuration");
+        case Engine::StartOutcome::TunFailed:
+        case Engine::StartOutcome::StrictRouteUnavailable:
+            return tr("Could not bring the tunnel up");
+        case Engine::StartOutcome::KillSwitchInactive:
+            return tr("The kill switch is not armed");
+        case Engine::StartOutcome::Busy:
+            return tr("Another connection is still finishing");
+        case Engine::StartOutcome::Started:
+        case Engine::StartOutcome::Exiting:
+        case Engine::StartOutcome::Superseded:
+        case Engine::StartOutcome::ExtraCoreBlocked:
+        case Engine::StartOutcome::StartFailed:
+            break;
+        case Engine::StartOutcome::GeoAssetsMissing:
+            // Сюда попадаем, только когда файлы на месте: иначе запуск ждёт
+            // загрузки и до этой строки не доходит.
+            return tr("The routing data lacks what this server needs");
+    }
+    return tr("Could not connect");
+}
+
+void ConnectPanel::onStartFinished(const int profileId, const Engine::StartOutcome outcome,
+                                   const QString &error) {
+    Q_UNUSED(error)
+    // Панель ждёт остановки — чужой запуск её не касается.
+    if (m_pending && m_button->state() == PowerButton::State::Stopping) return;
+    // Как и ответ о чужом профиле: запуск могли заказать лоток, восстановление
+    // после перезапуска или внешнее управление, и его отказ к этой попытке
+    // отношения не имеет.
+    if (m_pendingProfileId >= 0 && profileId >= 0 && profileId != m_pendingProfileId) return;
+
+    if (outcome == Engine::StartOutcome::Started) {
+        endPending();
+        refresh();
+        return;
+    }
+    // Попытку сменила следующая — отвечать будет она. Выход из программы не
+    // отказ, и показывать его уже некому.
+    if (outcome == Engine::StartOutcome::Superseded || outcome == Engine::StartOutcome::Exiting) return;
+    if (!m_pending) return;
+
+    // Гео-файлы догружаются, и запуск повторится сам. Это не конец попытки, а
+    // её часть: сторожевому таймеру даём ещё круг, чтобы он не объявил отказ
+    // посреди загрузки. А вот когда файлы на месте и в них просто нет нужной
+    // категории, качать нечего и ждать не́чего — это отказ.
+    if (outcome == Engine::StartOutcome::GeoAssetsMissing &&
+        (!Engine::AssetUpdates::GeoAssetsPresent() || Engine::AssetUpdates::GeoUpdateRunning())) {
+        setStatus(tr("Downloading the routing data"), "busy");
+        m_pendingGuard->start();
+        return;
+    }
+
+    endPending();
+    m_failure = startFailureText(outcome);
+    refresh();
+}
+
+void ConnectPanel::onStopFinished() {
+    // Остановка бывает и половиной переключения сервера: тогда панель ждёт
+    // запуска, и конец остановки для неё ничего не значит.
+    if (!m_pending || m_button->state() != PowerButton::State::Stopping) return;
+    endPending();
+    refresh();
+}
+
+void ConnectPanel::onConnectionState(const Engine::ConnectionState state) {
+    switch (state) {
+        case Engine::ConnectionState::Connecting:
+            // Без refresh следом: он закрыл бы только что начатое ожидание.
+            if (!m_pending || m_button->state() == PowerButton::State::Stopping) {
+                beginPending(false, tr("Connecting"));
+            }
+            return;
+        case Engine::ConnectionState::Stopping:
+            if (!m_pending) beginPending(true, tr("Disconnecting"));
+            return;
+        case Engine::ConnectionState::Running:
+        case Engine::ConnectionState::Idle:
+            break;
+    }
+    // Переход завершён — его и ждали.
+    if (m_pending) endPending();
+    refresh();
 }
 
 void ConnectPanel::updateElapsed() {
@@ -269,10 +381,14 @@ void ConnectPanel::updateElapsed() {
 void ConnectPanel::refresh() {
     const bool connected = isConnected();
 
-    // Состояние стало тем, которого добивались — ожидание закончено.
+    // Переход кончился — ожидание тоже. Спрашиваем движок, а не сравниваем
+    // «подключено» с «отключаемся»: на переключении сервера второе ничего не
+    // говорит о первом.
     if (m_pending) {
-        const bool stopping = m_button->state() == PowerButton::State::Stopping;
-        if (connected != stopping) endPending();
+        const auto state = tunnelState();
+        if (state == Engine::ConnectionState::Running || state == Engine::ConnectionState::Idle) {
+            endPending();
+        }
     }
 
     if (connected && !m_connectedAt.isValid()) {
@@ -284,9 +400,11 @@ void ConnectPanel::refresh() {
         m_elapsed->setText("00:00:00");
     }
 
+    if (connected) m_failure.clear();
     if (!m_pending) {
         m_button->setState(connected ? PowerButton::State::Connected : PowerButton::State::Off);
-        setStatus(connected ? tr("Connected") : tr("Disconnected"), connected ? "ok" : "");
+        if (!connected && !m_failure.isEmpty()) setStatus(m_failure, "bad");
+        else setStatus(connected ? tr("Connected") : tr("Disconnected"), connected ? "ok" : "");
     }
 
     const Choice choice = resolveProfile();

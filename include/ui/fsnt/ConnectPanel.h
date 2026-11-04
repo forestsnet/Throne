@@ -3,6 +3,8 @@
 #include <QDateTime>
 #include <QWidget>
 
+#include "include/engine/EngineTypes.h"
+
 class PowerButton;
 class QLabel;
 class QTimer;
@@ -30,6 +32,17 @@ public:
     // до сторожевого таймера, хотя ответ уже пришёл.
     void reportFailure();
 
+    // Ответы движка о конце операции. До них панель ждала, пока настоящее
+    // состояние само станет желаемым, а неудавшийся запуск такого состояния не
+    // даёт никогда: кольцо крутилось все 25 секунд сторожевого таймера, хотя
+    // отказ был известен сразу — иногда вместе с окном об ошибке поверх него.
+    void onStartFinished(int profileId, Engine::StartOutcome outcome, const QString &error);
+    void onStopFinished();
+    // Туннель поднимает не только эта кнопка: лоток, автозапуск при старте,
+    // повтор после догрузки гео-файлов, внешнее управление. Кольцо должно
+    // показывать работу, кто бы её ни начал.
+    void onConnectionState(Engine::ConnectionState state);
+
 signals:
     // Нечего запускать: окно предложит добавить подписку.
     void subscriptionNeeded();
@@ -48,6 +61,7 @@ private:
     };
 
     static bool isConnected();
+    static Engine::ConnectionState tunnelState();
     static Choice resolveProfile();
 
     void onButtonClicked();
@@ -57,8 +71,11 @@ private:
     void setStatus(const QString &text, const char *tone);
     // Начало и конец ожидания ответа ядра — в одном месте, чтобы сторожевой
     // таймер и опрос состояния не забывались по отдельности.
-    void beginPending(bool stopping, const QString &status);
+    void beginPending(bool stopping, const QString &status, int profileId = -1);
     void endPending();
+    // Короткая причина отказа под кнопкой. Подробности, где они есть, клиент
+    // показывает своим окном, здесь нужна одна строка.
+    static QString startFailureText(Engine::StartOutcome outcome);
 
     QLabel *m_elapsed = nullptr;
     QLabel *m_status = nullptr;
@@ -76,4 +93,11 @@ private:
     QTimer *m_statePoll = nullptr;
     QDateTime m_connectedAt;
     bool m_pending = false;
+    // Причина, по которой не удалось подключиться. Держим отдельно: состояние
+    // «не подключено» приходит и само по себе, и refresh затирал бы причину
+    // словом «Отключено» через долю секунды после того, как её показали.
+    // Снимается следующей попыткой или удавшимся подключением.
+    QString m_failure;
+    // Чей запуск ждём. -1 — ждём остановки или не знаем.
+    int m_pendingProfileId = -1;
 };

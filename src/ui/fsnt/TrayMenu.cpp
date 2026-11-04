@@ -7,6 +7,8 @@
 #include <QSystemTrayIcon>
 
 #include "include/database/GroupsRepo.h"
+#include "include/engine/EngineHost.h"
+#include "include/engine/connection/ConnectionManager.h"
 #include "include/database/ProfilesRepo.h"
 #include "include/global/Configs.hpp"
 #include "include/stats/traffic/TrafficLooper.hpp"
@@ -22,6 +24,22 @@ namespace {
     bool tunnelRunning() {
         const auto &settings = Configs::dataManager->settingsRepo;
         return settings->core_running && settings->started_id >= 0;
+    }
+
+    // Пока туннель поднимается или опускается, он не «подключён» и не
+    // «отключён». Меню собирается в момент открытия, и без этого состояния оно
+    // в середине перехода звало подключиться к тому, что уже подключается.
+    Engine::ConnectionState tunnelState() {
+        auto *engine = Engine::host();
+        if (engine == nullptr || engine->connection() == nullptr) {
+            return tunnelRunning() ? Engine::ConnectionState::Running : Engine::ConnectionState::Idle;
+        }
+        return engine->connection()->connectionState();
+    }
+
+    bool tunnelSettling() {
+        const auto state = tunnelState();
+        return state == Engine::ConnectionState::Connecting || state == Engine::ConnectionState::Stopping;
     }
 
     QString currentServerName() {
@@ -52,6 +70,9 @@ namespace Fsnt {
 
         const bool running = tunnelRunning();
         auto *toggle = m_menu->addAction(running ? tr("Disconnect") : tr("Connect"));
+        // В середине перехода нажимать нечего: повторный запрос либо ничего не
+        // сделает, либо заведёт второй запуск поверх идущего.
+        toggle->setEnabled(!tunnelSettling());
         connect(toggle, &QAction::triggered, this, [running] {
             if (Fsnt_RequestConnection) Fsnt_RequestConnection(!running);
         });
@@ -86,7 +107,15 @@ namespace Fsnt {
     void TrayMenu::addStatusSection() {
         const bool running = tunnelRunning();
 
-        auto *state = m_menu->addAction(running ? tr("Connected") : tr("Not connected"));
+        QString stateText = running ? tr("Connected") : tr("Not connected");
+        switch (tunnelState()) {
+            case Engine::ConnectionState::Connecting: stateText = tr("Connecting…"); break;
+            case Engine::ConnectionState::Stopping: stateText = tr("Disconnecting…"); break;
+            case Engine::ConnectionState::Idle:
+            case Engine::ConnectionState::Running:
+                break;
+        }
+        auto *state = m_menu->addAction(stateText);
         state->setEnabled(false);
 
         if (const QString server = currentServerName(); !server.isEmpty()) {
@@ -147,6 +176,9 @@ namespace Fsnt {
     }
 
     void TrayMenu::chooseServer(const int profileId, const QString &name) {
+        // В середине перехода переключение серверов только спутает состояние.
+        if (tunnelSettling()) return;
+
         auto &settings = Configs::dataManager->settingsRepo;
         settings->simple_selected_server = name;
         settings->Save();
