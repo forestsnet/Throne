@@ -128,6 +128,14 @@ void MainWindow::on_menu_delete_repeat_triggered() {
         return;
     }
 
+    // Снимок сделан до модального вопроса. Пока он висел, обновление подписки
+    // могло переписать список группы — записав свой порядок поверх, мы выкинули
+    // бы пришедшие серверы из группы, оставив их в базе невидимыми.
+    if (group->Profiles() != groupIds) {
+        MessageBoxWarning(tr("Remove duplicates"),
+                          tr("The subscription changed while the question was open. Try again."));
+        return;
+    }
     group->profiles = newOrder;
     Configs::dataManager->groupsRepo->Save(group);
     if (!del_ids.isEmpty()) Configs::dataManager->profilesRepo->BatchDeleteProfiles(del_ids, true);
@@ -393,17 +401,20 @@ void MainWindow::on_menu_remove_invalid_triggered() {
      int profileSize = currentGroup->Profiles().size();
      // Empty group: no worker unlocks mu, so the join below would block forever.
      if (profileSize == 0) return;
+     std::atomic<bool> coreDown{false};
      mu.lock();
      for (const auto& profileID : currentGroup->Profiles()) {
          auto profile = Configs::dataManager->profilesRepo->GetProfile(profileID);
-         parallelCoreCallPool->start([&out_del, profile, &counter, &mu, profileSize, &access]
+         parallelCoreCallPool->start([&out_del, profile, &counter, &mu, profileSize, &access, &coreDown]
          {
-             if (!IsValid(profile))
+             bool unreachable = false;
+             if (!IsValid(profile, &unreachable))
              {
                  access.lock();
                  out_del += profile;
                  access.unlock();
              }
+             if (unreachable) coreDown.store(true);
              if (++counter == profileSize) mu.unlock();
          });
      }
@@ -420,8 +431,16 @@ void MainWindow::on_menu_remove_invalid_triggered() {
          }
      }
 
-     runOnUiThread([=,this]
+     runOnUiThread([=,this, unreachable = coreDown.load()]
      {
+         // Пока ядро недоступно, непройденной оказывается каждая проверка, и
+         // удаление по такому вердикту выносит группу целиком. В подписочном
+         // пути это учтено, ручной пункт шёл мимо.
+         if (unreachable) {
+             MessageBoxWarning(tr("Remove invalid"),
+                               tr("The core is unreachable, so nothing could be checked. Nothing was removed."));
+             return;
+         }
          if (!out_del.empty() &&
          (Configs::dataManager->settingsRepo->skip_delete_confirmation || QMessageBox::question(this, tr("Confirmation"), tr("Remove %1 Invalid item(s) ?").arg(out_del.length()) + "\n" + remove_display) == QMessageBox::StandardButton::Yes)) {
          QList<int> del_ids;
