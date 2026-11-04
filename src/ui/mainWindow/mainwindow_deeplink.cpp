@@ -328,7 +328,12 @@ void MainWindow::handle_addsub(const QString &url, const QString &name) {
             Configs::dataManager->groupsRepo->Save(existing);
             refresh_groups();
             show_group(existing->id);
-            Subscription::updater()->RefreshGroup(existing->id);
+            // С отчётом, как и у новой подписки ниже. Повторным нажатием
+            // кнопки на странице провайдера люди чаще всего и обновляются, и
+            // именно этот путь молчал: капча, лимит устройств и отказ загрузки
+            // уходили в журнал, а в окне оставался прежний список без слов.
+            Subscription::updater()->RefreshGroup(existing->id, nullptr,
+                                                  Subscription::GroupUpdater::Surface::Report);
             return;
         }
     }
