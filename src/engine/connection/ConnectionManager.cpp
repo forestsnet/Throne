@@ -248,10 +248,10 @@ namespace Engine {
                 return false;
             }
             if (!error.isEmpty()) {
-                std::function<void()> onGeoInstalled;
-                if (m_options.geoAutoDownload) {
-                    onGeoInstalled = [this, id = ent->id, token = m_geoRetryToken.load()] { retryAfterGeoFetch(id, token); };
-                }
+                // И при автоподкачке, и когда человек сам согласился на неё в
+                // окне: ждут одного — что запуск продолжится сам.
+                std::function<void()> onGeoInstalled =
+                    [this, id = ent->id, token = m_geoRetryToken.load()] { retryAfterGeoFetch(id, token); };
                 if (Engine::AssetUpdates::HandleXrayGeoError(policy(), error, ent->outbound->DisplayTypeAndName(), resolved.interactive,
                                                              onGeoInstalled)) {
                     finish(StartOutcome::GeoAssetsMissing, error);

@@ -70,6 +70,14 @@ namespace Engine::AssetUpdates {
 
     bool GeoUpdateRunning();
 
+    // Main thread; both files are on disk.
+    bool GeoAssetsPresent();
+
+    // Main thread. Makes sure geoip.dat and geosite.dat are on disk: done runs at once when they already are, otherwise when
+    // the download this call starts — or the one it joins — ends, with an empty string on success. False when another request
+    // holds one of the files, and then done never runs: that caller has to ask again later.
+    bool EnsureGeoAssets(const std::function<void(const QString &error)> &done);
+
     struct GeoError {
         // The core error names geoip.dat or geosite.dat.
         bool isGeo = false;

@@ -28,9 +28,9 @@ namespace Engine::AssetUpdates {
         // A geo prompt is pending or open; main thread only.
         bool assetXrayGeoPromptBusy = false;
         std::atomic<bool> assetGeoUnattendedFetch{false};
-        // An unattended download runs, and the callers waiting for its clean result; main thread only.
+        // A shared download runs, and the callers waiting for its result; main thread only.
         bool assetGeoUnattendedBusy = false;
-        QList<std::function<void()>> assetGeoUnattendedWaiters;
+        QList<std::function<void(const QString &)>> assetGeoUnattendedWaiters;
 
         unsigned assetGeoBit(GeoFile file) {
             return 1u << static_cast<unsigned>(file);
@@ -199,36 +199,54 @@ namespace Engine::AssetUpdates {
         assetGeoUnattendedFetch.store(enabled);
     }
 
+    bool GeoAssetsPresent() {
+        ENGINE_CHECK_MAIN_THREAD();
+        return assetGeoPresent(GeoFile::GeoIp) && assetGeoPresent(GeoFile::GeoSite);
+    }
+
+    bool EnsureGeoAssets(const std::function<void(const QString &)> &done) {
+        ENGINE_CHECK_MAIN_THREAD();
+        GeoRequest request;
+        request.files.clear();
+        for (const auto &status : GeoStatus()) {
+            if (!status.present) request.files << status.file;
+        }
+        if (request.files.isEmpty()) {
+            if (done) done({});
+            return true;
+        }
+        // Присоединяемся к уже идущей загрузке, а не запускаем вторую: ждущих
+        // может быть несколько — замер задержки, запуск профиля, автоподкачка.
+        if (assetGeoUnattendedBusy) {
+            if (done) assetGeoUnattendedWaiters << done;
+            return true;
+        }
+        request.onlyMissing = true;
+        const bool started = UpdateGeoAssets(request, [](const QList<GeoFileResult> &results) {
+            QString dlErr;
+            for (const auto &result : results) {
+                if (!result.error.isEmpty()) dlErr += result.fileName + ": " + result.error + "\n";
+            }
+            assetGeoUnattendedBusy = false;
+            const auto waiters = std::exchange(assetGeoUnattendedWaiters, {});
+            for (const auto &waiter : waiters) waiter(dlErr);
+        });
+        if (!started) return false;
+        assetGeoUnattendedBusy = true;
+        if (done) assetGeoUnattendedWaiters << done;
+        return true;
+    }
+
     namespace {
         void assetGeoFetchUnattended(EnginePolicy *policy, const std::function<void()> &onInstalled) {
             ENGINE_CHECK_MAIN_THREAD();
-            if (assetGeoUnattendedBusy) {
-                if (onInstalled) assetGeoUnattendedWaiters << onInstalled;
-                return;
-            }
-            GeoRequest request;
-            request.files.clear();
-            for (const auto &status : GeoStatus()) {
-                if (!status.present) request.files << status.file;
-            }
-            request.onlyMissing = true;
-            const bool started = UpdateGeoAssets(request, [policy](const QList<GeoFileResult> &results) {
-                QString dlErr;
-                for (const auto &result : results) {
-                    if (!result.error.isEmpty()) dlErr += result.fileName + ": " + result.error + "\n";
-                }
-                assetGeoUnattendedBusy = false;
-                const auto waiters = std::exchange(assetGeoUnattendedWaiters, {});
-                policy->geoAssetDownloadFinished(dlErr);
-                if (!dlErr.isEmpty()) return;
-                for (const auto &waiter : waiters) waiter();
+            const bool joined = EnsureGeoAssets([policy, onInstalled](const QString &error) {
+                policy->geoAssetDownloadFinished(error);
+                if (error.isEmpty() && onInstalled) onInstalled();
             });
-            if (!started) {
+            if (!joined) {
                 MW_show_log(QStringLiteral("[Geo assets] The missing files are already being downloaded by another request; nothing is retried."));
-                return;
             }
-            assetGeoUnattendedBusy = true;
-            if (onInstalled) assetGeoUnattendedWaiters << onInstalled;
         }
     } // namespace
 
@@ -263,7 +281,16 @@ namespace Engine::AssetUpdates {
         }
 
         runOnUiThread([=] {
-            if (assetXrayGeoPromptBusy || GeoUpdateRunning()) return;
+            if (assetXrayGeoPromptBusy) return;
+            // Файлы уже качает кто-то другой — автоподкачка на старте или
+            // соседний запуск. Спрашивать не о чем, но попытку надо повторить:
+            // без этого человек жал «Подключиться» ещё раз уже сам.
+            if (GeoUpdateRunning()) {
+                EnsureGeoAssets([onInstalled](const QString &error) {
+                    if (error.isEmpty() && onInstalled) onInstalled();
+                });
+                return;
+            }
             assetXrayGeoPromptBusy = true;
             setTimeout([=] {
                 const auto geo = ClassifyGeoError(coreError);
@@ -278,19 +305,12 @@ namespace Engine::AssetUpdates {
                 assetXrayGeoPromptBusy = false;
                 if (!confirmed) return;
 
-                GeoRequest request;
-                request.files.clear();
-                for (const auto &status : GeoStatus()) {
-                    if (!status.present) request.files << status.file;
-                }
-                request.onlyMissing = true;
-                const bool started = UpdateGeoAssets(request, [policy](const QList<GeoFileResult> &results) {
-                    QString dlErr;
-                    for (const auto &result : results) {
-                        if (!result.error.isEmpty()) dlErr += result.fileName + ": " + result.error + "\n";
-                    }
+                const bool started = EnsureGeoAssets([policy, onInstalled](const QString &dlErr) {
                     if (dlErr.isEmpty()) MW_show_log(MainWindowTr::tr("Downloaded Xray geo asset files."));
                     policy->geoAssetDownloadFinished(dlErr);
+                    // Человек согласился на загрузку ради этого запуска — он и
+                    // ждёт, что тот пойдёт сам, а не что надо жать ещё раз.
+                    if (dlErr.isEmpty() && onInstalled) onInstalled();
                 });
                 // An API request may have started a download while the question was open.
                 if (!started) MW_show_log(MainWindowTr::tr("Geo asset files are already being downloaded."));

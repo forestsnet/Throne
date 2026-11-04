@@ -3,6 +3,7 @@
 #include <QHash>
 #include <QSet>
 
+#include <functional>
 #include <memory>
 
 namespace Configs { class Profile; }
@@ -110,6 +111,12 @@ private:
     static int subscriptionCount();
     static QList<int> duplicateSubscriptions();
     void probeOne(int profileId, int kind);
+    // Без geoip.dat и geosite.dat конфиг Xray не собирается, и замер возвращает
+    // «н/д» по всем серверам за долю секунды. На свежей установке их тянет сам
+    // запуск приложения, но нажать человек успевает раньше: тогда ждём загрузку
+    // и меряем после неё, вместо того чтобы показать пустой результат. True —
+    // работа отложена, вызывающему делать нечего.
+    bool deferUntilGeoAssets(const std::function<void()> &then);
 
 public:
     // Цели для экскурсии. Возвращаем QWidget*, потому что поднимать тип до
@@ -133,6 +140,8 @@ private:
     FsntIconButton *m_subMenu = nullptr;
     QTimer *m_latencyPoll = nullptr;
     int m_latencyPollsLeft = 0;
+    // Замер ждёт догрузки гео-файлов.
+    bool m_waitingForGeo = false;
     // Момент запуска замера в секундах. Строка считается ждущей, пока её
     // latency_at старше этой отметки.
     qint64 m_measureStartedAt = 0;

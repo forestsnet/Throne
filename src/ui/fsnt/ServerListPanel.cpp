@@ -23,6 +23,7 @@
 #include "include/configs/sub/GroupUpdater.hpp"
 #include "include/database/GroupsRepo.h"
 #include "include/database/ProfilesRepo.h"
+#include "include/engine/services/AssetUpdates.h"
 #include "include/global/Configs.hpp"
 #include "include/ui/fsnt/BusyButton.h"
 #include "include/ui/fsnt/FsntControls.h"
@@ -33,6 +34,8 @@
 #include "include/configs/sub/ProviderPolicy.hpp"
 #include "include/ui/mainwindow.h"
 #include "src/ui/fsnt/ServerItemDelegate.h"
+
+#include <QPointer>
 
 namespace {
     // Опросов подряд без единого ответа, после которых замер считается
@@ -276,9 +279,40 @@ void ServerListPanel::setShowFavouritesOnly(bool onlyFavourites) {
 }
 
 
+bool ServerListPanel::deferUntilGeoAssets(const std::function<void()> &then) {
+    if (Engine::AssetUpdates::GeoAssetsPresent()) return false;
+    // Второе нажатие не заводит второго ожидающего: он уже стоит в очереди.
+    if (m_waitingForGeo) return true;
+
+    QPointer<ServerListPanel> self(this);
+    const bool joined = Engine::AssetUpdates::EnsureGeoAssets([self, then](const QString &error) {
+        if (self.isNull() || !self->m_waitingForGeo) return;
+        self->m_waitingForGeo = false;
+        self->m_ping->setBusy(false);
+        if (!error.isEmpty()) {
+            emit self->notice(tr("Could not download the routing data: %1").arg(error.trimmed()));
+            return;
+        }
+        then();
+    });
+    if (!joined) {
+        emit notice(tr("The routing data is still downloading. Try again in a moment."));
+        return true;
+    }
+
+    m_waitingForGeo = true;
+    // Занятая кнопка здесь и есть ответ на нажатие: иначе человек видит, что
+    // ничего не произошло, и жмёт её ещё раз.
+    m_ping->setBusy(true);
+    emit notice(tr("Downloading the routing data, the test will start on its own…"));
+    return true;
+}
+
 void ServerListPanel::measureLatency() {
     auto *mw = GetMainWindow();
     if (mw == nullptr) return;
+
+    if (deferUntilGeoAssets([this] { measureLatency(); })) return;
 
     // testRunner приватный, но действие меню — именованный дочерний объект окна.
     // Дёргаем его, чтобы не править код, который правит upstream.
@@ -299,6 +333,9 @@ void ServerListPanel::measureLatency() {
 }
 
 void ServerListPanel::stopMeasurement() {
+    // Той же кнопкой человек отменяет и ожидание гео-файлов: сама загрузка
+    // идёт дальше, но замера после неё уже не будет.
+    m_waitingForGeo = false;
     if (auto *mw = GetMainWindow()) {
         if (auto *action = mw->findChild<QAction *>("menu_stop_testing")) action->trigger();
     }
@@ -307,6 +344,8 @@ void ServerListPanel::stopMeasurement() {
 }
 
 void ServerListPanel::probeOne(const int profileId, const int kind) {
+    if (deferUntilGeoAssets([this, profileId, kind] { probeOne(profileId, kind); })) return;
+
     const auto probeKind = Fsnt::PingKindFromSetting(kind);
     m_probeTarget = profileId;
     // Отметку ставим как при общем замере, но ждёт по ней только цель.

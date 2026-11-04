@@ -241,6 +241,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // обновление не начинается раньше, чем человек его увидит.
     setTimeout([this] { ReportPreviousUpdate(); }, this, 4000);
 
+    // Гео-файлы на свежей установке подтягиваем сами и молча. Без них не
+    // собирается конфиг Xray, и первое же действие человека — замер задержки
+    // или запуск — упиралось в окно «скачать?»: пока он отвечал, замер успевал
+    // пройти по пустому конфигу и показать «н/д» на всех серверах.
+    setTimeout([] {
+        if (Engine::AssetUpdates::GeoAssetsPresent()) return;
+        MW_show_log(QStringLiteral("[Geo assets] Not installed yet, downloading them in the background."));
+        Engine::AssetUpdates::EnsureGeoAssets([](const QString &error) {
+            if (error.isEmpty()) return;
+            MW_show_log(QStringLiteral("[Geo assets] Background download failed: %1").arg(error.trimmed()));
+        });
+    }, this, 1500);
+
     // migrate old themes
     bool isNum;
     Configs::dataManager->settingsRepo->theme.toInt(&isNum);
