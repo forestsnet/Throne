@@ -8,6 +8,9 @@
 * End the update download's progress when the download ends, not two minutes later **6**
 * Show the work behind the buttons that used to go quiet **7**
 * Say which diagnostic check is running and which is still waiting its turn **8**
+* Say why the connection dropped, not only that it did **9**
+* Let go of the windows that would not close **10**
+* Report what used to answer to the log alone **11**
 
 **1**:
 geoip.dat and geosite.dat are not shipped with the client, and without geosite.dat no Xray config builds at all. On a fresh install the first thing anyone does - measure the latency, or connect - therefore failed, offered to download the files, and left the measurement that triggered it to finish against a config that could not be built: every server came back as no answer. Waiting for the download and pressing the same button again worked, which is not something a person should have to work out. A start now fetches whatever is missing in the background without asking, the latency test waits for that download and runs itself when it ends, and a start that the prompt did download the files for continues on its own instead of needing a second press.
@@ -19,7 +22,9 @@ A link copied out of a messenger or a document carries characters that are not s
 Building the report polls the system and packs an archive, which on Windows takes the better part of a minute. The menu closed and nothing else happened - no line, no bar, no way to tell whether the button had worked at all - until a message box appeared at the end. It now opens a window that names the step it is on and fills a bar across the eight of them, and that same window reports the finished archive with a button that opens the folder it is in.
 
 **4**:
-Without geosite.dat the latency test dies in about a millisecond - the generated DNS section names geosite:private, the config will not load, and the whole batch fails at once. The button went on spinning and the dots went on moving for twelve seconds anyway, because the panel cleared that state on a timer instead of on the end of the run. It now waits for the run to report itself finished, which it does in the same millisecond the batch does, and writes to the log how many of the servers answered. A long measurement can be stopped by pressing the button again, which the code offered already but could never reach, since a button disabled while busy receives no clicks. A test started before the routing data is there waits for the download and runs itself when it arrives.
+Without geosite.dat the latency test dies in about a millisecond - the generated DNS section names geosite:private, the config will not load, and the whole batch fails at once. The button went on spinning and the dots went on moving for twelve seconds anyway, because the panel cleared that state on a timer instead of on the end of the run. It now waits for the run to report itself finished, which it does in the same millisecond the batch does, and writes to the log how many of the servers answered. A long measurement can be stopped by pressing the button again, which the code offered already but could never reach, since a button disabled while busy receives no clicks. A test started before the routing data is there waits for the download and runs itself when it arrives, and it opens that wait before asking for the download rather than after - the files can land in between, the answer then comes from inside the call, and the button was left spinning under "downloading" with nothing on the way.
+
+The poll that used to decide the end is no longer allowed to: either of its conditions could fire a few milliseconds before the engine reported the batch done, and the answer that arrived afterwards was discarded, leaving the engine holding a session the window thought was finished.
 
 **5**:
 The ring around the connect button ran on a timer of its own. A start that failed - no server to connect to, the core not answering, a configuration that would not build, the kill switch not armed - left the ring finishing its turn and then showed the same idle state as before, with the reason nowhere on screen. The panel now follows the engine's own start and stop signals, holds the waiting state until the transition really ends, and keeps the failure's reason until something else happens rather than letting the next refresh wipe it. Switching servers while connected no longer cancels its own wait. The tray menu shows the same two states and refuses to toggle the connection or change the server in the middle of a transition.
@@ -32,6 +37,15 @@ Update all now queued its work with no result handler at all, so the window stay
 
 **8**:
 The checks run one after another, and every one of them showed the same waiting state from the moment the window opened, so there was no telling which one the window was on. Each row now says whether it is in queue or being checked, and the buttons that fix something report what they did. A transport change the system refuses - the full tunnel needs administrator rights to create its network adapter, and without them traffic keeps going outside the tunnel - now says so, where before it looked no different from one that worked.
+
+**9**:
+The ring around the connect button reported the failures of attempts it had started and dropped everything else. A tunnel that went down under a working connection - the provider ending the session, a device limit, the network changing - left "Disconnected" on screen with nothing beside it, because the panel was waiting for nothing at that moment and the handler returned on exactly that. Only an unexpected exit reaches it, so there is no deliberate stop to mistake this for. The reason also stopped being cleared on the strength of "connected": the core's exit arrives before the state turns over, so the clear wiped the reason in the same frame it was set.
+
+**10**:
+Three windows in a row were written to refuse to close while they worked. The support report is the worst of them - on Windows its collection runs through about a minute of back-to-back process timeouts, and for all of it a modal window stood over everything with the cross and Escape going into a blocked reject. Each of them can be left now, and what they started reports where it can be seen. The power button no longer reads a press during a transition as a request to start another one either: pressing a spinning ring means stop, and it used to add another twenty-five seconds of waiting instead.
+
+**11**:
+Switching to the system proxy mode reported success whatever happened, although it refuses in headless mode and when the mixed inbound is off, so the button read Connected over traffic going straight out. Pressing the provider's button again for a subscription that is already there, which is how most people update, sent its refresh to the log alone - a captcha or a device limit left the same list on screen without a word. A deletion whose transaction fell through was reported as a deletion. Changing autostart printed a fixed line about the Windows elevation prompt rather than the reason the system gave, which someone on macOS read about a system they are not running.
 
 #### 1.4.5
 
