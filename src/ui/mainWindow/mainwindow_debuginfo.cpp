@@ -22,6 +22,26 @@
 #include "include/ui/fsnt/BusyDialog.h"
 #include "include/ui/mainWindow/MainWindowInternal.h"
 
+#include <QJsonDocument>
+#include <QJsonObject>
+
+namespace {
+    // Политика без блока unknown. Разобранные поля — настройки, а unknown
+    // хранит каждый нераспознанный заголовок ответа провайдера, то есть
+    // потенциально токен или заголовок авторизации его панели.
+    QString debugInfoPolicyWithoutUnknown(const QString &json) {
+        if (json.isEmpty()) return QStringLiteral("[none]");
+        auto parsed = QJsonDocument::fromJson(json.toUtf8());
+        if (!parsed.isObject()) return QStringLiteral("[unreadable]");
+        auto object = parsed.object();
+        const int dropped = object.value(QStringLiteral("unknown")).toObject().size();
+        object.remove(QStringLiteral("unknown"));
+        QString out = QString::fromUtf8(QJsonDocument(object).toJson(QJsonDocument::Compact));
+        if (dropped > 0) out += QStringLiteral(" (+%1 provider headers withheld)").arg(dropped);
+        return out;
+    }
+} // namespace
+
 // Сбор отладочной информации в один архив (Ctrl+Shift+D или пункт меню).
 // Действие menu_profile_debug_info объявлено в mainwindow.ui, но реализации у upstream нет.
 
@@ -345,11 +365,13 @@ void MainWindow::on_menu_profile_debug_info_triggered() {
                     stream << "Last update timestamp: " << group->sub_last_update << "\n";
                     stream << "Skip auto update: " << (group->skip_auto_update ? "Yes" : "No") << "\n";
                     stream << "Auto clear unavailable: " << (group->auto_clear_unavailable ? "Yes" : "No") << "\n";
-                    // Политика содержит только настройки, учётных данных в ней нет.
-                    stream << "Provider policy: "
-                           << (group->provider_policy_json.isEmpty() ? QString("[none]")
-                                                                     : group->provider_policy_json)
-                           << "\n";
+                    // Разобранные поля — настройки, их показываем. А вот unknown
+                    // хранит КАЖДЫЙ нераспознанный заголовок ответа провайдера
+                    // (ProviderPolicy.cpp, p.unknown[name] = value), и список
+                    // игнора закрывает только обычные серверные. Любой
+                    // x-subscription-token или www-authenticate от панели уехал
+                    // бы в отчёт как есть, а отчёт человек шлёт в мессенджер.
+                    stream << "Provider policy: " << debugInfoPolicyWithoutUnknown(group->provider_policy_json) << "\n";
                 }
                 
                 if (group->front_proxy_id >= 0) {
