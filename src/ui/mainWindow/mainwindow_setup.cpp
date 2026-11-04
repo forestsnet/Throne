@@ -184,8 +184,26 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             handle_deeplink_impl(url);
         });
     };
-    MW_url_test_one = [=,this](int profileId, const QString &method) {
-        runOnUiThread([=,this] { tests()->runUrlTests({profileId}, {}, true, method); });
+    MW_url_test_one = [=,this](int profileId, const QString &method, std::function<void()> done) {
+        runOnUiThread([=,this] {
+            // Через очередь: при отказе runUrlTests зовёт onFinished прямо из
+            // себя, и вызывающий узнал бы о конце раньше, чем начал ждать.
+            tests()->runUrlTests({profileId}, [done] {
+                if (done) QMetaObject::invokeMethod(QCoreApplication::instance(), done, Qt::QueuedConnection);
+            }, true, method);
+        });
+    };
+    MW_url_test_group = [=,this](std::function<void()> done) {
+        runOnUiThread([=,this] {
+            const auto group = Configs::dataManager->groupsRepo->CurrentGroup();
+            const auto profiles = group != nullptr ? group->Profiles() : QList<int>{};
+            // Через очередь: при отказе runUrlTests зовёт onFinished прямо
+            // из себя, и вызывающий получил бы конец замера раньше, чем успел
+            // его начать.
+            tests()->runUrlTests(profiles, [done] {
+                if (done) QMetaObject::invokeMethod(QCoreApplication::instance(), done, Qt::QueuedConnection);
+            });
+        });
     };
     MW_import_files = [=,this](const QStringList &paths) {
         runOnUiThread([=,this]

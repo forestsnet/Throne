@@ -38,8 +38,9 @@ void BusyButton::setBusy(const bool busy) {
     if (m_busy == busy) return;
     m_busy = busy;
 
-    // Повторный запуск во время работы только сбил бы уже идущий замер.
-    setEnabled(!busy);
+    // Повторный запуск во время работы сбил бы уже идущее обновление. Там, где
+    // нажатие во время работы что-то значит, вызывающий это снимает.
+    if (m_disableWhileBusy) setEnabled(!busy);
 
     if (busy) m_spinAnim->start();
     else m_spinAnim->stop();

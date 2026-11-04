@@ -7,6 +7,7 @@
 #include <memory>
 
 namespace Configs { class Profile; }
+namespace Subscription { struct UpdateOutcome; }
 #include <QWidget>
 
 class FsntSelect;
@@ -100,6 +101,7 @@ private:
     // вовсе, и крутить точки минуту бессмысленно.
     int m_measureIdlePolls = 0;
     void updateSubscription();
+    static QString subscriptionUpdateNotice(const QString &name, const Subscription::UpdateOutcome &outcome);
     // Меню по правой кнопке на строке сервера: проверить его одного, и на
     // выбор — чем именно проверять.
     void showServerMenu(const QPoint &where);
@@ -111,6 +113,7 @@ private:
     static int subscriptionCount();
     static QList<int> duplicateSubscriptions();
     void probeOne(int profileId, int kind);
+    void setPingBusy(bool busy);
     // Без geoip.dat и geosite.dat конфиг Xray не собирается, и замер возвращает
     // «н/д» по всем серверам за долю секунды. На свежей установке их тянет сам
     // запуск приложения, но нажать человек успевает раньше: тогда ждём загрузку
@@ -142,6 +145,10 @@ private:
     int m_latencyPollsLeft = 0;
     // Замер ждёт догрузки гео-файлов.
     bool m_waitingForGeo = false;
+    // Номер прогона: ответ о конце замера принимается только от текущего.
+    quint64 m_measureRun = 0;
+    // Конец прогона придёт ответом, а не угадывается по пустым опросам.
+    bool m_measureExactEnd = false;
     // Момент запуска замера в секундах. Строка считается ждущей, пока её
     // latency_at старше этой отметки.
     qint64 m_measureStartedAt = 0;

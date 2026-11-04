@@ -2,6 +2,7 @@
 
 #include "include/ui/fsnt/ServerListPanel.h"
 #include <QApplication>
+#include <QScopeGuard>
 #include <QClipboard>
 #include "include/ui/fsnt/SubscriptionSettings.hpp"
 
@@ -35,12 +36,17 @@
 #include "include/ui/mainwindow.h"
 #include "src/ui/fsnt/ServerItemDelegate.h"
 
+#include <QCoreApplication>
 #include <QPointer>
 
 namespace {
     // Опросов подряд без единого ответа, после которых замер считается
-    // несостоявшимся. Опрос идёт раз в две секунды.
+    // несостоявшимся. Опрос идёт раз в две секунды. Нужно только там, где о
+    // конце прогона никто не скажет, — иначе конец приходит ответом.
     constexpr int kIdlePollsBeforeGivingUp = 6;
+    // Предел на случай, если ответ о конце прогона так и не пришёл. Пять
+    // минут: меньше — и длинная подписка оборвалась бы на полпути.
+    constexpr int kPollsWithExactEnd = 150;
 }
 
 ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
@@ -95,6 +101,9 @@ ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
     m_ping = new BusyButton(Fsnt::Glyph::Bolt, this);
     m_ping->setFixedSize(36, 36);
     m_ping->setToolTip(tr("Measure latency"));
+    // Этой же кнопкой замер и обрывают, значит во время работы она должна
+    // оставаться нажимаемой.
+    m_ping->setDisableWhileBusy(false);
     searchRow->addWidget(m_ping);
 
     layout->addLayout(searchRow);
@@ -169,13 +178,15 @@ ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
     connect(m_latencyPoll, &QTimer::timeout, this, [this] {
         reloadServers();
 
-        // Если не ответил вообще никто, замер, скорее всего, и не начался:
-        // ядро могло упереться в отсутствующие гео-файлы и ждать ответа в
-        // модальном окне. Ждём несколько опросов и сдаёмся, а не крутим минуту.
-        m_measureIdlePolls = answeredCount() == 0 ? m_measureIdlePolls + 1 : 0;
-        if (m_measureIdlePolls >= kIdlePollsBeforeGivingUp) {
-            finishMeasurement();
-            return;
+        // Если не ответил вообще никто, замер, скорее всего, и не начался.
+        // Гадание нужно только без ответа о конце прогона: с ним пустые
+        // опросы означают лишь медленную сеть, и обрывать на них нельзя.
+        if (!m_measureExactEnd) {
+            m_measureIdlePolls = answeredCount() == 0 ? m_measureIdlePolls + 1 : 0;
+            if (m_measureIdlePolls >= kIdlePollsBeforeGivingUp) {
+                finishMeasurement();
+                return;
+            }
         }
 
         // Счётчик остаётся верхней границей: до части серверов может не быть
@@ -288,7 +299,7 @@ bool ServerListPanel::deferUntilGeoAssets(const std::function<void()> &then) {
     const bool joined = Engine::AssetUpdates::EnsureGeoAssets([self, then](const QString &error) {
         if (self.isNull() || !self->m_waitingForGeo) return;
         self->m_waitingForGeo = false;
-        self->m_ping->setBusy(false);
+        self->setPingBusy(false);
         if (!error.isEmpty()) {
             emit self->notice(tr("Could not download the routing data: %1").arg(error.trimmed()));
             return;
@@ -303,7 +314,7 @@ bool ServerListPanel::deferUntilGeoAssets(const std::function<void()> &then) {
     m_waitingForGeo = true;
     // Занятая кнопка здесь и есть ответ на нажатие: иначе человек видит, что
     // ничего не произошло, и жмёт её ещё раз.
-    m_ping->setBusy(true);
+    setPingBusy(true);
     emit notice(tr("Downloading the routing data, the test will start on its own…"));
     return true;
 }
@@ -316,34 +327,80 @@ void ServerListPanel::measureLatency() {
 
     // testRunner приватный, но действие меню — именованный дочерний объект окна.
     // Дёргаем его, чтобы не править код, который правит upstream.
-    if (auto *action = mw->findChild<QAction *>("actionUrl_Test_Group")) {
-        // Отметку ставим до запуска: строка считается ждущей, пока её latency_at
-        // старше этого момента. Так видно, кто уже ответил, а кто ещё нет.
-        m_measureStartedAt = QDateTime::currentSecsSinceEpoch();
-        action->trigger();
-        // Результаты приходят порциями и signals у TestRunner нет: обновляем список
-        // несколько раз, пока идёт замер, и останавливаемся сами.
-        m_latencyPollsLeft = 30;
-        m_measureIdlePolls = 0;
-        m_ping->setBusy(true);
-        m_latencyPoll->start();
-        m_measureRepaint->start();
-        reloadServers();
+    auto *action = mw->findChild<QAction *>("actionUrl_Test_Group");
+    if (action == nullptr && !MW_url_test_group) return;
+
+    // Отметку ставим до запуска: строка считается ждущей, пока её latency_at
+    // старше этого момента. Так видно, кто уже ответил, а кто ещё нет.
+    m_measureStartedAt = QDateTime::currentSecsSinceEpoch();
+    // Результаты приходят порциями: обновляем список, пока идёт замер.
+    m_measureExactEnd = static_cast<bool>(MW_url_test_group);
+    m_latencyPollsLeft = m_measureExactEnd ? kPollsWithExactEnd : 30;
+    m_measureIdlePolls = 0;
+    setPingBusy(true);
+    m_latencyPoll->start();
+    m_measureRepaint->start();
+    reloadServers();
+
+    if (MW_url_test_group) {
+        // Прогон, который не начался, кончается за миллисекунду — например
+        // ядру не хватило гео-файлов и конфиг не собрался. Без этого ответа
+        // панель узнавала об этом только по шести пустым опросам, то есть
+        // двенадцать секунд рисовала думающие точки на замере, которого нет.
+        const quint64 run = ++m_measureRun;
+        QPointer<ServerListPanel> self(this);
+        MW_url_test_group([self, run] {
+            if (self.isNull() || self->m_measureRun != run) return;
+            self->finishMeasurement();
+        });
+        return;
     }
+    action->trigger();
+}
+
+// Занятость и подсказка меняются вместе: кнопка, которая во время работы
+// обрывает замер, не должна обещать «замерить».
+void ServerListPanel::setPingBusy(const bool busy) {
+    m_ping->setBusy(busy);
+    m_ping->setToolTip(busy ? tr("Stop the measurement") : tr("Measure latency"));
 }
 
 void ServerListPanel::stopMeasurement() {
     // Той же кнопкой человек отменяет и ожидание гео-файлов: сама загрузка
-    // идёт дальше, но замера после неё уже не будет.
-    m_waitingForGeo = false;
+    // идёт дальше, но замера после неё уже не будет. Ядро тут ни при чём,
+    // останавливать нечего.
+    if (m_waitingForGeo) {
+        m_waitingForGeo = false;
+        setPingBusy(false);
+        emit notice(tr("Measurement cancelled"));
+        return;
+    }
+
     if (auto *mw = GetMainWindow()) {
         if (auto *action = mw->findChild<QAction *>("menu_stop_testing")) action->trigger();
+    }
+
+    // Отпускать кнопку сразу нельзя: ядро держит сеанс до конца текущей партии,
+    // каждая проба в ней ещё досиживает свой таймаут. Следующее нажатие по
+    // освобождённой кнопке упиралось в окно «прошлый тест ещё не вышел» —
+    // инженерный текст посреди простого окна. Закрывает замер его собственный
+    // ответ о конце, он придёт.
+    if (m_measureExactEnd && m_measureStartedAt != 0) {
+        emit notice(tr("Stopping the measurement…"));
+        return;
     }
     finishMeasurement();
     emit notice(tr("Measurement stopped"));
 }
 
 void ServerListPanel::probeOne(const int profileId, const int kind) {
+    // Второй замер поверх идущего ядро всё равно не возьмёт — сеанс один, — а
+    // ответы двух прогонов легли бы в одни и те же строки и закрывали бы друг
+    // друга чужой сводкой.
+    if (m_ping->isBusy()) {
+        emit notice(tr("A measurement is already running"));
+        return;
+    }
     if (deferUntilGeoAssets([this, profileId, kind] { probeOne(profileId, kind); })) return;
 
     const auto probeKind = Fsnt::PingKindFromSetting(kind);
@@ -352,17 +409,22 @@ void ServerListPanel::probeOne(const int profileId, const int kind) {
     m_measureStartedAt = QDateTime::currentSecsSinceEpoch();
     m_latencyPollsLeft = 15;
     m_measureIdlePolls = 0;
-    m_ping->setBusy(true);
+    setPingBusy(true);
     m_latencyPoll->start();
     m_measureRepaint->start();
     reloadServers();
 
-    Fsnt::ProbeProfile(profileId, probeKind, [this](int ms, const QString &error) {
-        // Запрос считает ядро, и его ответ придёт опросом; остальные способы
-        // отвечают прямо здесь, и тогда ждать нечего.
-        if (ms != 0) finishMeasurement();
-        if (ms < 0 && !error.isEmpty()) emit notice(error);
-        reloadServers();
+    // Номер прогона — как у общего замера: ответ прошлой проверки не должен
+    // закрывать следующую.
+    const quint64 run = ++m_measureRun;
+    QPointer<ServerListPanel> self(this);
+    Fsnt::ProbeProfile(profileId, probeKind, [self, run](int ms, const QString &error) {
+        if (self.isNull() || self->m_measureRun != run) return;
+        self->finishMeasurement();
+        // Своя причина у способа бывает подробнее общей («имя не разрешается»),
+        // и тогда она перекрывает сообщение, которое уже поставил finishMeasurement.
+        if (ms < 0 && !error.isEmpty()) emit self->notice(error);
+        self->reloadServers();
     });
 }
 
@@ -453,30 +515,57 @@ void ServerListPanel::removeGroups(const QList<int> &ids) {
 
     int removed = 0;
     int pinned = 0;
-    for (const int gid : ids) {
-        // Последнюю группу не трогаем: списку серверов нужно хоть что-то.
-        if (groupsRepo->GetAllGroupIds().size() <= 1) break;
-        if (Subscription::PolicyBlocksDeletion(gid)) {
-            ++pinned;
-            continue;
+    int failed = 0;
+    int keptLast = 0;
+    {
+        // Удаление идёт на UI-потоке и не быстрое: остановка туннеля ждёт ядро,
+        // а удаление группы уносит все её профили одной транзакцией и заставляет
+        // пересобрать таблицы. Курсор — единственное, что здесь можно показать,
+        // не перекрывая подтверждение, которое человек только что закрыл.
+        QApplication::setOverrideCursor(Qt::BusyCursor);
+        const auto restoreCursor = qScopeGuard([] { QApplication::restoreOverrideCursor(); });
+
+        for (const int gid : ids) {
+            // Последнюю группу не трогаем: списку серверов нужно хоть что-то.
+            if (groupsRepo->GetAllGroupIds().size() <= 1) {
+                ++keptLast;
+                continue;
+            }
+            if (Subscription::PolicyBlocksDeletion(gid)) {
+                ++pinned;
+                continue;
+            }
+            if (running != nullptr && running->gid == gid) {
+                if (auto *mw = GetMainWindow(); mw != nullptr) mw->profile_stop(false, true, false);
+            }
+            // По возврату, а не по факту вызова: сорвавшаяся транзакция
+            // считалась удалением, и человек читал, что подписки больше нет.
+            if (groupsRepo->DeleteGroup(gid)) ++removed;
+            else ++failed;
         }
-        if (running != nullptr && running->gid == gid) {
-            if (auto *mw = GetMainWindow(); mw != nullptr) mw->profile_stop(false, true, false);
+
+        if (removed > 0) {
+            MW_dialog_message(MwMessage::GroupsChanged, {});
+            reloadGroups();
         }
-        groupsRepo->DeleteGroup(gid);
-        ++removed;
     }
 
-    if (removed > 0) {
-        MW_dialog_message(MwMessage::GroupsChanged, {});
-        reloadGroups();
+    // Сначала то, что пошло не так: человеку важнее несделанное.
+    if (failed > 0) {
+        emit notice(tr("Deleted %n subscription(s), %1 could not be deleted", nullptr, removed).arg(failed));
+        return;
     }
     if (pinned > 0) {
-        emit notice(tr("Deleted %n subscription(s); %1 pinned by the provider left in place", nullptr, removed)
+        emit notice(tr("Deleted %n subscription(s), %1 pinned by the provider left in place", nullptr, removed)
                         .arg(pinned));
-    } else {
-        emit notice(tr("Deleted %n subscription(s)", nullptr, removed));
+        return;
     }
+    if (keptLast > 0) {
+        emit notice(tr("Deleted %n subscription(s), the last one is kept — the list needs something",
+                       nullptr, removed));
+        return;
+    }
+    emit notice(tr("Deleted %n subscription(s)", nullptr, removed));
 }
 
 void ServerListPanel::deleteDuplicateSubscriptions() {
@@ -771,11 +860,14 @@ int ServerListPanel::answeredCount() const {
 
 void ServerListPanel::finishMeasurement() {
     const bool neverStarted = answeredCount() == 0;
+    // Ответ прошлого прогона не должен закрывать следующий.
+    ++m_measureRun;
 
     m_latencyPoll->stop();
     m_measureRepaint->stop();
-    m_ping->setBusy(false);
+    setPingBusy(false);
     m_measureStartedAt = 0;
+    m_measureExactEnd = false;
 
     if (m_probeTarget >= 0) {
         const auto profile = Configs::dataManager->profilesRepo->GetProfile(m_probeTarget);
@@ -798,6 +890,10 @@ void ServerListPanel::finishMeasurement() {
     // не ответил, иначе точки продолжали бы «думать» на замершем списке.
     reloadServers();
 
+    // В журнал тоже: по архиву диагностики видно, когда панель сняла «идёт
+    // замер» и чем он кончился, а не только что прогон запускался.
+    MW_show_log(QStringLiteral("[Latency] finished: %1 of %2 answered").arg(withLatency).arg(total));
+
     if (neverStarted) {
         emit notice(tr("Latency check did not start"));
     } else if (withLatency == total) {
@@ -817,45 +913,80 @@ QWidget *ServerListPanel::listArea() const {
 }
 
 void ServerListPanel::updateSubscription() {
+    // Кнопка на время работы отключается сама, а пункт меню «Обновить
+    // подписку» ведёт сюда же и ничем не заперт: два ждущих на одном задании
+    // дали бы два уведомления об одном обновлении.
+    if (m_updateSub->isBusy()) return;
+
     const auto group = Configs::dataManager->groupsRepo->CurrentGroup();
     if (!group || group->url.isEmpty()) return;
 
     const int gid = group->id;
-    // Снимок по именам, а не по id. При sub_clear (умолчание upstream)
-    // обновление удаляет все профили и создаёт заново, поэтому сравнение по id
-    // на неизменившейся подписке давало «22 новых, 22 удалено».
-    const QSet<QString> before = serverNames(group->Profiles());
+    const QString name = group->name;
 
     m_updateSub->setBusy(true);
-    // showDiff = false: встроенный отчёт — модальный список всех профилей,
-    // два десятка строк «[+] [VLESS (Xray)] …», которые надо закрывать руками.
-    // Считаем сводку сами и показываем уведомлением.
-    Subscription::updater()->RefreshGroup(gid, [this, gid, before] {
-        // Колбэк приходит из рабочего потока обновлятора — возвращаемся в UI.
-        QMetaObject::invokeMethod(this, [this, gid, before] {
-            m_updateSub->setBusy(false);
-            reloadServers();
+    // Surface::Log, а не Report: встроенный отчёт — модальный список всех
+    // профилей, два десятка строк «[+] [VLESS (Xray)] …», которые надо
+    // закрывать руками. Сводку показываем уведомлением.
+    //
+    // RefreshWithOutcome, а не RefreshGroup. Тот отдаёт колбэк без результата,
+    // и панель считала итог сама, сравнивая имена серверов до и после. При
+    // отказе загрузки группа по замыслу остаётся нетронутой, имена совпадают —
+    // и человек читал «обновлено, ничего не изменилось» ровно там, где
+    // провайдер не ответил, отдал капчу или упёрся в лимит устройств. Отчёт о
+    // причине при этом уходил в журнал, которого в простом окне не видно.
+    // Вдобавок RefreshGroup на уже идущем обновлении этой группы вызывает
+    // колбэк сразу и синхронно, и дуга гасла посреди работы, а RefreshWithOutcome
+    // в том же случае встаёт в очередь ожидающих и отвечает вместе с ней.
+    QPointer<ServerListPanel> self(this);
+    Subscription::updater()->RefreshWithOutcome(
+        gid, Subscription::GroupUpdater::Surface::Log,
+        [self, name](const Subscription::UpdateOutcome &outcome) {
+            // Колбэк приходит из рабочего потока обновлятора — возвращаемся в UI.
+            QMetaObject::invokeMethod(QCoreApplication::instance(), [self, name, outcome] {
+                if (self.isNull()) return;
+                self->m_updateSub->setBusy(false);
+                self->reloadServers();
+                emit self->notice(subscriptionUpdateNotice(name, outcome));
+            }, Qt::QueuedConnection);
+        });
+}
 
-            const auto refreshed = Configs::dataManager->groupsRepo->GetGroup(gid);
-            if (!refreshed) return;
+// Итог обновления одной строкой. Имя подписки в ней обязательно: обновление
+// может оставить группу пустой, и тогда панель уезжает на соседнюю — без имени
+// человек читает итог, глядя на чужие серверы.
+QString ServerListPanel::subscriptionUpdateNotice(const QString &name,
+                                                  const Subscription::UpdateOutcome &outcome) {
+    using Failure = Subscription::UpdateOutcome::Failure;
+    switch (outcome.failure) {
+        case Failure::None:
+            break;
+        case Failure::NoGroup:
+            return tr("%1 is gone").arg(name);
+        case Failure::Fetch:
+            return tr("%1 did not answer, the server list is unchanged").arg(name);
+        case Failure::Empty:
+            return tr("%1 returned no servers, the list is unchanged").arg(name);
+        case Failure::Database:
+        case Failure::Internal:
+            return tr("%1 could not be updated").arg(name);
+    }
 
-            const QSet<QString> now = serverNames(refreshed->Profiles());
-            const int added = (now - before).size();
-            const int removed = (before - now).size();
-
-            // Переименование сервера видно как пара «добавлен и удалён», и это
-            // честно: для клиента это и есть изменение состава списка.
-            if (added == 0 && removed == 0) {
-                emit notice(tr("Subscription updated, nothing changed"));
-            } else if (removed == 0) {
-                emit notice(tr("Subscription updated: %1 new").arg(added));
-            } else if (added == 0) {
-                emit notice(tr("Subscription updated: %1 removed").arg(removed));
-            } else {
-                emit notice(tr("Subscription updated: %1 new, %2 removed").arg(added).arg(removed));
-            }
-        }, Qt::QueuedConnection);
-    }, false);
+    // Переименование сервера приходит как updated, а не как пара
+    // «добавлен и удалён»: считает это сам обновлятор, по своему сличению.
+    const int changed = outcome.added + outcome.removed + outcome.updated;
+    if (changed == 0) return tr("%1 updated, nothing changed").arg(name);
+    if (outcome.removed == 0 && outcome.updated == 0) {
+        return tr("%1 updated: %2 new").arg(name).arg(outcome.added);
+    }
+    if (outcome.added == 0 && outcome.updated == 0) {
+        return tr("%1 updated: %2 removed").arg(name).arg(outcome.removed);
+    }
+    return tr("%1 updated: %2 new, %3 changed, %4 removed")
+        .arg(name)
+        .arg(outcome.added)
+        .arg(outcome.updated)
+        .arg(outcome.removed);
 }
 
 void ServerListPanel::selectProfile(const int profileId) {

@@ -172,11 +172,26 @@ namespace Fsnt {
         // Запрос умеет только ядро: ему нужно поднять этот выход и сходить через
         // него наружу. Результат оно само запишет в профиль.
         if (kind == PingKind::RequestGet || kind == PingKind::RequestHead) {
-            if (MW_url_test_one) {
-                MW_url_test_one(profileId, kind == PingKind::RequestHead ? QStringLiteral("HEAD")
-                                                                        : QStringLiteral("GET"));
+            if (!MW_url_test_one) {
+                if (done) done(-1, QObject::tr("the core is not available"));
+                return;
             }
-            if (done) done(0, {});
+            // Отвечаем по настоящему концу прогона, а не сразу. Раньше эта
+            // ветка рапортовала об окончании до начала работы, вызывающий такой
+            // ответ намеренно не считал концом и дальше опрашивал базу — и
+            // прогон, который не начался и кончился за миллисекунду, оставлял
+            // кнопку занятой на все тридцать секунд опросов.
+            MW_url_test_one(profileId,
+                            kind == PingKind::RequestHead ? QStringLiteral("HEAD") : QStringLiteral("GET"),
+                            [profileId, done] {
+                                if (!done) return;
+                                // Значение ядро уже записало в профиль.
+                                const auto measured = Configs::dataManager->profilesRepo->GetProfile(profileId);
+                                const int ms = measured != nullptr ? measured->latency : -1;
+                                // Причину пустой: про «не ответил» вызывающий
+                                // скажет сам и с именем сервера.
+                                done(ms, {});
+                            });
             return;
         }
 
