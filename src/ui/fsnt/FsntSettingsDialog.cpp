@@ -617,10 +617,15 @@ void FsntSettingsDialog::save() {
 
     // Автозапуск живёт не в базе, а в системе, и пишется отдельно.
     if (m_autoRun->isChecked() != AutoRun_IsEnabled()) {
-        if (!AutoRun_SetEnabled(m_autoRun->isChecked())) {
+        // Причину функция отдаёт вторым параметром. Её выбрасывали, а на её
+        // место вставала заготовка про окно повышения прав в Windows — её
+        // читал и человек на маке. Переключатель возвращаем в настоящее
+        // положение: иначе он остаётся включённым на настройке, которая не
+        // применилась.
+        if (QString error; !AutoRun_SetEnabled(m_autoRun->isChecked(), &error)) {
+            m_autoRun->setChecked(AutoRun_IsEnabled());
             MessageBoxWarning(software_name,
-                              tr("Could not change the autostart entry. The system refused it: "
-                                 "on Windows this is usually the elevation prompt being dismissed."));
+                              tr("Could not change the autostart entry:") + "\n" + error);
         }
     }
 
