@@ -277,12 +277,23 @@ void ConnectPanel::endPending() {
 }
 
 void ConnectPanel::reportFailure() {
-    if (!m_pending) return;
     const bool wasStopping = m_button->state() == PowerButton::State::Stopping;
-    endPending();
-    // Падение ядра во время остановки — это и есть успешная остановка,
-    // сообщать об ошибке незачем.
-    if (!wasStopping) m_failure = tr("Could not connect");
+    if (m_pending) {
+        endPending();
+        // Падение ядра во время остановки — это и есть успешная остановка,
+        // сообщать об ошибке незачем.
+        if (!wasStopping) m_failure = tr("Could not connect");
+        refresh();
+        return;
+    }
+
+    // Ничего не ждали — значит туннель упал под работающим соединением:
+    // провайдер снял сеанс, кончился лимит устройств, сменилась сеть. Сюда
+    // доходит только внезапный выход, и завершение приложения, и свой же
+    // перезапуск CoreSupervisor отсекает раньше. Раньше эта причина
+    // выбрасывалась первой же строкой, и на экране оставалось одно слово
+    // «Отключено» без всяких объяснений.
+    m_failure = tr("The connection dropped");
     refresh();
 }
 
@@ -409,13 +420,14 @@ void ConnectPanel::refresh() {
     if (connected && !m_connectedAt.isValid()) {
         m_connectedAt = QDateTime::currentDateTime();
         m_ticker->start();
+        // Связь поднялась заново — прошлая причина больше не о чём.
+        m_failure.clear();
     } else if (!connected) {
         m_connectedAt = QDateTime();
         m_ticker->stop();
         m_elapsed->setText("00:00:00");
     }
 
-    if (connected) m_failure.clear();
     if (!m_pending) {
         m_button->setState(connected ? PowerButton::State::Connected : PowerButton::State::Off);
         if (!connected && !m_failure.isEmpty()) setStatus(m_failure, "bad");
