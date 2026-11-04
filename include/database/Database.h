@@ -88,6 +88,10 @@ namespace Configs {
         SQLite::Database db;
         std::string path_;
         std::atomic<int> writeCount{0};
+        // Глубина открытой транзакции. Вложенный BEGIN SQLite не принимает, а
+        // вложенность законна: обновление подписки объединяет удаление и
+        // вставку, а обе внутри себя открывают свою.
+        std::atomic<int> txDepth_{0};
         std::recursive_mutex writeMutex_;
         void maybeCheckpoint(int count);
         void maybeVacuum();

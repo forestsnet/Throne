@@ -16,7 +16,10 @@ namespace Configs {
     class ProfilesRepo {
     private:
         Database& db;
-        mutable std::mutex mutex;
+        // Рекурсивный: объединяя удаление и вставку одной транзакцией,
+        // вызывающий берёт этот замок первым (порядок «репозиторий, потом
+        // запись» принят во всей базе), а методы внутри берут его снова.
+        mutable std::recursive_mutex mutex;
         mutable std::map<int, std::weak_ptr<Profile>> identityMap;
         // Deleted ids: never reused, so Save/SaveBatch refuse them for the rest of the process.
         QSet<int> tombstones;
@@ -47,6 +50,14 @@ namespace Configs {
 
     public:
         explicit ProfilesRepo(Database& database);
+
+        // Замок репозитория наружу. Нужен тому, кто объединяет удаление и
+        // вставку одной транзакцией: взять его надо ПЕРЕД транзакцией, потому
+        // что внутри методы берут сначала его, а потом замок записи базы.
+        // Обратный порядок даёт взаимную блокировку с любым соседним писателем.
+        [[nodiscard]] std::unique_lock<std::recursive_mutex> LockForBatch() const {
+            return std::unique_lock(mutex);
+        }
         
         // Not saved yet: id stays -1 until AddProfile.
         [[nodiscard]] static std::shared_ptr<Profile> NewProfile(const QString &type);

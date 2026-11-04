@@ -9,6 +9,7 @@
 #include "include/database/GroupsRepo.h"
 #include "include/database/ProfilesRepo.h"
 #include "include/engine/EngineEvents.h"
+#include "include/engine/Lifecycle.h"
 #include "include/global/HTTPRequestHelper.hpp"
 #include "include/global/Notice.hpp"
 #include "include/global/Utils.hpp"
@@ -116,11 +117,14 @@ namespace Subscription {
             QList<int> kept;
         };
 
-        DeleteOutcome deleteProfiles(QList<int> ids) {
+        // stopRunning = false зовут изнутри транзакции: остановка туннеля ходит
+        // в движок и ждёт другой поток, а под замком записи базы этого делать
+        // нельзя. Такой вызывающий останавливает профиль заранее, сам.
+        DeleteOutcome deleteProfiles(QList<int> ids, bool stopRunning = true) {
             DeleteOutcome outcome;
             const QSet<int> requested(ids.begin(), ids.end());
             outcome.ok = Configs::dataManager->profilesRepo->BatchDeleteProfiles(
-                ids, Configs::dataManager->settingsRepo->allow_stopping_active_profile, false);
+                ids, stopRunning && Configs::dataManager->settingsRepo->allow_stopping_active_profile, false);
             const QSet<int> deleted(ids.begin(), ids.end());
             outcome.deleted = std::move(ids);
             for (int id : requested) {
@@ -132,7 +136,10 @@ namespace Subscription {
         // Inserts in chunks; only per-profile digests survive a flush.
         class ImportSink {
         public:
-            ImportSink(int gid, ContentIndex *index) : gid(gid), index(index) {}
+            // deferred: не писать ничего до явного flush(). Нужен обновлению
+            // подписки — разбор идёт до транзакции, запись внутри неё.
+            ImportSink(int gid, ContentIndex *index, bool deferred = false)
+                : gid(gid), deferred(deferred), index(index) {}
 
             void add(std::shared_ptr<Configs::Profile> ent) {
                 NewEntry entry;
@@ -152,12 +159,13 @@ namespace Subscription {
                 entryIndex.append(entries.size());
                 entries.append(std::move(entry));
                 chunk.append(std::move(ent));
-                if (chunk.size() >= kInsertChunk) flush();
+                if (!deferred && chunk.size() >= kInsertChunk) flush();
             }
 
-            void flush() {
-                if (chunk.isEmpty()) return;
-                if (Configs::dataManager->profilesRepo->AddProfileBatch(chunk, gid)) {
+            bool flush() {
+                if (chunk.isEmpty()) return true;
+                const bool ok = Configs::dataManager->profilesRepo->AddProfileBatch(chunk, gid);
+                if (ok) {
                     for (qsizetype i = 0; i < chunk.size(); ++i) {
                         entries[entryIndex[i]].id = chunk[i]->id;
                         added << chunk[i]->id;
@@ -166,6 +174,7 @@ namespace Subscription {
                 }
                 chunk.clear();
                 entryIndex.clear();
+                return ok;
             }
 
             // Sorted here rather than queued, so the SubscriptionFinished redraw already shows the order.
@@ -192,6 +201,7 @@ namespace Subscription {
 
         private:
             int gid;
+            bool deferred = false;
             int destination = -1;
             QList<int> added;
             ContentIndex *index;
@@ -1075,45 +1085,82 @@ namespace Subscription {
         QSet<int> keptIds;
         bool deleteFailed = false;
         bool cleared = false;
+        QList<int> doomed;
         if (settings->sub_clear) {
             MW_show_log(QObject::tr("Clearing servers..."));
-            auto doomed = members();
+            doomed = members();
             if (options.keep_working) {
-                QSet<int> working;
-                forEachProfile(doomed, [&working](const std::shared_ptr<Configs::Profile> &ent) {
-                    if (ent->IsWorking()) working.insert(ent->id);
+                QSet<int> stillWorking;
+                forEachProfile(doomed, [&stillWorking](const std::shared_ptr<Configs::Profile> &ent) {
+                    if (ent->IsWorking()) stillWorking.insert(ent->id);
                 });
-                doomed.removeIf([&working](int id) { return working.contains(id); });
+                doomed.removeIf([&stillWorking](int id) { return stillWorking.contains(id); });
             }
-            const auto outcome = deleteProfiles(doomed);
-            if (!outcome.ok) {
-                PostNotice({NoticeLevel::Error, "Internal Error", "DB Error when deleting profiles, Please try again."});
-                result.failure = UpdateOutcome::Failure::Database;
-                result.error = QStringLiteral("The old profiles could not be deleted from the database.");
-                return;
-            }
-            disturbed = outcome.deleted;
-            result.removed = static_cast<int>(outcome.deleted.size());
-            // A survivor still belongs to the subscription: fall through to the diff.
-            cleared = members().isEmpty();
         }
+        // Выжившие известны и до удаления: это members() минус doomed. Считаем
+        // их заранее, чтобы разбор документа прошёл ДО транзакции — иначе она
+        // держала бы замок записи весь разбор, и клиент замирал бы на каждом
+        // обновлении подписки.
+        const QSet<int> doomedIds(doomed.begin(), doomed.end());
+        QList<int> survivors;
+        for (const int id : members()) {
+            if (!doomedIds.contains(id)) survivors << id;
+        }
+        // Выживший всё ещё принадлежит подписке: идём в диff, а не в чистый импорт.
+        cleared = settings->sub_clear && survivors.isEmpty();
 
         QList<OldEntry> old;
         QSet<int> working;
         if (!cleared) {
-            forEachProfile(members(), [&](const std::shared_ptr<Configs::Profile> &ent) {
+            forEachProfile(survivors, [&](const std::shared_ptr<Configs::Profile> &ent) {
                 old.append({ent->id, {contentKeyOf(*ent), identityKeyOf(*ent)}, ent->outbound->DisplayTypeAndName()});
                 if (options.keep_working && ent->IsWorking()) working.insert(ent->id);
             });
         }
         ContentIndex index(old);
-        ImportSink sink(gid, cleared ? nullptr : &index);
+        ImportSink sink(gid, cleared ? nullptr : &index, true);
         ImportReport report;
 
         MW_show_log(">>>>>>>> " + QObject::tr("Processing subscription data..."));
         ParseDocument(std::move(body), sinkFor(sink, report));
-        sink.flush();
         MW_show_log(">>>>>>>> " + QObject::tr("Process complete, applying..."));
+
+        // Остановку туннеля делаем здесь, до транзакции: она ходит в движок и
+        // ждёт другой поток, а внутри транзакции мы держим замок записи базы.
+        // Неманульная остановка оставляет started_id называть профиль, поэтому
+        // сбрасываем его сами — ровно так же поступает GroupService::Delete.
+        if (settings->allow_stopping_active_profile && doomedIds.contains(settings->started_id)) {
+            Engine::Lifecycle::StopRunningProfile(false, true, false, false);
+            settings->UpdateStartedId(Configs::NoProfileId);
+        }
+
+        // Удаление и вставка — одной транзакцией. Раньше удаление коммитилось
+        // само по себе, а вставка шла следом кусками: процесс, не доживший до
+        // неё, оставлял подписку пустой, и на следующем запуске человек видел
+        // список без единого сервера. Замок репозитория берём первым, порядок
+        // «репозиторий, потом запись» принят во всей базе.
+        {
+            const auto hold = profilesRepo->LockForBatch();
+            QList<int> deletedIds;
+            const bool applied = Configs::dataManager->getDatabase().transaction(
+                "GroupUpdater::applyRefresh", [&] {
+                    if (!doomed.isEmpty()) {
+                        const auto outcome = deleteProfiles(doomed, false);
+                        if (!outcome.ok) return false;
+                        deletedIds = outcome.deleted;
+                    }
+                    return sink.flush();
+                });
+            if (!applied) {
+                PostNotice({NoticeLevel::Error, "Internal Error",
+                            "DB Error when applying the subscription, please try again."});
+                result.failure = UpdateOutcome::Failure::Database;
+                result.error = QStringLiteral("The subscription could not be written to the database.");
+                return;
+            }
+            disturbed = deletedIds;
+            result.removed = static_cast<int>(deletedIds.size());
+        }
         report.setImported(sink.stored());
 
         QString change_text;

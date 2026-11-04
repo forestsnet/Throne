@@ -139,6 +139,10 @@ namespace Configs {
 
     void Database::maybeCheckpoint(int count) {
         if (writeCount.fetch_add(count) >= WAL_CHECKPOINT_AFTER_WRITES) {
+            // Внутри открытой транзакции ядро контрольную точку не возьмёт:
+            // попытка кончилась бы предупреждением на каждую партию вставки.
+            // Счётчик не сбрасываем — возьмём её сразу после коммита.
+            if (txDepth_.load() > 0) return;
             writeCount = 0;
             checkpointWal();
         }
@@ -183,6 +187,18 @@ namespace Configs {
 
     bool Database::transaction(const std::string& op, const std::function<bool()>& body) {
         std::lock_guard lock(writeMutex_);
+        struct DepthGuard {
+            std::atomic<int> &depth;
+            ~DepthGuard() { --depth; }
+        };
+        // Уже внутри транзакции этого же потока: своего BEGIN не открываем,
+        // просто выполняем тело. Откатит всё целиком внешняя — тело вернуло
+        // false или бросило, и она это увидит.
+        if (txDepth_.fetch_add(1) > 0) {
+            DepthGuard nested{txDepth_};
+            return body();
+        }
+        DepthGuard guard{txDepth_};
         try {
             db.exec("BEGIN IMMEDIATE");
         } catch (std::exception& e) {
