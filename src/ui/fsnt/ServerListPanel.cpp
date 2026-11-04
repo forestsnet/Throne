@@ -25,6 +25,7 @@
 #include "include/database/GroupsRepo.h"
 #include "include/database/ProfilesRepo.h"
 #include "include/engine/services/AssetUpdates.h"
+#include "include/engine/services/GroupService.h"
 #include "include/global/Configs.hpp"
 #include "include/ui/fsnt/BusyButton.h"
 #include "include/ui/fsnt/FsntControls.h"
@@ -558,10 +559,17 @@ void ServerListPanel::removeGroups(const QList<int> &ids) {
             if (running != nullptr && running->gid == gid) {
                 if (auto *mw = GetMainWindow(); mw != nullptr) mw->profile_stop(false, true, false);
             }
+            // Через службу, а не напрямую в репозиторий: голый DeleteGroup
+            // уносит строки и оставляет started_id и remember_id указывать на
+            // удалённый профиль — автоподключение на следующем запуске бьётся
+            // в пустоту, а панель рисует «подключено» без сервера. Служба их
+            // сбрасывает и заодно снимает ссылки front и landing proxy у
+            // соседних групп, иначе их серверы перестают собираться.
+            //
             // По возврату, а не по факту вызова: сорвавшаяся транзакция
             // считалась удалением, и человек читал, что подписки больше нет.
-            if (groupsRepo->DeleteGroup(gid)) ++removed;
-            else ++failed;
+            if (Engine::GroupService::Delete(gid)) ++failed;
+            else ++removed;
         }
 
         if (removed > 0) {
@@ -641,10 +649,13 @@ void ServerListPanel::deleteSubscription(int gid) {
             mw->profile_stop(false, true, false);
         }
     }
+    // Через службу: она сбрасывает started_id на удалённый профиль и снимает
+    // ссылки front и landing proxy у соседних групп. Голый DeleteGroup этого
+    // не делает, и автоподключение после удаления подписки било в пустоту.
+    //
     // По возврату, а не по факту вызова: сорвавшаяся транзакция считалась
-    // удалением, и человек читал, что подписки больше нет. В оптовом удалении
-    // это учтено, одиночное шло мимо.
-    if (!Configs::dataManager->groupsRepo->DeleteGroup(gid)) {
+    // удалением, и человек читал, что подписки больше нет.
+    if (Engine::GroupService::Delete(gid)) {
         emit notice(tr("%1 could not be deleted").arg(group->name));
         return;
     }
