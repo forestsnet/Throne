@@ -167,7 +167,15 @@ namespace Engine {
         const auto &settings = Configs::dataManager->settingsRepo;
         if (!settings->direct_dns_auto) return false;
         if (settings->use_dns_object) return false;   // секцией DNS распоряжается сам человек
-        if (!m_dnsSelect.isNull()) return true;       // подбор уже идёт и сам продолжит запуск
+        if (!m_dnsSelect.isNull()) {
+            // Продолжит он запуск ПЕРВЫЙ: его StartRequest зашит в лямбду
+            // подбора. Этот же молча терялся — serial не получал ответа
+            // никогда, и кольцо подключения висело до сторожевого таймера.
+            // Отвечаем честно, нажать ещё раз человек сможет сам.
+            failStart(request, StartOutcome::Busy, QStringLiteral("Throne"),
+                      MainWindowTr::tr("The address of another server is still being resolved."));
+            return true;
+        }
 
         // Имя сервера, к которому подключаемся: проверять резолвер надо именно
         // по нему. Отвечающий на постороннее имя вполне может не знать нужного
