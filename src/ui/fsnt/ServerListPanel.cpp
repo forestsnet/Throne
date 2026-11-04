@@ -44,9 +44,6 @@ namespace {
     // несостоявшимся. Опрос идёт раз в две секунды. Нужно только там, где о
     // конце прогона никто не скажет, — иначе конец приходит ответом.
     constexpr int kIdlePollsBeforeGivingUp = 6;
-    // Предел на случай, если ответ о конце прогона так и не пришёл. Пять
-    // минут: меньше — и длинная подписка оборвалась бы на полпути.
-    constexpr int kPollsWithExactEnd = 150;
 }
 
 ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
@@ -189,6 +186,14 @@ ServerListPanel::ServerListPanel(QWidget *parent) : QWidget(parent) {
             }
         }
 
+        // Где конец приходит ответом, опрос только обновляет список. Решать
+        // ему нельзя: такт в две секунды обгоняет настоящий конец на последних
+        // миллисекундах, а finishMeasurement поднимает номер прогона — после
+        // этого настоящий ответ отбрасывается, ядро остаётся с незакрытым
+        // сеансом, и следующее нажатие упирается в инженерное окно «прошлый
+        // тест ещё не вышел». Выход из затянувшегося замера даёт та же кнопка.
+        if (m_measureExactEnd) return;
+
         // Счётчик остаётся верхней границей: до части серверов может не быть
         // связи вовсе, и сами по себе они никогда не «ответят».
         if (allMeasured() || --m_latencyPollsLeft <= 0) finishMeasurement();
@@ -295,6 +300,17 @@ bool ServerListPanel::deferUntilGeoAssets(const std::function<void()> &then) {
     // Второе нажатие не заводит второго ожидающего: он уже стоит в очереди.
     if (m_waitingForGeo) return true;
 
+    // Ожидание открываем до вызова. У EnsureGeoAssets есть синхронная ветка:
+    // файлы могли лечь на диск между проверкой выше и этой строкой — их пишет
+    // фоновая догрузка с запуска, — и тогда колбэк приходит прямо отсюда. Со
+    // флагом, выставленным после возврата, он видел бы ожидание незакрытым,
+    // выходил сразу, а кнопка оставалась занятой под надписью «загружаем»
+    // навсегда.
+    m_waitingForGeo = true;
+    // Занятая кнопка здесь и есть ответ на нажатие: иначе человек видит, что
+    // ничего не произошло, и жмёт её ещё раз.
+    setPingBusy(true);
+
     QPointer<ServerListPanel> self(this);
     const bool joined = Engine::AssetUpdates::EnsureGeoAssets([self, then](const QString &error) {
         if (self.isNull() || !self->m_waitingForGeo) return;
@@ -307,15 +323,15 @@ bool ServerListPanel::deferUntilGeoAssets(const std::function<void()> &then) {
         then();
     });
     if (!joined) {
+        m_waitingForGeo = false;
+        setPingBusy(false);
         emit notice(tr("The routing data is still downloading. Try again in a moment."));
         return true;
     }
 
-    m_waitingForGeo = true;
-    // Занятая кнопка здесь и есть ответ на нажатие: иначе человек видит, что
-    // ничего не произошло, и жмёт её ещё раз.
-    setPingBusy(true);
-    emit notice(tr("Downloading the routing data, the test will start on its own…"));
+    // Колбэк мог отработать синхронно и уже закрыть ожидание — тогда замер
+    // идёт, и обещать загрузку нечего.
+    if (m_waitingForGeo) emit notice(tr("Downloading the routing data, the test will start on its own…"));
     return true;
 }
 
@@ -335,7 +351,7 @@ void ServerListPanel::measureLatency() {
     m_measureStartedAt = QDateTime::currentSecsSinceEpoch();
     // Результаты приходят порциями: обновляем список, пока идёт замер.
     m_measureExactEnd = static_cast<bool>(MW_url_test_group);
-    m_latencyPollsLeft = m_measureExactEnd ? kPollsWithExactEnd : 30;
+    m_latencyPollsLeft = 30;
     m_measureIdlePolls = 0;
     setPingBusy(true);
     m_latencyPoll->start();
@@ -407,6 +423,10 @@ void ServerListPanel::probeOne(const int profileId, const int kind) {
     m_probeTarget = profileId;
     // Отметку ставим как при общем замере, но ждёт по ней только цель.
     m_measureStartedAt = QDateTime::currentSecsSinceEpoch();
+    // ProbeProfile зовёт колбэк на каждом пути выхода, так что конец известен
+    // точно. Без этого флаг оставался от прошлого общего замера, а проверка
+    // через ядро (RequestHead) освобождала кнопку, пока сеанс ещё занят.
+    m_measureExactEnd = true;
     m_latencyPollsLeft = 15;
     m_measureIdlePolls = 0;
     setPingBusy(true);
