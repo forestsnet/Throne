@@ -13,6 +13,7 @@
 #include "include/database/ProfilesRepo.h"
 #include "include/configs/sub/ProviderPolicy.hpp"
 #include "include/global/RunningProfiles.hpp"
+#include "include/global/Utils.hpp"
 #include "include/global/Validation.hpp"
 #include "include/ui/group/dialog_edit_group_advanced.h"
 #include "include/ui/utils/UiMode.h"
@@ -287,7 +288,9 @@ int DialogEditGroup::resolve_proxy_selection(QComboBox *combo, int fallback) con
 void DialogEditGroup::accept() {
     if (!form->validateAll()) return;
     // A basic group keeps no URL, even one typed before switching the type back.
-    const QString newUrl = ui->type->currentIndex() == 1 ? ui->url->text().trimmed() : QString();
+    // Невидимые символы из мессенджера остаются и в поле настроек группы, и
+    // подписка не обновляется по той же причине, по какой не добавлялась.
+    const QString newUrl = ui->type->currentIndex() == 1 ? CleanPastedLink(ui->url->text()) : QString();
     if (ent->url != newUrl) {
         ent->sub_info = Configs::SubUserInfo{};
         ent->sub_last_update = 0;

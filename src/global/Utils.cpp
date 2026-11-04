@@ -137,6 +137,38 @@ QStringList SplitAndTrim(const QString& raw, const QString& separator, bool keep
     return result;
 }
 
+namespace {
+    bool utilsInvisible(const QChar ch) {
+        // Other_Format — разметка самого текста: нулевой ширины пробел, метки
+        // направления письма, BOM, мягкий перенос. На экране их не видно, и в
+        // ссылке они не значат ничего. Пробелы бывают не только обычными:
+        // неразрывный приезжает из вёрстки, перенос строки — из письма, где
+        // ссылка не поместилась в строку.
+        return ch.category() == QChar::Other_Format || ch.isSpace();
+    }
+} // namespace
+
+QString TrimInvisible(const QString &raw) {
+    int from = 0;
+    int to = raw.size();
+    while (from < to && utilsInvisible(raw.at(from))) ++from;
+    while (to > from && utilsInvisible(raw.at(to - 1))) --to;
+    return raw.mid(from, to - from);
+}
+
+QString CleanPastedLink(const QString &raw) {
+    QString clean;
+    clean.reserve(raw.size());
+    for (const QChar ch : raw) {
+        // Other_Format — разметка самого текста: нулевой ширины пробел, метки
+        // направления письма, BOM, мягкий перенос. На экране их не видно, в
+        // адресе они не значат ничего, а запрос с ними уходит не туда.
+        if (utilsInvisible(ch)) continue;
+        clean += ch;
+    }
+    return clean;
+}
+
 QString QStringList2Command(const QStringList &list) {
     QStringList new_list;
     for (auto str: list) {

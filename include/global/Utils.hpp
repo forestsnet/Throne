@@ -138,6 +138,18 @@ QStringList SplitLines(const QString &_string);
 
 QStringList SplitAndTrim(const QString& raw, const QString& seperator, bool keepEmpty = true);
 
+// Ссылку человек приносит из мессенджера, письма или документа, и вместе с ней
+// приходит мусор, которого на экране не видно. QString::trimmed() считает
+// пробелами только ASCII, поэтому неразрывный пробел, метка направления письма
+// или BOM остаются в строке: человек видит в поле правильную ссылку, а подписка
+// не открывается.
+//
+// TrimInvisible снимает такую обёртку по краям и годится любому тексту.
+// CleanPastedLink убирает её ещё и внутри — для адреса, где пробелов не бывает
+// вовсе, а перенос строки в середине оставляет копирование из документа.
+QString TrimInvisible(const QString &raw);
+QString CleanPastedLink(const QString &raw);
+
 QByteArray DecodeB64IfValid(const QString &input, QByteArray::Base64Options options = QByteArray::Base64Option::Base64Encoding);
 
 class QUrlQuery;

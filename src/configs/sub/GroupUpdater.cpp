@@ -609,12 +609,12 @@ namespace Subscription {
     }
 
     void GroupUpdater::SubscribeUrl(const QString &url, const Finish &finish) {
-        const auto content = url.trimmed();
+        const auto content = CleanPastedLink(url);
         enqueue({-1, false, [=, this] { subscribeToUrl(content, nullptr); }, finish});
     }
 
     void GroupUpdater::SubscribeUrlWithOutcome(const QString &url, const OutcomeFinish &done) {
-        const auto content = url.trimmed();
+        const auto content = CleanPastedLink(url);
         enqueue({-1, false, [=, this] { subscribeToUrl(content, done); }});
     }
 
@@ -661,7 +661,7 @@ namespace Subscription {
     }
 
     void GroupUpdater::ImportUrl(const QString &url, const Finish &finish) {
-        const auto content = url.trimmed();
+        const auto content = CleanPastedLink(url);
         enqueue({-1, false, [=, this] {
             QByteArray body;
             Configs::SubUserInfo subInfo;
@@ -708,7 +708,7 @@ namespace Subscription {
     }
 
     void GroupUpdater::ImportUrlTo(int gid, const QString &url, const OutcomeFinish &done) {
-        const auto content = url.trimmed();
+        const auto content = CleanPastedLink(url);
         const auto outcome = groupUpdaterUnfinished(gid, QStringLiteral("The import failed unexpectedly."));
         enqueue({-1, false, [=, this] {
             if (Configs::dataManager->groupsRepo->GetGroup(gid) == nullptr) {

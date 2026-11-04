@@ -97,7 +97,7 @@ AddSubscriptionDialog::AddSubscriptionDialog(QWidget *parent) : QDialog(parent) 
 }
 
 void AddSubscriptionDialog::pasteFromClipboard() {
-    const QString text = QApplication::clipboard()->text().trimmed();
+    const QString text = TrimInvisible(QApplication::clipboard()->text());
     if (text.isEmpty()) {
         showStatus(tr("The clipboard is empty."));
         return;
@@ -167,7 +167,10 @@ int AddSubscriptionDialog::ownServersGroup() {
 void AddSubscriptionDialog::submit() {
     if (m_busy) return;
 
-    const QString text = m_input->text().trimmed();
+    // Не trimmed(): метка направления письма или BOM, приехавшие вместе со
+    // ссылкой из мессенджера, для него не пробелы, и строка после него всё ещё
+    // не начинается с «https://».
+    const QString text = TrimInvisible(m_input->text());
     if (text.isEmpty()) {
         showStatus(tr("Enter a link first."));
         return;
@@ -213,12 +216,21 @@ void AddSubscriptionDialog::submit() {
         return;
     }
 
+    // Внутри адреса пробелов не бывает: перенос строки в середине оставляет
+    // копирование из документа, где ссылка не поместилась. Исправленное
+    // показываем в поле — человек должен видеть то, что уйдёт в сеть.
+    const QString link = CleanPastedLink(text);
+    if (link != text) {
+        m_input->setText(link);
+        MW_show_log(QStringLiteral("[Subscription] The pasted link carried invisible characters, they were removed."));
+    }
+
     setBusy(true);
     showStatus(tr("Fetching the subscription…"));
     m_guard->start();
 
     // Колбэк приходит из рабочего потока обновлятора — возвращаемся в UI.
-    Subscription::updater()->SubscribeUrlWithOutcome(text, [this](const Subscription::UpdateOutcome &outcome) {
+    Subscription::updater()->SubscribeUrlWithOutcome(link, [this](const Subscription::UpdateOutcome &outcome) {
         const bool ok = outcome.ok();
         QMetaObject::invokeMethod(this, [this, ok] {
             m_guard->stop();
