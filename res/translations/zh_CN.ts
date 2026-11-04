@@ -164,6 +164,10 @@ You can try again — the password window will come back. Or connect through the
         <translation type="unfinished">取消</translation>
     </message>
     <message>
+        <source>The connection dropped</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>No server to connect to</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8658,6 +8662,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Hide</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Close</source>
         <translation type="unfinished">关闭</translation>
     </message>
@@ -9003,7 +9011,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Could not change the autostart entry. The system refused it: on Windows this is usually the elevation prompt being dismissed.</source>
+        <source>Could not change the autostart entry:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -14352,6 +14360,10 @@ Remove that endpoint from this routing profile as well?</source>
         <translation type="unfinished">
             <numerusform></numerusform>
         </translation>
+    </message>
+    <message>
+        <source>%1 could not be deleted</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>%1 is gone</source>

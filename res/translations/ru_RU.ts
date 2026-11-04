@@ -138,6 +138,10 @@ You can try again — the password window will come back. Or connect through the
         <translation>Отмена</translation>
     </message>
     <message>
+        <source>The connection dropped</source>
+        <translation>Связь оборвалась</translation>
+    </message>
+    <message>
         <source>No server to connect to</source>
         <translation>Нет сервера для подключения</translation>
     </message>
@@ -8723,6 +8727,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Показать файл</translation>
     </message>
     <message>
+        <source>Hide</source>
+        <translation>Скрыть</translation>
+    </message>
+    <message>
         <source>Close</source>
         <translation>Закрыть</translation>
     </message>
@@ -9048,8 +9056,8 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>О подписке и туннеле сообщаем, только когда окно клиента не перед вами: пока вы в него смотрите, всё и так видно.</translation>
     </message>
     <message>
-        <source>Could not change the autostart entry. The system refused it: on Windows this is usually the elevation prompt being dismissed.</source>
-        <translation>Не удалось изменить автозапуск: система отказала. В Windows так обычно выглядит закрытый запрос прав администратора.</translation>
+        <source>Could not change the autostart entry:</source>
+        <translation>Не удалось изменить автозапуск:</translation>
     </message>
     <message>
         <source>Settings were saved, but the connection mode could not be applied.</source>
@@ -14441,6 +14449,10 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>Delete «%1» along with its servers?</source>
         <translation>Удалить «%1» вместе с её серверами?</translation>
+    </message>
+    <message>
+        <source>%1 could not be deleted</source>
+        <translation>%1: удалить не удалось</translation>
     </message>
     <message>
         <source>%1 is gone</source>
