@@ -58,6 +58,11 @@ namespace Logging {
 
     QStringList RecentLines(int max = 0);
 
+    // Выбрасывает кольцо последних строк. Файл журнала не трогает: по нему
+    // поддержка и разбирает случай, а кольцо — только то, что окно журнала
+    // покажет при следующем открытии.
+    void ClearRecentLines();
+
     // Gives up rather than blocking if the faulting thread holds the writer lock.
     void FlushForCrash();
 

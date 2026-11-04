@@ -103,6 +103,11 @@ FsntLogDialog::FsntLogDialog(QWidget *parent) : QDialog(parent) {
     clear->setObjectName("fsntGhost");
     clear->setCursor(Qt::PointingHandCursor);
     connect(clear, &QPushButton::clicked, this, [this] {
+        // Вместе с кольцом журнала, иначе строки возвращались: окно создаётся
+        // заново при каждом открытии и заново читает RecentLines, так что
+        // очищенным оно оставалось ровно до закрытия. Файл на диске не трогаем
+        // — по нему поддержка и разбирает случай.
+        Logging::ClearRecentLines();
         m_lines.clear();
         rebuild();
     });

@@ -489,6 +489,17 @@ namespace Logging {
         return out;
     }
 
+    void ClearRecentLines() {
+        QMutexLocker lock(&g_mutex);
+        // Со сбросом самих строк, а не только счётчика: кольцо держит до
+        // четырёхсот строк журнала, и просить их выбросить человек может как
+        // раз потому, что в них попало лишнее. Отчёт о падении возьмёт отсюда
+        // меньше, зато файл на диске цел — там всё это осталось.
+        for (auto &line : g_ring) line.clear();
+        g_ringHead = 0;
+        g_ringCount = 0;
+    }
+
     bool PreviousSessionCrashed() { return g_previousCrashed; }
 
     QString PreviousSessionLogPath() { return g_previousSessionLog; }
