@@ -445,6 +445,10 @@ namespace Engine {
         };
 
         if (!mu_stopping.tryLock()) {
+            // Молчать нельзя: во время переключения сервера замок держит
+            // внутренний стоп, и нажатие «Отключить» просто пропадало — ни
+            // сигнала, ни строки, кнопка не отвечает и объяснить нечем.
+            MW_show_log(MainWindowTr::tr("Another profile is stopping..."));
             return;
         }
 
@@ -616,11 +620,14 @@ namespace Engine {
     void ConnectionManager::retryAfterGeoFetch(int profileId, quint64 token) {
         ENGINE_CHECK_MAIN_THREAD();
         if (token != m_geoRetryToken.load()) return;
-        if (std::exchange(m_geoRetriedProfile, profileId) == profileId) return;
+        // Отметку ставим после проверок, а не до них: любой отказ ниже съедал
+        // единственную попытку, и повтор терялся навсегда — сбрасывает её
+        // только успешный запуск.
         if (Configs::dataManager->settingsRepo->prepare_exit || connectionState() != ConnectionState::Idle ||
             m_lastProfileId != profileId) {
             return;
         }
+        if (std::exchange(m_geoRetriedProfile, profileId) == profileId) return;
         MW_show_log(QStringLiteral("Geo assets installed; starting profile %1 again.").arg(profileId));
         start(StartRequest{profileId, false});
     }
