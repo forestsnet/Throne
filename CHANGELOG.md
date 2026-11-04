@@ -1,3 +1,18 @@
+#### 1.4.6
+
+* Download the routing databases on a fresh install before anything asks for them **1**
+* Strip the invisible characters a pasted subscription link brings with it **2**
+* Show what the support report is doing while it is being built **3**
+
+**1**:
+geoip.dat and geosite.dat are not shipped with the client, and without geosite.dat no Xray config builds at all. On a fresh install the first thing anyone does - measure the latency, or connect - therefore failed, offered to download the files, and left the measurement that triggered it to finish against a config that could not be built: every server came back as no answer. Waiting for the download and pressing the same button again worked, which is not something a person should have to work out. A start now fetches whatever is missing in the background without asking, the latency test waits for that download and runs itself when it ends, and a start that the prompt did download the files for continues on its own instead of needing a second press.
+
+**2**:
+A link copied out of a messenger or a document carries characters that are not shown: a non-breaking space, a left-to-right mark, a BOM, a line break where the link did not fit the column. Qt counts none of them as whitespace, so trimming left them in place, the request went to an address that was not the one on screen, and the subscription would not open - for a link that opened perfectly well in a browser, and that someone else could add from the same message. The link is now cleaned of invisible characters and of any whitespace inside it before it is used, in the add dialog, in the group settings and in every subscription request, and the field shows the cleaned link so what gets used is visible.
+
+**3**:
+Building the report polls the system and packs an archive, which on Windows takes the better part of a minute. The menu closed and nothing else happened - no line, no bar, no way to tell whether the button had worked at all - until a message box appeared at the end. It now opens a window that names the step it is on and fills a bar across the eight of them, and that same window reports the finished archive with a button that opens the folder it is in.
+
 #### 1.4.5
 
 * Keep the log of the session that broke instead of truncating it at the next start **1**
