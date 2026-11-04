@@ -284,7 +284,14 @@ namespace Configs {
         for (int i = 0; i < n; ++i) {
             rows.push_back(profileToInsertRow(toAdd[i].get(), toAdd[i]->id, toAdd[i]->gid));
         }
-        db.execBatchInsertProfiles(rows);
+        // По возврату: обновление подписки при sub_clear сначала удаляет все
+        // профили группы настоящей транзакцией с проверкой, а потом вставляло
+        // новые кусками мимо транзакции и мимо проверок — и рапортовало успех.
+        // Человек читал «Added N profiles» над пустым списком.
+        if (!db.execBatchInsertProfiles(rows)) {
+            for (const auto &profile : toAdd) identityMap.erase(profile->id);
+            return false;
+        }
         ++revision;
 
         QList<int> profileIDs;

@@ -277,8 +277,8 @@ namespace Configs {
         }
     }
 
-    void Database::execBatchInsertProfilesChunk(const std::vector<ProfileInsertRow>& rows) {
-        if (rows.empty()) return;
+    bool Database::execBatchInsertProfilesChunk(const std::vector<ProfileInsertRow>& rows) {
+        if (rows.empty()) return true;
         const size_t n = rows.size();
         std::string sql = "INSERT INTO profiles (id, type, name, gid, latency, latency_at, dl_speed, ul_speed, test_country, ip_out, outbound_json, traffic_dl, traffic_up, endpoint_json) VALUES ";
         for (size_t i = 0; i < n; ++i) {
@@ -306,8 +306,10 @@ namespace Configs {
             }
             stmt.exec();
             maybeCheckpoint(static_cast<int>(rows.size()));
+            return true;
         } catch (std::exception& e) {
             NotifyError("execBatchInsertProfiles", e);
+            return false;
         }
     }
 

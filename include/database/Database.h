@@ -96,7 +96,7 @@ namespace Configs {
         void execBatchSettingsReplaceChunk(const std::vector<std::pair<std::string, std::string>>& keyValues);
         void execBatchInsertIntPairsChunk(const std::string& table, const std::string& colA, const std::string& colB,
                                          const std::vector<int>& pairs);
-        void execBatchInsertProfilesChunk(const std::vector<ProfileInsertRow>& rows);
+        bool execBatchInsertProfilesChunk(const std::vector<ProfileInsertRow>& rows);
         void execBatchReplaceProfilesChunk(const std::vector<ProfileInsertRow>& rows);
     public:
         explicit Database(const std::string& path, bool incrementalVacuum = false)
@@ -197,15 +197,19 @@ namespace Configs {
             }
         }
 
-        // 14 bind params per row.
-        void execBatchInsertProfiles0(const std::vector<ProfileInsertRow>& rows) {
+        // 14 bind params per row. Куски идут каждый своим autocommit, поэтому
+        // ответ один на всех: не легло хоть что-то — вызывающий не вправе
+        // считать список записанным.
+        bool execBatchInsertProfiles0(const std::vector<ProfileInsertRow>& rows) {
             const size_t chunkSize = BATCH_LIMIT_WRITE / 14;
+            bool ok = true;
             for (size_t off = 0; off < rows.size(); off += chunkSize) {
                 size_t end = std::min(off + chunkSize, rows.size());
                 std::vector<ProfileInsertRow> chunk(rows.begin() + static_cast<std::ptrdiff_t>(off),
                                                     rows.begin() + static_cast<std::ptrdiff_t>(end));
-                execBatchInsertProfilesChunk(chunk);
+                if (!execBatchInsertProfilesChunk(chunk)) ok = false;
             }
+            return ok;
         }
 
         void execBatchReplaceProfiles0(const std::vector<ProfileInsertRow>& rows) {
@@ -295,11 +299,12 @@ namespace Configs {
             }
         }
 
-        void execBatchInsertProfiles(const std::vector<ProfileInsertRow>& rows) {
+        bool execBatchInsertProfiles(const std::vector<ProfileInsertRow>& rows) {
             try {
-                execBatchInsertProfiles0(rows);
+                return execBatchInsertProfiles0(rows);
             } catch (std::exception& e) {
                 NotifyError("execBatchInsertProfiles", e);
+                return false;
             }
         }
 

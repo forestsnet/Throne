@@ -1119,10 +1119,22 @@ namespace Subscription {
         QString change_text;
         if (cleared) {
             result.added = sink.stored();
-            if (sink.entries.size() >= 1000) {
-                change_text += "[+] " + Int2String(sink.entries.size()) + " profiles\n";
+            // Вставка идёт кусками, каждый своим autocommit, а удаление перед
+            // ней — настоящей транзакцией с проверкой. Пока отказ вставки был
+            // невидим, человек читал «Added N profiles» над пустым списком.
+            if (const auto lost = static_cast<int>(sink.entries.size()) - result.added; lost > 0) {
+                report.addFatal(QCoreApplication::translate(
+                    "Validation", "%n profile(s) could not be saved to the database.", nullptr, lost));
+            }
+            // Список строим по тем, кто правда лёг: иначе дифф рассказывает про
+            // серверы, которых в базе нет.
+            if (result.added >= 1000) {
+                change_text += "[+] " + Int2String(result.added) + " profiles\n";
             } else {
-                for (const auto &entry : sink.entries) change_text += "[+] " + entry.display + "\n";
+                for (const auto &entry : sink.entries) {
+                    if (entry.id < 0) continue;
+                    change_text += "[+] " + entry.display + "\n";
+                }
             }
         } else {
             const auto plan = Reconcile(old, sink.entries, index);
