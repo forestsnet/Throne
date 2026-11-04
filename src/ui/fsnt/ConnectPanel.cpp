@@ -23,6 +23,11 @@
 namespace {
     // Сколько ждём ответа ядра, прежде чем признать попытку неудавшейся.
     constexpr int kConnectPendingTimeoutMs = 25000;
+
+    // Сколько раз догрузка гео-файлов может продлить это ожидание. Предел
+    // нужен: без него ожидание живёт ровно столько, сколько движок повторяет
+    // GeoAssetsMissing, а прервать его человеку нечем.
+    constexpr int kGeoRetryRounds = 3;
 }
 
 ConnectPanel::ConnectPanel(QWidget *parent) : QWidget(parent) {
@@ -186,6 +191,14 @@ void ConnectPanel::onButtonClicked() {
     auto *mw = GetMainWindow();
     if (mw == nullptr) return;
 
+    // Переход уже идёт. Нажатие на крутящееся кольцо — жест «прерви», и
+    // раньше оно делало обратное: isConnected() во время подключения ещё
+    // ложно, поэтому кнопка открывала второе ожидание и слала второй запуск,
+    // продлевая то самое ожидание, которое человек хотел прервать. Прервать
+    // начатый переход движок не умеет, так что запрос просто не повторяем —
+    // кольцо и подпись и так говорят, что идёт.
+    if (m_pending) return;
+
     if (isConnected()) {
         beginPending(true, tr("Disconnecting"));
         mw->profile_stop(false, false, true);
@@ -250,6 +263,7 @@ void ConnectPanel::beginPending(const bool stopping, const QString &status, cons
     m_failure.clear();
     m_pendingProfileId = profileId;
     m_pending = true;
+    m_geoRounds = 0;
     m_button->setState(stopping ? PowerButton::State::Stopping : PowerButton::State::Connecting);
     setStatus(status, "busy");
     m_pendingGuard->start();
@@ -327,7 +341,8 @@ void ConnectPanel::onStartFinished(const int profileId, const Engine::StartOutco
     // посреди загрузки. А вот когда файлы на месте и в них просто нет нужной
     // категории, качать нечего и ждать не́чего — это отказ.
     if (outcome == Engine::StartOutcome::GeoAssetsMissing &&
-        (!Engine::AssetUpdates::GeoAssetsPresent() || Engine::AssetUpdates::GeoUpdateRunning())) {
+        (!Engine::AssetUpdates::GeoAssetsPresent() || Engine::AssetUpdates::GeoUpdateRunning()) &&
+        ++m_geoRounds <= kGeoRetryRounds) {
         setStatus(tr("Downloading the routing data"), "busy");
         m_pendingGuard->start();
         return;
