@@ -682,6 +682,21 @@ void DialogManageRoutes::accept() {
     }
     Configs::dataManager->settingsRepo->dns_predefined_rules = predefinedRules;
 
+    // Список снят при открытии окна, а UpdateRouteProfiles удаляет всё, чего
+    // в нём нет. Профиль маршрутизации мог приехать по throne://-ссылке, пока
+    // окно открыто, и OK молча снёс бы его.
+    {
+        QSet<int> known;
+        for (const auto &item : chainList) known.insert(item->id);
+        for (const auto &item : Configs::dataManager->routesRepo->GetAllRouteProfiles()) {
+            if (known.contains(item->id)) continue;
+            MessageBoxWarning(tr("Routing"),
+                              tr("A routing profile was added while this window was open. "
+                                 "Close it and open it again, then apply the changes."));
+            return;
+        }
+    }
+
     Configs::dataManager->routesRepo->UpdateRouteProfiles(chainList);
     Configs::dataManager->settingsRepo->current_route_id = currentRoute->id;
 

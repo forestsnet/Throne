@@ -250,6 +250,7 @@ DialogBasicSettings::DialogBasicSettings(QWidget *parent)
     ui->proxy_scheme->setCurrentText(Configs::dataManager->settingsRepo->proxy_scheme);
 
     D_LOAD_STRING(inbound_address)
+    m_loadedInboundAddress = ui->inbound_address->text().trimmed();
     CACHE.custom_inbound = Configs::dataManager->settingsRepo->custom_inbound;
     D_LOAD_INT(inbound_socks_port)
     ui->random_listen_port->setChecked(Configs::dataManager->settingsRepo->random_inbound_port);
@@ -506,6 +507,7 @@ DialogBasicSettings::DialogBasicSettings(QWidget *parent)
     ui->mozilla_cert->setChecked(Configs::dataManager->settingsRepo->use_mozilla_certs);
     D_LOAD_BOOL(xray_use_system_ca)
     D_LOAD_BOOL(kill_switch)
+    m_loadedKillSwitch = ui->kill_switch->isChecked();
 
     D_LOAD_BOOL(skip_cert)
 
@@ -650,7 +652,13 @@ void DialogBasicSettings::accept() {
     if (!form->validateAll()) return;
     bool needChoosePort = false;
 
-    Configs::dataManager->settingsRepo->inbound_address = ui->inbound_address->text().trimmed();
+    // Та же причина: снятая в меню галочка «разрешить из локальной сети» не
+    // должна возвращаться сюда. Направление опасное — «::» означает, что
+    // смешанный вход слушает все интерфейсы, а проверка входа по умолчанию
+    // выключена.
+    if (const QString address = ui->inbound_address->text().trimmed(); address != m_loadedInboundAddress) {
+        Configs::dataManager->settingsRepo->inbound_address = address;
+    }
     Configs::dataManager->settingsRepo->custom_inbound = CACHE.custom_inbound;
     D_SAVE_INT(inbound_socks_port)
     if (!Configs::dataManager->settingsRepo->random_inbound_port && ui->random_listen_port->isChecked())
@@ -772,8 +780,13 @@ void DialogBasicSettings::accept() {
     Configs::dataManager->settingsRepo->disable_run_admin = ui->windows_no_admin->isChecked();
     Configs::dataManager->settingsRepo->use_mozilla_certs = ui->mozilla_cert->isChecked();
     D_SAVE_BOOL(xray_use_system_ca)
-    const bool killSwitchChanged = Configs::dataManager->settingsRepo->kill_switch != ui->kill_switch->isChecked();
-    D_SAVE_BOOL(kill_switch)
+    // Только если галочку трогали здесь: иначе OK вернул бы kill switch
+    // включённым человеку, который минуту назад выключил его из меню, и сеть
+    // снова оказалась бы заблокированной.
+    const bool killSwitchTouched = ui->kill_switch->isChecked() != m_loadedKillSwitch;
+    const bool killSwitchChanged = killSwitchTouched &&
+        Configs::dataManager->settingsRepo->kill_switch != ui->kill_switch->isChecked();
+    if (killSwitchTouched) Configs::dataManager->settingsRepo->kill_switch = ui->kill_switch->isChecked();
 
     QStringList changes;
     if (CACHE.needRestart) changes << MwArg::NeedRestart;

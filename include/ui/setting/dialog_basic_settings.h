@@ -32,6 +32,13 @@ public slots:
     void accept();
 
 private:
+    // Снимки на момент открытия окна. Оно немодальное и держит свою копию всех
+    // настроек, а эти две меняют и другой дорогой: kill switch — из меню
+    // Start/Stop и из окна про заблокированный трафик, приём на все адреса —
+    // пунктом меню. Безусловная запись при OK возвращала их такими, какими они
+    // были при открытии, то есть отменяла то, что человек только что сделал.
+    bool m_loadedKillSwitch = false;
+    QString m_loadedInboundAddress;
     Ui::DialogBasicSettings *ui;
 
     Validation::Form *form = nullptr;
