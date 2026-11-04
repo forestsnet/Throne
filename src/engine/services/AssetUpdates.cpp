@@ -238,15 +238,31 @@ namespace Engine::AssetUpdates {
     }
 
     namespace {
+        // Сколько раз переспросить, пока файлы держит другой запрос. Держит их
+        // ручная загрузка из настроек, и отпускает за секунды.
+        constexpr int kGeoEnsureRetries = 4;
+        constexpr int kGeoEnsureRetryMs = 1500;
+
+        // EnsureGeoAssets отказывает, пока одним из файлов распоряжается чужой
+        // запрос, и ждущего в этом случае не берёт вовсе. Молча терять его
+        // нельзя: ждут повтора запуска, и без него человек жмёт «Подключиться»
+        // ещё раз сам. Переспрашиваем, пока тот запрос не отпустит.
+        void assetGeoEnsureWithRetry(const std::function<void(const QString &)> &done, int attemptsLeft) {
+            if (EnsureGeoAssets(done)) return;
+            if (attemptsLeft <= 0) {
+                MW_show_log(QStringLiteral("[Geo assets] Another request still holds the files, so the start is not retried."));
+                return;
+            }
+            setTimeout([done, attemptsLeft] { assetGeoEnsureWithRetry(done, attemptsLeft - 1); },
+                       QCoreApplication::instance(), kGeoEnsureRetryMs);
+        }
+
         void assetGeoFetchUnattended(EnginePolicy *policy, const std::function<void()> &onInstalled) {
             ENGINE_CHECK_MAIN_THREAD();
-            const bool joined = EnsureGeoAssets([policy, onInstalled](const QString &error) {
+            assetGeoEnsureWithRetry([policy, onInstalled](const QString &error) {
                 policy->geoAssetDownloadFinished(error);
                 if (error.isEmpty() && onInstalled) onInstalled();
-            });
-            if (!joined) {
-                MW_show_log(QStringLiteral("[Geo assets] The missing files are already being downloaded by another request; nothing is retried."));
-            }
+            }, kGeoEnsureRetries);
         }
     } // namespace
 
@@ -286,9 +302,11 @@ namespace Engine::AssetUpdates {
             // соседний запуск. Спрашивать не о чем, но попытку надо повторить:
             // без этого человек жал «Подключиться» ещё раз уже сам.
             if (GeoUpdateRunning()) {
-                EnsureGeoAssets([onInstalled](const QString &error) {
+                // Через повтор: возврат EnsureGeoAssets здесь отбрасывался, и
+                // когда файлы держал чужой запрос, ждущий терялся без следа.
+                assetGeoEnsureWithRetry([onInstalled](const QString &error) {
                     if (error.isEmpty() && onInstalled) onInstalled();
-                });
+                }, kGeoEnsureRetries);
                 return;
             }
             assetXrayGeoPromptBusy = true;
