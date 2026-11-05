@@ -936,6 +936,8 @@ set(ENGINE_SOURCES
         # Last: its <windows.h> macros must not reach a later TU of the same MSVC unity batch.
         include/engine/supervisor/CoreSupervisor.h
         src/engine/supervisor/CoreSupervisor.cpp
+        include/engine/supervisor/CoreExitReason.h
+        src/engine/supervisor/CoreExitReason.cpp
 )
 list(APPEND PROJECT_SOURCES ${ENGINE_SOURCES})
 # Windows only (cmake/windows/windows.cmake); empty elsewhere.

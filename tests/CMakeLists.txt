@@ -77,6 +77,15 @@ target_link_libraries(SystemStateJournalTest PRIVATE Qt6::Test)
 
 add_test(NAME SystemStateJournalTest COMMAND SystemStateJournalTest)
 
+qt_add_executable(CoreExitReasonTest
+        CoreExitReasonTest.cpp
+        ../src/engine/supervisor/CoreExitReason.cpp
+)
+target_include_directories(CoreExitReasonTest PRIVATE ${CMAKE_SOURCE_DIR})
+target_link_libraries(CoreExitReasonTest PRIVATE Qt6::Test)
+
+add_test(NAME CoreExitReasonTest COMMAND CoreExitReasonTest)
+
 qt_add_executable(NetworkFailureTextTest
         NetworkFailureTextTest.cpp
         ../src/global/NetworkFailureText.cpp

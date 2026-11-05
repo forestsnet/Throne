@@ -142,6 +142,10 @@ You can try again — the password window will come back. Or connect through the
         <translation>Связь оборвалась</translation>
     </message>
     <message>
+        <source>The connection dropped: %1</source>
+        <translation>Связь оборвалась: %1</translation>
+    </message>
+    <message>
         <source>No server to connect to</source>
         <translation>Нет сервера для подключения</translation>
     </message>
@@ -13314,6 +13318,14 @@ Release note:
     <message>
         <source>The downloaded backup does not match the backup list; it may have been replaced or damaged.</source>
         <translation>Скачанная копия не совпадает со списком копий — возможно, её подменили или повредили.</translation>
+    </message>
+    <message>
+        <source>the core could not be started</source>
+        <translation>ядро не удалось запустить</translation>
+    </message>
+    <message>
+        <source>the core stopped with an error</source>
+        <translation>ядро завершилось с ошибкой</translation>
     </message>
 </context>
 <context>

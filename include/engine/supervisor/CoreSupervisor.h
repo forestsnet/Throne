@@ -95,7 +95,8 @@ namespace Engine {
         // Main thread, for direct connections.
         void stateChanged(Engine::CoreState state);
         // Main thread. Unexpected exits only, after the expected-exit return and before the give-up branch.
-        void coreExited(bool wasConnected);
+        // reason is empty when nothing about the exit is worth showing, see CoreExitReasonText.
+        void coreExited(bool wasConnected, const QString &reason);
         // Main thread, from cancelResume(): a user stop with nothing running cancelled the resume that waits for the core.
         void resumeCancelled();
 

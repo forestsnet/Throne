@@ -4,6 +4,7 @@
 #include "include/engine/EngineEvents.h"
 #include "include/engine/Lifecycle.h"
 #include "include/engine/ThreadCheck.h"
+#include "include/engine/supervisor/CoreExitReason.h"
 #include "include/global/Configs.hpp"
 #include "include/global/Logger.hpp"
 #include "include/global/Notice.hpp"
@@ -93,11 +94,6 @@ namespace {
         QString last;
     };
 
-    bool coreSupervisorIsPanicLine(const QString &line) {
-        return line.startsWith(QLatin1String("Core panicked:")) || line.startsWith(QLatin1String("panic:")) ||
-               line.startsWith(QLatin1String("fatal error:"));
-    }
-
     QString coreSupervisorOneLine(QString text) {
         for (auto &c : text) {
             if (c.category() == QChar::Other_Control) c = u' ';
@@ -118,7 +114,7 @@ namespace {
         text.remove(goLogStamp);
         text = coreSupervisorOneLine(text);
         if (text.isEmpty()) return;
-        if (coreSupervisorIsPanicLine(text)) {
+        if (Engine::CoreExitLooksLikePanic(text)) {
             tail.panic = text;
             return;
         }
@@ -595,7 +591,7 @@ namespace Engine {
         // A replaced core's late report and an intentional kill say nothing about why the core fails.
         if (gen <= m_handledExitGen || gen < m_lastCoreErrorGen || m_expectedExitGen.load() == gen) return;
         m_lastCoreErrorGen = gen;
-        m_lastCoreError = gen == m_timedOutGen && !coreSupervisorIsPanicLine(line)
+        m_lastCoreError = gen == m_timedOutGen && !CoreExitLooksLikePanic(line)
                               ? QStringLiteral("did not connect within %1 s").arg(kConnectTimeoutMs / 1000)
                               : line;
     }
@@ -659,7 +655,10 @@ namespace Engine {
             }
         }
 
-        emit coreExited(wasConnected);
+        // The cause travels with the exit: the window cannot ask for it later, and
+        // the next core's report overwrites it.
+        emit coreExited(wasConnected, CoreExitReasonText(failedToStart,
+                                                         m_lastCoreErrorGen == gen ? m_lastCoreError : QString()));
 
         if ((m_failures >= kGiveUpAfter && m_startWhenUp < 0) || (!wasConnected && m_startFailures >= kGiveUpAfter)) {
             m_startWhenUp = -1;

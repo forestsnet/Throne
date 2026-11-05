@@ -93,6 +93,7 @@ ConnectPanel::ConnectPanel(QWidget *parent) : QWidget(parent) {
         // Состояние не изменилось — значит операция и правда не удалась.
         if (isConnected() == wasStopping) {
             m_failure = wasStopping ? tr("Could not disconnect") : tr("Could not connect");
+            m_dropped = false;
             setStatus(m_failure, "bad");
         }
     });
@@ -261,6 +262,7 @@ void ConnectPanel::offerWayWithoutRights(int profileId) {
 void ConnectPanel::beginPending(const bool stopping, const QString &status, const int profileId) {
     // Новая попытка отменяет прошлую причину: о ней уже рассказали.
     m_failure.clear();
+    m_dropped = false;
     m_pendingProfileId = profileId;
     m_pending = true;
     m_geoRounds = 0;
@@ -276,13 +278,28 @@ void ConnectPanel::endPending() {
     m_statePoll->stop();
 }
 
-void ConnectPanel::reportFailure() {
+void ConnectPanel::reportCoreExit(const bool wasConnected, const QString &reason) {
+    // Ядро, которое до подключения не дошло, этой панели само по себе ничего не
+    // говорит: о неудавшейся попытке расскажет startFinished. Кроме одного
+    // случая — когда на экране уже висит обрыв. Тогда это ядро не поднялось
+    // обратно, обрыв от этого стал неустранимым, и причину стоит дописать:
+    // «Связь оборвалась» звучит так, будто надо подождать, а ждать нечего.
+    if (!wasConnected) {
+        if (m_pending || !m_dropped || reason.isEmpty()) return;
+        m_failure = dropText(reason);
+        refresh();
+        return;
+    }
+
     const bool wasStopping = m_button->state() == PowerButton::State::Stopping;
     if (m_pending) {
         endPending();
         // Падение ядра во время остановки — это и есть успешная остановка,
         // сообщать об ошибке незачем.
-        if (!wasStopping) m_failure = tr("Could not connect");
+        if (!wasStopping) {
+            m_failure = tr("Could not connect");
+            m_dropped = false;
+        }
         refresh();
         return;
     }
@@ -293,8 +310,13 @@ void ConnectPanel::reportFailure() {
     // перезапуск CoreSupervisor отсекает раньше. Раньше эта причина
     // выбрасывалась первой же строкой, и на экране оставалось одно слово
     // «Отключено» без всяких объяснений.
-    m_failure = tr("The connection dropped");
+    m_failure = dropText(reason);
+    m_dropped = true;
     refresh();
+}
+
+QString ConnectPanel::dropText(const QString &reason) {
+    return reason.isEmpty() ? tr("The connection dropped") : tr("The connection dropped: %1").arg(reason);
 }
 
 QString ConnectPanel::startFailureText(const Engine::StartOutcome outcome) {
@@ -361,6 +383,7 @@ void ConnectPanel::onStartFinished(const int profileId, const Engine::StartOutco
 
     endPending();
     m_failure = startFailureText(outcome);
+    m_dropped = false;
     refresh();
 }
 
@@ -422,6 +445,7 @@ void ConnectPanel::refresh() {
         m_ticker->start();
         // Связь поднялась заново — прошлая причина больше не о чём.
         m_failure.clear();
+        m_dropped = false;
     } else if (!connected) {
         m_connectedAt = QDateTime();
         m_ticker->stop();

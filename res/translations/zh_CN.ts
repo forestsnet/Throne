@@ -168,6 +168,10 @@ You can try again — the password window will come back. Or connect through the
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>The connection dropped: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>No server to connect to</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13210,6 +13214,14 @@ Release note:
     </message>
     <message>
         <source>The downloaded backup does not match the backup list; it may have been replaced or damaged.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the core could not be started</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the core stopped with an error</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

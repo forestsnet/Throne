@@ -182,10 +182,11 @@ void FsntWindow::observeEngine() {
     connect(engine->connection(), &Engine::ConnectionManager::stopFinished, this, [this](int) {
         if (m_connectPanel != nullptr) m_connectPanel->onStopFinished();
     });
-    connect(engine->supervisor(), &Engine::CoreSupervisor::coreExited, this, [this](bool wasConnected) {
-        if (wasConnected && m_connectPanel != nullptr) m_connectPanel->reportFailure();
-        refreshConnectionState();
-    });
+    connect(engine->supervisor(), &Engine::CoreSupervisor::coreExited, this,
+            [this](bool wasConnected, const QString &reason) {
+                if (m_connectPanel != nullptr) m_connectPanel->reportCoreExit(wasConnected, reason);
+                refreshConnectionState();
+            });
 
     // Подписки: список серверов и карточка подписки живут этими событиями.
     auto *events = Engine::EngineEvents::instance();
