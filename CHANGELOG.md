@@ -1,3 +1,10 @@
+#### 1.4.7
+
+* Stop the wheel from changing the dropdown the page was only scrolling past **1**
+
+**1**:
+The settings page is taller than its window, so it scrolls, and a dropdown takes the wheel for itself the moment the cursor is over it. Scrolling the page therefore changed whatever field the pointer happened to be over - the theme went from dark to system on its own, and Save wrote that choice down with the rest of them. Nothing said it had happened, and the field that moved is not the one being looked at. A wheel over a dropdown now leaves the field alone and scrolls the page, which is what the gesture was for. It no longer leaves the keyboard in the field it passed over either: that only showed on Windows and Linux, where a dropdown takes focus from the wheel, and it meant the next arrow key changed the field as well. An open list scrolls as before, and a click, Tab and the arrow keys still work on the field itself.
+
 #### 1.4.6
 
 * Download the routing databases on a fresh install before anything asks for them **1**
