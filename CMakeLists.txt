@@ -104,6 +104,8 @@ set(PROJECT_SOURCES
         include/global/PeriodicRunner.hpp
         src/global/PeriodicRunner.cpp
         src/global/HTTPRequestHelper.cpp
+        include/global/NetworkFailureText.hpp
+        src/global/NetworkFailureText.cpp
         src/global/DeviceDetailsHelper.cpp
         src/global/CountryHelper.cpp
         include/global/ExitLookup.hpp

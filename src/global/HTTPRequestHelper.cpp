@@ -16,6 +16,7 @@
 
 
 #include "include/global/Configs.hpp"
+#include "include/global/NetworkFailureText.hpp"
 #include "include/global/LocalNetwork.hpp"
 
 namespace Configs_network {
@@ -129,7 +130,10 @@ namespace Configs_network {
         if (tooLarge) {
             result.error = QObject::tr("Response larger than %1 MB").arg(maxBytes / (1024 * 1024));
         } else {
-            result.error = _reply->error() == QNetworkReply::NetworkError::NoError ? "" : _reply->errorString();
+            result.error = _reply->error() == QNetworkReply::NetworkError::NoError
+                               ? QString()
+                               : NetworkFailureText(_reply->error(),
+                                                    _reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt());
             result.data = std::move(body);
         }
         _reply->deleteLater();
@@ -178,7 +182,6 @@ namespace Configs_network {
         loop.exec();
         reportDownloadProgress({}, false);
         auto netErr = _reply->error();
-        const QString netErrStr = _reply->errorString();
         const int httpStatus = _reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         const QByteArray body = _reply->readAll();
         _reply->deleteLater();
@@ -188,7 +191,7 @@ namespace Configs_network {
             return QObject::tr("Download stalled: no data arrived for %1 seconds.").arg(kDownloadAssetIdleTimeoutMs / 1000);
         }
         if (netErr != QNetworkReply::NetworkError::NoError) {
-            return netErrStr;
+            return QObject::tr("Download failed: %1.").arg(NetworkFailureText(netErr, httpStatus));
         }
 
         if (httpStatus != 0 && (httpStatus < 200 || httpStatus >= 300)) {

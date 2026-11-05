@@ -12004,6 +12004,74 @@ Deleted %5 Profiles:
         <translation>默认</translation>
     </message>
     <message>
+        <source>the server wants a login (HTTP %1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the server refused access (HTTP 403)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>there is nothing at this address (HTTP %1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the server asks to wait before the next request (HTTP 429)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the server is having trouble (HTTP %1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the server turned the request down (HTTP %1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the server answered with HTTP %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the server name does not resolve</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the server refused the connection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the server closed the connection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the server did not answer in time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the encrypted connection could not be set up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the proxy did not let the request through</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>there is no network</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the server redirects in circles</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the server redirects to an address without encryption</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the request failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Request with proxy but the mixed inbound is disabled and Tun Mode is off.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -12014,6 +12082,10 @@ Deleted %5 Profiles:
     <message>
         <source>Response larger than %1 MB</source>
         <translation>响应大于 %1 MB</translation>
+    </message>
+    <message>
+        <source>Download failed: %1.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Download failed: server returned HTTP status %1.</source>

@@ -11486,12 +11486,84 @@ Details: %3</source>
         <translation>Запрос через прокси, но профиль не запущен.</translation>
     </message>
     <message>
+        <source>the server wants a login (HTTP %1)</source>
+        <translation>сервер требует вход (HTTP %1)</translation>
+    </message>
+    <message>
+        <source>the server refused access (HTTP 403)</source>
+        <translation>сервер отказал в доступе (HTTP 403)</translation>
+    </message>
+    <message>
+        <source>there is nothing at this address (HTTP %1)</source>
+        <translation>по этому адресу ничего нет (HTTP %1)</translation>
+    </message>
+    <message>
+        <source>the server asks to wait before the next request (HTTP 429)</source>
+        <translation>сервер просит подождать перед следующим запросом (HTTP 429)</translation>
+    </message>
+    <message>
+        <source>the server is having trouble (HTTP %1)</source>
+        <translation>у сервера неполадки (HTTP %1)</translation>
+    </message>
+    <message>
+        <source>the server turned the request down (HTTP %1)</source>
+        <translation>сервер отклонил запрос (HTTP %1)</translation>
+    </message>
+    <message>
+        <source>the server answered with HTTP %1</source>
+        <translation>сервер ответил HTTP %1</translation>
+    </message>
+    <message>
+        <source>the server name does not resolve</source>
+        <translation>имя сервера не разрешается</translation>
+    </message>
+    <message>
+        <source>the server refused the connection</source>
+        <translation>сервер не принимает подключения</translation>
+    </message>
+    <message>
+        <source>the server closed the connection</source>
+        <translation>сервер закрыл соединение</translation>
+    </message>
+    <message>
+        <source>the server did not answer in time</source>
+        <translation>сервер не ответил за отведённое время</translation>
+    </message>
+    <message>
+        <source>the encrypted connection could not be set up</source>
+        <translation>не удалось установить шифрованное соединение</translation>
+    </message>
+    <message>
+        <source>the proxy did not let the request through</source>
+        <translation>прокси не пропустил запрос</translation>
+    </message>
+    <message>
+        <source>there is no network</source>
+        <translation>сети нет</translation>
+    </message>
+    <message>
+        <source>the server redirects in circles</source>
+        <translation>сервер перенаправляет по кругу</translation>
+    </message>
+    <message>
+        <source>the server redirects to an address without encryption</source>
+        <translation>сервер перенаправляет на адрес без шифрования</translation>
+    </message>
+    <message>
+        <source>the request failed</source>
+        <translation>запрос не удался</translation>
+    </message>
+    <message>
         <source>Request with proxy but the mixed inbound is disabled and Tun Mode is off.</source>
         <translation>Запрос требует прокси, но смешанный вход отключён, а режим Tun выключен.</translation>
     </message>
     <message>
         <source>Response larger than %1 MB</source>
         <translation>Размер ответа превышает %1 МБ</translation>
+    </message>
+    <message>
+        <source>Download failed: %1.</source>
+        <translation>Загрузка не удалась: %1.</translation>
     </message>
     <message>
         <source>Download failed: server returned HTTP status %1.</source>

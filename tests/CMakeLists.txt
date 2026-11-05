@@ -77,6 +77,15 @@ target_link_libraries(SystemStateJournalTest PRIVATE Qt6::Test)
 
 add_test(NAME SystemStateJournalTest COMMAND SystemStateJournalTest)
 
+qt_add_executable(NetworkFailureTextTest
+        NetworkFailureTextTest.cpp
+        ../src/global/NetworkFailureText.cpp
+)
+target_include_directories(NetworkFailureTextTest PRIVATE ${CMAKE_SOURCE_DIR})
+target_link_libraries(NetworkFailureTextTest PRIVATE Qt6::Test Qt6::Network)
+
+add_test(NAME NetworkFailureTextTest COMMAND NetworkFailureTextTest)
+
 # Виджетный тест: своё окно, колесо приходит через оконную систему, поэтому
 # нужен offscreen — на машине сборки дисплея может не быть.
 qt_add_executable(WheelGuardTest
