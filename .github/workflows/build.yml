@@ -115,8 +115,10 @@ jobs:
         run: |
           go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.12
           go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.6.2
+      # Only "Build golang parts" consumes the toolchain, so a cache hit must skip the
+      # whole sysroot build: it fetches a Debian archive that is regularly unavailable.
       - name: Clone cronet-go
-        if: matrix.cross_os == 'linux'
+        if: steps.cache-common.outputs.cache-hit != 'true' && matrix.cross_os == 'linux'
         run: |
           set -xeuo pipefail
           git init ~/cronet-go
@@ -125,13 +127,13 @@ jobs:
           git -C ~/cronet-go checkout FETCH_HEAD
           git -C ~/cronet-go submodule update --init --recursive --depth=1
       - name: Download Chromium toolchain
-        if: matrix.cross_os == 'linux'
+        if: steps.cache-common.outputs.cache-hit != 'true' && matrix.cross_os == 'linux'
         run: |
           set -xeuo pipefail
           cd ~/cronet-go
           go run ./cmd/build-naive --target=linux/${{ matrix.cross_arch }} download-toolchain
       - name: Set Chromium toolchain environment
-        if: matrix.cross_os == 'linux'
+        if: steps.cache-common.outputs.cache-hit != 'true' && matrix.cross_os == 'linux'
         run: |
           set -xeuo pipefail
           cd ~/cronet-go
