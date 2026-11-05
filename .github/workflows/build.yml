@@ -909,6 +909,10 @@ jobs:
       actions: write
     steps:
       - name: Dropping superseded compiler caches
+        # Housekeeping decides nothing about the build, and a release is judged by
+        # the run's conclusion. A rate-limited API call must not make a good
+        # release read as a failed one, so a failure here stays in the log.
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -923,5 +927,7 @@ jobs:
                             if (seen[group]++) print $2 "\t" $3 }' \
             | while IFS=$'\t' read -r id key; do
                 echo "deleting $key"
-                gh api -X DELETE "/repos/$REPO/actions/caches/$id" --silent
+                # Two runs pruning at once means the second one meets a 404 here,
+                # and that is nothing to stop over.
+                gh api -X DELETE "/repos/$REPO/actions/caches/$id" --silent || echo "already gone: $key"
               done
