@@ -131,7 +131,19 @@ jobs:
         run: |
           set -xeuo pipefail
           cd ~/cronet-go
-          go run ./cmd/build-naive --target=linux/${{ matrix.cross_arch }} download-toolchain
+          # The sysroot comes from snapshot.debian.org, which answers 503 for minutes at a
+          # time, and Chromium's downloader spends its five retries within a second or two.
+          # A cross target downloads two sysroots - the host one as well - so it meets the
+          # archive twice as often. The script keeps what it already fetched, so each round
+          # resumes rather than starting over.
+          for attempt in 1 2 3 4 5 6; do
+            if go run ./cmd/build-naive --target=linux/${{ matrix.cross_arch }} download-toolchain; then
+              exit 0
+            fi
+            echo "toolchain attempt ${attempt} failed"
+            sleep $((attempt * 45))
+          done
+          exit 1
       - name: Set Chromium toolchain environment
         if: steps.cache-common.outputs.cache-hit != 'true' && matrix.cross_os == 'linux'
         run: |
