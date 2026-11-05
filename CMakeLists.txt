@@ -163,6 +163,10 @@ set(PROJECT_SOURCES
         src/api/remote/RouterManage.cpp
         src/api/remote/RouterBackup.cpp
         src/api/remote/RouterFeeds.cpp
+        src/api/remote/RouterProfileConfig.cpp
+        src/api/remote/RouterRoutes.cpp
+        src/api/remote/RouterConnections.cpp
+        src/api/remote/RouterWarp.cpp
 
         src/stats/traffic/TrafficLooper.cpp
         include/stats/traffic/TrafficLine.hpp
@@ -895,6 +899,10 @@ set(ENGINE_SOURCES
         include/engine/services/GeoAssetMirrors.h
         include/engine/services/StatsService.h
         src/engine/services/StatsService.cpp
+        include/engine/services/RouteService.h
+        src/engine/services/RouteService.cpp
+        include/engine/services/WarpService.h
+        src/engine/services/WarpService.cpp
         include/engine/tests/TestObserver.h
         include/engine/tests/TestRunner.h
         src/engine/tests/TestRunner.cpp
