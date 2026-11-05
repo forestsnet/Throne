@@ -13829,8 +13829,8 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>Всё через VPN</translation>
     </message>
     <message>
-        <source>Every app and every site goes through the tunnel. The safest choice and the one to pick if you are not sure; the local network still works.</source>
-        <translation>Все приложения и все сайты идут через туннель. Самый надёжный вариант и тот, что стоит выбрать, если не уверены; локальная сеть при этом работает.</translation>
+        <source>Every app and every site goes through the tunnel. The safest choice and the one to pick if you are not sure — the local network still works.</source>
+        <translation>Все приложения и все сайты идут через туннель. Самый надёжный вариант и тот, что стоит выбрать, если не уверены — локальная сеть при этом работает.</translation>
     </message>
     <message>
         <source>Except domestic sites</source>

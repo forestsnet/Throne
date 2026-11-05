@@ -13706,7 +13706,7 @@ Remove that endpoint from this routing profile as well?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Every app and every site goes through the tunnel. The safest choice and the one to pick if you are not sure; the local network still works.</source>
+        <source>Every app and every site goes through the tunnel. The safest choice and the one to pick if you are not sure — the local network still works.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

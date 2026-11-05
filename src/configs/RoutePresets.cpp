@@ -115,7 +115,7 @@ namespace Configs {
              QCoreApplication::translate(
                  "RoutePresets",
                  "Every app and every site goes through the tunnel. The safest choice and the "
-                 "one to pick if you are not sure; the local network still works.")},
+                 "one to pick if you are not sure — the local network still works.")},
             {QString::fromLatin1(kPresetBypassLocal),
              QCoreApplication::translate("RoutePresets", "Except domestic sites"),
              QCoreApplication::translate(
