@@ -137,6 +137,7 @@ int main(int argc, char* argv[]) {
     Engine::Bootstrap::SetSoftwareNames();
 
     GuiStartup::InstallMacOpenEventFilter(a);
+    GuiStartup::InstallWheelGuard(a);
     GuiStartup::LoadEmojiFont();
 
     QStringList arguments = QApplication::arguments();

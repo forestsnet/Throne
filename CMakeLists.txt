@@ -805,6 +805,8 @@ set(PROJECT_SOURCES
         src/global/Common.cpp
         include/ui/app/GuiStartup.h
         src/ui/app/GuiStartup.cpp
+        include/ui/app/WheelGuard.h
+        src/ui/app/WheelGuard.cpp
         include/ui/app/dialog_about.h
         src/ui/app/dialog_about.cpp
         include/ui/app/dialog_update.h

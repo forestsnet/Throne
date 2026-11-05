@@ -15,6 +15,10 @@ namespace GuiStartup {
     // No-op off macOS.
     void InstallMacOpenEventFilter(QApplication &app);
 
+    // The mouse wheel scrolls the page it is over and never changes the value of
+    // a field it passes.
+    void InstallWheelGuard(QApplication &app);
+
     void LoadEmojiFont();
 
     void HandleLaunchLine(QLocalSocket *socket, const QString &line);

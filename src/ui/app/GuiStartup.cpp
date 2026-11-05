@@ -16,6 +16,7 @@
 #include "include/global/Logger.hpp"
 #include "include/global/Notice.hpp"
 #include "include/sys/HostPresence.hpp"
+#include "include/ui/app/WheelGuard.h"
 
 #ifdef Q_OS_WIN
 #include <3rdparty/WinCommander.hpp>
@@ -103,6 +104,11 @@ namespace GuiStartup {
         // Install before the event loop so launch-by-deeplink FileOpen events are caught.
         app.installEventFilter(new MacOpenEventFilter(&app));
 #endif
+    }
+
+    void InstallWheelGuard(QApplication &app) {
+        // Before the event loop, so the first dialog opened is already covered.
+        WheelGuard::InstallOn(app);
     }
 
     void LoadEmojiFont() {

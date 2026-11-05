@@ -1,4 +1,4 @@
-find_package(Qt6 REQUIRED COMPONENTS Test)
+find_package(Qt6 REQUIRED COMPONENTS Test Widgets)
 
 # Класс теста объявлен прямо в .cpp и включает свой .moc — нужен AUTOMOC.
 set(CMAKE_AUTOMOC ON)
@@ -76,3 +76,15 @@ target_include_directories(SystemStateJournalTest PRIVATE ${CMAKE_SOURCE_DIR})
 target_link_libraries(SystemStateJournalTest PRIVATE Qt6::Test)
 
 add_test(NAME SystemStateJournalTest COMMAND SystemStateJournalTest)
+
+# Виджетный тест: своё окно, колесо приходит через оконную систему, поэтому
+# нужен offscreen — на машине сборки дисплея может не быть.
+qt_add_executable(WheelGuardTest
+        WheelGuardTest.cpp
+        ../src/ui/app/WheelGuard.cpp
+)
+target_include_directories(WheelGuardTest PRIVATE ${CMAKE_SOURCE_DIR})
+target_link_libraries(WheelGuardTest PRIVATE Qt6::Test Qt6::Widgets)
+
+add_test(NAME WheelGuardTest COMMAND WheelGuardTest)
+set_tests_properties(WheelGuardTest PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
