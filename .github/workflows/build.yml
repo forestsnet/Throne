@@ -141,6 +141,12 @@ jobs:
               exit 0
             fi
             echo "toolchain attempt ${attempt} failed"
+            # get-clang.sh calls a sysroot finished once its lib directory exists, and that
+            # appears after the first few packages are unpacked. Left in place, the half
+            # built tree of a failed attempt is taken for a good one, the next attempt skips
+            # the build and exits clean, and the only sign is a link error much later. The
+            # verified .deb files stay, since downloading them is the slow part.
+            rm -rf naiveproxy/src/out/sysroot-build/*/*_staging
             sleep $((attempt * 45))
           done
           exit 1
