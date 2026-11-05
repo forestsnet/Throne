@@ -16,6 +16,7 @@
 #include <QPainterPath>
 #include <QStyledItemDelegate>
 #include <QVariantAnimation>
+#include <QWheelEvent>
 
 #include "include/global/Utils.hpp"
 #include "include/ui/fsnt/FsntPalette.hpp"
@@ -387,6 +388,13 @@ FsntSelect::FsntSelect(QWidget *parent) : QComboBox(parent) {
     setCursor(Qt::PointingHandCursor);
     setAttribute(Qt::WA_Hover, true);
 
+    // Колесу не оставляем и фокус. QComboBox по умолчанию стоит на
+    // Qt::WheelFocus, то есть прокрутка страницы уводит клавиатуру в поле под
+    // курсором, и следующая стрелка снова меняет значение, которого никто не
+    // трогал. Щелчок и Tab остаются. macOS сама даёт полям только Tab, там
+    // строка ничего не меняет.
+    if (focusPolicy() == Qt::WheelFocus) setFocusPolicy(Qt::StrongFocus);
+
     auto *list = new QListView(this);
     list->setUniformItemSizes(true);
     list->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -462,6 +470,16 @@ void FsntSelect::leaveEvent(QEvent *event) {
     Q_UNUSED(event)
     m_hovered = false;
     update();
+}
+
+void FsntSelect::wheelEvent(QWheelEvent *event) {
+    // Колесо над полем ничего не выбирает. Поля стоят на прокручиваемых
+    // страницах, и человек, листающий настройки, менял ими значение, не
+    // замечая этого, а «Сохранить» потом записывал выбор, которого он не
+    // делал. Событие оставляем непринятым: Qt несёт колесо вверх по дереву,
+    // пока его не приняли, так что страница прокручивается как обычно.
+    // Открытый список это не задевает — у него своё окно со своим списком.
+    event->ignore();
 }
 
 // ---------------------------------------------------------------- значки
