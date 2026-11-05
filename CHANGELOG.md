@@ -2,12 +2,20 @@
 
 * Stop the wheel from changing the dropdown the page was only scrolling past **1**
 * Keep the wheel off the fields of the advanced dialogs as well **2**
+* Say why a download failed in the language the rest of the window is in **3**
+* Say why the connection dropped when the core is not coming back **4**
 
 **1**:
 The settings page is taller than its window, so it scrolls, and a dropdown takes the wheel for itself the moment the cursor is over it. Scrolling the page therefore changed whatever field the pointer happened to be over - the theme went from dark to system on its own, and Save wrote that choice down with the rest of them. Nothing said it had happened, and the field that moved is not the one being looked at. A wheel over a dropdown now leaves the field alone and scrolls the page, which is what the gesture was for. It no longer leaves the keyboard in the field it passed over either: that only showed on Windows and Linux, where a dropdown takes focus from the wheel, and it meant the next arrow key changed the field as well. An open list scrolls as before, and a click, Tab and the arrow keys still work on the field itself.
 
 **2**:
 The advanced dialogs are built from .ui forms and hold plain combo boxes and spin boxes, with the same result: thirty-odd fields across a dozen forms, and the profile editors mounted at runtime from any of thirty more. A guard each dialog has to arm for itself would miss the editors mounted later and every form added after it, so it sits on the application instead. A wheel over a field that holds a value is left unaccepted, Qt carries it up to the page, and the page scrolls. A field that comes with Qt::WheelFocus loses it when it is polished, because focus is handed out before the event is delivered and no filter can hold it back - without that the page scrolled and the keyboard stayed behind in the field the pointer passed, where the next arrow key changed it again. Scroll bars keep their wheel, it is what they are for.
+
+**3**:
+A subscription that would not update reported it half in one language and half in another: "Не удалось загрузить подписку: Error transferring webhook.site - server replied with status code 404". The tail came from Qt, and it could not have come out in Russian - Qt's own translations are in none of the packages we build, the Windows one has no translations directory at all, and the Linux one has them deleted on purpose. That same string also spells out the whole address, subscription token and all, which is why it had to be stripped of URLs before it could be shown. The reason is now worded in the client: the HTTP status when the server answered, and what went wrong when it did not - a name that does not resolve, a refused connection, a proxy that did not let the request through, a server that never replied. It reads better than the string it replaces, it carries no address, and every download reports it the same way, not only subscriptions.
+
+**4**:
+"The connection dropped" was all the window said, and when the core could not be started again it was the half that mattered that went missing: the tunnel was not coming back on its own, while a bare dropped connection suggests waiting. The exit that carries that reason was the one the panel ignored, since a core that never connected normally belongs to a failed attempt, which reports itself. After a drop it is the failed restart, and the message now says so. What it says is a category, not the line from the log: that one is the system's wording in English, or the core's own output, and the log keeps it either way. Only the two cases the client can really tell apart are named - the core would not start, the core stopped with an error - and for everything else the message stays as it was, because a provider ending the session and a network change look the same from inside the client and a guess would be worse than the plain fact.
 
 #### 1.4.6
 
