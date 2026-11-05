@@ -1,9 +1,13 @@
 #### 1.4.7
 
 * Stop the wheel from changing the dropdown the page was only scrolling past **1**
+* Keep the wheel off the fields of the advanced dialogs as well **2**
 
 **1**:
 The settings page is taller than its window, so it scrolls, and a dropdown takes the wheel for itself the moment the cursor is over it. Scrolling the page therefore changed whatever field the pointer happened to be over - the theme went from dark to system on its own, and Save wrote that choice down with the rest of them. Nothing said it had happened, and the field that moved is not the one being looked at. A wheel over a dropdown now leaves the field alone and scrolls the page, which is what the gesture was for. It no longer leaves the keyboard in the field it passed over either: that only showed on Windows and Linux, where a dropdown takes focus from the wheel, and it meant the next arrow key changed the field as well. An open list scrolls as before, and a click, Tab and the arrow keys still work on the field itself.
+
+**2**:
+The advanced dialogs are built from .ui forms and hold plain combo boxes and spin boxes, with the same result: thirty-odd fields across a dozen forms, and the profile editors mounted at runtime from any of thirty more. A guard each dialog has to arm for itself would miss the editors mounted later and every form added after it, so it sits on the application instead. A wheel over a field that holds a value is left unaccepted, Qt carries it up to the page, and the page scrolls. A field that comes with Qt::WheelFocus loses it when it is polished, because focus is handed out before the event is delivered and no filter can hold it back - without that the page scrolled and the keyboard stayed behind in the field the pointer passed, where the next arrow key changed it again. Scroll bars keep their wheel, it is what they are for.
 
 #### 1.4.6
 
