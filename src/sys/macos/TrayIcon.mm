@@ -58,8 +58,12 @@ void TrayIcon::setIcon(const QIcon &icon) {
     [image release];
 }
 
+// The callers rebuild the menu on every update and hand over the same text most times.
 void TrayIcon::setToolTip(const QString &text) {
-    item(m_statusItem).button.toolTip = text.toNSString();
+    NSStatusBarButton *button = item(m_statusItem).button;
+    NSString *wanted = text.toNSString();
+    if (button.toolTip == wanted || [button.toolTip isEqualToString:wanted]) return;
+    button.toolTip = wanted;
 }
 
 void TrayIcon::setContextMenu(QMenu *menu) {
