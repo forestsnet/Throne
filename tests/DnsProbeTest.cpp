@@ -1,5 +1,10 @@
 #include <QtTest>
 
+#include <QHostAddress>
+#include <QTcpServer>
+#include <QTcpSocket>
+#include <QUdpSocket>
+
 #include "include/global/DnsProbe.hpp"
 
 using Configs::BuildDnsQuery;
@@ -125,17 +130,47 @@ private slots:
     // Проба завершается по таймауту, а следом приходит ошибка сокета. Раньше
     // на этом клиент падал: состояние удалялось дважды. Сигнал должен прийти
     // ровно один раз.
+    //
+    // Молчащие слушатели поднимаем свои, на петле. Раньше тут стоял 192.0.2.1
+    // из RFC 5737 с расчётом на то, что он не маршрутизируется ниоткуда — но
+    // это верно ровно до первого полного туннеля на машине. Тот забирает адрес
+    // себе, выход на него отвечает, проба удаётся, и тест падает у любого, кто
+    // держит клиент включённым. Петлю туннель не забирает никогда.
     void unreachableServerFinishesExactlyOnce() {
+        // Соединение принимается, но в ответ не приходит ничего: рукопожатие
+        // TLS и запрос DNS упираются в таймаут, а не в отказ. Отказ пришёл бы
+        // сразу и гонки, ради которой тест написан, не случилось бы.
+        QTcpServer silentTcp;
+        QVERIFY2(silentTcp.listen(QHostAddress::LocalHost), qPrintable(silentTcp.errorString()));
+        QUdpSocket silentUdp;
+        QVERIFY2(silentUdp.bind(QHostAddress::LocalHost), qPrintable(silentUdp.errorString()));
+        const QString tcp = QStringLiteral("127.0.0.1:%1").arg(silentTcp.serverPort());
+        const QString udp = QStringLiteral("127.0.0.1:%1").arg(silentUdp.localPort());
+
         DnsProbe probe;
         QSignalSpy spy(&probe, &DnsProbe::Finished);
-        // TEST-NET-1 по RFC 5737: не маршрутизируется ниоткуда.
-        probe.Start({"tls://192.0.2.1", "https://192.0.2.1/dns-query", "udp://192.0.2.1"}, 300);
+        probe.Start({"tls://" + tcp, "https://" + tcp + "/dns-query", "udp://" + udp}, 300);
         QVERIFY(spy.wait(5000));
+
+        // Рвём соединения уже после завершения пробы: её сокеты получают ошибку
+        // позже собственного таймаута, и это та самая последовательность, на
+        // которой состояние удалялось второй раз.
+        while (auto *pending = silentTcp.nextPendingConnection()) pending->abort();
+        silentTcp.close();
+        silentUdp.close();
+
         QTest::qWait(1500); // доживаем до запоздалых ошибок сокетов
         QCOMPARE(spy.count(), 1);
         const auto results = spy.first().first().value<QList<DnsProbeResult>>();
         QCOMPARE(results.size(), 3);
-        for (const auto &result : results) QVERIFY(!result.ok);
+        for (const auto &result : results) {
+            QVERIFY(!result.ok);
+            // Упереться проба должна в ожидание, а не в отказ соединения: на
+            // отказе она завершается сразу, запоздалой ошибке взяться неоткуда,
+            // и тест молча перестаёт проверять ту гонку, ради которой написан.
+            QVERIFY2(result.error == QStringLiteral("превышено ожидание"),
+                     qPrintable(result.address + " -> " + result.error));
+        }
     }
 
     void badAddressFailsWithoutNetwork() {
