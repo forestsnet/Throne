@@ -1,3 +1,25 @@
+#### 1.4.8
+
+* Stop IPv6 from leaving outside the tunnel **1**
+* Stop switching iCloud Private Relay off by default **2**
+* Move sing-box up to the WireGuard fix **3**
+* Ship Russian and English only **4**
+* Save the log from the simple window too
+* Reword the interface texts that strung two sentences together with a semicolon
+* Everything upstream brought along: a routing profile per group and routing imported from a subscription, DNS served to the other devices on the network, countries excluded from the auto selector, a reconnect when a subscription update replaces the running profile, a remote API for connections, warp and profile editing, the title bar following the theme, a freeze on opening the routing profile editor and another on the first outbound popup, an Xray connection leak, a newer Xray and the rest
+
+**1**:
+IPv4 went through the tunnel while IPv6 went straight out to the provider, so a site reachable over both saw the real address beside the chosen one. The tunnel never took an IPv6 address of its own, and without one the core does not claim ::/0, which leaves the system nowhere to send IPv6 but the physical interface - an unticked IPv6 box meant let it out rather than do not route it. The tunnel now always carries an IPv6 address, and with the box unticked the traffic is refused inside the tunnel instead of going around it. Four more places had to hold for that to mean anything. The tunnel's MTU has to be at least 1280 or no address is assigned at all, so that floor is now enforced in the settings window, in the API and again when the config is built, since a database from an older build can still hold a smaller number. A routing profile taken verbatim is finished before the built-in rules exist, so the refusal is put at the head of its own rules instead. The excluded ranges carried 91 IPv6 prefixes, most of them from geoip, and a prefix kept out of the tunnel's routes is one the tunnel never sees, which is also how the refusal never applied to it. And the loopback exclusion on Linux asked about the checkbox rather than about what the interface actually carries.
+
+**2**:
+Apple does not offer the relay in every country, and where it is not offered there is nothing for the switch to turn off. Both ways the client did it, the system toggle and NXDOMAIN on the relay's own names, make the device announce the network it is on as incompatible with iCloud Private Relay and name the person's own Wi-Fi while doing it, so everyone got that notice to fix a leak most of them never had. The switch is still under DNS for whoever the relay really does get in the way of. The stored value moves to a new key, because the old default was to block: every existing database holds it, there is no telling it apart from a deliberate choice, and without the move the new default would have reached fresh installs only. A relay left switched off by a session that did not finish is still repaired when the core next starts, which never depended on the setting.
+
+**3**:
+A WireGuard outbound could stall and stay stalled until the profile was restarted. The core moves up to the point where that is fixed and brings the don't-fragment and GSO fixes along with it. The rebuilt sing-tun that comes after it is left for a release of its own, since it replaces a hundred and twenty-six files and wants a run on Windows before it ships.
+
+**4**:
+The client's own strings were never translated into Chinese or Farsi, and by now that is most of the window - of 4154 strings 1647 were empty in the Chinese file and 3324 in the Farsi one, the language switch and its own description among them. Picking either of those got a mix of older translations and English, which reads worse than English on its own. The stored numbering is unchanged, so nobody else's choice moves, and whoever had picked Chinese or Farsi gets English, which those two were already falling back to for every string nobody had translated.
+
 #### 1.4.7
 
 * Stop the wheel from changing the dropdown the page was only scrolling past **1**
