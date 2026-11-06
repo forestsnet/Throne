@@ -68,7 +68,7 @@ QString SystemProxy_Apply(const QString &host, int port, const QString &) {
         runSettingsTool(errors, tools.kwriteconfig, kioslavercArgs("ProxyType", "1"));
         runSettingsTool(errors, "dbus-send", kReparseKio);
     }
-    return errors.join("; ");
+    return errors.join(" · ");
 }
 
 QString SystemProxy_Clear() {
@@ -85,7 +85,7 @@ QString SystemProxy_Clear() {
         runSettingsTool(errors, "dbus-send", kReparseKio);
     }
     if (errors.isEmpty()) proxyApplied = false;
-    return errors.join("; ");
+    return errors.join(" · ");
 }
 
 QString SystemProxy_Capture() { return {}; }

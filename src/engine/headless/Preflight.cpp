@@ -304,10 +304,10 @@ namespace Engine::Preflight {
                     uid_t owner = ::geteuid();
                     if (const QStringList open = preflightOpenToOthers(path, &owner); !open.isEmpty()) {
                         if (::geteuid() == 0) {
-                            fails << shownPath + QStringLiteral(": ") + open.join(QStringLiteral("; ")) +
+                            fails << shownPath + QStringLiteral(": ") + open.join(QStringLiteral(", ")) +
                                          QStringLiteral(" (Throne refuses to run as root with it)");
                         } else {
-                            warns << shownPath + QStringLiteral(": ") + open.join(QStringLiteral("; ")) +
+                            warns << shownPath + QStringLiteral(": ") + open.join(QStringLiteral(", ")) +
                                          QStringLiteral(", so other users can change the settings that name the programs Throne starts");
                         }
                         fixes << QStringLiteral("chmod go-w %1").arg(preflightQuote(path));
@@ -321,9 +321,9 @@ namespace Engine::Preflight {
                 vet(dataDir.configDir);
                 fixes.removeDuplicates();
                 if (!fails.isEmpty()) {
-                    report.fail(shown + QStringLiteral(": ") + (fails + warns).join(QStringLiteral("; ")), fixes);
+                    report.fail(shown + QStringLiteral(": ") + (fails + warns).join(QStringLiteral(". ")), fixes);
                 } else if (!warns.isEmpty()) {
-                    report.warn(shown + QStringLiteral(": ") + warns.join(QStringLiteral("; ")), fixes);
+                    report.warn(shown + QStringLiteral(": ") + warns.join(QStringLiteral(". ")), fixes);
                 } else {
                     report.ok(shown + (QFileInfo::exists(dataDir.configDir) ? QStringLiteral(": writable")
                                                                              : QStringLiteral(": writable; config/ is created on the first start")));
@@ -747,7 +747,7 @@ namespace Engine::Preflight {
 
         void preflightTun(PreflightReport &report, const PreflightCore &core, const PreflightSettings &settings) {
             const QString remembered = settings.rememberTun
-                                           ? QStringLiteral("; the remembered Tun mode will not come back at start (degraded: tun_unavailable)")
+                                           ? QStringLiteral(". The remembered Tun mode will not come back at start (degraded: tun_unavailable)")
                                            : QString();
             const QString corePath = preflightQuote(core.path);
 #if defined(Q_OS_LINUX)
@@ -774,7 +774,7 @@ namespace Engine::Preflight {
                 fixes << QStringLiteral("in a container: --cap-add NET_ADMIN");
             }
             if (!problems.isEmpty()) {
-                report.warn(QStringLiteral("Tun: unavailable: ") + problems.join(QStringLiteral("; ")) + remembered, fixes);
+                report.warn(QStringLiteral("Tun: unavailable: ") + problems.join(QStringLiteral(" and ")) + remembered, fixes);
             } else if (tunDevice == true && netAdmin == true) {
                 report.ok(QStringLiteral("Tun: available (the core opens /dev/net/tun and has CAP_NET_ADMIN)"));
             } else {
@@ -827,7 +827,7 @@ namespace Engine::Preflight {
             const QString corePath = preflightQuote(core.path);
 #if defined(Q_OS_LINUX)
             if (!core.reported) {
-                report.info(QStringLiteral("kill switch: not checked (the core did not report); ") + setting);
+                report.info(QStringLiteral("kill switch: not checked (the core did not report). ") + setting);
                 return;
             }
             const auto privilege = preflightFlag(core.report, "kill_switch_privilege");
@@ -856,46 +856,46 @@ namespace Engine::Preflight {
                 fixes << QStringLiteral("sudo modprobe nf_tables (the kernel needs nftables support)");
             }
             if (!problems.isEmpty()) {
-                report.warn(QStringLiteral("kill switch: unavailable: ") + problems.join(QStringLiteral("; ")) + QStringLiteral("; ") + setting,
+                report.warn(QStringLiteral("kill switch: unavailable: ") + problems.join(QStringLiteral(" and ")) + QStringLiteral(". ") + setting,
                             fixes);
             } else if (privilege == true) {
                 const QString nft = nftables == true      ? QStringLiteral(", nftables works")
                                     : nftablesError.isEmpty() ? QString()
                                                               : QStringLiteral(", nftables not checked: ") + nftablesError;
-                report.ok(QStringLiteral("kill switch: available (the core runs as root with CAP_NET_ADMIN%1); ").arg(nft) + setting);
+                report.ok(QStringLiteral("kill switch: available (the core runs as root with CAP_NET_ADMIN%1). ").arg(nft) + setting);
             } else {
                 const QString detail = core.report.value(QStringLiteral("detail")).toString();
-                report.info(QStringLiteral("kill switch: unknown (%1); ").arg(detail.isEmpty() ? QStringLiteral("the core could not tell") : detail) +
+                report.info(QStringLiteral("kill switch: unknown (%1). ").arg(detail.isEmpty() ? QStringLiteral("the core could not tell") : detail) +
                             setting);
             }
 #elif defined(Q_OS_MACOS)
             if (!core.reported) {
-                report.info(QStringLiteral("kill switch: not checked (the core did not report); ") + setting);
+                report.info(QStringLiteral("kill switch: not checked (the core did not report). ") + setting);
                 return;
             }
             const auto privilege = preflightFlag(core.report, "kill_switch_privilege");
             if (privilege == true) {
-                report.ok(QStringLiteral("kill switch: available (the core runs as root); ") + setting);
+                report.ok(QStringLiteral("kill switch: available (the core runs as root). ") + setting);
             } else if (privilege == false) {
-                report.warn(QStringLiteral("kill switch: unavailable: the core does not run as root; ") + setting,
+                report.warn(QStringLiteral("kill switch: unavailable: the core does not run as root. ") + setting,
                             preflightElevationFixes(
                                 {QStringLiteral("sudo chown root:wheel %1 && sudo chmod u+s %1").arg(corePath)}));
             } else {
-                report.info(QStringLiteral("kill switch: unknown (the core could not tell); ") + setting);
+                report.info(QStringLiteral("kill switch: unknown (the core could not tell). ") + setting);
             }
 #elif defined(Q_OS_WIN)
             Q_UNUSED(core)
             Q_UNUSED(corePath)
             if (Configs::KnownAdmin().value_or(false)) {
-                report.ok(QStringLiteral("kill switch: available (Throne runs elevated); ") + setting);
+                report.ok(QStringLiteral("kill switch: available (Throne runs elevated). ") + setting);
             } else {
-                report.warn(QStringLiteral("kill switch: unavailable: Throne does not run elevated; ") + setting,
+                report.warn(QStringLiteral("kill switch: unavailable: Throne does not run elevated. ") + setting,
                             {QStringLiteral("run Throne elevated, or as a Windows service (Throne --headless --service)")});
             }
 #else
             Q_UNUSED(core)
             Q_UNUSED(corePath)
-            report.info(QStringLiteral("kill switch: not supported on this OS; ") + setting);
+            report.info(QStringLiteral("kill switch: not supported on this OS. ") + setting);
 #endif
         }
 

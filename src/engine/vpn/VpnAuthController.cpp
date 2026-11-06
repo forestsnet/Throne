@@ -305,7 +305,7 @@ namespace Engine {
         QString summary;
         if (!summaryParts.isEmpty()) {
             summary = (problem ? MainWindowTr::tr("VPN endpoint problem") : MainWindowTr::tr("VPN endpoint")) + ": " +
-                      QStringList(summaryParts.mid(0, 2)).join(QStringLiteral("; "));
+                      QStringList(summaryParts.mid(0, 2)).join(QStringLiteral(" · "));
             if (summaryParts.size() > 2) summary += QStringLiteral(" (+%1)").arg(summaryParts.size() - 2);
         }
         const auto detail = QStringList(detailParts.mid(0, 3)).join(QStringLiteral(" | "));

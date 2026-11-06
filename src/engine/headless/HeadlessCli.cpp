@@ -151,12 +151,12 @@ namespace Engine::HeadlessCli {
             if (euid == 0 && !writable.isEmpty()) {
                 *error = QString("refusing to run as root with %1: %2. It holds the settings that name the programs Throne starts, "
                                  "so only its owner may write to it (chmod go-w it, or pass another --data-dir)")
-                             .arg(path, writable.join("; "));
+                             .arg(path, writable.join(", "));
                 return false;
             }
             if (!writable.isEmpty()) {
                 LOG_WARN(QString("%1: %2, so other users can change Throne's settings, which name the programs it starts")
-                             .arg(path, writable.join("; ")));
+                             .arg(path, writable.join(", ")));
             }
             if (st.st_uid != euid) {
                 LOG_WARN(QString("%1 is owned by uid %2, who controls Throne's settings, which name the programs it starts%3")

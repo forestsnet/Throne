@@ -98,7 +98,7 @@ namespace Engine::BackupArchive {
                 QStringList problems;
                 while (problems.size() < 3 && query.executeStep()) problems << QString::fromUtf8(query.getColumn(0).getText());
                 if (problems == QStringList{QStringLiteral("ok")}) return {};
-                return problems.isEmpty() ? QStringLiteral("the integrity check returned nothing") : problems.join("; ");
+                return problems.isEmpty() ? QStringLiteral("the integrity check returned nothing") : problems.join(" · ");
             } catch (std::exception &e) {
                 return QString::fromUtf8(e.what());
             }

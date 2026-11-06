@@ -49,7 +49,7 @@ QString SystemProxy_Apply(const QString &host, int port, const QString &) {
             if (auto e = networksetup({command, service, host, portText}); !e.isEmpty()) errors << e;
         }
     }
-    return errors.join("; ");
+    return errors.join(" · ");
 }
 
 QString SystemProxy_Clear() {
@@ -66,7 +66,7 @@ QString SystemProxy_Clear() {
         }
     }
     if (errors.isEmpty()) proxyApplied = false;
-    return errors.join("; ");
+    return errors.join(" · ");
 }
 
 QString SystemProxy_Capture() { return {}; }

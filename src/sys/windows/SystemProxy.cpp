@@ -109,7 +109,7 @@ QString SystemProxy_Apply(const QString &host, int port, const QString &windowsF
         }
     }
     announceProxyChange();
-    return errors.join("; ");
+    return errors.join(" · ");
 }
 
 QString SystemProxy_Clear() {
@@ -129,7 +129,7 @@ QString SystemProxy_Clear() {
         }
     }
     announceProxyChange();
-    return errors.join("; ");
+    return errors.join(" · ");
 }
 
 namespace {

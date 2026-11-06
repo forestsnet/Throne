@@ -160,7 +160,7 @@ namespace Configs_network {
             errors << reason;
             if (answeredIp.isEmpty()) answeredIp = info.ip;
         }
-        if (error != nullptr) *error = errors.join(QStringLiteral("; "));
+        if (error != nullptr) *error = errors.join(QStringLiteral(" · "));
         ExitInfo partial;
         partial.ip = answeredIp;
         return partial;

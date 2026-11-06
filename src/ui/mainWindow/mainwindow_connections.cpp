@@ -754,7 +754,7 @@ void MainWindow::onConnectionContextMenu(const QPoint& pos)
                 }
 
                 auto* box = boxes[i].first;
-                box->setText(notes.isEmpty() ? target.label : tr("%1  (%2)").arg(target.label, notes.join("; ")));
+                box->setText(notes.isEmpty() ? target.label : tr("%1  (%2)").arg(target.label, notes.join(" · ")));
                 box->setChecked(here);
                 box->setToolTip(tips.join('\n'));
                 boxes[i].second = here;
