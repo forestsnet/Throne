@@ -24,7 +24,7 @@ sudo rm -f /Library/LaunchDaemons/moe.Throne.coreprivilege.plist
 sudo chmod u-s "/Applications/FSNT Client.app/Contents/MacOS/ThroneCore"
 ```
 
-While the tunnel is up, iCloud Private Relay is switched off for the network you are on. The relay does not step aside for a plain `utun` the way it does for a VPN with a system extension, so Safari would otherwise keep reaching sites through Apple instead of the country the profile picked. Whatever the setting was is put back when you disconnect, and there is a switch for the whole thing under DNS.
+iCloud Private Relay can be switched off for the network you are on while the tunnel is up, and whatever the setting was is put back when you disconnect. The relay does not step aside for a plain `utun` the way it does for a VPN with a system extension, so Safari would otherwise keep reaching sites through Apple instead of the country the profile picked. It is off by default: Apple does not offer the relay in every country, and where it is not offered there is nothing to switch off, while the system still tells the person that their own network is incompatible with Private Relay. The switch is under DNS.
 
 ### Note on the direct DNS
 

@@ -9051,6 +9051,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Off by default: Apple does not offer the relay in every country, and where it is not offered there is nothing to switch off, while the system still tells you that your own network is incompatible with Private Relay.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Subscriptions</source>
         <translation type="unfinished"></translation>
     </message>

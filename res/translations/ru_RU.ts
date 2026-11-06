@@ -9175,6 +9175,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <source>Apple hides the IP address of Safari behind its own relay, and it does not step aside for this client the way it does for others, so pages see Apple&apos;s address instead of the country you picked. While connected, the relay is switched off for the network you are on — the same switch as Limit IP Address Tracking in System Settings — and put back when you disconnect. Apple devices on the same network are affected too.</source>
         <translation>Apple прячет адрес Safari за своим реле и нашему клиенту дорогу не уступает, как уступает другим, поэтому страницы видят адрес Apple вместо выбранной страны. Пока подключение держится, реле выключается для текущей сети — тот же переключатель, что «Ограничить отслеживание IP-адреса» в системных настройках, — и возвращается при отключении. Устройства Apple в этой же сети это тоже затронет.</translation>
     </message>
+    <message>
+        <source>Off by default: Apple does not offer the relay in every country, and where it is not offered there is nothing to switch off, while the system still tells you that your own network is incompatible with Private Relay.</source>
+        <translation>По умолчанию выключено: Apple предлагает реле не во всех странах, и там, где его нет, выключать нечего — зато система всё равно сообщит, что ваша сеть несовместима с «Частным узлом iCloud».</translation>
+    </message>
     <message numerus="yes">
         <source>Every %n minute(s)</source>
         <translation>

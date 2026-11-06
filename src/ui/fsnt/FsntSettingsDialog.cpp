@@ -391,6 +391,9 @@ void FsntSettingsDialog::buildDns(QVBoxLayout *column, QWidget *host) {
                     "switched off for the network you are on — the same switch as Limit IP Address "
                     "Tracking in System Settings — and put back when you disconnect. Apple devices "
                     "on the same network are affected too."));
+    card.addNote(tr("Off by default: Apple does not offer the relay in every country, and where it "
+                    "is not offered there is nothing to switch off, while the system still tells you "
+                    "that your own network is incompatible with Private Relay."));
 }
 
 void FsntSettingsDialog::buildSubscriptions(QVBoxLayout *column, QWidget *host) {

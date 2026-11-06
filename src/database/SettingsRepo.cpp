@@ -34,7 +34,7 @@ namespace Configs {
             {"net_use_proxy",                 &net_use_proxy},
             {"remember_enable",               &remember_enable},
             {"skip_cert",                     &skip_cert},
-            {"block_private_relay",           &block_private_relay},
+            {"private_relay_block",           &block_private_relay},
             {"fakedns",                       &fake_dns},
             {"fakeip_disable_ipv6",           &fakeip_disable_ipv6},
             {"direct_dns_disable_ipv6",       &direct_dns_disable_ipv6},
@@ -374,7 +374,12 @@ namespace Configs {
             ntp_interval = minutes.isEmpty() ? QStringLiteral("30m") : minutes + u'm';
         }
         // Retired keys nothing writes back; the DNS ones would otherwise keep overriding the migrated flags on every load.
-        db.exec("DELETE FROM settings WHERE key IN ('direct_dns_strategy', 'remote_dns_strategy', 'log_auto_scroll')");
+        // block_private_relay ушёл туда же, но по другой причине: запрет реле
+        // стал выключен по умолчанию, а в базе прежнее «включено» лежит у всех,
+        // и отличить его от осознанного выбора нельзя. Поэтому ключ снимается
+        // один раз, а дальше держится уже то, что человек поставил сам
+        // (private_relay_block).
+        db.exec("DELETE FROM settings WHERE key IN ('direct_dns_strategy', 'remote_dns_strategy', 'log_auto_scroll', 'block_private_relay')");
     }
 
     void SettingsRepo::saveAllSettings() const {
