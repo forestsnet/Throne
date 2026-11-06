@@ -1715,6 +1715,14 @@ Throne will restart to complete the restore.</source>
         <translation>前置代理</translation>
     </message>
     <message>
+        <source>Routing Profile</source>
+        <translation>路由配置档</translation>
+    </message>
+    <message>
+        <source>The routing profile this group&apos;s profiles connect with. Default follows the routing profile chosen in the Routing menu.</source>
+        <translation>此组的配置档连接时使用的路由配置档。“默认”跟随路由菜单中选择的路由配置档。</translation>
+    </message>
+    <message>
         <source>Auto Clear Unavailable Profiles</source>
         <translation>自动清除不可用配置档</translation>
     </message>
@@ -1731,6 +1739,14 @@ Throne will restart to complete the restore.</source>
         <translation>高级</translation>
     </message>
     <message>
+        <source>Each update saves the routing profile the subscription provides (Happ format) as this group&apos;s own routing profile. DNS settings from the subscription are never used.</source>
+        <translation>每次更新时，将订阅提供的路由配置档（Happ 格式）保存为此组自己的路由配置档。从不使用订阅中的 DNS 设置。</translation>
+    </message>
+    <message>
+        <source>Use the subscription&apos;s routing profile</source>
+        <translation>使用订阅提供的路由配置档</translation>
+    </message>
+    <message>
         <source>Share</source>
         <translation>分享</translation>
     </message>
@@ -1741,6 +1757,18 @@ Throne will restart to complete the restore.</source>
     <message>
         <source>Copy profile share links (Deep Links)</source>
         <translation>复制配置档分享链接(深度链接)</translation>
+    </message>
+    <message>
+        <source>Default (%1)</source>
+        <translation>默认（%1）</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>默认</translation>
+    </message>
+    <message>
+        <source>%1 (from this subscription)</source>
+        <translation>%1（来自此订阅）</translation>
     </message>
     <message>
         <source>The provider hides the subscription URL.</source>
@@ -2988,6 +3016,34 @@ Throne will restart to complete the restore.</source>
         <translation>刷新令牌</translation>
     </message>
     <message>
+        <source>Endpoint</source>
+        <translation type="unfinished">端点</translation>
+    </message>
+    <message>
+        <source>Region</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bucket</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Path-Style Addressing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Access Key ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Secret Access Key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Session Token</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Secrets</source>
         <translation>密钥</translation>
     </message>
@@ -3040,16 +3096,20 @@ Throne will restart to complete the restore.</source>
         <translation>Google Drive 文件夹 ID</translation>
     </message>
     <message>
+        <source>Key prefix in the bucket</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>A directory path</source>
         <translation>目录路径</translation>
     </message>
     <message>
-        <source>Where both ends exchange the stream: google-drive uses a Google Drive folder, template any HTTP storage API described by Template, local a folder on this machine.</source>
-        <translation>双方交换数据流的位置：google-drive 使用 Google Drive 文件夹，template 使用模板所描述的任意 HTTP 存储 API，local 使用本机上的文件夹。</translation>
+        <source>Where both ends exchange the stream: google-drive uses a Google Drive folder, s3 a bucket of any S3-compatible storage, template any HTTP storage API described by Template, local a folder on this machine.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>google-drive: the folder ID. local: a directory path. template: read as {folder}.</source>
-        <translation>google-drive：文件夹 ID。local：目录路径。template：作为 {folder} 读取。</translation>
+        <source>google-drive: the folder ID. s3: the key prefix inside the bucket. local: a directory path. template: read as {folder}.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>The Google Drive OAuth client ID.</source>
@@ -3062,6 +3122,34 @@ Throne will restart to complete the restore.</source>
     <message>
         <source>The OAuth refresh token for the Google account that owns the folder.</source>
         <translation>拥有该文件夹的 Google 账号的 OAuth 刷新令牌。</translation>
+    </message>
+    <message>
+        <source>The S3 API URL, such as https://s3.us-east-1.amazonaws.com or a MinIO or R2 endpoint.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The region requests are signed for. Default: us-east-1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The bucket both ends share.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Puts the bucket in the URL path. When off, the bucket becomes part of the endpoint&apos;s host name, which needs a DNS endpoint and a DNS-compatible bucket name. Default: on.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The S3 access key ID.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The S3 secret access key.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Optional: the session token of temporary credentials.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Values the template reads as {secret0}, {secret1}, …, separated by commas.</source>
@@ -3598,6 +3686,10 @@ Throne will restart to complete the restore.</source>
         <translation>启用 Warp</translation>
     </message>
     <message>
+        <source>WireGuard runs over UDP. AmneziaWG adds WARP-compatible junk and camouflage packets. MASQUE tunnels over HTTP/3 or HTTP/2.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Endpoint</source>
         <translation>端点</translation>
     </message>
@@ -3620,10 +3712,6 @@ Throne will restart to complete the restore.</source>
     <message>
         <source>Reserved</source>
         <translation>保留</translation>
-    </message>
-    <message>
-        <source>WireGuard runs over UDP. MASQUE tunnels over HTTP/3 or HTTP/2 and passes networks that block WireGuard.</source>
-        <translation>WireGuard 基于 UDP 运行。MASQUE 通过 HTTP/3 或 HTTP/2 建立隧道，并穿透阻止 WireGuard 的网络。</translation>
     </message>
     <message>
         <source>Mode</source>
@@ -3854,6 +3942,14 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
         <translation>高级 DNS 设置</translation>
     </message>
     <message>
+        <source>%1 (updated by subscription &quot;%2&quot;)</source>
+        <translation>%1（由订阅“%2”更新）</translation>
+    </message>
+    <message>
+        <source>Every update of the subscription &quot;%1&quot; overwrites its rules. Deleting it stops the import.</source>
+        <translation>订阅“%1”的每次更新都会覆盖其规则。删除它将停止导入。</translation>
+    </message>
+    <message>
         <source>Cache Capacity</source>
         <translation>缓存容量</translation>
     </message>
@@ -3900,6 +3996,14 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
     <message>
         <source>Reverse Mapping</source>
         <translation>反向映射</translation>
+    </message>
+    <message>
+        <source>Generating the AmneziaWG QUIC signature...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>AmneziaWG has no QUIC signature yet: click Generate Warp Config.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Invalid settings</source>
@@ -3987,14 +4091,6 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
     </message>
     <message>
         <source>Required while WARP is on: click Generate Warp Config, or fill it in.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Routing</source>
-        <translation type="unfinished">路由</translation>
-    </message>
-    <message>
-        <source>A routing profile was added while this window was open. Close it and open it again, then apply the changes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4172,11 +4268,11 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
     </message>
     <message>
         <source>Generic scan</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">通用扫描</translation>
     </message>
     <message>
         <source>WARP scan</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">WARP 扫描</translation>
     </message>
     <message>
         <source>Probe addresses with ping, TCP, TLS or HTTP, and optionally test them through one of your profiles.</source>
@@ -4560,7 +4656,7 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
     <name>DialogScanInstance</name>
     <message>
         <source>IP Scanner</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">IP 扫描器</translation>
     </message>
     <message>
         <source>Name</source>
@@ -4736,7 +4832,7 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
     </message>
     <message>
         <source>Timeout (ms)</source>
-        <translation type="unfinished"></translation>
+        <translation>超时 (毫秒)</translation>
     </message>
     <message>
         <source>Echo requests</source>
@@ -4852,7 +4948,7 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
     </message>
     <message>
         <source>Profile</source>
-        <translation type="unfinished">配置档</translation>
+        <translation>配置档</translation>
     </message>
     <message>
         <source>Test URL</source>
@@ -4940,11 +5036,11 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
     </message>
     <message>
         <source>WARP scan</source>
-        <translation type="unfinished"></translation>
+        <translation>WARP 扫描</translation>
     </message>
     <message>
         <source>Generic scan</source>
-        <translation type="unfinished"></translation>
+        <translation>通用扫描</translation>
     </message>
     <message>
         <source>%1 - IP Scanner</source>
@@ -4968,11 +5064,11 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
     </message>
     <message>
         <source>ICMP (ping): the timeout must be between %1 and %2 ms.</source>
-        <translation type="unfinished"></translation>
+        <translation>ICMP (ping)：超时必须在 %1 到 %2 毫秒之间。</translation>
     </message>
     <message>
         <source>ICMP (ping): echo requests must be between %1 and %2.</source>
-        <translation type="unfinished"></translation>
+        <translation>ICMP (ping)：回显请求数必须在 %1 到 %2 之间。</translation>
     </message>
     <message>
         <source>TCP connect: the timeout must be between %1 and %2 ms.</source>
@@ -5053,7 +5149,7 @@ Close without saving?</source>
     </message>
     <message>
         <source>Select a profile…</source>
-        <translation type="unfinished"></translation>
+        <translation>选择一个配置档…</translation>
     </message>
     <message>
         <source>Registering a WARP device…</source>
@@ -5164,7 +5260,7 @@ Close without saving?</source>
     <name>DialogScanner</name>
     <message>
         <source>IP Scanner</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">IP 扫描器</translation>
     </message>
     <message>
         <source>No scans yet. Create one with &quot;New scan&quot;.</source>
@@ -5321,6 +5417,10 @@ Close without saving?</source>
         <translation>Tun 启用 IPv6</translation>
     </message>
     <message>
+        <source>Carry IPv6 through the tunnel. Off, IPv6 is refused rather than sent around the tunnel, so a server without IPv6 makes applications fall back to IPv4.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Strict Route</source>
         <translation>严格路由</translation>
     </message>
@@ -5381,7 +5481,7 @@ Close without saving?</source>
         <translation>排除故障</translation>
     </message>
     <message>
-        <source>IPv6 needs an MTU of at least %1. Below that the system may drop IPv6 from the Tun.</source>
+        <source>IPv6 needs an MTU of at least %1. Below that the Tun carries no IPv6 at all, and the system sends it around the tunnel instead.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5827,12 +5927,12 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>仅指定国家</translation>
     </message>
     <message>
-        <source>e.g. DE,NL,FR</source>
-        <translation>如 DE,NL,FR</translation>
+        <source>e.g. DE,NL,FR or !RU</source>
+        <translation>如 DE,NL,FR 或 !RU</translation>
     </message>
     <message>
-        <source>Comma-separated country codes, empty means any. Uses the country found by the IP test, so profiles that were never IP-tested are skipped while this is set.</source>
-        <translation>逗号间隔的国家代码，空白表示任何国家。使用由 IP 测试找到的国家，因此在设定这个期间，从未进行 IP 测试的配置档会被跳过。</translation>
+        <source>Comma-separated country codes, empty means any. Put ! before a code to exclude that country instead, e.g. !RU uses every country but Russia. Uses the country found by the IP test, so profiles that were never IP-tested are skipped while this is set.</source>
+        <translation>逗号间隔的国家代码，空白表示任何国家。在代码前加 ! 则排除该国家，例如 !RU 使用除俄罗斯以外的所有国家。使用由 IP 测试找到的国家，因此在设定这个期间，从未进行 IP 测试的配置档会被跳过。</translation>
     </message>
     <message>
         <source>Run the best</source>
@@ -6097,8 +6197,8 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>%1 有一项将被重复使用的近期测试结果。</translation>
     </message>
     <message>
-        <source>The rest will be measured before the selector starts.</source>
-        <translation>其余的在选择器开始前将被测量。</translation>
+        <source>The rest will be measured as the selector starts: it runs as soon as enough profiles work, and switches to the full ranking once all are measured.</source>
+        <translation>其余的将在选择器启动时测量：一旦有足够的配置档可用，选择器就会运行，并在全部测量完成后切换到完整排名。</translation>
     </message>
 </context>
 <context>
@@ -6373,16 +6473,12 @@ rendezvous service. Replaces the server address and port.</source>
         <translation>Realm 选项</translation>
     </message>
     <message>
-        <source>Gecko obfuscation needs a password. Without one, obfuscation is off.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>None</source>
         <translation>无</translation>
     </message>
     <message>
-        <source>Obfuscation needs a password; without one, it is off.</source>
-        <translation>混淆需要密码；没有密码时混淆关闭。</translation>
+        <source>Obfuscation needs a password. Without one, it is off.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -8788,8 +8884,36 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation type="unfinished">清除</translation>
     </message>
     <message>
+        <source>Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The log holds the domains you visited and the addresses of your servers.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Close</source>
         <translation type="unfinished">关闭</translation>
+    </message>
+    <message>
+        <source>There is no log file to save.</source>
+        <translation type="unfinished">没有可保存的日志文件。</translation>
+    </message>
+    <message>
+        <source>Save logs</source>
+        <translation type="unfinished">保存日志</translation>
+    </message>
+    <message>
+        <source>Log files (*.log);;All files (*)</source>
+        <translation type="unfinished">日志文件 (*.log);;所有文件 (*)</translation>
+    </message>
+    <message>
+        <source>Cannot write to: %1</source>
+        <translation type="unfinished">无法写到: %1</translation>
+    </message>
+    <message>
+        <source>Saved %1 (%2)</source>
+        <translation type="unfinished">已保存 %1 (%2)</translation>
     </message>
 </context>
 <context>
@@ -9838,7 +9962,7 @@ You can change this later in settings.</source>
     </message>
     <message>
         <source>IP Scanner</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">IP 扫描器</translation>
     </message>
     <message>
         <source>Restart Program</source>
@@ -9973,8 +10097,16 @@ You can change this later in settings.</source>
         <translation>[自动选择器] 正在测量 %1 个尚未测试的配置档...</translation>
     </message>
     <message>
+        <source>[Auto selector] %1 working profiles found. Starting now while the remaining %2 are still being measured.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>[Auto selector] Ranked %1 profiles.</source>
         <translation>[自动选择器] 已排名 %1 个配置档。</translation>
+    </message>
+    <message>
+        <source>[Auto selector] Every profile is measured and the best ones changed — rebuilding with the full ranking.</source>
+        <translation>[自动选择器] 所有配置档均已测量，且最佳配置档有变化——按完整排名重新构建。</translation>
     </message>
     <message>
         <source>[Auto selector] The subscription replaced profiles it was running on — rebuilding.</source>
@@ -10055,6 +10187,10 @@ You can change this later in settings.</source>
     <message>
         <source>The current routing profile auto-updates from a URL.</source>
         <translation>当前路由配置档从一个 URL 自动更新。</translation>
+    </message>
+    <message>
+        <source>The current routing profile is updated by the subscription &quot;%1&quot;.</source>
+        <translation>当前路由配置档由订阅“%1”更新。</translation>
     </message>
     <message>
         <source>Removed %1 from the %2 rules of &quot;%3&quot;</source>
@@ -10870,6 +11006,10 @@ Error: %1</source>
     <message>
         <source>System proxy: %1</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The group &quot;%1&quot; uses its own routing profile, so the running profile keeps it.</source>
+        <translation>组“%1”使用自己的路由配置档，因此正在运行的配置档保持不变。</translation>
     </message>
     <message>
         <source>[Kill switch] Restarting the core so that its own traffic passes the kill switch...</source>
@@ -11690,6 +11830,14 @@ Details: %3</source>
         <translation>弱密码算法</translation>
     </message>
     <message>
+        <source>%1 was removed by the update and stays stopped: no single profile with the same name replaces it.</source>
+        <translation>%1 已在更新中被移除并保持停止：没有唯一的同名配置档可以替代它。</translation>
+    </message>
+    <message>
+        <source>%1 was replaced by the update. Connecting to the profile with the same name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Removed %1 duplicate profiles:</source>
         <translation>移除了 %1 个重复配置档:</translation>
     </message>
@@ -11818,6 +11966,54 @@ Deleted %5 Profiles:
     <message>
         <source>could not parse a routing profile from the response</source>
         <translation>无法解析响应中的路由配置档</translation>
+    </message>
+    <message>
+        <source>the routing profile is not in the Happ format</source>
+        <translation>路由配置档不是 Happ 格式</translation>
+    </message>
+    <message>
+        <source>a raw routing profile is not accepted from a subscription</source>
+        <translation>不接受来自订阅的原始路由配置档</translation>
+    </message>
+    <message>
+        <source>unknown routing link action &quot;%1&quot;</source>
+        <translation>未知的路由链接操作“%1”</translation>
+    </message>
+    <message>
+        <source>the routing profile is not valid base64</source>
+        <translation>路由配置档不是有效的 base64</translation>
+    </message>
+    <message>
+        <source>the routing profile is not a JSON object</source>
+        <translation>路由配置档不是 JSON 对象</translation>
+    </message>
+    <message>
+        <source>[Routing] %1: the routing profile the subscription provides was ignored: %2</source>
+        <translation>[路由] %1：已忽略订阅提供的路由配置档：%2</translation>
+    </message>
+    <message>
+        <source>[Routing] %1: the routing profile the subscription provides was not applied, the routing profiles are open for editing.</source>
+        <translation>[路由] %1：未应用订阅提供的路由配置档，因为路由配置档正在编辑中。</translation>
+    </message>
+    <message>
+        <source>%1 entries, %2 skipped</source>
+        <translation>%1 条，跳过 %2 条</translation>
+    </message>
+    <message>
+        <source>%1 entries</source>
+        <translation>%1 条</translation>
+    </message>
+    <message>
+        <source>%1 routing</source>
+        <translation>%1 路由</translation>
+    </message>
+    <message>
+        <source>[Routing] %1: created the routing profile &quot;%2&quot; from the subscription (%3)</source>
+        <translation>[路由] %1：已从订阅创建路由配置档“%2”（%3）</translation>
+    </message>
+    <message>
+        <source>[Routing] %1: updated the routing profile &quot;%2&quot; from the subscription (%3)</source>
+        <translation>[路由] %1：已从订阅更新路由配置档“%2”（%3）</translation>
     </message>
     <message>
         <source>the remote content is a raw routing profile, which is not supported for remote profiles yet</source>
@@ -12026,6 +12222,14 @@ Deleted %5 Profiles:
     <message>
         <source>Failed to reach the core.</source>
         <translation>连接到核心失败。</translation>
+    </message>
+    <message>
+        <source>The core returned an invalid QUIC signature.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to generate WARP QUIC signature: %1</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Cloudflare WARP</source>
@@ -13138,7 +13342,7 @@ Release note:
     </message>
     <message>
         <source>Choose a profile for the config test</source>
-        <translation type="unfinished"></translation>
+        <translation>为配置测试选择一个配置档</translation>
     </message>
     <message>
         <source>This type of profile cannot be pointed at scanned addresses</source>
@@ -14009,7 +14213,7 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
     <message>
         <source>IP Scanner</source>
-        <translation type="unfinished"></translation>
+        <translation>IP 扫描器</translation>
     </message>
     <message numerus="yes">
         <source>The targets changed since this scan was paused, so it cannot resume. Start over from the beginning and clear its %n result(s)?</source>
@@ -14067,11 +14271,11 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
     <message>
         <source>WARP</source>
-        <translation type="unfinished"></translation>
+        <translation>WARP</translation>
     </message>
     <message>
         <source>Generic</source>
-        <translation type="unfinished"></translation>
+        <translation>通用</translation>
     </message>
     <message>
         <source>Open</source>
@@ -15104,7 +15308,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
     </message>
     <message>
         <source>Must not be negative.</source>
-        <translation type="unfinished"></translation>
+        <translation>不能为负数。</translation>
     </message>
     <message>
         <source>Use whole seconds, for example 30s.</source>
@@ -15510,11 +15714,11 @@ Paste the link your provider gave you and the servers will appear here.</source>
     </message>
     <message>
         <source>The link is damaged: its payload is not valid base64.</source>
-        <translation type="unfinished"></translation>
+        <translation>链接已损坏：其内容不是有效的 base64。</translation>
     </message>
     <message>
         <source>The link is damaged: its payload is not a JSON object.</source>
-        <translation type="unfinished"></translation>
+        <translation>链接已损坏：其内容不是 JSON 对象。</translation>
     </message>
     <message>
         <source>Unsupported profile type &quot;%1&quot;.</source>
@@ -15586,7 +15790,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
     </message>
     <message>
         <source>%1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1: %2</translation>
     </message>
     <message>
         <source>Line %1 (&quot;%2&quot;): %3</source>
@@ -16424,7 +16628,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
     </message>
     <message>
         <source>Removed from the imported configuration: it would write a file on this computer at a path the sender chose.</source>
-        <translation type="unfinished"></translation>
+        <translation>已从导入的配置中移除：它会在这台电脑上由发送者指定的路径写入文件。</translation>
     </message>
     <message>
         <source>Removed the reverse proxy from the imported configuration: it would let the server reach this computer and its network.</source>
@@ -16540,7 +16744,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
     </message>
     <message>
         <source>List items that are not text were ignored.</source>
-        <translation type="unfinished"></translation>
+        <translation>已忽略非文本的列表项。</translation>
     </message>
     <message>
         <source>Must not contain &quot;|&quot;, which separates headers in share links.</source>
@@ -16559,7 +16763,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Use two-letter country codes separated by commas, for example DE,NL,FR.</source>
+        <source>Use two-letter country codes separated by commas, for example DE,NL,FR. Put ! before a code to exclude that country, for example !RU.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -16699,7 +16903,15 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Must be google-drive, template or local.</source>
+        <source>Must be google-drive, s3, template or local.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter the key prefix both ends share in the bucket.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The key prefix must be relative, without empty, &quot;.&quot; or &quot;..&quot; parts, backslashes or control characters.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -16711,11 +16923,51 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>S3 needs the access key ID and the secret access key. The session token is optional.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The S3 keys cannot contain control characters.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The access key ID cannot contain spaces, commas or slashes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Google Drive needs the client ID, client secret and refresh token.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>The template service needs a template describing the storage API.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter the S3 endpoint URL, such as https://s3.example.com.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The endpoint must be an http or https URL without credentials, query or fragment.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The signing region cannot contain spaces, commas, slashes or control characters.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter the bucket both ends share.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The bucket name cannot be &quot;.&quot; or &quot;..&quot;, nor contain slashes, backslashes or control characters.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Virtual-hosted addressing needs a DNS-compatible bucket name: lowercase letters, digits, dots and hyphens.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Virtual-hosted addressing needs a DNS endpoint, not an IP address. Turn on path-style addressing instead.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

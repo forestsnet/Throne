@@ -1729,7 +1729,7 @@ namespace Configs {
         {
             if (service.trimmed() == "s3") {
                 if (secrets.size() < 2 || secrets.size() > 3 || secrets[0].trimmed().isEmpty() || secrets[1].trimmed().isEmpty())
-                    return QCoreApplication::translate("Validation", "S3 needs the access key ID and the secret access key; the session token is optional.");
+                    return QCoreApplication::translate("Validation", "S3 needs the access key ID and the secret access key. The session token is optional.");
                 if (!std::all_of(secrets.cbegin(), secrets.cend(), xdriveHeaderValue))
                     return QCoreApplication::translate("Validation", "The S3 keys cannot contain control characters.");
                 if (secrets[0].contains(QRegularExpression("[/ ,\\t]")))

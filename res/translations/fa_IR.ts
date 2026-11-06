@@ -365,6 +365,18 @@ Outbound: %4</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Logs</source>
+        <translation type="unfinished">گزارش‌ها</translation>
+    </message>
+    <message>
+        <source>Saves the Throne log of this session as one file, including the core output shown in the log panel.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save logs…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Saved %1 (%2)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -381,12 +393,20 @@ Outbound: %4</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>%1 was removed by the update and stays stopped: no single profile with the same name replaces it.</source>
-        <translation>%1 با به‌روزرسانی حذف شد و متوقف می‌ماند: هیچ نمایهٔ یکتایی با همین نام جایگزین آن نیست.</translation>
+        <source>There is no log file to save.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>%1 was replaced by the update; connecting to the profile with the same name.</source>
-        <translation>%1 با به‌روزرسانی جایگزین شد؛ در حال اتصال به نمایهٔ هم‌نام.</translation>
+        <source>Save logs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log files (*.log);;All files (*)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot write to: %1</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -454,7 +474,7 @@ It stays a preference, not a lock: if that profile stops working the selector st
     </message>
     <message>
         <source>Profile</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">نمایه</translation>
     </message>
     <message>
         <source>Status</source>
@@ -1665,6 +1685,14 @@ Throne will restart to complete the restore.</source>
         <translation>اشتراک</translation>
     </message>
     <message>
+        <source>Routing Profile</source>
+        <translation>نمایه مسیریابی</translation>
+    </message>
+    <message>
+        <source>The routing profile this group&apos;s profiles connect with. Default follows the routing profile chosen in the Routing menu.</source>
+        <translation>نمایه مسیریابی که نمایه‌های این گروه با آن متصل می‌شوند. «پیش فرض» از نمایه مسیریابی انتخاب‌شده در منوی مسیریابی پیروی می‌کند.</translation>
+    </message>
+    <message>
         <source>Advanced</source>
         <translation type="unfinished">پیشرفته</translation>
     </message>
@@ -1673,8 +1701,28 @@ Throne will restart to complete the restore.</source>
         <translation>URL</translation>
     </message>
     <message>
+        <source>Each update saves the routing profile the subscription provides (Happ format) as this group&apos;s own routing profile. DNS settings from the subscription are never used.</source>
+        <translation>هر به‌روزرسانی، نمایه مسیریابی ارائه‌شده توسط اشتراک (قالب Happ) را به‌عنوان نمایه مسیریابی خود این گروه ذخیره می‌کند. تنظیمات DNS اشتراک هرگز استفاده نمی‌شود.</translation>
+    </message>
+    <message>
+        <source>Use the subscription&apos;s routing profile</source>
+        <translation>استفاده از نمایه مسیریابی اشتراک</translation>
+    </message>
+    <message>
         <source>Copy profile share links</source>
         <translation>لینک های اشتراک گذاری نمایه را کپی کنید</translation>
+    </message>
+    <message>
+        <source>Default (%1)</source>
+        <translation>پیش فرض (%1)</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>پیش فرض</translation>
+    </message>
+    <message>
+        <source>%1 (from this subscription)</source>
+        <translation>%1 (از این اشتراک)</translation>
     </message>
     <message>
         <source>The provider hides the subscription URL.</source>
@@ -2949,6 +2997,34 @@ Throne will restart to complete the restore.</source>
         <translation>توکن تازه‌سازی</translation>
     </message>
     <message>
+        <source>Endpoint</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Region</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bucket</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Path-Style Addressing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Access Key ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Secret Access Key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Session Token</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Secrets</source>
         <translation>رمزها</translation>
     </message>
@@ -3001,16 +3077,20 @@ Throne will restart to complete the restore.</source>
         <translation>شناسهٔ پوشهٔ Google Drive</translation>
     </message>
     <message>
+        <source>Key prefix in the bucket</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>A directory path</source>
         <translation>مسیر یک پوشه</translation>
     </message>
     <message>
-        <source>Where both ends exchange the stream: google-drive uses a Google Drive folder, template any HTTP storage API described by Template, local a folder on this machine.</source>
-        <translation>جایی که دو طرف جریان را مبادله می‌کنند: google-drive از یک پوشهٔ Google Drive استفاده می‌کند، template از هر API ذخیره‌سازی HTTP که در قالب توصیف شده باشد، و local از پوشه‌ای روی همین دستگاه.</translation>
+        <source>Where both ends exchange the stream: google-drive uses a Google Drive folder, s3 a bucket of any S3-compatible storage, template any HTTP storage API described by Template, local a folder on this machine.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>google-drive: the folder ID. local: a directory path. template: read as {folder}.</source>
-        <translation>google-drive: شناسهٔ پوشه. local: مسیر یک پوشه. template: به‌صورت {folder} خوانده می‌شود.</translation>
+        <source>google-drive: the folder ID. s3: the key prefix inside the bucket. local: a directory path. template: read as {folder}.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>The Google Drive OAuth client ID.</source>
@@ -3023,6 +3103,34 @@ Throne will restart to complete the restore.</source>
     <message>
         <source>The OAuth refresh token for the Google account that owns the folder.</source>
         <translation>توکن تازه‌سازی OAuth برای حساب Google که مالک پوشه است.</translation>
+    </message>
+    <message>
+        <source>The S3 API URL, such as https://s3.us-east-1.amazonaws.com or a MinIO or R2 endpoint.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The region requests are signed for. Default: us-east-1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The bucket both ends share.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Puts the bucket in the URL path. When off, the bucket becomes part of the endpoint&apos;s host name, which needs a DNS endpoint and a DNS-compatible bucket name. Default: on.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The S3 access key ID.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The S3 secret access key.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Optional: the session token of temporary credentials.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Values the template reads as {secret0}, {secret1}, …, separated by commas.</source>
@@ -3536,6 +3644,10 @@ For more information, see the document &quot;Configuration/DNS&quot;.</source>
         <translation>نمایه مسیریابی</translation>
     </message>
     <message>
+        <source>WireGuard runs over UDP. AmneziaWG adds WARP-compatible junk and camouflage packets. MASQUE tunnels over HTTP/3 or HTTP/2.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When enabled, domains destined for direct outbound will also be resolved using direct dns&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3680,6 +3792,14 @@ For more information, see the document &quot;Configuration/DNS&quot;.</source>
         <translation>فهرست نمایه‌های مسیریابی خالی است، این وضعیت غیرقابل دسترس است و ممکن است خرابی رخ دهد</translation>
     </message>
     <message>
+        <source>%1 (updated by subscription &quot;%2&quot;)</source>
+        <translation>%1 (به‌روزشده توسط اشتراک «%2»)</translation>
+    </message>
+    <message>
+        <source>Every update of the subscription &quot;%1&quot; overwrites its rules. Deleting it stops the import.</source>
+        <translation>هر به‌روزرسانی اشتراک «%1» قوانین آن را بازنویسی می‌کند. حذف آن، وارد کردن را متوقف می‌کند.</translation>
+    </message>
+    <message>
         <source>Predefined DNS Answers</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3782,6 +3902,14 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Generating the AmneziaWG QUIC signature...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>AmneziaWG has no QUIC signature yet: click Generate Warp Config.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Generating config...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3800,14 +3928,6 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
     <message>
         <source>Routing profile cannot be empty</source>
         <translation>نمایه مسیریابی نمی‌تواند خالی باشد</translation>
-    </message>
-    <message>
-        <source>Routing</source>
-        <translation type="unfinished">مسیریابی</translation>
-    </message>
-    <message>
-        <source>A routing profile was added while this window was open. Close it and open it again, then apply the changes.</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Structured profile</source>
@@ -4022,10 +4142,6 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>WireGuard runs over UDP. MASQUE tunnels over HTTP/3 or HTTP/2 and passes networks that block WireGuard.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Mode</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4126,11 +4242,11 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
     </message>
     <message>
         <source>Generic scan</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">اسکن عمومی</translation>
     </message>
     <message>
         <source>WARP scan</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">اسکن WARP</translation>
     </message>
     <message>
         <source>Probe addresses with ping, TCP, TLS or HTTP, and optionally test them through one of your profiles.</source>
@@ -4513,7 +4629,7 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
     <name>DialogScanInstance</name>
     <message>
         <source>IP Scanner</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">اسکنر IP</translation>
     </message>
     <message>
         <source>Name</source>
@@ -4689,7 +4805,7 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
     </message>
     <message>
         <source>Timeout (ms)</source>
-        <translation type="unfinished"></translation>
+        <translation>مهلت (میلی‌ثانیه)</translation>
     </message>
     <message>
         <source>Echo requests</source>
@@ -4805,7 +4921,7 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
     </message>
     <message>
         <source>Profile</source>
-        <translation type="unfinished"></translation>
+        <translation>نمایه</translation>
     </message>
     <message>
         <source>Test URL</source>
@@ -4893,11 +5009,11 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
     </message>
     <message>
         <source>WARP scan</source>
-        <translation type="unfinished"></translation>
+        <translation>اسکن WARP</translation>
     </message>
     <message>
         <source>Generic scan</source>
-        <translation type="unfinished"></translation>
+        <translation>اسکن عمومی</translation>
     </message>
     <message>
         <source>%1 - IP Scanner</source>
@@ -4921,11 +5037,11 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
     </message>
     <message>
         <source>ICMP (ping): the timeout must be between %1 and %2 ms.</source>
-        <translation type="unfinished"></translation>
+        <translation>ICMP (ping): مهلت باید بین %1 تا %2 میلی‌ثانیه باشد.</translation>
     </message>
     <message>
         <source>ICMP (ping): echo requests must be between %1 and %2.</source>
-        <translation type="unfinished"></translation>
+        <translation>ICMP (ping): تعداد درخواست‌های echo باید بین %1 تا %2 باشد.</translation>
     </message>
     <message>
         <source>TCP connect: the timeout must be between %1 and %2 ms.</source>
@@ -5002,11 +5118,11 @@ Close without saving?</source>
     </message>
     <message>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">هیچ‌کدام</translation>
     </message>
     <message>
         <source>Select a profile…</source>
-        <translation type="unfinished"></translation>
+        <translation>یک نمایه انتخاب کنید…</translation>
     </message>
     <message>
         <source>Registering a WARP device…</source>
@@ -5117,7 +5233,7 @@ Close without saving?</source>
     <name>DialogScanner</name>
     <message>
         <source>IP Scanner</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">اسکنر IP</translation>
     </message>
     <message>
         <source>No scans yet. Create one with &quot;New scan&quot;.</source>
@@ -5184,7 +5300,7 @@ Close without saving?</source>
     </message>
     <message>
         <source>Profile</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">نمایه</translation>
     </message>
     <message>
         <source>Group</source>
@@ -5274,6 +5390,10 @@ Close without saving?</source>
         <translation>فعال کردن IPv6 برای Tun</translation>
     </message>
     <message>
+        <source>Carry IPv6 through the tunnel. Off, IPv6 is refused rather than sent around the tunnel, so a server without IPv6 makes applications fall back to IPv4.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Address ranges handed straight to the physical NIC instead of being routed through the core, one CIDR per line. Uncheck to let the core hijack private range traffic instead. Loopback and broadcast are always bypassed and cannot be listed here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5290,7 +5410,7 @@ Close without saving?</source>
         <translation>عیب یابی</translation>
     </message>
     <message>
-        <source>IPv6 needs an MTU of at least %1. Below that the system may drop IPv6 from the Tun.</source>
+        <source>IPv6 needs an MTU of at least %1. Below that the Tun carries no IPv6 at all, and the system sends it around the tunnel instead.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5780,11 +5900,11 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>e.g. DE,NL,FR</source>
+        <source>e.g. DE,NL,FR or !RU</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Comma-separated country codes, empty means any. Uses the country found by the IP test, so profiles that were never IP-tested are skipped while this is set.</source>
+        <source>Comma-separated country codes, empty means any. Put ! before a code to exclude that country instead, e.g. !RU uses every country but Russia. Uses the country found by the IP test, so profiles that were never IP-tested are skipped while this is set.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6050,7 +6170,7 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The rest will be measured before the selector starts.</source>
+        <source>The rest will be measured as the selector starts: it runs as soon as enough profiles work, and switches to the full ranking once all are measured.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -6278,6 +6398,10 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>None</source>
+        <translation>هیچ‌کدام</translation>
+    </message>
+    <message>
         <source>Obfuscation Password</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6325,7 +6449,7 @@ rendezvous service. Replaces the server address and port.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Gecko obfuscation needs a password. Without one, obfuscation is off.</source>
+        <source>Obfuscation needs a password. Without one, it is off.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -6653,7 +6777,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
     </message>
     <message>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">هیچ‌کدام</translation>
     </message>
     <message>
         <source>Prefer</source>
@@ -7319,7 +7443,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
     </message>
     <message>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">هیچ‌کدام</translation>
     </message>
     <message>
         <source>Prefer</source>
@@ -8731,8 +8855,36 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation type="unfinished">پاک کردن</translation>
     </message>
     <message>
+        <source>Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The log holds the domains you visited and the addresses of your servers.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Close</source>
         <translation type="unfinished">بستن</translation>
+    </message>
+    <message>
+        <source>There is no log file to save.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save logs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log files (*.log);;All files (*)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot write to: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Saved %1 (%2)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -9617,7 +9769,7 @@ You can change this later in settings.</source>
     </message>
     <message>
         <source>IP Scanner</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">اسکنر IP</translation>
     </message>
     <message>
         <source>Open Web dashboard</source>
@@ -10638,6 +10790,10 @@ Details: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>The group &quot;%1&quot; uses its own routing profile, so the running profile keeps it.</source>
+        <translation>گروه «%1» از نمایه مسیریابی خودش استفاده می‌کند، بنابراین نمایه در حال اجرا همان را نگه می‌دارد.</translation>
+    </message>
+    <message>
         <source>[Kill switch] Restarting the core so that its own traffic passes the kill switch...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -10671,7 +10827,7 @@ Details: %3</source>
     </message>
     <message>
         <source>Profile</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">نمایه</translation>
     </message>
     <message>
         <source>Group</source>
@@ -10788,6 +10944,10 @@ Details: %3</source>
     <message>
         <source>The current routing profile auto-updates from a URL.</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The current routing profile is updated by the subscription &quot;%1&quot;.</source>
+        <translation>نمایه مسیریابی فعلی توسط اشتراک «%1» به‌روز می‌شود.</translation>
     </message>
     <message>
         <source>Removed %1 from the %2 rules of &quot;%3&quot;</source>
@@ -11161,7 +11321,15 @@ URL: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>[Auto selector] %1 working profiles found. Starting now while the remaining %2 are still being measured.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>[Auto selector] Ranked %1 profiles.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>[Auto selector] Every profile is measured and the best ones changed — rebuilding with the full ranking.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -11539,6 +11707,14 @@ How to update?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>%1 was removed by the update and stays stopped: no single profile with the same name replaces it.</source>
+        <translation>%1 با به‌روزرسانی حذف شد و متوقف می‌ماند: هیچ نمایهٔ یکتایی با همین نام جایگزین آن نیست.</translation>
+    </message>
+    <message>
+        <source>%1 was replaced by the update. Connecting to the profile with the same name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Removed %1 duplicate profiles:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -11705,7 +11881,7 @@ Release note:
     </message>
     <message>
         <source>Select</source>
-        <translation type="unfinished">انتخاب</translation>
+        <translation>انتخاب</translation>
     </message>
     <message>
         <source>Proxy</source>
@@ -11745,7 +11921,7 @@ Release note:
     </message>
     <message>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">هیچ‌کدام</translation>
     </message>
     <message>
         <source>Used: %1 Remain: %2 Expire: %3</source>
@@ -11835,6 +12011,54 @@ Release note:
     <message>
         <source>could not parse a routing profile from the response</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the routing profile is not in the Happ format</source>
+        <translation>نمایه مسیریابی در قالب Happ نیست</translation>
+    </message>
+    <message>
+        <source>a raw routing profile is not accepted from a subscription</source>
+        <translation>نمایه مسیریابی خام از اشتراک پذیرفته نمی‌شود</translation>
+    </message>
+    <message>
+        <source>unknown routing link action &quot;%1&quot;</source>
+        <translation>عمل ناشناخته در پیوند مسیریابی «%1»</translation>
+    </message>
+    <message>
+        <source>the routing profile is not valid base64</source>
+        <translation>نمایه مسیریابی base64 معتبر نیست</translation>
+    </message>
+    <message>
+        <source>the routing profile is not a JSON object</source>
+        <translation>نمایه مسیریابی یک شیء JSON نیست</translation>
+    </message>
+    <message>
+        <source>[Routing] %1: the routing profile the subscription provides was ignored: %2</source>
+        <translation>[مسیریابی] %1: نمایه مسیریابی ارائه‌شده توسط اشتراک نادیده گرفته شد: %2</translation>
+    </message>
+    <message>
+        <source>[Routing] %1: the routing profile the subscription provides was not applied, the routing profiles are open for editing.</source>
+        <translation>[مسیریابی] %1: نمایه مسیریابی ارائه‌شده توسط اشتراک اعمال نشد، نمایه‌های مسیریابی در حال ویرایش هستند.</translation>
+    </message>
+    <message>
+        <source>%1 entries, %2 skipped</source>
+        <translation>%1 مورد، %2 رد شد</translation>
+    </message>
+    <message>
+        <source>%1 entries</source>
+        <translation>%1 مورد</translation>
+    </message>
+    <message>
+        <source>%1 routing</source>
+        <translation>مسیریابی %1</translation>
+    </message>
+    <message>
+        <source>[Routing] %1: created the routing profile &quot;%2&quot; from the subscription (%3)</source>
+        <translation>[مسیریابی] %1: نمایه مسیریابی «%2» از اشتراک ایجاد شد (%3)</translation>
+    </message>
+    <message>
+        <source>[Routing] %1: updated the routing profile &quot;%2&quot; from the subscription (%3)</source>
+        <translation>[مسیریابی] %1: نمایه مسیریابی «%2» از اشتراک به‌روز شد (%3)</translation>
     </message>
     <message>
         <source>the remote content is a raw routing profile, which is not supported for remote profiles yet</source>
@@ -12583,7 +12807,7 @@ Release note:
     </message>
     <message>
         <source>Choose a profile for the config test</source>
-        <translation type="unfinished"></translation>
+        <translation>یک نمایه برای تست پیکربندی انتخاب کنید</translation>
     </message>
     <message>
         <source>This type of profile cannot be pointed at scanned addresses</source>
@@ -12631,7 +12855,7 @@ Release note:
     </message>
     <message>
         <source>Raw</source>
-        <translation type="unfinished"></translation>
+        <translation>خام</translation>
     </message>
     <message>
         <source>Private</source>
@@ -12651,11 +12875,11 @@ Release note:
     </message>
     <message>
         <source>Encrypted</source>
-        <translation type="unfinished"></translation>
+        <translation>رمزگذاری‌شده</translation>
     </message>
     <message>
         <source>Weak Cipher</source>
-        <translation type="unfinished"></translation>
+        <translation>رمز ضعیف</translation>
     </message>
     <message>
         <source>Unverified Host Key</source>
@@ -13059,6 +13283,14 @@ Release note:
     </message>
     <message>
         <source>Failed to reach the core.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The core returned an invalid QUIC signature.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to generate WARP QUIC signature: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -13915,7 +14147,7 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
     <message>
         <source>IP Scanner</source>
-        <translation type="unfinished"></translation>
+        <translation>اسکنر IP</translation>
     </message>
     <message numerus="yes">
         <source>The targets changed since this scan was paused, so it cannot resume. Start over from the beginning and clear its %n result(s)?</source>
@@ -13973,11 +14205,11 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
     <message>
         <source>WARP</source>
-        <translation type="unfinished"></translation>
+        <translation>WARP</translation>
     </message>
     <message>
         <source>Generic</source>
-        <translation type="unfinished"></translation>
+        <translation>عمومی</translation>
     </message>
     <message>
         <source>Open</source>
@@ -15010,7 +15242,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
     </message>
     <message>
         <source>Must not be negative.</source>
-        <translation type="unfinished"></translation>
+        <translation>نباید منفی باشد.</translation>
     </message>
     <message>
         <source>Use whole seconds, for example 30s.</source>
@@ -15416,11 +15648,11 @@ Paste the link your provider gave you and the servers will appear here.</source>
     </message>
     <message>
         <source>The link is damaged: its payload is not valid base64.</source>
-        <translation type="unfinished"></translation>
+        <translation>پیوند آسیب دیده است: محتوای آن base64 معتبر نیست.</translation>
     </message>
     <message>
         <source>The link is damaged: its payload is not a JSON object.</source>
-        <translation type="unfinished"></translation>
+        <translation>پیوند آسیب دیده است: محتوای آن یک شیء JSON نیست.</translation>
     </message>
     <message>
         <source>Unsupported profile type &quot;%1&quot;.</source>
@@ -15492,7 +15724,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
     </message>
     <message>
         <source>%1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1: %2</translation>
     </message>
     <message>
         <source>Line %1 (&quot;%2&quot;): %3</source>
@@ -16330,7 +16562,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
     </message>
     <message>
         <source>Removed from the imported configuration: it would write a file on this computer at a path the sender chose.</source>
-        <translation type="unfinished"></translation>
+        <translation>از پیکربندی واردشده حذف شد: روی این رایانه پرونده‌ای را در مسیری که فرستنده انتخاب کرده می‌نوشت.</translation>
     </message>
     <message>
         <source>Removed the reverse proxy from the imported configuration: it would let the server reach this computer and its network.</source>
@@ -16446,7 +16678,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
     </message>
     <message>
         <source>List items that are not text were ignored.</source>
-        <translation type="unfinished"></translation>
+        <translation>موارد غیرمتنی فهرست نادیده گرفته شدند.</translation>
     </message>
     <message>
         <source>Must not contain &quot;|&quot;, which separates headers in share links.</source>
@@ -16465,7 +16697,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Use two-letter country codes separated by commas, for example DE,NL,FR.</source>
+        <source>Use two-letter country codes separated by commas, for example DE,NL,FR. Put ! before a code to exclude that country, for example !RU.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -16605,7 +16837,15 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Must be google-drive, template or local.</source>
+        <source>Must be google-drive, s3, template or local.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter the key prefix both ends share in the bucket.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The key prefix must be relative, without empty, &quot;.&quot; or &quot;..&quot; parts, backslashes or control characters.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -16617,11 +16857,51 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>S3 needs the access key ID and the secret access key. The session token is optional.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The S3 keys cannot contain control characters.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The access key ID cannot contain spaces, commas or slashes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Google Drive needs the client ID, client secret and refresh token.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>The template service needs a template describing the storage API.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter the S3 endpoint URL, such as https://s3.example.com.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The endpoint must be an http or https URL without credentials, query or fragment.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The signing region cannot contain spaces, commas, slashes or control characters.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter the bucket both ends share.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The bucket name cannot be &quot;.&quot; or &quot;..&quot;, nor contain slashes, backslashes or control characters.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Virtual-hosted addressing needs a DNS-compatible bucket name: lowercase letters, digits, dots and hyphens.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Virtual-hosted addressing needs a DNS endpoint, not an IP address. Turn on path-style addressing instead.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

@@ -15,8 +15,8 @@ namespace Configs
             return Validation::EachItem(text, Validation::Split::Comma, [](const QString &item) {
                 const QString code = item.startsWith('!') ? item.mid(1).trimmed() : item;
                 if (code.size() == 2 && code[0].isLetter() && code[1].isLetter() && code[0].unicode() < 0x80 && code[1].unicode() < 0x80) return QString();
-                return QCoreApplication::translate("Validation", "Use two-letter country codes separated by commas, for example DE,NL,FR; "
-                                                                 "put ! before a code to exclude that country, for example !RU.");
+                return QCoreApplication::translate("Validation", "Use two-letter country codes separated by commas, for example DE,NL,FR. "
+                                                                 "Put ! before a code to exclude that country, for example !RU.");
             });
         }
 

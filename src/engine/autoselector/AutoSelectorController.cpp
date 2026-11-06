@@ -176,7 +176,7 @@ namespace Engine {
             }
             // The early build takes the working members first; the core probes the unmeasured rest itself.
             Configs::RerankAutoSelectorPool(ent, untrusted);
-            MW_show_log(MainWindowTr::tr("[Auto selector] %1 working profiles found; starting now while the remaining %2 are "
+            MW_show_log(MainWindowTr::tr("[Auto selector] %1 working profiles found. Starting now while the remaining %2 are "
                                          "still being measured.")
                             .arg(found)
                             .arg(remaining));

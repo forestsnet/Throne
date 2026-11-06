@@ -92,7 +92,7 @@
     </message>
     <message>
         <source>Settings</source>
-        <translation type="unfinished">Настройки</translation>
+        <translation>Настройки</translation>
     </message>
     <message>
         <source>Settings in Advanced mode</source>
@@ -443,7 +443,7 @@ Outbound: %4</translation>
     </message>
     <message>
         <source>Unknown</source>
-        <translation type="unfinished">Неизвестно</translation>
+        <translation>Неизвестно</translation>
     </message>
 </context>
 <context>
@@ -1039,7 +1039,7 @@ The local network stays reachable unless Private Range Bypass is turned off in T
     </message>
     <message>
         <source>Interface</source>
-        <translation type="unfinished">Интерфейс</translation>
+        <translation>Интерфейс</translation>
     </message>
     <message>
         <source>Simple</source>
@@ -1156,6 +1156,14 @@ The local network stays reachable unless Private Range Bypass is turned off in T
     <message>
         <source>DNS Server Port</source>
         <translation>Порт DNS-сервера</translation>
+    </message>
+    <message>
+        <source>Lets other devices on your network use this DNS server, for example a router that sends its DNS through this computer. Anyone who can reach this port can then resolve names through your DNS settings.</source>
+        <translation>Позволяет другим устройствам в сети использовать этот DNS-сервер, например роутеру, который направляет DNS через этот компьютер. Любой, кто может достучаться до этого порта, сможет разрешать имена через ваши настройки DNS.</translation>
+    </message>
+    <message>
+        <source>Allow other devices to connect</source>
+        <translation>Разрешить подключаться другим устройствам</translation>
     </message>
     <message>
         <source>NTP Settings</source>
@@ -1713,6 +1721,14 @@ Throne will restart to complete the restore.</source>
         <translation>Фронт-прокси</translation>
     </message>
     <message>
+        <source>Routing Profile</source>
+        <translation>Профиль маршрутизации</translation>
+    </message>
+    <message>
+        <source>The routing profile this group&apos;s profiles connect with. Default follows the routing profile chosen in the Routing menu.</source>
+        <translation>Профиль маршрутизации, с которым подключаются профили этой группы. «По умолчанию» — профиль, выбранный в меню «Маршрутизация».</translation>
+    </message>
+    <message>
         <source>Auto Clear Unavailable Profiles</source>
         <translation>Автоочистка недоступных профилей</translation>
     </message>
@@ -1725,8 +1741,28 @@ Throne will restart to complete the restore.</source>
         <translation>Доп. настройки</translation>
     </message>
     <message>
+        <source>Each update saves the routing profile the subscription provides (Happ format) as this group&apos;s own routing profile. DNS settings from the subscription are never used.</source>
+        <translation>При каждом обновлении профиль маршрутизации из подписки (формат Happ) сохраняется как собственный профиль этой группы. Настройки DNS из подписки никогда не используются.</translation>
+    </message>
+    <message>
+        <source>Use the subscription&apos;s routing profile</source>
+        <translation>Использовать профиль маршрутизации из подписки</translation>
+    </message>
+    <message>
         <source>Copy profile share links</source>
         <translation>Копировать ссылки профилей</translation>
+    </message>
+    <message>
+        <source>Default (%1)</source>
+        <translation>По умолчанию (%1)</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>По умолчанию</translation>
+    </message>
+    <message>
+        <source>%1 (from this subscription)</source>
+        <translation>%1 (из этой подписки)</translation>
     </message>
     <message>
         <source>The provider hides the subscription URL.</source>
@@ -2632,7 +2668,7 @@ Throne will restart to complete the restore.</source>
     </message>
     <message>
         <source>Folder</source>
-        <translation type="unfinished">Папка</translation>
+        <translation>Папка</translation>
     </message>
     <message>
         <source>Client ID</source>
@@ -2645,6 +2681,34 @@ Throne will restart to complete the restore.</source>
     <message>
         <source>Refresh Token</source>
         <translation>Refresh Token</translation>
+    </message>
+    <message>
+        <source>Endpoint</source>
+        <translation>Эндпоинт</translation>
+    </message>
+    <message>
+        <source>Region</source>
+        <translation>Регион</translation>
+    </message>
+    <message>
+        <source>Bucket</source>
+        <translation>Бакет</translation>
+    </message>
+    <message>
+        <source>Path-Style Addressing</source>
+        <translation>Адресация path-style</translation>
+    </message>
+    <message>
+        <source>Access Key ID</source>
+        <translation>Access Key ID</translation>
+    </message>
+    <message>
+        <source>Secret Access Key</source>
+        <translation>Secret Access Key</translation>
+    </message>
+    <message>
+        <source>Session Token</source>
+        <translation>Session Token</translation>
     </message>
     <message>
         <source>Secrets</source>
@@ -2696,7 +2760,7 @@ Throne will restart to complete the restore.</source>
     </message>
     <message>
         <source>Concurrency</source>
-        <translation type="unfinished">Кол-во потоков</translation>
+        <translation>Параллельность</translation>
     </message>
     <message>
         <source>Max Concurrency</source>
@@ -3061,12 +3125,12 @@ Throne will restart to complete the restore.</source>
         <translation>Short ID не действует без публичного ключа Reality, поэтому Reality остается выключенным.</translation>
     </message>
     <message>
-        <source>Where both ends exchange the stream: google-drive uses a Google Drive folder, template any HTTP storage API described by Template, local a folder on this machine.</source>
-        <translation>Где стороны обмениваются потоком: google-drive — папка Google Drive, template — любое хранилище с HTTP API, описанное шаблоном, local — папка на этой машине.</translation>
+        <source>Where both ends exchange the stream: google-drive uses a Google Drive folder, s3 a bucket of any S3-compatible storage, template any HTTP storage API described by Template, local a folder on this machine.</source>
+        <translation>Где обе стороны обмениваются потоком: google-drive использует папку Google Drive, s3 — бакет любого S3-совместимого хранилища, template — любой HTTP API хранилища, описанный в шаблоне, local — папку на этом компьютере.</translation>
     </message>
     <message>
-        <source>google-drive: the folder ID. local: a directory path. template: read as {folder}.</source>
-        <translation>google-drive: идентификатор папки. local: путь к каталогу. template: читается как {folder}.</translation>
+        <source>google-drive: the folder ID. s3: the key prefix inside the bucket. local: a directory path. template: read as {folder}.</source>
+        <translation>google-drive: ID папки. s3: префикс ключей внутри бакета. local: путь к каталогу. template: подставляется как {folder}.</translation>
     </message>
     <message>
         <source>The Google Drive OAuth client ID.</source>
@@ -3079,6 +3143,34 @@ Throne will restart to complete the restore.</source>
     <message>
         <source>The OAuth refresh token for the Google account that owns the folder.</source>
         <translation>Refresh-токен OAuth для учётной записи Google, которой принадлежит папка.</translation>
+    </message>
+    <message>
+        <source>The S3 API URL, such as https://s3.us-east-1.amazonaws.com or a MinIO or R2 endpoint.</source>
+        <translation>URL API S3, например https://s3.us-east-1.amazonaws.com или эндпоинт MinIO или R2.</translation>
+    </message>
+    <message>
+        <source>The region requests are signed for. Default: us-east-1.</source>
+        <translation>Регион, для которого подписываются запросы. По умолчанию: us-east-1.</translation>
+    </message>
+    <message>
+        <source>The bucket both ends share.</source>
+        <translation>Бакет, общий для обеих сторон.</translation>
+    </message>
+    <message>
+        <source>Puts the bucket in the URL path. When off, the bucket becomes part of the endpoint&apos;s host name, which needs a DNS endpoint and a DNS-compatible bucket name. Default: on.</source>
+        <translation>Помещает бакет в путь URL. Если выключено, бакет становится частью имени хоста эндпоинта, для чего нужны DNS-эндпоинт и совместимое с DNS имя бакета. По умолчанию: вкл.</translation>
+    </message>
+    <message>
+        <source>The S3 access key ID.</source>
+        <translation>Access key ID для S3.</translation>
+    </message>
+    <message>
+        <source>The S3 secret access key.</source>
+        <translation>Secret access key для S3.</translation>
+    </message>
+    <message>
+        <source>Optional: the session token of temporary credentials.</source>
+        <translation>Необязательно: session token временных учётных данных.</translation>
     </message>
     <message>
         <source>Values the template reads as {secret0}, {secret1}, …, separated by commas.</source>
@@ -3131,6 +3223,10 @@ Throne will restart to complete the restore.</source>
     <message>
         <source>Google Drive folder ID</source>
         <translation>Идентификатор папки Google Drive</translation>
+    </message>
+    <message>
+        <source>Key prefix in the bucket</source>
+        <translation>Префикс ключей в бакете</translation>
     </message>
     <message>
         <source>A directory path</source>
@@ -3596,6 +3692,10 @@ Throne will restart to complete the restore.</source>
         <translation>Включить Warp</translation>
     </message>
     <message>
+        <source>WireGuard runs over UDP. AmneziaWG adds WARP-compatible junk and camouflage packets. MASQUE tunnels over HTTP/3 or HTTP/2.</source>
+        <translation>WireGuard работает по UDP. AmneziaWG добавляет совместимые с WARP мусорные и маскирующие пакеты. MASQUE работает через HTTP/3 или HTTP/2.</translation>
+    </message>
+    <message>
         <source>Endpoint</source>
         <translation>Endpoint</translation>
     </message>
@@ -3730,10 +3830,6 @@ For more information, see the document &quot;Configuration/DNS&quot;.</source>
     <message>
         <source>Enable FakeIP</source>
         <translation>Включить FakeIP</translation>
-    </message>
-    <message>
-        <source>WireGuard runs over UDP. MASQUE tunnels over HTTP/3 or HTTP/2 and passes networks that block WireGuard.</source>
-        <translation>WireGuard работает поверх UDP. MASQUE туннелирует трафик через HTTP/3 или HTTP/2 и проходит через сети, блокирующие WireGuard.</translation>
     </message>
     <message>
         <source>Mode</source>
@@ -3892,8 +3988,24 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
         <translation>Объект DNS</translation>
     </message>
     <message>
+        <source>%1 (updated by subscription &quot;%2&quot;)</source>
+        <translation>%1 (обновляется подпиской «%2»)</translation>
+    </message>
+    <message>
+        <source>Every update of the subscription &quot;%1&quot; overwrites its rules. Deleting it stops the import.</source>
+        <translation>Каждое обновление подписки «%1» перезаписывает его правила. Удаление прекращает импорт.</translation>
+    </message>
+    <message>
         <source>The DNS object is not a valid JSON object</source>
         <translation>Объект DNS не является допустимым объектом JSON</translation>
+    </message>
+    <message>
+        <source>Generating the AmneziaWG QUIC signature...</source>
+        <translation>Генерация QUIC-сигнатуры AmneziaWG...</translation>
+    </message>
+    <message>
+        <source>AmneziaWG has no QUIC signature yet: click Generate Warp Config.</source>
+        <translation>У AmneziaWG ещё нет QUIC-сигнатуры: нажмите «Сгенерировать конфигурацию Warp».</translation>
     </message>
     <message>
         <source>Generating config...</source>
@@ -4110,14 +4222,6 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
     <message>
         <source>WARP has no config yet: click Generate Warp Config.</source>
         <translation>У WARP ещё нет конфигурации — нажмите «Создать конфигурацию WARP».</translation>
-    </message>
-    <message>
-        <source>Routing</source>
-        <translation>Маршрутизация</translation>
-    </message>
-    <message>
-        <source>A routing profile was added while this window was open. Close it and open it again, then apply the changes.</source>
-        <translation>Пока это окно было открыто, добавился профиль маршрутизации. Закройте окно, откройте заново и примените изменения.</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -5354,11 +5458,11 @@ Close without saving?</source>
     </message>
     <message>
         <source>Open in browser</source>
-        <translation type="unfinished">Открыть в браузере</translation>
+        <translation>Открыть в браузере</translation>
     </message>
     <message>
         <source>Close</source>
-        <translation type="unfinished">Закрыть</translation>
+        <translation>Закрыть</translation>
     </message>
 </context>
 <context>
@@ -5370,6 +5474,10 @@ Close without saving?</source>
     <message>
         <source>Tun Enable IPv6</source>
         <translation>Вкл. IPv6 в TUN</translation>
+    </message>
+    <message>
+        <source>Carry IPv6 through the tunnel. Off, IPv6 is refused rather than sent around the tunnel, so a server without IPv6 makes applications fall back to IPv4.</source>
+        <translation>Пропускать IPv6 через туннель. Когда выключено, IPv6 отклоняется, а не идёт мимо туннеля, поэтому с сервером без IPv6 приложения переходят на IPv4.</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Improves Tun routing and performance using nftables. While enabled, this machine cannot be used as a network gateway for other devices.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -5392,8 +5500,8 @@ Close without saving?</source>
         <translation>Устранение неполадок</translation>
     </message>
     <message>
-        <source>IPv6 needs an MTU of at least %1. Below that the system may drop IPv6 from the Tun.</source>
-        <translation>Для IPv6 нужен MTU не меньше %1. При меньшем значении система может отключить IPv6 на интерфейсе TUN.</translation>
+        <source>IPv6 needs an MTU of at least %1. Below that the Tun carries no IPv6 at all, and the system sends it around the tunnel instead.</source>
+        <translation>Для IPv6 нужен MTU не меньше %1. Ниже этого значения туннель не несёт IPv6 вовсе, и система отправляет его мимо туннеля.</translation>
     </message>
     <message>
         <source>This covers every address, which would stop Tun from routing anything.</source>
@@ -5878,12 +5986,12 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>Только страны</translation>
     </message>
     <message>
-        <source>e.g. DE,NL,FR</source>
-        <translation>например, DE,NL,FR</translation>
+        <source>e.g. DE,NL,FR or !RU</source>
+        <translation>например, DE,NL,FR или !RU</translation>
     </message>
     <message>
-        <source>Comma-separated country codes, empty means any. Uses the country found by the IP test, so profiles that were never IP-tested are skipped while this is set.</source>
-        <translation>Коды стран через запятую. Пустое поле — любая страна. Используется страна, определённая IP-тестом, поэтому, пока фильтр задан, профили без IP-теста пропускаются.</translation>
+        <source>Comma-separated country codes, empty means any. Put ! before a code to exclude that country instead, e.g. !RU uses every country but Russia. Uses the country found by the IP test, so profiles that were never IP-tested are skipped while this is set.</source>
+        <translation>Коды стран через запятую. Пустое поле — любая страна. Поставьте ! перед кодом, чтобы исключить страну, например !RU — все страны, кроме России. Используется страна, определённая IP-тестом, поэтому, пока фильтр задан, профили без IP-теста пропускаются.</translation>
     </message>
     <message>
         <source>Run the best</source>
@@ -6150,8 +6258,8 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>Профилей с недавним результатом теста (он будет использован повторно): %1.</translation>
     </message>
     <message>
-        <source>The rest will be measured before the selector starts.</source>
-        <translation>Остальные профили будут измерены до запуска автовыбора.</translation>
+        <source>The rest will be measured as the selector starts: it runs as soon as enough profiles work, and switches to the full ranking once all are measured.</source>
+        <translation>Остальные профили будут измерены при запуске: автовыбор заработает, как только наберётся достаточно рабочих профилей, и перейдёт на полный рейтинг, когда измерены все.</translation>
     </message>
 </context>
 <context>
@@ -6380,6 +6488,10 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>Obfuscation</translation>
     </message>
     <message>
+        <source>None</source>
+        <translation>Нет</translation>
+    </message>
+    <message>
         <source>Obfuscation Password</source>
         <translation>Obfuscation Password</translation>
     </message>
@@ -6430,8 +6542,8 @@ rendezvous service. Replaces the server address and port.</source>
         <translation>Параметры Realm</translation>
     </message>
     <message>
-        <source>Gecko obfuscation needs a password. Without one, obfuscation is off.</source>
-        <translation>Для обфускации gecko нужен пароль. Без него обфускация выключена.</translation>
+        <source>Obfuscation needs a password. Without one, it is off.</source>
+        <translation>Для обфускации нужен пароль. Без него она выключена.</translation>
     </message>
 </context>
 <context>
@@ -8656,19 +8768,19 @@ Improves hole-punching reliability. Requires IPv4.</source>
     <name>Engine::CoreSupervisor</name>
     <message>
         <source>Throne could not open the local channel the core connects to (%1), so no profile can start.</source>
-        <translation type="unfinished">Throne не удалось открыть локальный канал, через который подключается ядро (%1), поэтому ни один профиль не может быть запущен.</translation>
+        <translation>Throne не удалось открыть локальный канал, через который подключается ядро (%1), поэтому ни один профиль не может быть запущен.</translation>
     </message>
     <message>
         <source>Core unavailable</source>
-        <translation type="unfinished">Ядро недоступно</translation>
+        <translation>Ядро недоступно</translation>
     </message>
     <message>
         <source>The core did not connect within %1 s, restarting it.</source>
-        <translation type="unfinished">Ядро не подключилось за %1 с, перезапуск.</translation>
+        <translation>Ядро не подключилось за %1 с, перезапуск.</translation>
     </message>
     <message>
         <source>The core keeps exiting, so it is no longer restarted. Use Restart Core to try again.</source>
-        <translation type="unfinished">Ядро постоянно завершает работу, поэтому больше не перезапускается. Попробуйте снова через «Перезапуск ядра».</translation>
+        <translation>Ядро постоянно завершает работу, поэтому больше не перезапускается. Попробуйте снова через «Перезапуск ядра».</translation>
     </message>
 </context>
 <context>
@@ -8837,8 +8949,36 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Очистить</translation>
     </message>
     <message>
+        <source>Save</source>
+        <translation type="unfinished">Сохранить</translation>
+    </message>
+    <message>
+        <source>The log holds the domains you visited and the addresses of your servers.</source>
+        <translation>В журнале видны домены, которые вы открывали, и адреса ваших серверов.</translation>
+    </message>
+    <message>
         <source>Close</source>
         <translation>Закрыть</translation>
+    </message>
+    <message>
+        <source>There is no log file to save.</source>
+        <translation type="unfinished">Нет файла лога для сохранения.</translation>
+    </message>
+    <message>
+        <source>Save logs</source>
+        <translation type="unfinished">Сохранить логи</translation>
+    </message>
+    <message>
+        <source>Log files (*.log);;All files (*)</source>
+        <translation type="unfinished">Файлы логов (*.log);;Все файлы (*)</translation>
+    </message>
+    <message>
+        <source>Cannot write to: %1</source>
+        <translation>Не удалось записать файл: %1</translation>
+    </message>
+    <message>
+        <source>Saved %1 (%2)</source>
+        <translation type="unfinished">Сохранено: %1 (%2)</translation>
     </message>
 </context>
 <context>
@@ -10732,6 +10872,10 @@ Name: %1</source>
         <translation>Текущий профиль маршрутизации автоматически обновляется с URL-адреса.</translation>
     </message>
     <message>
+        <source>The current routing profile is updated by the subscription &quot;%1&quot;.</source>
+        <translation>Текущий профиль маршрутизации обновляется подпиской «%1».</translation>
+    </message>
+    <message>
         <source>Removed %1 from the %2 rules of &quot;%3&quot;</source>
         <translation>Удалено %1 из правил %2 профиля &quot;%3&quot;</translation>
     </message>
@@ -11115,103 +11259,103 @@ Details: %3</source>
     </message>
     <message>
         <source>a required category</source>
-        <translation type="unfinished">обязательная категория</translation>
+        <translation>обязательная категория</translation>
     </message>
     <message>
         <source>The Xray config &quot;%1&quot; needs &quot;%2&quot;, but the installed %3 does not contain it.</source>
-        <translation type="unfinished">Конфигурации Xray «%1» нужен «%2», но в установленном %3 его нет.</translation>
+        <translation>Конфигурации Xray «%1» нужен «%2», но в установленном %3 его нет.</translation>
     </message>
     <message>
         <source>The Xray config &quot;%1&quot; needs geo data files that are not installed: %2. Download them under Basic Settings &gt; Miscellaneous &gt; Xray Geo Assets.</source>
-        <translation type="unfinished">Конфигурации Xray «%1» нужны неустановленные файлы геоданных: %2. Загрузите их в «Основные настройки &gt; Разное &gt; Геоданные Xray».</translation>
+        <translation>Конфигурации Xray «%1» нужны неустановленные файлы геоданных: %2. Загрузите их в «Основные настройки &gt; Разное &gt; Геоданные Xray».</translation>
     </message>
     <message>
         <source>Downloaded Xray geo asset files.</source>
-        <translation type="unfinished">Загружены гео-файлы Xray.</translation>
+        <translation>Загружены гео-файлы Xray.</translation>
     </message>
     <message>
         <source>Geo asset files are already being downloaded.</source>
-        <translation type="unfinished">Файлы геоданных уже загружаются.</translation>
+        <translation>Файлы геоданных уже загружаются.</translation>
     </message>
     <message>
         <source>Failed to close connections: %1</source>
-        <translation type="unfinished">Не удалось закрыть подключения: %1</translation>
+        <translation>Не удалось закрыть подключения: %1</translation>
     </message>
     <message>
         <source>IPC error</source>
-        <translation type="unfinished">Ошибка IPC</translation>
+        <translation>Ошибка IPC</translation>
     </message>
     <message>
         <source>Failed to stop tests</source>
-        <translation type="unfinished">Не удалось остановить тесты</translation>
+        <translation>Не удалось остановить тесты</translation>
     </message>
     <message>
         <source>a tested profile</source>
-        <translation type="unfinished">тестируемый профиль</translation>
+        <translation>тестируемый профиль</translation>
     </message>
     <message>
         <source>[%1] test error: %2</source>
-        <translation type="unfinished">[%1] ошибка теста: %2</translation>
+        <translation>[%1] ошибка теста: %2</translation>
     </message>
     <message>
         <source>[%1] IP test error: %2</source>
-        <translation type="unfinished">[%1] Ошибка теста IP: %2</translation>
+        <translation>[%1] Ошибка теста IP: %2</translation>
     </message>
     <message>
         <source>Profile test aborted</source>
-        <translation type="unfinished">Тест профиля прерван</translation>
+        <translation>Тест профиля прерван</translation>
     </message>
     <message>
         <source>Something is very wrong, the subject ent cannot be found!</source>
-        <translation type="unfinished">Что-то явно не так, объект ent не может быть найден!</translation>
+        <translation>Что-то явно не так, объект ent не может быть найден!</translation>
     </message>
     <message>
         <source>Profile manager data is corrupted, try again.</source>
-        <translation type="unfinished">Данные менеджера профилей повреждены, попробуйте еще раз.</translation>
+        <translation>Данные менеджера профилей повреждены, попробуйте еще раз.</translation>
     </message>
     <message>
         <source>The last url test did not exit completely, please wait. If it persists, please restart the program.</source>
-        <translation type="unfinished">Предыдущий тест задержки еще не завершился, подождите. Если проблема не исчезнет, перезапустите программу.</translation>
+        <translation>Предыдущий тест задержки еще не завершился, подождите. Если проблема не исчезнет, перезапустите программу.</translation>
     </message>
     <message>
         <source>The last test did not exit completely, please wait. If it persists, please restart the program.</source>
-        <translation type="unfinished">Предыдущий тест еще не завершился, подождите. Если проблема не исчезнет, перезапустите программу.</translation>
+        <translation>Предыдущий тест еще не завершился, подождите. Если проблема не исчезнет, перезапустите программу.</translation>
     </message>
     <message>
         <source>Failed to build test config for batch: </source>
-        <translation type="unfinished">Не удалось собрать тестовую конфигурацию для пакета профилей: </translation>
+        <translation>Не удалось собрать тестовую конфигурацию для пакета профилей: </translation>
     </message>
     <message>
         <source>URL test finished!</source>
-        <translation type="unfinished">Тест задержки завершён!</translation>
+        <translation>Тест задержки завершён!</translation>
     </message>
     <message>
         <source>IP test finished!</source>
-        <translation type="unfinished">Тест IP завершён!</translation>
+        <translation>Тест IP завершён!</translation>
     </message>
     <message>
         <source>The last test did not finish completely, please wait. If it persists, please restart the program.</source>
-        <translation type="unfinished">Предыдущий тест еще не завершился, подождите. Если проблема не исчезнет, перезапустите программу.</translation>
+        <translation>Предыдущий тест еще не завершился, подождите. Если проблема не исчезнет, перезапустите программу.</translation>
     </message>
     <message>
         <source>Failed to build batch test config: </source>
-        <translation type="unfinished">Не удалось собрать тестовую конфигурацию для пакета профилей: </translation>
+        <translation>Не удалось собрать тестовую конфигурацию для пакета профилей: </translation>
     </message>
     <message>
         <source>Speedtest finished!</source>
-        <translation type="unfinished">Тест скорости завершён!</translation>
+        <translation>Тест скорости завершён!</translation>
     </message>
     <message>
         <source>Profile speed test aborted</source>
-        <translation type="unfinished">Тест скорости профиля прерван</translation>
+        <translation>Тест скорости профиля прерван</translation>
     </message>
     <message>
         <source>[%1] speed test error: %2</source>
-        <translation type="unfinished">[%1] ошибка теста скорости: %2</translation>
+        <translation>[%1] ошибка теста скорости: %2</translation>
     </message>
     <message>
         <source>[Auto selector] Running the best %1 of %2 ranked profiles.</source>
-        <translation type="unfinished">[Автовыбор] Запущены лучшие профили: %1 из %2.</translation>
+        <translation>[Автовыбор] Запущены лучшие профили: %1 из %2.</translation>
     </message>
     <message>
         <source>[Auto selector] Reusing existing test results. Ranked %1 profiles.</source>
@@ -11219,63 +11363,71 @@ Details: %3</source>
     </message>
     <message>
         <source>[Auto selector] Measuring %1 not-yet-tested profiles...</source>
-        <translation type="unfinished">[Автовыбор] Замер ещё не протестированных профилей: %1...</translation>
+        <translation>[Автовыбор] Замер ещё не протестированных профилей: %1...</translation>
+    </message>
+    <message>
+        <source>[Auto selector] %1 working profiles found. Starting now while the remaining %2 are still being measured.</source>
+        <translation>[Автовыбор] Найдено рабочих профилей: %1. Запуск сейчас, остальные %2 ещё измеряются.</translation>
     </message>
     <message>
         <source>[Auto selector] Ranked %1 profiles.</source>
-        <translation type="unfinished">[Автовыбор] Ранжировано профилей: %1.</translation>
+        <translation>[Автовыбор] Ранжировано профилей: %1.</translation>
+    </message>
+    <message>
+        <source>[Auto selector] Every profile is measured and the best ones changed — rebuilding with the full ranking.</source>
+        <translation>[Автовыбор] Все профили измерены, и лучшие изменились — пересборка по полному рейтингу.</translation>
     </message>
     <message>
         <source>[Auto selector] The subscription replaced profiles it was running on — rebuilding.</source>
-        <translation type="unfinished">[Автовыбор] Подписка заменила используемые профили — пересборка.</translation>
+        <translation>[Автовыбор] Подписка заменила используемые профили — пересборка.</translation>
     </message>
     <message>
         <source>[Auto selector] Every running profile stopped working — rebuilding from the next best candidates.</source>
-        <translation type="unfinished">[Автовыбор] Все запущенные профили перестали работать — выполняется пересборка из следующих наилучших кандидатов.</translation>
+        <translation>[Автовыбор] Все запущенные профили перестали работать — выполняется пересборка из следующих наилучших кандидатов.</translation>
     </message>
     <message>
         <source>[Kill switch] Not starting %1: the kill switch is not active.</source>
-        <translation type="unfinished">[Kill switch] %1 не запускается: kill switch не активен.</translation>
+        <translation>[Kill switch] %1 не запускается: kill switch не активен.</translation>
     </message>
     <message>
         <source>BuildConfig return error</source>
-        <translation type="unfinished">Ошибка BuildConfig</translation>
+        <translation>Ошибка BuildConfig</translation>
     </message>
     <message>
         <source>[Kill switch] The extra core %1 could not be allowed through the kill switch.</source>
-        <translation type="unfinished">[Kill switch] Не удалось пропустить дополнительное ядро %1 через kill switch.</translation>
+        <translation>[Kill switch] Не удалось пропустить дополнительное ядро %1 через kill switch.</translation>
     </message>
     <message>
         <source>Another profile is starting...</source>
-        <translation type="unfinished">Другой профиль запускается...</translation>
+        <translation>Другой профиль запускается...</translation>
     </message>
     <message>
         <source>Another profile is stopping...</source>
-        <translation type="unfinished">Другой профиль останавливается...</translation>
+        <translation>Другой профиль останавливается...</translation>
     </message>
     <message>
         <source>Try to start the config, but the core has not listened to the RPC port, so restart it...</source>
-        <translation type="unfinished">Попытка запустить конфигурацию, но ядро не слушает порт RPC — перезапуск ядра...</translation>
+        <translation>Попытка запустить конфигурацию, но ядро не слушает порт RPC — перезапуск ядра...</translation>
     </message>
     <message>
         <source>Starting profile %1</source>
-        <translation type="unfinished">Запуск профиля %1</translation>
+        <translation>Запуск профиля %1</translation>
     </message>
     <message>
         <source>Failed to start profile %1</source>
-        <translation type="unfinished">Не удалось запустить профиль %1</translation>
+        <translation>Не удалось запустить профиль %1</translation>
     </message>
     <message>
         <source>Stopping profile %1</source>
-        <translation type="unfinished">Остановка профиля %1</translation>
+        <translation>Остановка профиля %1</translation>
     </message>
     <message>
         <source>Failed to stop, please restart the program.</source>
-        <translation type="unfinished">Не удалось остановить, пожалуйста, перезапустите программу.</translation>
+        <translation>Не удалось остановить, пожалуйста, перезапустите программу.</translation>
     </message>
     <message>
         <source>User opted for no privilege req, some features may not work</source>
-        <translation type="unfinished">Пользователь решил не запрашивать привилегии, некоторые функции могут не работать</translation>
+        <translation>Пользователь решил не запрашивать привилегии, некоторые функции могут не работать</translation>
     </message>
     <message>
         <source>The address of another server is still being resolved.</source>
@@ -11295,15 +11447,19 @@ Details: %3</source>
     </message>
     <message>
         <source>System proxy: %1</source>
-        <translation type="unfinished">Системный прокси: %1</translation>
+        <translation>Системный прокси: %1</translation>
+    </message>
+    <message>
+        <source>The group &quot;%1&quot; uses its own routing profile, so the running profile keeps it.</source>
+        <translation>Группа «%1» использует собственный профиль маршрутизации, поэтому запущенный профиль сохраняет его.</translation>
     </message>
     <message>
         <source>[Kill switch] Restarting the core so that its own traffic passes the kill switch...</source>
-        <translation type="unfinished">[Kill switch] Перезапуск ядра, чтобы его собственный трафик проходил через kill switch...</translation>
+        <translation>[Kill switch] Перезапуск ядра, чтобы его собственный трафик проходил через kill switch...</translation>
     </message>
     <message>
         <source>[VPN] %1: %2</source>
-        <translation type="unfinished">[VPN] %1: %2</translation>
+        <translation>[VPN] %1: %2</translation>
     </message>
     <message>
         <source>VPN endpoint problem</source>
@@ -11315,15 +11471,15 @@ Details: %3</source>
     </message>
     <message>
         <source>[VPN] %1: the core did not answer the sign-in prompt.</source>
-        <translation type="unfinished">[VPN] %1: ядро не ответило на запрос входа.</translation>
+        <translation>[VPN] %1: ядро не ответило на запрос входа.</translation>
     </message>
     <message>
         <source>[VPN] %1: could not answer the sign-in prompt: %2</source>
-        <translation type="unfinished">[VPN] %1: не удалось ответить на запрос входа: %2</translation>
+        <translation>[VPN] %1: не удалось ответить на запрос входа: %2</translation>
     </message>
     <message>
         <source>[VPN] %1: signed in again with a new one-time code.</source>
-        <translation type="unfinished">[VPN] %1: выполнен повторный вход с новым одноразовым кодом.</translation>
+        <translation>[VPN] %1: выполнен повторный вход с новым одноразовым кодом.</translation>
     </message>
     <message>
         <source>[VPN] %1 rejected the saved credentials. Restarting the profile with a new one-time code.</source>
@@ -11335,15 +11491,15 @@ Details: %3</source>
     </message>
     <message>
         <source>[VPN] %1 rejected the saved credentials.</source>
-        <translation type="unfinished">[VPN] %1: сохраненные учетные данные отклонены.</translation>
+        <translation>[VPN] %1: сохраненные учетные данные отклонены.</translation>
     </message>
     <message>
         <source>Imported %1 profile(s)</source>
-        <translation type="unfinished">Импортировано профилей: %1</translation>
+        <translation>Импортировано профилей: %1</translation>
     </message>
     <message>
         <source>routing profiles</source>
-        <translation type="unfinished">профилей маршрутизации</translation>
+        <translation>профилей маршрутизации</translation>
     </message>
     <message>
         <source>Search Settings</source>
@@ -11668,6 +11824,14 @@ How to update?</source>
     <message>
         <source>Processing subscription data...</source>
         <translation>Идёт обработка данных подписки...</translation>
+    </message>
+    <message>
+        <source>%1 was removed by the update and stays stopped: no single profile with the same name replaces it.</source>
+        <translation>%1 удалён при обновлении и остаётся остановленным: нет единственного профиля с тем же названием, который бы его заменил.</translation>
+    </message>
+    <message>
+        <source>%1 was replaced by the update. Connecting to the profile with the same name.</source>
+        <translation>%1 заменён обновлением. Подключаемся к профилю с тем же именем.</translation>
     </message>
     <message>
         <source>Removed %1 duplicate profiles:</source>
@@ -12042,6 +12206,54 @@ Release note:
     <message>
         <source>could not parse a routing profile from the response</source>
         <translation>не удалось разобрать профиль маршрутизации из ответа</translation>
+    </message>
+    <message>
+        <source>the routing profile is not in the Happ format</source>
+        <translation>профиль маршрутизации не в формате Happ</translation>
+    </message>
+    <message>
+        <source>a raw routing profile is not accepted from a subscription</source>
+        <translation>необработанный (raw) профиль маршрутизации из подписки не принимается</translation>
+    </message>
+    <message>
+        <source>unknown routing link action &quot;%1&quot;</source>
+        <translation>неизвестное действие ссылки маршрутизации «%1»</translation>
+    </message>
+    <message>
+        <source>the routing profile is not valid base64</source>
+        <translation>профиль маршрутизации не является корректным base64</translation>
+    </message>
+    <message>
+        <source>the routing profile is not a JSON object</source>
+        <translation>профиль маршрутизации не является JSON-объектом</translation>
+    </message>
+    <message>
+        <source>[Routing] %1: the routing profile the subscription provides was ignored: %2</source>
+        <translation>[Маршрутизация] %1: профиль маршрутизации из подписки пропущен: %2</translation>
+    </message>
+    <message>
+        <source>[Routing] %1: the routing profile the subscription provides was not applied, the routing profiles are open for editing.</source>
+        <translation>[Маршрутизация] %1: профиль маршрутизации из подписки не применён — профили маршрутизации открыты для редактирования.</translation>
+    </message>
+    <message>
+        <source>%1 entries, %2 skipped</source>
+        <translation>записей: %1, пропущено: %2</translation>
+    </message>
+    <message>
+        <source>%1 entries</source>
+        <translation>записей: %1</translation>
+    </message>
+    <message>
+        <source>%1 routing</source>
+        <translation>%1 — маршрутизация</translation>
+    </message>
+    <message>
+        <source>[Routing] %1: created the routing profile &quot;%2&quot; from the subscription (%3)</source>
+        <translation>[Маршрутизация] %1: из подписки создан профиль маршрутизации «%2» (%3)</translation>
+    </message>
+    <message>
+        <source>[Routing] %1: updated the routing profile &quot;%2&quot; from the subscription (%3)</source>
+        <translation>[Маршрутизация] %1: профиль маршрутизации «%2» обновлён из подписки (%3)</translation>
     </message>
     <message>
         <source>the remote content is a raw routing profile, which is not supported for remote profiles yet</source>
@@ -12892,6 +13104,14 @@ Release note:
         <translation>Не удалось установить связь с ядром.</translation>
     </message>
     <message>
+        <source>The core returned an invalid QUIC signature.</source>
+        <translation>Ядро вернуло неверную подпись QUIC.</translation>
+    </message>
+    <message>
+        <source>Failed to generate WARP QUIC signature: %1</source>
+        <translation>Не удалось сгенерировать подпись QUIC для WARP: %1</translation>
+    </message>
+    <message>
         <source>Cloudflare WARP</source>
         <translation>Cloudflare WARP</translation>
     </message>
@@ -13480,15 +13700,15 @@ outbound и другие функции Throne могут не работать.
     <name>RemoteApi::Router</name>
     <message>
         <source>[API] %1 %2 from %3</source>
-        <translation type="unfinished">[API] %1 %2 от %3</translation>
+        <translation>[API] %1 %2 от %3</translation>
     </message>
     <message>
         <source>[API] %1</source>
-        <translation type="unfinished">[API] %1</translation>
+        <translation>[API] %1</translation>
     </message>
     <message numerus="yes">
         <source>[API] Testing %n profile(s) to find the lowest latency</source>
-        <translation type="unfinished">
+        <translation>
             <numerusform>[API] Тестирование %n профиля для поиска наименьшей задержки</numerusform>
             <numerusform>[API] Тестирование %n профилей для поиска наименьшей задержки</numerusform>
             <numerusform>[API] Тестирование %n профилей для поиска наименьшей задержки</numerusform>
@@ -13496,78 +13716,78 @@ outbound и другие функции Throne могут не работать.
     </message>
     <message>
         <source>[API] Lowest latency: %1 (%2 ms)</source>
-        <translation type="unfinished">[API] Наименьшая задержка: %1 (%2 мс)</translation>
+        <translation>[API] Наименьшая задержка: %1 (%2 мс)</translation>
     </message>
 </context>
 <context>
     <name>RemoteApi::Server</name>
     <message>
         <source>The request was dropped without an answer</source>
-        <translation type="unfinished">Запрос отброшен без ответа</translation>
+        <translation>Запрос отброшен без ответа</translation>
     </message>
     <message>
         <source>Off</source>
-        <translation type="unfinished">Выкл.</translation>
+        <translation>Выключен</translation>
     </message>
     <message>
         <source>Not listening: the key is missing or invalid</source>
-        <translation type="unfinished">Не принимает подключения: ключ отсутствует или недействителен</translation>
+        <translation>Не принимает подключения: ключ отсутствует или недействителен</translation>
     </message>
     <message>
         <source>Port %1 is in use</source>
-        <translation type="unfinished">Порт %1 занят</translation>
+        <translation>Порт %1 занят</translation>
     </message>
     <message>
         <source>Cannot listen on port %1: %2</source>
-        <translation type="unfinished">Не удалось начать прослушивание порта %1: %2</translation>
+        <translation>Не удалось начать прослушивание порта %1: %2</translation>
     </message>
     <message>
         <source>Listening on port %1 (local network)</source>
-        <translation type="unfinished">Прослушивается порт %1 (локальная сеть)</translation>
+        <translation>Прослушивается порт %1 (локальная сеть)</translation>
     </message>
     <message>
         <source>Listening on %1:%2</source>
-        <translation type="unfinished">Прослушивается %1:%2</translation>
+        <translation>Прослушивается %1:%2</translation>
     </message>
     <message>
         <source>Stopped listening</source>
-        <translation type="unfinished">Прослушивание остановлено</translation>
+        <translation>Прослушивание остановлено</translation>
     </message>
     <message>
         <source>Refused %1: too many failed attempts</source>
-        <translation type="unfinished">Отклонено подключение %1: слишком много неудачных попыток</translation>
+        <translation>Отклонено подключение %1: слишком много неудачных попыток</translation>
     </message>
     <message>
         <source>Refused %1: not in the allowed addresses</source>
-        <translation type="unfinished">Отклонено подключение %1: адрес не входит в разрешенные</translation>
+        <translation>Отклонено подключение %1: адрес не входит в разрешенные</translation>
     </message>
     <message>
         <source>Refused %1: too many connections</source>
-        <translation type="unfinished">Отклонено подключение %1: слишком много подключений</translation>
+        <translation>Отклонено подключение %1: слишком много подключений</translation>
     </message>
     <message>
         <source>unsupported protocol version</source>
-        <translation type="unfinished">неподдерживаемая версия протокола</translation>
+        <translation>неподдерживаемая версия протокола</translation>
     </message>
     <message>
         <source>invalid frame length</source>
-        <translation type="unfinished">недопустимая длина фрейма</translation>
+        <translation>недопустимая длина фрейма</translation>
     </message>
     <message>
         <source>a frame failed authentication, most likely the key is wrong</source>
-        <translation type="unfinished">фрейм не прошел аутентификацию, скорее всего, ключ неверный</translation>
+        <translation>фрейм не прошел аутентификацию, скорее всего, ключ неверный</translation>
     </message>
     <message>
         <source>The response is too large</source>
-        <translation type="unfinished">Ответ слишком большой</translation>
+        <translation>Ответ слишком большой</translation>
     </message>
     <message>
         <source>Closed the connection from %1: %2</source>
-        <translation type="unfinished">Закрыто подключение от %1: %2</translation>
+        <translation>Закрыто подключение от %1: %2</translation>
     </message>
     <message>
         <source>Throne is shutting down</source>
-        <translation type="unfinished">Throne завершает работу</translation>
+        <translation>Throne завершает работу</translation>
     </message>
 </context>
 <context>
@@ -14199,35 +14419,35 @@ Remove that endpoint from this routing profile as well?</source>
     <name>Scanner::IpListUpdater</name>
     <message>
         <source>The IP list no longer exists</source>
-        <translation type="unfinished">Список IP больше не существует</translation>
+        <translation>Список IP больше не существует</translation>
     </message>
     <message>
         <source>Only lists with a URL or rule-set source can be updated</source>
-        <translation type="unfinished">Обновлять можно только списки с источником «URL» или «Набор правил»</translation>
+        <translation>Обновлять можно только списки с источником «URL» или «Набор правил»</translation>
     </message>
     <message>
         <source>Updating IP list %1</source>
-        <translation type="unfinished">Обновление списка IP %1</translation>
+        <translation>Обновление списка IP %1</translation>
     </message>
     <message>
         <source>Updating IP list %1 failed: %2</source>
-        <translation type="unfinished">Не удалось обновить список IP %1: %2</translation>
+        <translation>Не удалось обновить список IP %1: %2</translation>
     </message>
     <message>
         <source>its source changed during the update</source>
-        <translation type="unfinished">его источник изменился во время обновления</translation>
+        <translation>его источник изменился во время обновления</translation>
     </message>
     <message>
         <source>The source changed during the update</source>
-        <translation type="unfinished">Источник изменился во время обновления</translation>
+        <translation>Источник изменился во время обновления</translation>
     </message>
     <message>
         <source>The entries could not be saved</source>
-        <translation type="unfinished">Не удалось сохранить записи</translation>
+        <translation>Не удалось сохранить записи</translation>
     </message>
     <message numerus="yes">
         <source>IP list %1 updated (%n entries)</source>
-        <translation type="unfinished">
+        <translation>
             <numerusform>Список IP %1 обновлен (%n запись)</numerusform>
             <numerusform>Список IP %1 обновлен (%n записи)</numerusform>
             <numerusform>Список IP %1 обновлен (%n записей)</numerusform>
@@ -14235,150 +14455,150 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
     <message>
         <source>The list has no source to fetch</source>
-        <translation type="unfinished">У списка нет источника для загрузки</translation>
+        <translation>У списка нет источника для загрузки</translation>
     </message>
     <message>
         <source>Unknown rule-set: %1</source>
-        <translation type="unfinished">Неизвестный набор правил: %1</translation>
+        <translation>Неизвестный набор правил: %1</translation>
     </message>
     <message>
         <source>The source must be an http(s) URL</source>
-        <translation type="unfinished">Источником должен быть URL http(s)</translation>
+        <translation>Источником должен быть URL http(s)</translation>
     </message>
     <message>
         <source>The core is not running</source>
-        <translation type="unfinished">Ядро не запущено</translation>
+        <translation>Ядро не запущено</translation>
     </message>
     <message>
         <source>The core could not read the rule-set</source>
-        <translation type="unfinished">Ядру не удалось прочитать набор правил</translation>
+        <translation>Ядру не удалось прочитать набор правил</translation>
     </message>
     <message>
         <source>The address returned a web page instead of an IP list</source>
-        <translation type="unfinished">По этому адресу находится веб-страница, а не список IP</translation>
+        <translation>По этому адресу находится веб-страница, а не список IP</translation>
     </message>
     <message>
         <source>No addresses found</source>
-        <translation type="unfinished">Адреса не найдены</translation>
+        <translation>Адреса не найдены</translation>
     </message>
     <message>
         <source>IP list update failed: %1</source>
-        <translation type="unfinished">Не удалось обновить список IP: %1</translation>
+        <translation>Не удалось обновить список IP: %1</translation>
     </message>
     <message>
         <source>IP list update failed</source>
-        <translation type="unfinished">Не удалось обновить список IP</translation>
+        <translation>Не удалось обновить список IP</translation>
     </message>
 </context>
 <context>
     <name>Scanner::ScanManager</name>
     <message>
         <source>The scan is already running</source>
-        <translation type="unfinished">Сканирование уже выполняется</translation>
+        <translation>Сканирование уже выполняется</translation>
     </message>
     <message>
         <source>The scan no longer exists</source>
-        <translation type="unfinished">Сканирование больше не существует</translation>
+        <translation>Сканирование больше не существует</translation>
     </message>
     <message>
         <source>Turn on at least one test phase</source>
-        <translation type="unfinished">Включите хотя бы один этап проверки</translation>
+        <translation>Включите хотя бы один этап проверки</translation>
     </message>
     <message>
         <source>A TLS handshake check needs TLS turned on</source>
-        <translation type="unfinished">Для проверки TLS-хендшейка нужно включить TLS</translation>
+        <translation>Для проверки TLS-хендшейка нужно включить TLS</translation>
     </message>
     <message>
         <source>HTTP/3 needs TLS turned on</source>
-        <translation type="unfinished">Для HTTP/3 нужно включить TLS</translation>
+        <translation>Для HTTP/3 нужно включить TLS</translation>
     </message>
     <message>
         <source>The profile for the config test cannot be used</source>
-        <translation type="unfinished">Профиль для проверки конфигурации нельзя использовать</translation>
+        <translation>Профиль для проверки конфигурации нельзя использовать</translation>
     </message>
     <message>
         <source>Choose the IP list to scan</source>
-        <translation type="unfinished">Выберите список IP для сканирования</translation>
+        <translation>Выберите список IP для сканирования</translation>
     </message>
     <message>
         <source>The IP list to scan is empty</source>
-        <translation type="unfinished">Список IP для сканирования пуст</translation>
+        <translation>Список IP для сканирования пуст</translation>
     </message>
     <message>
         <source>The result list is empty</source>
-        <translation type="unfinished">Список результатов пуст</translation>
+        <translation>Список результатов пуст</translation>
     </message>
     <message>
         <source>Pause the scan first</source>
-        <translation type="unfinished">Сначала приостановите сканирование</translation>
+        <translation>Сначала приостановите сканирование</translation>
     </message>
     <message>
         <source>Scan %1 Result</source>
-        <translation type="unfinished">Результат сканирования %1</translation>
+        <translation>Результат сканирования %1</translation>
     </message>
     <message>
         <source>config test</source>
-        <translation type="unfinished">проверка конфигурации</translation>
+        <translation>проверка конфигурации</translation>
     </message>
     <message>
         <source>Scanning %1 with %2</source>
-        <translation type="unfinished">Сканирование %1 (%2)</translation>
+        <translation>Сканирование %1 (%2)</translation>
     </message>
     <message>
         <source>%1 failed %2: %3</source>
-        <translation type="unfinished">%1 — сбой (%2): %3</translation>
+        <translation>%1 — сбой (%2): %3</translation>
     </message>
     <message>
         <source>Connected to %1 with TCP (%2 ms)</source>
-        <translation type="unfinished">TCP-подключение к %1 установлено (%2 мс)</translation>
+        <translation>TCP-подключение к %1 установлено (%2 мс)</translation>
     </message>
     <message>
         <source>%1 replied to ping (%2 ms)</source>
-        <translation type="unfinished">%1 ответил на пинг (%2 мс)</translation>
+        <translation>%1 ответил на пинг (%2 мс)</translation>
     </message>
     <message>
         <source>TLS handshake with %1 succeeded (%2 ms)</source>
-        <translation type="unfinished">TLS-хендшейк с %1 выполнен (%2 мс)</translation>
+        <translation>TLS-хендшейк с %1 выполнен (%2 мс)</translation>
     </message>
     <message>
         <source>%1 answered over HTTP (%2 ms)</source>
-        <translation type="unfinished">%1 ответил по HTTP (%2 мс)</translation>
+        <translation>%1 ответил по HTTP (%2 мс)</translation>
     </message>
     <message>
         <source>%1 passed the config test (%2 ms)</source>
-        <translation type="unfinished">%1 прошел проверку конфигурации (%2 мс)</translation>
+        <translation>%1 прошел проверку конфигурации (%2 мс)</translation>
     </message>
     <message>
         <source>Preparing</source>
-        <translation type="unfinished">Подготовка</translation>
+        <translation>Подготовка</translation>
     </message>
     <message>
         <source>The scan stopped on an unexpected error</source>
-        <translation type="unfinished">Сканирование остановлено из-за непредвиденной ошибки</translation>
+        <translation>Сканирование остановлено из-за непредвиденной ошибки</translation>
     </message>
     <message>
         <source>Scan %1: saving its final state failed</source>
-        <translation type="unfinished">Сканирование %1: не удалось сохранить итоговое состояние</translation>
+        <translation>Сканирование %1: не удалось сохранить итоговое состояние</translation>
     </message>
     <message>
         <source>Preparing targets…</source>
-        <translation type="unfinished">Подготовка целей…</translation>
+        <translation>Подготовка целей…</translation>
     </message>
     <message>
         <source>The scan has no profile for the config test</source>
-        <translation type="unfinished">У сканирования нет профиля для проверки конфигурации</translation>
+        <translation>У сканирования нет профиля для проверки конфигурации</translation>
     </message>
     <message>
         <source>The result list could not be created</source>
-        <translation type="unfinished">Не удалось создать список результатов</translation>
+        <translation>Не удалось создать список результатов</translation>
     </message>
     <message>
         <source>The base IP list no longer exists</source>
-        <translation type="unfinished">Базовый список IP больше не существует</translation>
+        <translation>Базовый список IP больше не существует</translation>
     </message>
     <message>
         <source>The base IP list is empty</source>
-        <translation type="unfinished">Базовый список IP пуст</translation>
+        <translation>Базовый список IP пуст</translation>
     </message>
     <message>
         <source>The base IP list holds only IPv6 ranges. Enable IPv6 scanning</source>
@@ -14386,15 +14606,15 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
     <message>
         <source>%1 snapshot</source>
-        <translation type="unfinished">%1 (снимок)</translation>
+        <translation>%1 (снимок)</translation>
     </message>
     <message>
         <source>The base IP list could not be copied</source>
-        <translation type="unfinished">Не удалось скопировать базовый список IP</translation>
+        <translation>Не удалось скопировать базовый список IP</translation>
     </message>
     <message>
         <source>The base IP list holds no valid target</source>
-        <translation type="unfinished">Базовый список IP не содержит допустимых целей</translation>
+        <translation>Базовый список IP не содержит допустимых целей</translation>
     </message>
     <message>
         <source>The result list holds only IPv6 entries. Enable IPv6 scanning</source>
@@ -14402,15 +14622,15 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
     <message>
         <source>%1 rescan snapshot</source>
-        <translation type="unfinished">%1 (снимок для повторного сканирования)</translation>
+        <translation>%1 (снимок для повторного сканирования)</translation>
     </message>
     <message>
         <source>The result list could not be copied</source>
-        <translation type="unfinished">Не удалось скопировать список результатов</translation>
+        <translation>Не удалось скопировать список результатов</translation>
     </message>
     <message>
         <source>The result list holds no valid target</source>
-        <translation type="unfinished">Список результатов не содержит допустимых целей</translation>
+        <translation>Список результатов не содержит допустимых целей</translation>
     </message>
     <message>
         <source>The copy of the result list is gone. Rescan the results again</source>
@@ -14438,7 +14658,7 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
     <message>
         <source>Scan %1: network check failed: %2</source>
-        <translation type="unfinished">Сканирование %1: ошибка проверки сети: %2</translation>
+        <translation>Сканирование %1: ошибка проверки сети: %2</translation>
     </message>
     <message>
         <source>IPv4 is unreachable from this network. IPv4 results were kept</source>
@@ -14450,11 +14670,11 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
     <message>
         <source>The core ended the scan session early</source>
-        <translation type="unfinished">Ядро досрочно завершило сеанс сканирования</translation>
+        <translation>Ядро досрочно завершило сеанс сканирования</translation>
     </message>
     <message>
         <source>The core made no progress on the scan</source>
-        <translation type="unfinished">Сканирование в ядре не продвинулось</translation>
+        <translation>Сканирование в ядре не продвинулось</translation>
     </message>
     <message numerus="yes">
         <source>%n result(s) passed only on a retry. The network fails some attempts at random</source>
@@ -14466,7 +14686,7 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
     <message numerus="yes">
         <source>Re-testing %n failed result(s)…</source>
-        <translation type="unfinished">
+        <translation>
             <numerusform>Повторная проверка %n неудачного результата…</numerusform>
             <numerusform>Повторная проверка %n неудачных результатов…</numerusform>
             <numerusform>Повторная проверка %n неудачных результатов…</numerusform>
@@ -14474,11 +14694,11 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
     <message>
         <source>The core did not answer the probe request</source>
-        <translation type="unfinished">Ядро не ответило на запрос проверки</translation>
+        <translation>Ядро не ответило на запрос проверки</translation>
     </message>
     <message numerus="yes">
         <source>Testing %n candidate(s) through the config…</source>
-        <translation type="unfinished">
+        <translation>
             <numerusform>Проверка %n кандидата через конфигурацию…</numerusform>
             <numerusform>Проверка %n кандидатов через конфигурацию…</numerusform>
             <numerusform>Проверка %n кандидатов через конфигурацию…</numerusform>
@@ -14486,19 +14706,19 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
     <message>
         <source>The core did not answer the config test</source>
-        <translation type="unfinished">Ядро не ответило на проверку конфигурации</translation>
+        <translation>Ядро не ответило на проверку конфигурации</translation>
     </message>
     <message>
         <source>Checking the network…</source>
-        <translation type="unfinished">Проверка сети…</translation>
+        <translation>Проверка сети…</translation>
     </message>
     <message>
         <source>Scan %1 stopped: %2</source>
-        <translation type="unfinished">Сканирование %1 остановлено: %2</translation>
+        <translation>Сканирование %1 остановлено: %2</translation>
     </message>
     <message numerus="yes">
         <source>Skipped %n invalid entry(ies)</source>
-        <translation type="unfinished">
+        <translation>
             <numerusform>Пропущена %n недопустимая запись</numerusform>
             <numerusform>Пропущено %n недопустимые записи</numerusform>
             <numerusform>Пропущено %n недопустимых записей</numerusform>
@@ -14506,15 +14726,15 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
     <message>
         <source>Probing</source>
-        <translation type="unfinished">Проверка адресов</translation>
+        <translation>Проверка адресов</translation>
     </message>
     <message>
         <source>Testing configs</source>
-        <translation type="unfinished">Проверка конфигураций</translation>
+        <translation>Проверка конфигураций</translation>
     </message>
     <message>
         <source>Checking network</source>
-        <translation type="unfinished">Проверка сети</translation>
+        <translation>Проверка сети</translation>
     </message>
 </context>
 <context>
@@ -14930,134 +15150,134 @@ Paste the link your provider gave you and the servers will appear here.</source>
     <name>Sys::CoreDiagnostics</name>
     <message>
         <source>The core is not running.</source>
-        <translation type="unfinished">Ядро не запущено.</translation>
+        <translation>Ядро не запущено.</translation>
     </message>
     <message>
         <source>Could not reach the core. See the log for details.</source>
-        <translation type="unfinished">Не удалось установить связь с ядром. Подробности смотрите в логах.</translation>
+        <translation>Не удалось установить связь с ядром. Подробности смотрите в логах.</translation>
     </message>
     <message>
         <source>The core could not capture the profile: %1</source>
-        <translation type="unfinished">Ядру не удалось выполнить профилирование: %1</translation>
+        <translation>Ядру не удалось выполнить профилирование: %1</translation>
     </message>
     <message>
         <source>The core returned an empty profile.</source>
-        <translation type="unfinished">Ядро вернуло пустой результат профилирования.</translation>
+        <translation>Ядро вернуло пустой результат профилирования.</translation>
     </message>
     <message>
         <source>Could not save %1: %2</source>
-        <translation type="unfinished">Не удалось сохранить %1: %2</translation>
+        <translation>Не удалось сохранить %1: %2</translation>
     </message>
     <message>
         <source>Performance profile saved to %1</source>
-        <translation type="unfinished">Результат профилирования сохранен в %1</translation>
+        <translation>Результат профилирования сохранен в %1</translation>
     </message>
     <message>
         <source>The performance profile was saved (%1).</source>
-        <translation type="unfinished">Результат профилирования сохранен (%1).</translation>
+        <translation>Результат профилирования сохранен (%1).</translation>
     </message>
     <message>
         <source>Performance profile failed: %1</source>
-        <translation type="unfinished">Ошибка профилирования: %1</translation>
+        <translation>Ошибка профилирования: %1</translation>
     </message>
     <message>
         <source>Performance profile</source>
-        <translation type="unfinished">Профилирование</translation>
+        <translation>Профилирование</translation>
     </message>
     <message>
         <source>Show in folder</source>
-        <translation type="unfinished">Показать в папке</translation>
+        <translation>Показать в папке</translation>
     </message>
 </context>
 <context>
     <name>Sys::KillSwitch</name>
     <message>
         <source>The kill switch needs Throne to run as administrator.</source>
-        <translation type="unfinished">Для kill switch нужно запустить Throne от имени администратора.</translation>
+        <translation>Для kill switch нужно запустить Throne от имени администратора.</translation>
     </message>
     <message>
         <source>The kill switch needs the core to have root privileges.</source>
-        <translation type="unfinished">Для kill switch ядру нужны права root.</translation>
+        <translation>Для kill switch ядру нужны права root.</translation>
     </message>
     <message>
         <source>The kill switch is not supported on this system.</source>
-        <translation type="unfinished">Kill switch не поддерживается в этой системе.</translation>
+        <translation>Kill switch не поддерживается в этой системе.</translation>
     </message>
     <message>
         <source>Another program removed the kill switch rules or disabled the system firewall.</source>
-        <translation type="unfinished">Другая программа удалила правила kill switch или отключила системный брандмауэр.</translation>
+        <translation>Другая программа удалила правила kill switch или отключила системный брандмауэр.</translation>
     </message>
     <message>
         <source>The kill switch rejected its settings.</source>
-        <translation type="unfinished">Kill switch не принял настройки.</translation>
+        <translation>Kill switch не принял настройки.</translation>
     </message>
     <message>
         <source>The kill switch process stopped unexpectedly.</source>
-        <translation type="unfinished">Процесс kill switch неожиданно остановился.</translation>
+        <translation>Процесс kill switch неожиданно остановился.</translation>
     </message>
     <message>
         <source>Details: %1</source>
-        <translation type="unfinished">Подробности: %1</translation>
+        <translation>Подробности: %1</translation>
     </message>
     <message>
         <source>[Kill switch] Off.</source>
-        <translation type="unfinished">[Kill switch] Выключен.</translation>
+        <translation>[Kill switch] Выключен.</translation>
     </message>
     <message>
         <source>[Kill switch] Allowing the extra core %1.</source>
-        <translation type="unfinished">[Kill switch] Разрешено дополнительное ядро %1.</translation>
+        <translation>[Kill switch] Разрешено дополнительное ядро %1.</translation>
     </message>
     <message>
         <source>[Kill switch] Warning: %1</source>
-        <translation type="unfinished">[Kill switch] Предупреждение: %1</translation>
+        <translation>[Kill switch] Предупреждение: %1</translation>
     </message>
     <message>
         <source>[Kill switch] On: only traffic through Throne can leave this device.</source>
-        <translation type="unfinished">[Kill switch] Включен: покинуть это устройство может только трафик через Throne.</translation>
+        <translation>[Kill switch] Включен: покинуть это устройство может только трафик через Throne.</translation>
     </message>
     <message>
         <source>[Kill switch] New settings applied.</source>
-        <translation type="unfinished">[Kill switch] Новые настройки применены.</translation>
+        <translation>[Kill switch] Новые настройки применены.</translation>
     </message>
     <message>
         <source>the kill switch did not respond within %1 seconds</source>
-        <translation type="unfinished">kill switch не ответил в течение %1 с</translation>
+        <translation>kill switch не ответил в течение %1 с</translation>
     </message>
     <message>
         <source>could not start %1: %2</source>
-        <translation type="unfinished">не удалось запустить %1: %2</translation>
+        <translation>не удалось запустить %1: %2</translation>
     </message>
     <message>
         <source>the kill switch process crashed</source>
-        <translation type="unfinished">процесс kill switch аварийно завершился</translation>
+        <translation>процесс kill switch аварийно завершился</translation>
     </message>
     <message>
         <source>the kill switch process exited with code %1</source>
-        <translation type="unfinished">процесс kill switch завершился с кодом %1</translation>
+        <translation>процесс kill switch завершился с кодом %1</translation>
     </message>
     <message>
         <source>the kill switch process crashed before it was ready</source>
-        <translation type="unfinished">процесс kill switch аварийно завершился до готовности</translation>
+        <translation>процесс kill switch аварийно завершился до готовности</translation>
     </message>
     <message>
         <source>the kill switch process exited with code %1 before it was ready</source>
-        <translation type="unfinished">процесс kill switch завершился с кодом %1 до готовности</translation>
+        <translation>процесс kill switch завершился с кодом %1 до готовности</translation>
     </message>
     <message>
         <source>[Kill switch] The new settings could not be applied, the previous ones stay in force: %1</source>
-        <translation type="unfinished">[Kill switch] Не удалось применить новые настройки, продолжают действовать прежние: %1</translation>
+        <translation>[Kill switch] Не удалось применить новые настройки, продолжают действовать прежние: %1</translation>
     </message>
     <message>
         <source>[Kill switch] Protection lost: %1</source>
-        <translation type="unfinished">[Kill switch] Защита потеряна: %1</translation>
+        <translation>[Kill switch] Защита потеряна: %1</translation>
     </message>
     <message>
         <source>[Kill switch] Starting it again...</source>
-        <translation type="unfinished">[Kill switch] Повторный запуск...</translation>
+        <translation>[Kill switch] Повторный запуск...</translation>
     </message>
     <message>
         <source>[Kill switch] Not active: %1</source>
-        <translation type="unfinished">[Kill switch] Не активен: %1</translation>
+        <translation>[Kill switch] Не активен: %1</translation>
     </message>
 </context>
 <context>
@@ -15463,8 +15683,16 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Укажите либо «Max Connections», либо «Max Concurrency», но не оба.</translation>
     </message>
     <message>
-        <source>Must be google-drive, template or local.</source>
-        <translation>Допустимо google-drive, template или local.</translation>
+        <source>Must be google-drive, s3, template or local.</source>
+        <translation>Должно быть google-drive, s3, template или local.</translation>
+    </message>
+    <message>
+        <source>Enter the key prefix both ends share in the bucket.</source>
+        <translation>Укажите префикс ключей в бакете, общий для обеих сторон.</translation>
+    </message>
+    <message>
+        <source>The key prefix must be relative, without empty, &quot;.&quot; or &quot;..&quot; parts, backslashes or control characters.</source>
+        <translation>Префикс ключей должен быть относительным, без пустых частей, «.» и «..», обратных косых черт и управляющих символов.</translation>
     </message>
     <message>
         <source>Enter the directory both ends share.</source>
@@ -15475,12 +15703,52 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Укажите идентификатор папки Google Drive, общей для обеих сторон.</translation>
     </message>
     <message>
+        <source>S3 needs the access key ID and the secret access key. The session token is optional.</source>
+        <translation>Для S3 нужны идентификатор ключа доступа и секретный ключ. Токен сессии необязателен.</translation>
+    </message>
+    <message>
+        <source>The S3 keys cannot contain control characters.</source>
+        <translation>Ключи S3 не могут содержать управляющие символы.</translation>
+    </message>
+    <message>
+        <source>The access key ID cannot contain spaces, commas or slashes.</source>
+        <translation>Access key ID не может содержать пробелы, запятые или косые черты.</translation>
+    </message>
+    <message>
         <source>Google Drive needs the client ID, client secret and refresh token.</source>
         <translation>Для Google Drive нужны идентификатор клиента, секрет клиента и refresh-токен.</translation>
     </message>
     <message>
         <source>The template service needs a template describing the storage API.</source>
         <translation>Службе template нужен шаблон, описывающий API хранилища.</translation>
+    </message>
+    <message>
+        <source>Enter the S3 endpoint URL, such as https://s3.example.com.</source>
+        <translation>Укажите URL эндпоинта S3, например https://s3.example.com.</translation>
+    </message>
+    <message>
+        <source>The endpoint must be an http or https URL without credentials, query or fragment.</source>
+        <translation>Эндпоинт должен быть URL http или https без учётных данных, параметров запроса и фрагмента.</translation>
+    </message>
+    <message>
+        <source>The signing region cannot contain spaces, commas, slashes or control characters.</source>
+        <translation>Регион подписи не может содержать пробелы, запятые, косые черты или управляющие символы.</translation>
+    </message>
+    <message>
+        <source>Enter the bucket both ends share.</source>
+        <translation>Укажите бакет, общий для обеих сторон.</translation>
+    </message>
+    <message>
+        <source>The bucket name cannot be &quot;.&quot; or &quot;..&quot;, nor contain slashes, backslashes or control characters.</source>
+        <translation>Имя бакета не может быть «.» или «..» и не может содержать косые и обратные косые черты или управляющие символы.</translation>
+    </message>
+    <message>
+        <source>Virtual-hosted addressing needs a DNS-compatible bucket name: lowercase letters, digits, dots and hyphens.</source>
+        <translation>Для адресации virtual-hosted нужно совместимое с DNS имя бакета: строчные буквы, цифры, точки и дефисы.</translation>
+    </message>
+    <message>
+        <source>Virtual-hosted addressing needs a DNS endpoint, not an IP address. Turn on path-style addressing instead.</source>
+        <translation>Для адресации virtual-hosted нужен DNS-эндпоинт, а не IP-адрес. Включите вместо этого адресацию path-style.</translation>
     </message>
     <message>
         <source>The front port is used only together with a front address.</source>
@@ -15547,8 +15815,8 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>AnyTLS не поддерживает TCP Fast Open, поэтому он был отключен.</translation>
     </message>
     <message>
-        <source>Use two-letter country codes separated by commas, for example DE,NL,FR.</source>
-        <translation>Используйте двухбуквенные коды стран через запятую, например DE,NL,FR.</translation>
+        <source>Use two-letter country codes separated by commas, for example DE,NL,FR. Put ! before a code to exclude that country, for example !RU.</source>
+        <translation>Используйте двухбуквенные коды стран через запятую, например DE,NL,FR. Поставьте ! перед кодом, чтобы исключить страну, например !RU.</translation>
     </message>
     <message>
         <source>Cannot run more profiles than are ranked (%1).</source>
