@@ -18,7 +18,7 @@ NOTES="$(awk -v version="$VERSION" '
 ' "$CHANGELOG")"
 
 if [ -z "${NOTES//[[:space:]]/}" ]; then
-    echo "CHANGELOG.md has no notes for $VERSION; add a '#### $VERSION' section at the top." >&2
+    echo "CHANGELOG.md has no notes for $VERSION. Add a '#### $VERSION' section at the top." >&2
     exit 1
 fi
 printf '%s\n' "$NOTES"
