@@ -1049,6 +1049,10 @@ namespace Configs {
                 if (ctx.isResolvedUsed && (ctx.tunEnabled || ctx.forTest || dataManager->settingsRepo->kill_switch)) {
                     return {{"type", "underlying"}};
                 }
+                // A macOS Tun points the system resolver at its dns-system inbound, which `local` would query and loop through (#2045).
+                if (ctx.os == Darwin && (ctx.tunEnabled || ctx.forTest)) {
+                    return {{"type", "underlying"}};
+                }
                 return {{"type", "local"}};
             }
             if (parsed.type == "dhcp") {
