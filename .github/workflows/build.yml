@@ -21,6 +21,10 @@ env:
   # throneproj/Throne-api.
   # A THRONE_API_REF repository variable overrides it.
   THRONE_API_REF: ${{ vars.THRONE_API_REF || '48b1d5354d121d41897cebc5fd48de01886d5287' }}
+  # The Chromium toolchain for the Linux targets. This commit fixes the naiveproxy submodule under it, and through it
+  # both the sysroot package lists and the archive snapshot they are fetched from, so it also identifies the cached
+  # .deb files exactly.
+  CRONET_GO_REF: 2ee86b72426042457b8eb879ab32296f5752bf2f
 jobs:
   lint:
     permissions:
@@ -123,21 +127,38 @@ jobs:
           set -xeuo pipefail
           git init ~/cronet-go
           git -C ~/cronet-go remote add origin https://github.com/throneproj/cronet-go.git
-          git -C ~/cronet-go fetch --depth=1 origin "2ee86b72426042457b8eb879ab32296f5752bf2f"
+          git -C ~/cronet-go fetch --depth=1 origin "$CRONET_GO_REF"
           git -C ~/cronet-go checkout FETCH_HEAD
           git -C ~/cronet-go submodule update --init --recursive --depth=1
+      - name: Cache sysroot packages
+        if: steps.cache-common.outputs.cache-hit != 'true' && matrix.cross_os == 'linux'
+        uses: actions/cache@v6.1.0
+        with:
+          # Fetching the .deb files is the slow half of the toolchain, and they are the same
+          # for every run: CRONET_GO_REF fixes both the package lists and the archive
+          # snapshot. Stored once, a later run that misses CommonCache-* no longer waits on
+          # snapshot.debian.org at all. The key carries no timestamp, so this is one entry
+          # per architecture rather than one per run, and the post step saves only after a
+          # job that succeeded, so a half fetched set never becomes the cached one. The
+          # release directory is matched by pattern because its name follows whichever
+          # Debian release the pin uses.
+          path: ~/cronet-go/naiveproxy/src/out/sysroot-build/*/debian-packages
+          key: SysrootDebs-${{ matrix.cross_arch }}-${{ env.CRONET_GO_REF }}
       - name: Download Chromium toolchain
         if: steps.cache-common.outputs.cache-hit != 'true' && matrix.cross_os == 'linux'
         run: |
           set -xeuo pipefail
           cd ~/cronet-go
-          # The sysroot comes from snapshot.debian.org, which answers 503 for minutes at a
-          # time, and Chromium's downloader spends its five retries within a second or two.
-          # A cross target downloads two sysroots - the host one as well - so it meets the
-          # archive twice as often. The script keeps what it already fetched, so each round
-          # resumes rather than starting over.
-          for attempt in 1 2 3 4 5 6; do
-            if go run ./cmd/build-naive --target=linux/${{ matrix.cross_arch }} download-toolchain; then
+          # The sysroot comes from snapshot.debian.org, which answers 503 or 504 for minutes
+          # at a time, and Chromium's downloader gives up on a file after five tries about
+          # half a minute apart. A cross target downloads two sysroots - the host one as
+          # well - so it meets the archive twice as often. The script keeps the .deb files
+          # it already has, so each round resumes where the last one stopped. Hence this
+          # many rounds: 1.4.7 took three runs of six, and the second of them was still
+          # getting further through the list when it ran out of them.
+          rounds=12
+          for attempt in $(seq 1 "$rounds"); do
+            if go run ./cmd/build-naive --target=linux/${{ matrix.cross_arch }} download-toolchain 2>&1 | tee "$RUNNER_TEMP/toolchain.log"; then
               exit 0
             fi
             echo "toolchain attempt ${attempt} failed"
@@ -147,7 +168,17 @@ jobs:
             # the build and exits clean, and the only sign is a link error much later. The
             # verified .deb files stay, since downloading them is the slow part.
             rm -rf naiveproxy/src/out/sysroot-build/*/*_staging
-            sleep $((attempt * 45))
+            # Every .deb is checked against the sha256 from the package list, whether it was
+            # just fetched or left from an earlier round, so a truncated or swapped file
+            # stops the round instead of reaching the sysroot. Dropping the file it named
+            # keeps one bad copy from failing every round after it, which matters now that
+            # the directory outlives the run in a cache.
+            sed -n 's|.*SHA256 mismatch for \(/.*\.deb\)$|\1|p' "$RUNNER_TEMP/toolchain.log" | xargs -r rm -f
+            # Waiting out the archive is the point of the pause, so there is nothing to wait
+            # for after the last round.
+            if [ "$attempt" -lt "$rounds" ]; then
+              sleep $(( attempt * 45 < 270 ? attempt * 45 : 270 ))
+            fi
           done
           exit 1
       - name: Set Chromium toolchain environment
