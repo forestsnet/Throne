@@ -351,9 +351,17 @@ namespace Configs {
         bool vpn_auto_redirect = true;
         // Only UDP and ICMP reach the bridge: pre-match aborts at the sniff rule for TCP.
         bool vpn_l3_bridge = false;
+        // IPv6 нужен канал не меньше 1280 байт, иначе адрес на интерфейс не
+        // встанет. Ниже этого порога туннель IPv6 не несёт вообще.
+        static constexpr int kTunMinIPv6Mtu = 1280;
         int vpn_mtu = 1420;
         bool disable_private_range_bypass = false;
         QStringList vpn_private_ranges = defaultTunPrivateRanges();
+        // Выключенный флажок значит «IPv6 не работает», а не «IPv6 идёт мимо
+        // туннеля»: адрес v6 интерфейс получает в любом случае, чтобы auto_route
+        // забрал ::/0, а правило маршрутизации отказывает. Иначе системный
+        // маршрут по умолчанию оставался на физическом интерфейсе и весь IPv6
+        // уходил наружу открытым.
         bool vpn_ipv6 = false;
         QString vpn_tun_ipv4_cidr = "172.19.0.1/24";
         QString vpn_tun_ipv6_cidr = "fdfe:dcba:9876::1/96";

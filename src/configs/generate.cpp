@@ -1433,8 +1433,13 @@ namespace Configs {
                 const auto tunIPv4CIDR = settings.vpn_tun_ipv4_cidr;
                 const auto tunIPv6CIDR = settings.vpn_tun_ipv6_cidr;
                 ctx.result->tunIPv4CIDR = tunIPv4CIDR;
+                // Адрес v6 ставим и при снятом флажке: без него auto_route не берёт
+                // ::/0, системный маршрут остаётся на физическом интерфейсе, и весь
+                // IPv6 идёт мимо туннеля открытым. Отказывает дальше правило
+                // маршрутизации, так что снятый флажок глушит IPv6, а не выпускает.
+                const bool tunCarriesIPv6 = settings.vpn_mtu >= Configs::SettingsRepo::kTunMinIPv6Mtu;
                 auto tunAddress = QJsonArray{tunIPv4CIDR};
-                if (settings.vpn_ipv6) tunAddress += tunIPv6CIDR;
+                if (tunCarriesIPv6) tunAddress += tunIPv6CIDR;
                 inboundObj["address"] = tunAddress;
 
                 QJsonArray routeExcludeAddrs;
@@ -1459,7 +1464,7 @@ namespace Configs {
                 // On macOS a bypass covering the Tun subnet black-holes the system DNS (#1738).
                 if (ctx.os == Darwin) {
                     excludedRanges = subtractPrefix(excludedRanges, tunIPv4CIDR);
-                    if (settings.vpn_ipv6) excludedRanges = subtractPrefix(excludedRanges, tunIPv6CIDR);
+                    if (tunCarriesIPv6) excludedRanges = subtractPrefix(excludedRanges, tunIPv6CIDR);
                 }
                 for (const auto &range : excludedRanges) routeExcludeAddrs << range;
                 // An IPv4-only Tun's strict route rejects every IPv6 flow, [::1] included; the static exclusion is checked first.
@@ -2406,7 +2411,22 @@ namespace Configs {
                 QJsonObject dnsHijack;
                 QJsonObject dnsInReject;
                 QJsonObject dnsSystem;
+                QJsonObject tunIPv6Reject;
             } injected;
+
+            // Туннель держит ::/0 всегда, поэтому IPv6 доходит сюда, а не уходит
+            // наружу. Снятый флажок обрывает его тут, до правил пользователя: любое
+            // из них могло бы отправить адрес v6 в direct, и это была бы та же
+            // утечка, только через наше же правило. После hijack-dns, иначе
+            // перестали бы отвечать запросы DNS к адресам v6.
+            if (!ctx.forTest && settings.spmode_vpn && !settings.vpn_ipv6
+                && settings.vpn_mtu >= Configs::SettingsRepo::kTunMinIPv6Mtu) {
+                injected.tunIPv6Reject = QJsonObject{
+                    {"inbound", tags::tunIn},
+                    {"ip_version", 6},
+                    {"action", "reject"},
+                };
+            }
 
             if (systemDnsInbound(ctx)) {
                 injected.dnsSystem = QJsonObject{
@@ -2552,6 +2572,7 @@ namespace Configs {
             appendIfSet(injected.resolve);
             appendIfSet(injected.dnsHijack);
             appendIfSet(injected.dnsInReject);
+            appendIfSet(injected.tunIPv6Reject);
             // Отказ по имени из рукопожатия, после sniff. Одного NXDOMAIN мало:
             // руководство Apple написано для сети, в которую устройство входит
             // заново, а туннель поднимается посреди сеанса — адреса реле у

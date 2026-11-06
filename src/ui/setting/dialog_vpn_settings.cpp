@@ -19,7 +19,7 @@ namespace {
     const QString kDefaultTunIPv6CIDR = "fdfe:dcba:9876::1/96";
     constexpr int kVpnMinMtu = 1000;
     constexpr int kVpnMaxMtu = 10000;
-    constexpr int kVpnMinIPv6Mtu = 1280;
+    constexpr int kVpnMinIPv6Mtu = Configs::SettingsRepo::kTunMinIPv6Mtu;
 
     // Older builds saved bare addresses, which the core cannot read as a prefix (routeExcludePrefix widens them the same way).
     QString WithPrefixLength(const QString &saved) {
@@ -54,10 +54,14 @@ DialogVPNSettings::DialogVPNSettings(QWidget *parent) : QDialog(parent), ui(new 
 
     using namespace Validation;
     form->bind(ui->vpn_mtu, Rules::Int(kVpnMinMtu, kVpnMaxMtu, Empty::Required)).label(ui->label_10->text());
+    // Порог важен независимо от флажка: ниже него адрес v6 на интерфейс не
+    // встанет, туннель не заберёт ::/0, и IPv6 пойдёт мимо него наружу.
     form->addRule({ui->vpn_mtu, ui->vpn_ipv6}, [this] {
         const auto mtu = ToInt(ui->vpn_mtu->currentText());
-        if (!ui->vpn_ipv6->isChecked() || !mtu || *mtu >= kVpnMinIPv6Mtu || *mtu < kVpnMinMtu) return QString();
-        return tr("IPv6 needs an MTU of at least %1. Below that the system may drop IPv6 from the Tun.").arg(kVpnMinIPv6Mtu);
+        if (!mtu || *mtu >= kVpnMinIPv6Mtu || *mtu < kVpnMinMtu) return QString();
+        return tr("IPv6 needs an MTU of at least %1. Below that the Tun carries no IPv6 at all, and the system sends it "
+                  "around the tunnel instead.")
+            .arg(kVpnMinIPv6Mtu);
     }, this, Severity::Warning, ui->label_10->text());
     form->bind(ui->tun_ipv4_cidr, Rules::Cidr(Family::V4));
     form->bind(ui->tun_ipv6_cidr, Rules::Cidr(Family::V6));

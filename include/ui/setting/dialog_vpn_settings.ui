@@ -69,6 +69,9 @@
           <property name="text">
            <string>Tun Enable IPv6</string>
           </property>
+          <property name="toolTip">
+           <string>Carry IPv6 through the tunnel. Off, IPv6 is refused rather than sent around the tunnel, so a server without IPv6 makes applications fall back to IPv4.</string>
+          </property>
          </widget>
         </item>
         <item>
