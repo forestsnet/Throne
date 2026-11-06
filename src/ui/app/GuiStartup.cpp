@@ -176,13 +176,13 @@ namespace GuiStartup {
     void LoadTranslator() {
         QString locale;
         switch (Configs::dataManager->settingsRepo->language) {
+            // Китайский (2) и персидский (3) убраны, а нумерация оставлена
+            // прежней, чтобы чужой выбор не поехал. Кто выбрал один из них,
+            // получает English: язык, на который и так сваливается всё
+            // непереведённое, а не системный, которого человек не просил.
             case 1: // English
-                break;
             case 2:
-                locale = "zh_CN";
-                break;
             case 3:
-                locale = "fa_IR";
                 break;
             case 4:
                 locale = "ru_RU";

@@ -522,13 +522,14 @@ void FsntSettingsDialog::buildApplication(QVBoxLayout *column, QWidget *host) {
     syncPingRows();
 
     m_language = makeSelect(host);
-    // Индексы совпадают со switch в main.cpp: 0 системный, 1 English, 2 中文, 3 فارسی, 4 русский.
+    // Значение — то, что понимает switch в GuiStartup.cpp, а не номер строки:
+    // 2 (中文) и 3 (فارسی) убраны, нумерация прежняя.
     m_language->addItem(tr("System"), 0);
     m_language->addItem("English", 1);
-    m_language->addItem("简体中文", 2);
-    m_language->addItem("فارسی", 3);
     m_language->addItem("Русский", 4);
-    m_language->setCurrentIndex(qBound(0, settings->language, 4));
+    const int languageRow = m_language->findData(settings->language);
+    // Убранный язык показываем как English — на нём окно и открылось.
+    m_language->setCurrentIndex(languageRow >= 0 ? languageRow : 1);
     card.addControl(tr("Language"), m_language);
 
     m_theme = makeSelect(host);

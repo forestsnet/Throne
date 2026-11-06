@@ -335,7 +335,14 @@ DialogBasicSettings::DialogBasicSettings(QWidget *parent)
     D_LOAD_BOOL(start_minimal)
     ui->skip_delete_confirm->setChecked(Configs::dataManager->settingsRepo->skip_delete_confirmation);
     D_LOAD_BOOL(show_config_security)
-    ui->language->setCurrentIndex(Configs::dataManager->settingsRepo->language);
+    // Номер строки больше не равен значению настройки: китайский и персидский
+    // убраны, а нумерация значений осталась прежней, чтобы чужой выбор не поехал.
+    ui->language->setItemData(0, 0);
+    ui->language->setItemData(1, 1);
+    ui->language->setItemData(2, 4);
+    const int languageRow = ui->language->findData(Configs::dataManager->settingsRepo->language);
+    // Убранный язык показываем как English — на нём окно и открылось.
+    ui->language->setCurrentIndex(languageRow >= 0 ? languageRow : 1);
     ui->ui_mode->setCurrentIndex(Configs::dataManager->settingsRepo->simple_mode ? 0 : 1);
     // Выбор интерфейса у форка один и живёт в меню «Простой режим»: он
     // перезапускает программу в фасаде. Этот список управляет складыванием
@@ -707,7 +714,7 @@ void DialogBasicSettings::accept() {
 
     Configs::dataManager->settingsRepo->enable_stats = ui->connection_statistics->isChecked();
     Configs::dataManager->settingsRepo->disable_traffic_aggregation = ui->disable_traffic_aggregation->isChecked();
-    Configs::dataManager->settingsRepo->language = ui->language->currentIndex();
+    Configs::dataManager->settingsRepo->language = ui->language->currentData().toInt();
     const bool simpleMode = ui->ui_mode->currentIndex() == 0;
     const bool uiModeChanged = Configs::dataManager->settingsRepo->simple_mode != simpleMode;
     Configs::dataManager->settingsRepo->simple_mode = simpleMode;

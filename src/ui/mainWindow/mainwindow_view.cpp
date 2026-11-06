@@ -28,12 +28,13 @@
 #include "include/ui/widget/LiveChart.h"
 #include "include/ui/widget/StartStopButton.hpp"
 
-// Mirrors the language switch in main.cpp; QLocale() alone follows the system, not an explicit setting.
+// Mirrors the language switch in GuiStartup.cpp; QLocale() alone follows the system, not an explicit setting.
 bool MainWindow::usesTightLabels() const {
-    static const QStringList byLanguageSetting = {"", "en", "zh_CN", "fa_IR", "ru_RU"};
+    // Позиции 2 и 3 — убранные китайский и персидский: их выбор даёт English.
+    static const QStringList byLanguageSetting = {"", "en", "en", "en", "ru_RU"};
     const int language = Configs::dataManager->settingsRepo->language;
     const QString locale = language == 0 ? QLocale().name() : byLanguageSetting.value(language);
-    return locale.startsWith("zh") || locale.startsWith("ru");
+    return locale.startsWith("ru");
 }
 
 void MainWindow::applyTopBarMetrics() {
