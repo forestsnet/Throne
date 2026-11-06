@@ -71,4 +71,4 @@
     </tbody>
 </table>
 
-> **Setup** picks the right build for your Windows version and CPU; **legacy** builds are for Windows 7 / 8. **AppImage** is one file for every distribution, with nothing to install. **system Qt** packages use the Qt libraries installed on your system and are much smaller. **macOS:** take the DMG; if macOS refuses to open the app, see the [README](https://github.com/{{REPO}}#note-on-macos-releases).
+> **Setup** picks the right build for your Windows version and CPU - **legacy** builds are for Windows 7 / 8. **AppImage** is one file for every distribution, with nothing to install. **system Qt** packages use the Qt libraries installed on your system and are much smaller. **macOS:** take the DMG. If macOS refuses to open the app, see the [README](https://github.com/{{REPO}}#note-on-macos-releases).
