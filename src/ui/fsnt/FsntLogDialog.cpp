@@ -2,15 +2,22 @@
 
 #include <QApplication>
 #include <QClipboard>
+#include <QDateTime>
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPlainTextEdit>
 #include <QPushButton>
+#include <QSaveFile>
 #include <QScrollBar>
 #include <QVBoxLayout>
 
 #include "include/global/Logger.hpp"
+#include "include/global/Utils.hpp"
+#include "include/ui/utils/NativeFileDialog.h"
 #include "include/ui/fsnt/FsntControls.h"
 #include "include/ui/fsnt/FsntPalette.hpp"
 #include "include/ui/fsnt/FsntTheme.hpp"
@@ -112,6 +119,12 @@ FsntLogDialog::FsntLogDialog(QWidget *parent) : QDialog(parent) {
         rebuild();
     });
 
+    auto *save = new QPushButton(tr("Save"), this);
+    save->setObjectName("fsntGhost");
+    save->setCursor(Qt::PointingHandCursor);
+    save->setToolTip(tr("The log holds the domains you visited and the addresses of your servers."));
+    connect(save, &QPushButton::clicked, this, [this] { saveLogs(); });
+
     auto *close = new QPushButton(tr("Close"), this);
     close->setObjectName("fsntPrimary");
     close->setCursor(Qt::PointingHandCursor);
@@ -119,10 +132,17 @@ FsntLogDialog::FsntLogDialog(QWidget *parent) : QDialog(parent) {
 
     auto *buttons = new QHBoxLayout;
     buttons->addWidget(copy);
+    buttons->addWidget(save);
     buttons->addWidget(clear);
     buttons->addStretch();
     buttons->addWidget(close);
     layout->addLayout(buttons);
+
+    m_status = new QLabel(this);
+    m_status->setObjectName("fsntDialogHint");
+    m_status->setWordWrap(true);
+    m_status->hide();
+    layout->addWidget(m_status);
 
     setStyleSheet(Fsnt::BuildStyleSheet());
 }
@@ -162,4 +182,38 @@ void FsntLogDialog::rebuild() {
     }
     m_view->setPlainText(shown.join('\n'));
     m_view->verticalScrollBar()->setValue(m_view->verticalScrollBar()->maximum());
+}
+
+void FsntLogDialog::saveLogs() {
+    const QStringList files = Logging::LogFiles();
+    const auto report = [this](const QString &text) {
+        m_status->setText(text);
+        m_status->setVisible(!text.isEmpty());
+    };
+    if (files.isEmpty()) {
+        report(tr("There is no log file to save."));
+        return;
+    }
+
+    const QString name = QStringLiteral("throne-%1.log").arg(QDateTime::currentDateTime().toString(QStringLiteral("yyyyMMdd-HHmmss")));
+    const QString path = NativeFileDialog::getSaveFileName(this, tr("Save logs"), QDir::home().absoluteFilePath(name),
+                                                           tr("Log files (*.log);;All files (*)"));
+    if (path.isEmpty()) return;
+
+    // Через QSaveFile, чтобы на половине записи не осталось обрезанного файла,
+    // который человек всё равно отправит в поддержку.
+    QSaveFile out(path);
+    bool ok = out.open(QIODevice::WriteOnly);
+    for (const QString &file : files) {
+        if (!ok) break;
+        QFile in(file);
+        if (!in.open(QIODevice::ReadOnly)) continue;
+        const QByteArray data = in.readAll();
+        ok = out.write(data) == data.size();
+    }
+    if (!ok || !out.commit()) {
+        report(tr("Cannot write to: %1").arg(QDir::toNativeSeparators(path)));
+        return;
+    }
+    report(tr("Saved %1 (%2)").arg(QFileInfo(path).fileName(), ReadableSize(QFileInfo(path).size())));
 }

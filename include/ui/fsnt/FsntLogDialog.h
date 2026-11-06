@@ -4,6 +4,7 @@
 #include <QStringList>
 
 class FsntSwitch;
+class QLabel;
 class QLineEdit;
 class QPlainTextEdit;
 
@@ -26,10 +27,14 @@ public slots:
 private:
     bool passes(const QString &line) const;
     void rebuild();
+    // Файлы журнала этого сеанса, склеенные в один — то, что просят в поддержку.
+    // Окно показывает только кольцо в памяти, а на диске лежит больше.
+    void saveLogs();
 
     QStringList m_lines;
     QLineEdit *m_filter = nullptr;
     FsntSwitch *m_problemsOnly = nullptr;
     FsntSwitch *m_autoScroll = nullptr;
     QPlainTextEdit *m_view = nullptr;
+    QLabel *m_status = nullptr;
 };
