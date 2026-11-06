@@ -931,7 +931,7 @@
             <item row="1" column="1">
              <widget class="MyLineEdit" name="cipher_suites">
               <property name="toolTip">
-               <string>Colon-separated TLS 1.2 cipher suite names. A uTLS fingerprint ignores them; use the "unsafe" fingerprint (Go's own TLS stack) to apply them.</string>
+               <string>Colon-separated TLS 1.2 cipher suite names. A uTLS fingerprint ignores them. Use the "unsafe" fingerprint (Go's own TLS stack) to apply them.</string>
               </property>
              </widget>
             </item>

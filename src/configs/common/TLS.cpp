@@ -77,7 +77,7 @@ namespace Configs {
         {
             if (tlsSecureCipherSuites.contains(name)) return {};
             if (tlsInsecureCipherSuites.contains(name)) {
-                return QCoreApplication::translate("Validation", "sing-box refuses this suite because Go lists it as insecure (CBC-SHA256, RC4, 3DES and RSA key exchange); only VLESS profiles running on Xray can use it.");
+                return QCoreApplication::translate("Validation", "sing-box refuses this suite because Go lists it as insecure (CBC-SHA256, RC4, 3DES and RSA key exchange). Only VLESS profiles running on Xray can use it.");
             }
             return QCoreApplication::translate("Validation", "Unknown cipher suite. Use Go's names, for example TLS_AES_128_GCM_SHA256.");
         }
@@ -241,7 +241,7 @@ namespace Configs {
         {
             const auto rule = [](const QString& pin) -> QString {
                 if (certificateSha256FromPcs(pin).size() == 1) {
-                    return QCoreApplication::translate("Validation", "This is a hexadecimal SHA-256; write it in base64 (44 characters ending in =).");
+                    return QCoreApplication::translate("Validation", "This is a hexadecimal SHA-256. Write it in base64 (44 characters ending in =).");
                 }
                 return Validation::Base64Key(pin, 32);
             };
@@ -279,7 +279,7 @@ namespace Configs {
         QString PinsWithCertificate(bool pins, bool certificate)
         {
             if (!pins || !certificate) return {};
-            return QCoreApplication::translate("Validation", "A custom certificate cannot be combined with certificate pins; keep only one of them.");
+            return QCoreApplication::translate("Validation", "A custom certificate cannot be combined with certificate pins. Keep only one of them.");
         }
 
         QString ClientCertificatePair(bool certificate, bool key)

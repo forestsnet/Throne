@@ -1497,7 +1497,7 @@ namespace Configs {
             const auto t = fingerprint.trimmed().toLower();
             if (t.isEmpty()) return {};
             // xrayReality::Build drops "unsafe"; Xray refuses hellogolang for REALITY.
-            if (reality && t == "hellogolang") return QCoreApplication::translate("Validation", "REALITY cannot use the hellogolang fingerprint; choose another one.");
+            if (reality && t == "hellogolang") return QCoreApplication::translate("Validation", "REALITY cannot use the hellogolang fingerprint. Choose another one.");
             if (xrayStreamFingerprints().contains(t)) return {};
             return QCoreApplication::translate("Validation", "Xray does not know the fingerprint \"%1\". Use chrome, firefox, safari, ios, android, edge, 360, qq, random, randomized or unsafe.").arg(fingerprint.trimmed());
         }
@@ -1541,7 +1541,7 @@ namespace Configs {
                 name = sni;
             }
             if (!name.isEmpty()) return {};
-            return QCoreApplication::translate("Validation", "Fetching ECH over DNS needs a domain SNI; otherwise write it as domain+https://dns/dns-query.");
+            return QCoreApplication::translate("Validation", "Fetching ECH over DNS needs a domain SNI. Otherwise write it as domain+https://dns/dns-query.");
         }
 
         QString XraySpiderX(const QString& spiderX)
@@ -1644,7 +1644,7 @@ namespace Configs {
                 for (qint64 k = from; k <= to && room < kRoom; ++k) room += std::pow(double(bytes.size()), double(k));
             }
             if (room < kRoom) {
-                return QCoreApplication::translate("Validation", "The table and length allow too few session IDs; use a longer length (for example 8-16) or a larger table.");
+                return QCoreApplication::translate("Validation", "The table and length allow too few session IDs. Use a longer length (for example 8-16) or a larger table.");
             }
             if (std::any_of(bytes.cbegin(), bytes.cend(), [](char c) { return static_cast<unsigned char>(c) >= 0x80; })) {
                 return QCoreApplication::translate("Validation", "The table must contain only ASCII characters.");

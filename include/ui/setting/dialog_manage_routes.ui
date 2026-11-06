@@ -371,7 +371,7 @@
           <item row="5" column="0">
            <widget class="QLabel" name="warp_masque_http_mode_l">
             <property name="toolTip">
-             <string>HTTP/3 runs over UDP; HTTP/2 runs over TLS on TCP and works where UDP is blocked.</string>
+             <string>HTTP/3 runs over UDP. HTTP/2 runs over TLS on TCP and works where UDP is blocked.</string>
             </property>
             <property name="text">
              <string>HTTP Version</string>
@@ -384,7 +384,7 @@
           <item row="5" column="1">
            <widget class="QComboBox" name="warp_masque_http_mode">
             <property name="toolTip">
-             <string>HTTP/3 runs over UDP; HTTP/2 runs over TLS on TCP and works where UDP is blocked.</string>
+             <string>HTTP/3 runs over UDP. HTTP/2 runs over TLS on TCP and works where UDP is blocked.</string>
             </property>
             <item>
              <property name="text">
@@ -678,7 +678,7 @@ For more information, see the document &quot;Configuration/DNS&quot;.</string>
                <string notr="true">advanced</string>
               </property>
               <property name="toolTip">
-               <string>Hand out no fake IPv6 addresses; AAAA queries are answered empty.</string>
+               <string>Hand out no fake IPv6 addresses. AAAA queries are answered empty.</string>
               </property>
               <property name="text">
                <string>FakeIP Disable IPv6</string>

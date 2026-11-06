@@ -64,7 +64,7 @@ namespace Configs {
 
                 const QString tlsStr = objN["tls"].toString().trimmed();
                 if (!tlsStr.isEmpty() && tlsStr.compare("tls", Qt::CaseInsensitive) != 0 && tlsStr.compare("none", Qt::CaseInsensitive) != 0) {
-                    ParseDiag::Error("tls", QCoreApplication::translate("Validation", "Unsupported TLS mode; a VMess link can use only tls or none."), tlsStr);
+                    ParseDiag::Error("tls", QCoreApplication::translate("Validation", "Unsupported TLS mode. A VMess link can use only tls or none."), tlsStr);
                 }
                 if (tlsStr.compare("tls", Qt::CaseInsensitive) == 0) {
                     tls->enabled = true;

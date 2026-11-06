@@ -32,7 +32,7 @@ namespace Configs {
         {
             if (flow.isEmpty()) return {};
             if (flow == "xtls-rprx-vision-udp443")
-                return QCoreApplication::translate("Validation", "sing-box does not support xtls-rprx-vision-udp443; use xtls-rprx-vision, or the Xray VLESS type.");
+                return QCoreApplication::translate("Validation", "sing-box does not support xtls-rprx-vision-udp443. Use xtls-rprx-vision, or the Xray VLESS type.");
             if (flow != "xtls-rprx-vision") return Validation::OneOf(flow, vlessFlows);
             if (!tlsEnabled || !(transportType.isEmpty() || transportType == "tcp"))
                 return QCoreApplication::translate("Validation", "XTLS Vision works only with TLS or REALITY directly over TCP: turn on TLS and set the network to tcp, or clear the flow.");

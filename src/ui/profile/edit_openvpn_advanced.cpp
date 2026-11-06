@@ -415,7 +415,7 @@ void EditOpenVPNAdvanced::bindValidation() {
                                              "tls.certificate", "tls.client_certificate", "tls.client_key", "tls.control_wrap"};
         for (const auto &key: OpenVPNModeConflicts(o)) {
             if (o.mode == "static_key" && pageKeys.contains(key)) {
-                return tr("Static key mode does not use the credentials, certificates or control channel wrap on the profile page; clear them there.");
+                return tr("Static key mode does not use the credentials, certificates or control channel wrap on the profile page. Clear them there.");
             }
         }
         return QString();

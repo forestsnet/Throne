@@ -837,8 +837,8 @@ namespace Validation {
         if (at < 0) {
             if (validationParseUint16(t)) {
                 if (style.allowSingle) return {};
-                return colon ? QCoreApplication::translate("Validation", "\"%1\" is a single port; write it as %1:%1.").arg(t)
-                             : QCoreApplication::translate("Validation", "\"%1\" is a single port; write it as %1-%1.").arg(t);
+                return colon ? QCoreApplication::translate("Validation", "\"%1\" is a single port. Write it as %1:%1.").arg(t)
+                             : QCoreApplication::translate("Validation", "\"%1\" is a single port. Write it as %1-%1.").arg(t);
             }
             return validationAllDigits(t) ? tooLarge() : format();
         }
@@ -883,7 +883,7 @@ namespace Validation {
             if (!v || *v < min || *v > max) return validationRangeMessage(min, max);
             values[k++] = *v;
         }
-        if (!allowReversed && values[0] > values[1]) return QCoreApplication::translate("Validation", "The range starts after it ends; put the smaller number first.");
+        if (!allowReversed && values[0] > values[1]) return QCoreApplication::translate("Validation", "The range starts after it ends. Put the smaller number first.");
         return {};
     }
 

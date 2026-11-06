@@ -1104,7 +1104,7 @@ void RouteItem::ensurePlusTabBuiltOnce() {
     auto* lay = new QVBoxLayout(container);
     lay->setContentsMargins(8, 8, 8, 8);
 
-    auto* hint = new QLabel(tr("Check attributes to show as tabs; unchecking clears their values."), container);
+    auto* hint = new QLabel(tr("Check attributes to show as tabs. Unchecking clears their values."), container);
     hint->setWordWrap(true);
     hint->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     ruleAttrPlusList = new QListWidget(container);

@@ -316,12 +316,12 @@ void EditAutoSelector::updateBalanceEnabled() const {
     ui->balance_interval_l->setEnabled(rotating);
 
     if (!on) {
-        ui->balance_hint->setText(tr("The best profile carries all traffic; the other ready profiles are "
+        ui->balance_hint->setText(tr("The best profile carries all traffic. The other ready profiles are "
                                      "kept verified so one can take over instantly."));
         return;
     }
     if (rotating) {
-        ui->balance_hint->setText(tr("New connections move to another good profile on each rotation; open ones are "
+        ui->balance_hint->setText(tr("New connections move to another good profile on each rotation. Open ones are "
                                      "left alone and finish where they started. Traffic is counted exactly."));
     } else {
         ui->balance_hint->setText(tr("Every new connection may take a different profile. Widest spread, but your "
@@ -357,12 +357,12 @@ void EditAutoSelector::refreshPlanSummary() {
     }
 
     QStringList lines;
-    lines << tr("%1 of %2 profiles in the checked groups can be used; %3 would run.")
+    lines << tr("%1 of %2 profiles in the checked groups can be used, and %3 would run.")
                  .arg(plan.eligible)
                  .arg(plan.membersInGroups)
                  .arg(plan.build.size());
     if (plan.missingGroups > 0) {
-        lines << tr("%n tracked group(s) no longer exist and are ignored; saving removes them.", nullptr,
+        lines << tr("%n tracked group(s) no longer exist and are ignored. Saving removes them.", nullptr,
                     plan.missingGroups);
     }
     if (!plan.skipped.isEmpty()) {

@@ -54,7 +54,7 @@ namespace Configs {
         {
             const auto path = text.trimmed();
             if (path.contains('?') || path.contains('#')) {
-                return QCoreApplication::translate("Validation", "Remove the part from ? or #; the server takes only a path such as /vpn.");
+                return QCoreApplication::translate("Validation", "Remove the part from ? or #. The server takes only a path such as /vpn.");
             }
             const auto hexDigit = [](QChar c) {
                 const auto u = c.unicode();
@@ -167,7 +167,7 @@ namespace Configs {
             const bool used = !token.secret.isEmpty() || !token.secret_path.isEmpty() || !token.pin.isEmpty() ||
                               !token.password.isEmpty() || !token.device_id.isEmpty() || token.counter > 0;
             if (!used) return {};
-            return QCoreApplication::translate("Validation", "Without a token mode these settings are not used or saved; pick a mode or clear them.");
+            return QCoreApplication::translate("Validation", "Without a token mode these settings are not used or saved. Pick a mode or clear them.");
         }
 
         QString OpenConnectTokenCounter(const openconnect& profile)
@@ -815,24 +815,24 @@ namespace Configs {
         if (otp_profile_id >= 0) {
             otp_profile_id = -1;
             issues << Validation::Issue{Validation::Severity::Warning, "otp_profile_id",
-                                        QCoreApplication::translate("Validation", "Removed the link to a one-time password entry; choose the entry again in the profile's settings."), {}};
+                                        QCoreApplication::translate("Validation", "Removed the link to a one-time password entry. Choose the entry again in the profile's settings."), {}};
         }
         // Each wrapper is an executable the core starts during authentication.
         if (!csd->wrapper_path.isEmpty()) {
             issues << Validation::Issue{Validation::Severity::Warning, "csd.wrapper_path",
-                                        QCoreApplication::translate("Validation", "Removed the CSD wrapper path from the imported profile; set it again in Advanced settings if you trust it."),
+                                        QCoreApplication::translate("Validation", "Removed the CSD wrapper path from the imported profile. Set it again in Advanced settings if you trust it."),
                                         csd->wrapper_path};
             csd->wrapper_path.clear();
         }
         if (!hip->wrapper_path.isEmpty()) {
             issues << Validation::Issue{Validation::Severity::Warning, "hip.wrapper_path",
-                                        QCoreApplication::translate("Validation", "Removed the HIP wrapper path from the imported profile; set it again in Advanced settings if you trust it."),
+                                        QCoreApplication::translate("Validation", "Removed the HIP wrapper path from the imported profile. Set it again in Advanced settings if you trust it."),
                                         hip->wrapper_path};
             hip->wrapper_path.clear();
         }
         if (!tncc->wrapper_path.isEmpty()) {
             issues << Validation::Issue{Validation::Severity::Warning, "tncc.wrapper_path",
-                                        QCoreApplication::translate("Validation", "Removed the TNCC wrapper path from the imported profile; set it again in Advanced settings if you trust it."),
+                                        QCoreApplication::translate("Validation", "Removed the TNCC wrapper path from the imported profile. Set it again in Advanced settings if you trust it."),
                                         tncc->wrapper_path};
             tncc->wrapper_path.clear();
         }

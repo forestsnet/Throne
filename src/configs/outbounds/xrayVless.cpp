@@ -65,7 +65,7 @@ namespace Configs {
         QString XrayXDriveFlow(const QString &flow, const QString &network) {
             const auto f = flow.trimmed();
             if (NormalizeXrayNetwork(network.trimmed()) != "xdrive" || f.isEmpty() || f.compare("none", Qt::CaseInsensitive) == 0) return {};
-            return QCoreApplication::translate("Validation", "XDRIVE does not support a flow; clear it.");
+            return QCoreApplication::translate("Validation", "XDRIVE does not support a flow. Clear it.");
         }
 
         QString XrayXDriveMux(int muxState, const QString &network) {

@@ -28,20 +28,20 @@ namespace {
             if (xray) xrayHops++;
             if (hop->type == "custom" && hop->Custom() != nullptr && hop->Custom()->type == Configs::Custom::CustomFullConfig) customFullConfig = true;
         }
-        if (customFullConfig) return EditChain::tr("A custom %1 config cannot be a hop; only custom outbounds can.").arg(software_core_name);
+        if (customFullConfig) return EditChain::tr("A custom %1 config cannot be a hop. Only custom outbounds can.").arg(software_core_name);
         if (extraCores > 1) return EditChain::tr("Only one Extra Core profile can be in a chain.");
         if (xrayFullConfigs > 1) return EditChain::tr("Only one custom Xray config can be in a chain.");
         if (extraCores > 0 && xrayFullConfigs > 0) return EditChain::tr("An Extra Core profile and a custom Xray config cannot be in the same chain.");
         if (xrayFullConfigs > 0 && xrayHops > 0) return EditChain::tr("A custom Xray config cannot share a chain with other Xray profiles.");
         // An extra core or a custom Xray config is reached through its local socks port, so nothing can come after it.
         if (extraCores == 1 && count > 1 && extraCoreIndex != count - 1) {
-            return EditChain::tr("An Extra Core profile can only be the final hop; move it to the top of the list.");
+            return EditChain::tr("An Extra Core profile can only be the final hop. Move it to the top of the list.");
         }
         if (xrayFullConfigs == 1 && count > 1 && xrayFullConfigIndex != count - 1) {
-            return EditChain::tr("A custom Xray config can only be the final hop; move it to the top of the list.");
+            return EditChain::tr("A custom Xray config can only be the final hop. Move it to the top of the list.");
         }
         if (transitions > 2) {
-            return EditChain::tr("The chain switches between %1 and Xray too often; keep the Xray hops together, between %1 hops.").arg(software_core_name);
+            return EditChain::tr("The chain switches between %1 and Xray too often. Keep the Xray hops together, between %1 hops.").arg(software_core_name);
         }
         return {};
     }
@@ -97,7 +97,7 @@ void EditChain::bindValidation(Validation::Form &form) {
     form.addRule({ui->listWidget}, [this] { return hopsError(); }, this, Validation::Severity::Error, label);
     form.addRule({ui->listWidget}, [this] {
         if (droppedHops == 0) return QString();
-        return tr("%n hop(s) no longer exist or cannot be hops, so they were left out; saving removes them.", nullptr, droppedHops);
+        return tr("%n hop(s) no longer exist or cannot be hops, so they were left out. Saving removes them.", nullptr, droppedHops);
     }, this, Validation::Severity::Warning, label);
 }
 
@@ -105,7 +105,7 @@ QString EditChain::hopsError() const {
     QList<std::shared_ptr<Configs::Profile>> hops;
     for (int i = 0; i < ui->listWidget->count(); i++) {
         auto hop = Configs::dataManager->profilesRepo->GetProfile(ui->listWidget->item(i)->data(114514).toInt());
-        if (hop == nullptr || hop->outbound == nullptr) return tr("Hop %1 no longer exists; replace or remove it.").arg(i + 1);
+        if (hop == nullptr || hop->outbound == nullptr) return tr("Hop %1 no longer exists. Replace or remove it.").arg(i + 1);
         hops << hop;
     }
     if (hops.isEmpty()) return tr("Add at least one profile to the chain.");

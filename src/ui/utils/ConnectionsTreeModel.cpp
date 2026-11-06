@@ -213,8 +213,8 @@ QVariant ConnectionsTreeModel::headerData(int section, Qt::Orientation orientati
         case ColSource: return tr("Click To Sort By Source");
         case ColProtocol: return tr("Click To Sort By Protocol");
         case ColOutbound: return tr("Click To Sort By Outbound");
-        case ColTraffic: return tr("Click to sort by traffic; right-click to choose total/down/up");
-        case ColSpeed: return tr("Click to sort by speed; right-click to choose total/down/up");
+        case ColTraffic: return tr("Click to sort by traffic. Right-click to choose total/down/up");
+        case ColSpeed: return tr("Click to sort by speed. Right-click to choose total/down/up");
         default: return {};
         }
     }

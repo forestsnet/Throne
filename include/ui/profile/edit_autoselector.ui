@@ -670,7 +670,7 @@
             <string>optional — inherits the Direct Test URL</string>
            </property>
            <property name="toolTip">
-            <string>Fetched WITHOUT the proxy to tell a dead internet connection apart from dead servers, and to notice the moment it comes back. Leave empty to inherit the Direct Test URL from Basic Settings, and empty there too to rely on the operating system's network state. A URL that turns out to be blocked can only delay a resume by a few minutes; it can never keep the selector paused.</string>
+            <string>Fetched WITHOUT the proxy to tell a dead internet connection apart from dead servers, and to notice the moment it comes back. Leave empty to inherit the Direct Test URL from Basic Settings, and empty there too to rely on the operating system's network state. A URL that turns out to be blocked can only delay a resume by a few minutes. It can never keep the selector paused.</string>
            </property>
           </widget>
          </item>

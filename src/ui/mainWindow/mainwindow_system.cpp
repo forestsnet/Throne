@@ -515,7 +515,7 @@ void MainWindow::OpenDashboard() {
         return;
     }
     if (settings.started_id < 0) {
-        MessageBoxWarning(software_name, tr("Start a profile first; the dashboard is served by the running core."));
+        MessageBoxWarning(software_name, tr("Start a profile first. The dashboard is served by the running core."));
         return;
     }
 
@@ -815,7 +815,7 @@ void MainWindow::CheckUpdate(bool autoInstall) {
         QString updateBody = QObject::tr("Update found: %1\nRelease note:\n%2")
                                  .arg(assets_name, release_note);
         if (headlessSameInstall) {
-            updateBody += "\n\n" + tr("Update is unavailable while a background Throne (PID %1) runs from this installation; stop it first.")
+            updateBody += "\n\n" + tr("Update is unavailable while a background Throne (PID %1) runs from this installation. Stop it first.")
                                          .arg(headless->pid);
         }
         // 0 — ставить, 1 — открыть страницу релиза, -1 — ничего.

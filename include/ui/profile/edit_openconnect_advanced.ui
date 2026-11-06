@@ -166,7 +166,7 @@
              <item row="1" column="0">
               <widget class="QLabel" name="token_secret_l">
                <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A Base32 secret, a base32: prefixed secret or an otpauth:// URI for totp and hotp; the encoded CTF content for stoken; the access token for oidc. Conflicts with the secret path.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;For totp and hotp, a Base32 secret, a base32: prefixed secret or an otpauth:// URI. For stoken, the encoded CTF content. For oidc, the access token. Conflicts with the secret path.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
                 <string>Secret</string>

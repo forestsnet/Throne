@@ -321,7 +321,7 @@ namespace Configs {
                         else notes << QObject::tr("Ignored an unreadable peer fingerprint: %1").arg(line);
                     }
                 } else if (tag == "pkcs12") {
-                    fatal = QObject::tr("PKCS#12 bundles are not supported; export the CA, certificate and key as PEM.");
+                    fatal = QObject::tr("PKCS#12 bundles are not supported. Export the CA, certificate and key as PEM.");
                 } else {
                     notes << QObject::tr("Ignored inline block: <%1>").arg(tag);
                 }
@@ -337,12 +337,12 @@ namespace Configs {
                 continue;
             }
             if (key == "pkcs12") {
-                fatal = QObject::tr("PKCS#12 bundles are not supported; export the CA, certificate and key as PEM.");
+                fatal = QObject::tr("PKCS#12 bundles are not supported. Export the CA, certificate and key as PEM.");
                 continue;
             }
             if (key == "dev" || key == "dev-type") {
                 if (value.startsWith("tap")) {
-                    fatal = QObject::tr("TAP (layer 2) tunnels are not supported; only `dev tun` profiles can be imported.");
+                    fatal = QObject::tr("TAP (layer 2) tunnels are not supported. Only `dev tun` profiles can be imported.");
                 }
                 continue;
             }
@@ -393,7 +393,7 @@ namespace Configs {
             }
             if (key == "auth-user-pass") {
                 if (!value.isEmpty() && value != "[inline]") {
-                    notes << QObject::tr("Credentials live in %1; enter them in the profile editor.").arg(value);
+                    notes << QObject::tr("Credentials live in %1. Enter them in the profile editor.").arg(value);
                 }
                 continue;
             }
@@ -432,7 +432,7 @@ namespace Configs {
                 else {
                     out.tls->crl_path = value;
                     if (args.size() > 2 && args[2] == "dir") {
-                        notes << QObject::tr("A hash-directory CRL is not supported; point `crl-verify` at a PEM or DER file.");
+                        notes << QObject::tr("A hash-directory CRL is not supported. Point `crl-verify` at a PEM or DER file.");
                     }
                 }
                 continue;
@@ -694,7 +694,7 @@ namespace Configs {
             tls.client_key.clear();
             tls.client_key_path.clear();
             if (dropped) {
-                notes << QObject::tr("`%1` turns the client certificate off; it was dropped and the server has to accept "
+                notes << QObject::tr("`%1` turns the client certificate off. It was dropped and the server has to accept "
                                      "password login.").arg(clientCertSwitch);
             }
         }
@@ -759,7 +759,7 @@ namespace Configs {
             }
         }
         if (!out.tls->remote_certificate_eku.isEmpty() && !out.tls->remote_certificate_tls.isEmpty()) {
-            notes << QObject::tr("`remote-cert-eku` replaces `remote-cert-tls`; the latter was dropped.");
+            notes << QObject::tr("`remote-cert-eku` replaces `remote-cert-tls`. The latter was dropped.");
             out.tls->remote_certificate_tls.clear();
         }
         // A redirect-gateway config is a full tunnel, not a management network.

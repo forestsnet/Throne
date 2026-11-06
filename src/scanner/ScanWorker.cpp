@@ -328,7 +328,7 @@ namespace Scanner {
         if (base == nullptr) return ScanManager::tr("The base IP list no longer exists");
         if (base->entries.isEmpty()) return ScanManager::tr("The base IP list is empty");
         const auto baseEntries = scanWorkerFamilyFilter(base->entries, scan_.config.scanIPv6);
-        if (baseEntries.isEmpty()) return ScanManager::tr("The base IP list holds only IPv6 ranges; enable IPv6 scanning");
+        if (baseEntries.isEmpty()) return ScanManager::tr("The base IP list holds only IPv6 ranges. Enable IPv6 scanning");
         if (!persist_ || stop_) return {};
 
         const int resultId = EnsureScanResultList(scan_);
@@ -402,7 +402,7 @@ namespace Scanner {
         const auto entries = scanWorkerFamilyFilter(allEntries, scan_.config.scanIPv6);
         if (entries.isEmpty()) {
             persistPassState();
-            return ScanManager::tr("The result list holds only IPv6 entries; enable IPv6 scanning");
+            return ScanManager::tr("The result list holds only IPv6 entries. Enable IPv6 scanning");
         }
         auto snapshot = Configs::IpListsRepo::NewIpList();
         snapshot->name = ScanManager::tr("%1 rescan snapshot").arg(scan_.name);
@@ -439,7 +439,7 @@ namespace Scanner {
             const auto entries = lists.GetEntries(scan_.rescan_snapshot_list_id);
             if (entries.isEmpty()) {
                 scan_.rescan_snapshot_list_id = -1;
-                return ScanManager::tr("The copy of the result list is gone; rescan the results again");
+                return ScanManager::tr("The copy of the result list is gone. Rescan the results again");
             }
             spec_ = scanWorkerBuildSpec(entries, {}, QStringLiteral("list"), false, 0);
             return {};
@@ -447,7 +447,7 @@ namespace Scanner {
         const auto entries = lists.GetEntries(scan_.snapshot_list_id);
         if (entries.isEmpty()) {
             scan_.snapshot_list_id = -1;
-            return ScanManager::tr("The copy of the base IP list is gone; restart the scan");
+            return ScanManager::tr("The copy of the base IP list is gone. Restart the scan");
         }
         spec_ = scanWorkerBuildSpec(entries, scan_.config.ports, scan_.config.PortModeKey(),
                                     scan_.config.shuffle, scan_.seed);
@@ -471,7 +471,7 @@ namespace Scanner {
             quint64 &cursor = rescan ? scan_.rescan_cursor : scan_.cursor;
             const quint64 total = rescan ? scan_.rescan_total : scan_.total;
             if (!rescan && scan_.config.stopAfter > 0 && scan_.found >= scan_.config.stopAfter) {
-                pushLog(ScanManager::tr("Found %n result(s); stopping as configured", nullptr, scan_.found));
+                pushLog(ScanManager::tr("Found %n result(s). Stopping as configured", nullptr, scan_.found));
                 completed = true;
                 return {};
             }
@@ -515,13 +515,13 @@ namespace Scanner {
                 if ((!ipv4Up && !ipv6Up) || ipv4Blocks || ipv6Blocks) {
                     unverified = true;
                     networkError = ipv4Up && ipv6Blocks
-                                       ? ScanManager::tr("IPv6 is unreachable from this network; scan paused (turn off IPv6 scanning to go on)")
-                                       : ScanManager::tr("Network appears to be down; scan paused");
+                                       ? ScanManager::tr("IPv6 is unreachable from this network. Scan paused (turn off IPv6 scanning to go on)")
+                                       : ScanManager::tr("Network appears to be down. Scan paused");
                     if (!detail.isEmpty()) MW_show_log(ScanManager::tr("Scan %1: network check failed: %2").arg(scanId_).arg(detail));
                 } else if (rescan) {
                     if (!ipv4Up && ipv4Failed)
-                        pushLog(ScanManager::tr("IPv4 is unreachable from this network; IPv4 results were kept"));
-                    if (!ipv6Up && ipv6Failed) pushLog(ScanManager::tr("IPv6 is unreachable from this network; IPv6 results were kept"));
+                        pushLog(ScanManager::tr("IPv4 is unreachable from this network. IPv4 results were kept"));
+                    if (!ipv6Up && ipv6Failed) pushLog(ScanManager::tr("IPv6 is unreachable from this network. IPv6 results were kept"));
                 }
             }
 
@@ -576,7 +576,7 @@ namespace Scanner {
         const qsizetype hitsBefore = result.hits.size();
         const auto reportRescued = qScopeGuard([&] {
             if (const auto rescued = static_cast<int>(result.hits.size() - hitsBefore); rescued > 0)
-                pushLog(ScanManager::tr("%n result(s) passed only on a retry; the network fails some attempts at random", nullptr, rescued));
+                pushLog(ScanManager::tr("%n result(s) passed only on a retry. The network fails some attempts at random", nullptr, rescued));
         });
         for (int round = 0; round < kScanWorkerRescanRetries && !result.failures.isEmpty(); ++round) {
             for (int waited = 0; waited < kScanWorkerRetryDelayMs && !stop_; waited += 100) QThread::msleep(100);

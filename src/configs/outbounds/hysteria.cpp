@@ -125,7 +125,7 @@ namespace Configs {
             if (!hopping || !interval.trimmed().isEmpty()) return {};
             const auto maxNs = Validation::ParseDurationNs(intervalMax);
             if (!maxNs || *maxNs <= 0) return {};
-            return QCoreApplication::translate("Validation", "Ignored without a Hop Interval; set one as well, for example 30s with a maximum of 60s.");
+            return QCoreApplication::translate("Validation", "Ignored without a Hop Interval. Set one as well, for example 30s with a maximum of 60s.");
         }
 
         QString HysteriaV1Speed(qint64 upMbps, qint64 downMbps) {
@@ -135,9 +135,9 @@ namespace Configs {
 
         QString HysteriaGeckoSizes(qint64 minSize, qint64 maxSize) {
             if (minSize < 0 || maxSize < 0 || minSize > 2048 || maxSize > 2048)
-                return QCoreApplication::translate("Validation", "Packet sizes must be from 0 to 2048; 0 uses the default.");
+                return QCoreApplication::translate("Validation", "Packet sizes must be from 0 to 2048, where 0 uses the default.");
             if ((minSize == 0 ? 512 : minSize) <= (maxSize == 0 ? 1200 : maxSize)) return {};
-            return QCoreApplication::translate("Validation", "The minimum packet size must not exceed the maximum; 0 means the default, 512 for the minimum and 1200 for the maximum.");
+            return QCoreApplication::translate("Validation", "The minimum packet size must not exceed the maximum, where 0 means the default, 512 for the minimum and 1200 for the maximum.");
         }
 
         QString HysteriaAuth(const QString &type, const QString &auth) {
@@ -149,7 +149,7 @@ namespace Configs {
 
         QString HysteriaAuthType(const QString &type, const QString &auth) {
             if (!type.isEmpty() || auth.isEmpty()) return {};
-            return QCoreApplication::translate("Validation", "Choose an authentication type; without one the payload is not sent.");
+            return QCoreApplication::translate("Validation", "Choose an authentication type. Without one the payload is not sent.");
         }
 
         QString HysteriaRealm(const QString &url, const QString &id, const QStringList &stunServers, bool portMapping,
@@ -362,7 +362,7 @@ namespace Configs {
             }
             // The official client accepts a pin of any certificate in the chain; sing-box checks only the server's own.
             if (pinned) {
-                ParseDiag::Warn("pinSHA256", QCoreApplication::translate("Validation", "Only the server's own certificate is checked against this pin; if it is the hash of an intermediate or root certificate, the connection will fail."));
+                ParseDiag::Warn("pinSHA256", QCoreApplication::translate("Validation", "Only the server's own certificate is checked against this pin. If it is the hash of an intermediate or root certificate, the connection will fail."));
             }
         }
         quic->ParseFromLink(link);

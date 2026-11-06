@@ -67,10 +67,10 @@ namespace Configs {
             if (key.isEmpty() || (key.contains("-----BEGIN ") && key.contains("PRIVATE KEY-----"))) return {};
             static const QRegularExpression publicKey(QStringLiteral("^(\\S+\\s+)?(ssh-|ecdsa-sha2-|sk-)\\S+\\s+AAAA"));
             if (publicKey.match(key).hasMatch()) {
-                return QCoreApplication::translate("Validation", "This is a public key; paste the private key, the block that starts with -----BEGIN and ends with PRIVATE KEY-----.");
+                return QCoreApplication::translate("Validation", "This is a public key. Paste the private key, the block that starts with -----BEGIN and ends with PRIVATE KEY-----.");
             }
             if (key.startsWith("PuTTY-User-Key-File")) {
-                return QCoreApplication::translate("Validation", "PuTTY keys are not supported; export the key in OpenSSH format with PuTTYgen.");
+                return QCoreApplication::translate("Validation", "PuTTY keys are not supported. Export the key in OpenSSH format with PuTTYgen.");
             }
             return QCoreApplication::translate("Validation", "Not a private key: paste the whole block from -----BEGIN to the PRIVATE KEY----- line.");
         }
@@ -111,7 +111,7 @@ namespace Configs {
         QString SshKeySources(const QString& privateKey, const QString& privateKeyPath)
         {
             if (privateKey.trimmed().isEmpty() || privateKeyPath.trimmed().isEmpty()) return {};
-            return QCoreApplication::translate("Validation", "Both a pasted key and a key file are set; the pasted key is used.");
+            return QCoreApplication::translate("Validation", "Both a pasted key and a key file are set. The pasted key is used.");
         }
     }
 

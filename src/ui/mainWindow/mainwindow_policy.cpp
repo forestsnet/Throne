@@ -147,7 +147,7 @@ bool MainWindow::offerLeftoverTunAdapterRetry(const QString &error) {
         QMessageBox::Information,
         tr("Leftover Tun adapter"),
         tr("Windows was still holding the Tun adapter from an earlier session that did not close cleanly. "
-           "Starting the profile again usually works; if it keeps failing, restart Windows.\n\nError: %1").arg(error),
+           "Starting the profile again usually works. If it keeps failing, restart Windows.\n\nError: %1").arg(error),
         QMessageBox::NoButton,
         this
     );

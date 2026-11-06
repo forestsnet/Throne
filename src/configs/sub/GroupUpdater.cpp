@@ -1007,7 +1007,7 @@ namespace Subscription {
             auto outcome = groupUpdaterFailure(gid, UpdateOutcome::Failure::Fetch, groupUpdaterFetchError(error));
             outcome.report.addFatal(fetchFailure(error));
             if (surface == Surface::Report) {
-                outcome.report.addFatal(QCoreApplication::translate("Validation", "The group %1 was created, but its first download failed. Update it to try again; if the download keeps failing, try another TLS version, HTTP version or User Agent in the group's Advanced settings.").arg(group->name));
+                outcome.report.addFatal(QCoreApplication::translate("Validation", "The group %1 was created, but its first download failed. Update it to try again. If the download keeps failing, try another TLS version, HTTP version or User Agent in the group's Advanced settings.").arg(group->name));
             }
             if (surface != Surface::Log) ShowImportReport(reportTitle(surface, group->name), outcome.report);
             return outcome;

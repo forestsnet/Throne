@@ -97,7 +97,7 @@ namespace Configs {
         outbound::ParseFromClash(object);
         uuid = QString::fromStdString(object.uuid);
         if (uuid.trimmed().isEmpty()) {
-            ParseDiag::Error("uuid", QCoreApplication::translate("Validation", "Missing UUID. TUIC v4 (token authentication) is not supported; only TUIC v5 servers work."));
+            ParseDiag::Error("uuid", QCoreApplication::translate("Validation", "Missing UUID. TUIC v4 (token authentication) is not supported. Only TUIC v5 servers work."));
             return false;
         }
         password = QString::fromStdString(object.password);

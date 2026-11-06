@@ -723,14 +723,14 @@ namespace Configs {
         QString routeRuleDomainProblem(const QString& value, Validation::Severity* severity) {
             *severity = Validation::Severity::Warning;
             if (value.contains(QStringLiteral("://")))
-                return QCoreApplication::translate("Validation", "Write only the domain, without a scheme such as https://; as written, this never matches.");
+                return QCoreApplication::translate("Validation", "Write only the domain, without a scheme such as https://. As written, this never matches.");
             if (std::any_of(value.begin(), value.end(), [](QChar c) { return c.isSpace(); }))
                 return QCoreApplication::translate("Validation", "A domain has no spaces in it, so this never matches.");
-            if (value.contains(u'/')) return QCoreApplication::translate("Validation", "Write only the domain, without a path; as written, this never matches.");
+            if (value.contains(u'/')) return QCoreApplication::translate("Validation", "Write only the domain, without a path. As written, this never matches.");
             if (value.contains(u':'))
-                return QCoreApplication::translate("Validation", "A domain has no port or ':' in it, so this never matches; match ports and IP addresses with conditions of their own.");
+                return QCoreApplication::translate("Validation", "A domain has no port or ':' in it, so this never matches. Match ports and IP addresses with conditions of their own.");
             if (value != value.toLower())
-                return QCoreApplication::translate("Validation", "The core compares lowercase host names, so this never matches; write it in lowercase.");
+                return QCoreApplication::translate("Validation", "The core compares lowercase host names, so this never matches. Write it in lowercase.");
             return {};
         }
 
@@ -738,7 +738,7 @@ namespace Configs {
         QString routeRuleOverrideAddressProblem(const QString& value) {
             if (value.startsWith(u'[')) {
                 if (value.size() > 2 && value.endsWith(u']')) return Validation::Ip(value.mid(1, value.size() - 2));
-                return QCoreApplication::translate("Validation", "Write an IPv6 address as 2001:db8::1 or [2001:db8::1]; a port goes in override_port.");
+                return QCoreApplication::translate("Validation", "Write an IPv6 address as 2001:db8::1 or [2001:db8::1]. A port goes in override_port.");
             }
             if (Validation::Ip(value).isEmpty()) return {};
             if (routeRuleHasPortSuffix(value))
@@ -750,7 +750,7 @@ namespace Configs {
             const QString bare = value.startsWith(u'[') && value.endsWith(u']') ? value.mid(1, value.size() - 2) : value;
             if (Validation::Ip(bare).isEmpty()) {
                 *severity = Validation::Severity::Warning;
-                return QCoreApplication::translate("Validation", "An IP address sends no server name; use a host name such as www.example.com.");
+                return QCoreApplication::translate("Validation", "An IP address sends no server name. Use a host name such as www.example.com.");
             }
             if (!value.contains(QStringLiteral("://")) && routeRuleHasPortSuffix(value))
                 return QCoreApplication::translate("Validation", "Write only the host name, without a port.");
@@ -765,17 +765,17 @@ namespace Configs {
         // Mirrors calculatePrerequisites' checks of route outbounds, which otherwise fail the start without naming the rule.
         QString routeRuleOutboundProblem(int id) {
             if (id == proxyID || id == directID || id == warpBypassID) return {};
-            if (id < 0) return QCoreApplication::translate("Validation", "Not a valid outbound; pick another one.");
+            if (id < 0) return QCoreApplication::translate("Validation", "Not a valid outbound. Pick another one.");
             const auto ent = dataManager->profilesRepo->GetProfile(id);
             if (ent == nullptr || ent->outbound == nullptr)
-                return QCoreApplication::translate("Validation", "The outbound profile no longer exists; pick another one.");
+                return QCoreApplication::translate("Validation", "The outbound profile no longer exists. Pick another one.");
             const QString name = ent->outbound->DisplayName();
             if (routeRuleUnroutable(ent))
                 return QCoreApplication::translate("Validation", "Routing rules cannot use \"%1\": extra core profiles and full configs are not supported. Pick another outbound.").arg(name);
             if (ent->type != "chain") return {};
             const auto chain = ent->Chain();
             if (chain == nullptr || chain->list.isEmpty())
-                return QCoreApplication::translate("Validation", "The chain \"%1\" has no hops; pick another outbound.").arg(name);
+                return QCoreApplication::translate("Validation", "The chain \"%1\" has no hops. Pick another outbound.").arg(name);
             for (const int hopID: chain->list) {
                 const auto hop = dataManager->profilesRepo->GetProfile(hopID);
                 if (hop == nullptr || hop->type == "chain" || routeRuleUnroutable(hop))
@@ -872,7 +872,7 @@ namespace Configs {
             }
         } else if (attr == "process_name") {
             if (value.contains(u'/') || value.contains(u'\\')) {
-                message = QCoreApplication::translate("Validation", "Write only the program's file name, such as chrome.exe; a name with a path never matches. Match a full path with a process path condition instead.");
+                message = QCoreApplication::translate("Validation", "Write only the program's file name, such as chrome.exe. A name with a path never matches. Match a full path with a process path condition instead.");
                 severity = Severity::Warning;
             }
         } else if (attr == "process_path") {
@@ -940,7 +940,7 @@ namespace Configs {
         if (act == "route-options") {
             if (tls_fragment && tls_record_fragment) {
                 add(Severity::Error, "tls_record_fragment",
-                    QCoreApplication::translate("Validation", "A route-options rule cannot turn on both tls_fragment and tls_record_fragment; keep one, or use a route rule, which accepts both."),
+                    QCoreApplication::translate("Validation", "A route-options rule cannot turn on both tls_fragment and tls_record_fragment. Keep one, or use a route rule, which accepts both."),
                     "tls_fragment");
             }
             const bool anyOption = !override_address.trimmed().isEmpty() || override_port.trimmed().toInt() > 0 || tls_fragment ||
@@ -966,7 +966,7 @@ namespace Configs {
             // The block or dns_out outbound is what makes a route rule a reject or hijack-dns one.
             if (attr == "outbound" && action == "route") continue;
             add(Severity::Warning, attr,
-                QCoreApplication::translate("Validation", "A %1 rule ignores it; it applies only to these actions: %2.").arg(act, it->join(QStringLiteral(", "))),
+                QCoreApplication::translate("Validation", "A %1 rule ignores it. It applies only to these actions: %2.").arg(act, it->join(QStringLiteral(", "))),
                 "action");
         }
 

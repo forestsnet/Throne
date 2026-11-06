@@ -166,7 +166,7 @@ namespace Configs {
             }
         }
         if (extraAddresses > 0) {
-            ParseDiag::Warn("address", QCoreApplication::translate("Validation", "The link lists %n more server address(es); only the first one was imported.", nullptr, extraAddresses));
+            ParseDiag::Warn("address", QCoreApplication::translate("Validation", "The link lists %n more server address(es). Only the first one was imported.", nullptr, extraAddresses));
         }
         tls->enabled = true;
         return haveAddress && !tls->server_name.isEmpty() && !username.isEmpty() && !password.isEmpty();

@@ -169,7 +169,7 @@ void EditOpenConnect::bindValidation(Validation::Form &form) {
         for (const auto &entry: o.form_entries) advanced << entry->value;
         for (const auto &value: advanced) {
             if (!OtpPlaceholderUnbound(value, o.otp_profile_id).isEmpty()) {
-                return tr("The token or form entries under Advanced use %1; select an authenticator entry.").arg(Configs::kOtpPlaceholder);
+                return tr("The token or form entries under Advanced use %1. Select an authenticator entry.").arg(Configs::kOtpPlaceholder);
             }
         }
         return QString();

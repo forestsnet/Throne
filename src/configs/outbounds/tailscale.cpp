@@ -38,7 +38,7 @@ namespace Configs {
             const auto slash = route.lastIndexOf('/');
             const QHostAddress address(route.left(slash));
             if (route.mid(slash + 1) == "0" && (address == QHostAddress(QHostAddress::AnyIPv4) || address == QHostAddress(QHostAddress::AnyIPv6))) {
-                return QCoreApplication::translate("Validation", "Do not advertise the default route; tick Advertise exit node instead.");
+                return QCoreApplication::translate("Validation", "Do not advertise the default route. Tick Advertise exit node instead.");
             }
             return {};
         }
@@ -46,7 +46,7 @@ namespace Configs {
         QString TailscaleExitNode(const QString& exitNode, bool advertiseExitNode)
         {
             if (!advertiseExitNode || exitNode.trimmed().isEmpty()) return {};
-            return QCoreApplication::translate("Validation", "A node that advertises itself as an exit node cannot use another one; clear the exit node or untick Advertise exit node.");
+            return QCoreApplication::translate("Validation", "A node that advertises itself as an exit node cannot use another one. Clear the exit node or untick Advertise exit node.");
         }
     }
 

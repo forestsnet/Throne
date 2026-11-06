@@ -12,7 +12,7 @@ namespace Configs {
         QString HttpAuth(const QString &username, const QString &password)
         {
             if (password.isEmpty() || !username.isEmpty()) return {};
-            return QCoreApplication::translate("Validation", "Enter a user name too; without one the password is not sent.");
+            return QCoreApplication::translate("Validation", "Enter a user name too. Without one the password is not sent.");
         }
     }
 

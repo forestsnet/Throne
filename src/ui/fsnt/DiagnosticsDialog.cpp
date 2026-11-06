@@ -65,7 +65,7 @@ FsntDiagnosticsDialog::FsntDiagnosticsDialog(QWidget *parent) : QDialog(parent) 
 
     auto *hint = new QLabel(
         tr("The client checks itself and says what to fix. Everything here runs on this "
-           "computer; nothing is sent anywhere."), this);
+           "computer. Nothing is sent anywhere."), this);
     hint->setObjectName("fsntDialogHint");
     hint->setWordWrap(true);
     layout->addWidget(hint);

@@ -59,7 +59,7 @@ namespace Configs {
         QString TlsFragmentSizeLarge(const QString& spec)
         {
             if (!TlsFragmentSize(spec).isEmpty() || outboundFragmentMax(spec) <= kFragmentSafeChunk) return {};
-            return QCoreApplication::translate("Validation", "Fragments above 400 bytes can fail the connection when the ClientHello is very large; a maximum of 400 or less is always safe.");
+            return QCoreApplication::translate("Validation", "Fragments above 400 bytes can fail the connection when the ClientHello is very large. A maximum of 400 or less is always safe.");
         }
 
         QString TlsFragmentSleep(const QString& spec)

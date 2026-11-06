@@ -80,7 +80,7 @@ namespace Configs {
             if (!aes128 && !chacha && method != "2022-blake3-aes-256-gcm") return password.isEmpty() ? Validation::Required(password) : QString();
             const QStringList keys = password.split(u':');
             if (chacha && keys.size() > 1)
-                return QCoreApplication::translate("Validation", "2022-blake3-chacha20-poly1305 takes a single key; several keys joined with : need an AES 2022 method.");
+                return QCoreApplication::translate("Validation", "2022-blake3-chacha20-poly1305 takes a single key. Several keys joined with : need an AES 2022 method.");
             for (qsizetype i = 0; i < keys.size(); ++i) {
                 const QString message = shadowsocksKeyMessage(keys[i], aes128 ? 16 : 32);
                 if (message.isEmpty()) continue;
@@ -189,7 +189,7 @@ namespace Configs {
         uot = object.udp_over_tcp;
         if (!object.plugin.empty()) {
             if (object.plugin != "v2ray-plugin" && object.plugin != "obfs") {
-                ParseDiag::Error("plugin", QCoreApplication::translate("Validation", "Unsupported plugin; only obfs and v2ray-plugin work."), QString::fromStdString(object.plugin));
+                ParseDiag::Error("plugin", QCoreApplication::translate("Validation", "Unsupported plugin. Only obfs and v2ray-plugin work."), QString::fromStdString(object.plugin));
             } else if (object.plugin == "v2ray-plugin") {
                 plugin = "v2ray-plugin";
                 QStringList ssPlugin;

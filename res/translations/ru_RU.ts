@@ -324,11 +324,11 @@ Outbound: %4</translation>
         <translation>Нажмите для сортировки по Outbound</translation>
     </message>
     <message>
-        <source>Click to sort by traffic; right-click to choose total/down/up</source>
+        <source>Click to sort by traffic. Right-click to choose total/down/up</source>
         <translation>Нажмите, чтобы отсортировать по трафику. ПКМ — выбор: всего/получено/отправлено</translation>
     </message>
     <message>
-        <source>Click to sort by speed; right-click to choose total/down/up</source>
+        <source>Click to sort by speed. Right-click to choose total/down/up</source>
         <translation>Нажмите, чтобы отсортировать по скорости. ПКМ — выбор: всего/скачивание/отдача</translation>
     </message>
 </context>
@@ -776,7 +776,7 @@ It stays a preference, not a lock: if that profile stops working the selector st
         <translation>Создать резервную копию</translation>
     </message>
     <message>
-        <source>Restore from a backup file. You can choose which parts to restore; each selected part replaces the current data. The application restarts after restore.</source>
+        <source>Restore from a backup file. You can choose which parts to restore. Each selected part replaces the current data. The application restarts after restore.</source>
         <translation>Восстановление из файла резервной копии. Можно выбрать, какие разделы восстановить. Каждый выбранный раздел заменит текущие данные. После восстановления приложение перезапустится.</translation>
     </message>
     <message>
@@ -1038,7 +1038,7 @@ The local network stays reachable unless Private Range Bypass is turned off in T
         <translation>Интервал (мин, не менее 30)</translation>
     </message>
     <message>
-        <source>Subscriptions whose server sends an update interval (profile-update-interval) follow it; the interval above applies when a server sends none. Groups can override this in their Advanced settings.</source>
+        <source>Subscriptions whose server sends an update interval (profile-update-interval) follow it. The interval above applies when a server sends none. Groups can override this in their Advanced settings.</source>
         <translation>Если сервер подписки передает интервал обновления (profile-update-interval), используется он. Указанный выше интервал применяется, когда сервер его не передает. Группы могут переопределить это в своих дополнительных настройках.</translation>
     </message>
     <message>
@@ -1054,7 +1054,7 @@ The local network stays reachable unless Private Range Bypass is turned off in T
         <translation>Разрешить остановку активного профиля</translation>
     </message>
     <message>
-        <source>TLS versions offered when fetching subscriptions. Some servers answer the default handshake with a CAPTCHA or a block page; TLS 1.2 often gets through.</source>
+        <source>TLS versions offered when fetching subscriptions. Some servers answer the default handshake with a CAPTCHA or a block page. TLS 1.2 often gets through.</source>
         <translation>Версии TLS, предлагаемые при загрузке подписок. Некоторые серверы отвечают на стандартный TLS-хендшейк капчей или страницей блокировки. С TLS 1.2 это часто удается обойти.</translation>
     </message>
     <message>
@@ -1650,7 +1650,7 @@ Throne will restart to complete the restore.</source>
         <translation>Нечего сохранять в резервную копию</translation>
     </message>
     <message>
-        <source>A subscription update is running; try again when it finishes.</source>
+        <source>A subscription update is running. Try again when it finishes.</source>
         <translation>Выполняется обновление подписки. Повторите попытку после его завершения.</translation>
     </message>
     <message>
@@ -1768,7 +1768,7 @@ Throne will restart to complete the restore.</source>
         <translation>User Agent</translation>
     </message>
     <message>
-        <source>TLS versions offered when fetching this subscription. Some servers answer the default handshake with a CAPTCHA or a block page; TLS 1.2 often gets through. Keep Default follows the Subscription settings.</source>
+        <source>TLS versions offered when fetching this subscription. Some servers answer the default handshake with a CAPTCHA or a block page. TLS 1.2 often gets through. Keep Default follows the Subscription settings.</source>
         <translation>Версии TLS, предлагаемые при загрузке этой подписки. Некоторые серверы отвечают на стандартный TLS-хендшейк CAPTCHA или страницей блокировки. С TLS 1.2 часто удаётся пройти. «По умолчанию» — значение из настроек (вкладка «Подписка»).</translation>
     </message>
     <message>
@@ -1848,7 +1848,7 @@ Throne will restart to complete the restore.</source>
         <translation>Интервал обновления</translation>
     </message>
     <message>
-        <source>Use the update interval sent by the subscription server; the interval above applies when it sends none. Keep Default follows the Subscription settings.</source>
+        <source>Use the update interval sent by the subscription server. The interval above applies when it sends none. Keep Default follows the Subscription settings.</source>
         <translation>Использовать интервал обновления, присланный сервером подписки. Если сервер его не присылает, действует интервал выше. «По умолчанию» — значение из настроек (вкладка «Подписка»).</translation>
     </message>
     <message>
@@ -2407,7 +2407,7 @@ Throne will restart to complete the restore.</source>
         <translation>Наборы шифров</translation>
     </message>
     <message>
-        <source>Colon-separated TLS 1.2 cipher suite names. A uTLS fingerprint ignores them; use the &quot;unsafe&quot; fingerprint (Go&apos;s own TLS stack) to apply them.</source>
+        <source>Colon-separated TLS 1.2 cipher suite names. A uTLS fingerprint ignores them. Use the &quot;unsafe&quot; fingerprint (Go&apos;s own TLS stack) to apply them.</source>
         <translation>Названия наборов шифров TLS 1.2 через двоеточие. uTLS fingerprint их игнорирует. Чтобы они применялись, выберите fingerprint &quot;unsafe&quot; (собственный стек TLS из Go).</translation>
     </message>
     <message>
@@ -2763,7 +2763,7 @@ Throne will restart to complete the restore.</source>
         <translation>Источник: %1.</translation>
     </message>
     <message>
-        <source>Set by %1; the profile&apos;s own address is %2.</source>
+        <source>Set by %1. The profile&apos;s own address is %2.</source>
         <translation>Источник: %1. Собственный адрес профиля — %2.</translation>
     </message>
     <message>
@@ -2897,7 +2897,7 @@ Throne will restart to complete the restore.</source>
         <translation>Uplink HTTP Method</translation>
     </message>
     <message>
-        <source>HTTP method for upload requests. Default: POST. Xray uppercases it; GET is accepted only in packet-up mode.</source>
+        <source>HTTP method for upload requests. Default: POST. Xray uppercases it. GET is accepted only in packet-up mode.</source>
         <translation>HTTP-метод upload-запросов. По умолчанию: POST. Xray переводит значение в верхний регистр. GET принимается только в режиме packet-up.</translation>
     </message>
     <message>
@@ -2905,7 +2905,7 @@ Throne will restart to complete the restore.</source>
         <translation>Uplink Data Placement</translation>
     </message>
     <message>
-        <source>Where upload data is placed. Default: auto. cookie/header are accepted only in packet-up mode; auto/body are always accepted.</source>
+        <source>Where upload data is placed. Default: auto. cookie/header are accepted only in packet-up mode, and auto/body are always accepted.</source>
         <translation>Куда помещаются upload-данные. По умолчанию: auto. cookie/header принимаются только в режиме packet-up, а auto/body принимаются всегда.</translation>
     </message>
     <message>
@@ -2941,7 +2941,7 @@ Throne will restart to complete the restore.</source>
         <translation>Stream Up Server Seconds</translation>
     </message>
     <message>
-        <source>Stream-up server interval for periodic xPaddingBytes keepalive writes, in seconds. Default: 20-80; values &lt;= 0 disable periodic padding.</source>
+        <source>Stream-up server interval for periodic xPaddingBytes keepalive writes, in seconds. Default: 20-80. Values &lt;= 0 disable periodic padding.</source>
         <translation>Серверный интервал stream-up для периодических keepalive-записей xPaddingBytes, в секундах. По умолчанию: 20-80. Значения &lt;= 0 отключают периодический padding.</translation>
     </message>
     <message>
@@ -2973,7 +2973,7 @@ Throne will restart to complete the restore.</source>
         <translation>Session ID Length</translation>
     </message>
     <message>
-        <source>Length range of the generated session id, e.g. 8-16. Only used together with sessionIDTable; &quot;from&quot; must be greater than 0.</source>
+        <source>Length range of the generated session id, e.g. 8-16. Only used together with sessionIDTable, and &quot;from&quot; must be greater than 0.</source>
         <translation>Диапазон длины генерируемого session id, например 8-16. Используется только вместе с sessionIDTable. Значение &quot;from&quot; должно быть больше 0.</translation>
     </message>
     <message>
@@ -3013,7 +3013,7 @@ Throne will restart to complete the restore.</source>
         <translation>Клиентский лимит xmux для H2/H3: максимум секунд, пока нижележащее соединение остается переиспользуемым. Пустой xmux по умолчанию: 1800-3000.</translation>
     </message>
     <message>
-        <source>Client-side H2/H3 keepalive interval for underlying connections, in seconds. 0 uses Xray defaults; negative values disable keepalive where supported.</source>
+        <source>Client-side H2/H3 keepalive interval for underlying connections, in seconds. 0 uses Xray defaults. Negative values disable keepalive where supported.</source>
         <translation>Клиентский интервал keepalive для нижележащих H2/H3-соединений, в секундах. 0 использует значения Xray по умолчанию. Отрицательные значения отключают keepalive там, где это поддерживается.</translation>
     </message>
     <message>
@@ -3069,7 +3069,7 @@ Throne will restart to complete the restore.</source>
         <translation>Порт адреса прикрытия. По умолчанию 443.</translation>
     </message>
     <message>
-        <source>Largest upload per file, in bytes. Default: 524288; Xray caps it at 16 MiB.</source>
+        <source>Largest upload per file, in bytes. Default: 524288. Xray caps it at 16 MiB.</source>
         <translation>Наибольший объём одной загрузки, в байтах. По умолчанию 524288, предел Xray — 16 МиБ.</translation>
     </message>
     <message>
@@ -3097,7 +3097,7 @@ Throne will restart to complete the restore.</source>
         <translation>Сколько простаивающая сессия живёт до уборки её файлов, в секундах. По умолчанию 300.</translation>
     </message>
     <message>
-        <source>Parallel storage requests per stream. Default: 8; Xray caps it at 64.</source>
+        <source>Parallel storage requests per stream. Default: 8. Xray caps it at 64.</source>
         <translation>Сколько запросов к хранилищу идёт параллельно на поток. По умолчанию 8, предел Xray — 64.</translation>
     </message>
     <message>
@@ -3720,7 +3720,7 @@ For more information, see the document &quot;Configuration/DNS&quot;.</source>
         <translation>Peer Public Key</translation>
     </message>
     <message>
-        <source>HTTP/3 runs over UDP; HTTP/2 runs over TLS on TCP and works where UDP is blocked.</source>
+        <source>HTTP/3 runs over UDP. HTTP/2 runs over TLS on TCP and works where UDP is blocked.</source>
         <translation>HTTP/3 работает поверх UDP. HTTP/2 — поверх TLS на TCP и работает там, где UDP заблокирован.</translation>
     </message>
     <message>
@@ -3752,7 +3752,7 @@ For more information, see the document &quot;Configuration/DNS&quot;.</source>
         <translation>Отключить IPv6</translation>
     </message>
     <message>
-        <source>Hand out no fake IPv6 addresses; AAAA queries are answered empty.</source>
+        <source>Hand out no fake IPv6 addresses. AAAA queries are answered empty.</source>
         <translation>Не выдавать FakeIP-адреса IPv6. На запросы AAAA даются пустые ответы.</translation>
     </message>
     <message>
@@ -4116,7 +4116,7 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
         <translation>Обновление (%1 / %2)</translation>
     </message>
     <message numerus="yes">
-        <source>%n profile(s) were updated with warnings; see the details.</source>
+        <source>%n profile(s) were updated with warnings. See the details.</source>
         <translation>
             <numerusform>%n профиль обновлен с предупреждениями. См. подробности.</numerusform>
             <numerusform>%n профиля обновлены с предупреждениями. См. подробности.</numerusform>
@@ -4218,7 +4218,7 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
         <translation>OTP</translation>
     </message>
     <message>
-        <source>No usable code; check the secret.</source>
+        <source>No usable code. Check the secret.</source>
         <translation>Не удалось получить код. Проверьте Secret.</translation>
     </message>
     <message>
@@ -4701,7 +4701,7 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
         <translation>Только порты списка</translation>
     </message>
     <message>
-        <source>Your ports are ignored; entries without a port are probed on port 443 (80 for plain HTTP).</source>
+        <source>Your ports are ignored. Entries without a port are probed on port 443 (80 for plain HTTP).</source>
         <translation>Ваши порты игнорируются. Записи без порта проверяются на порту 443 (80 для обычного HTTP).</translation>
     </message>
     <message>
@@ -4953,7 +4953,7 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
         <translation>Минимальная версия TLS выше максимальной, поэтому любой хендшейк завершится ошибкой.</translation>
     </message>
     <message>
-        <source>HTTP/2 needs &quot;h2&quot; in the ALPN list; add it or leave ALPN empty.</source>
+        <source>HTTP/2 needs &quot;h2&quot; in the ALPN list. Add it or leave ALPN empty.</source>
         <translation>Для HTTP/2 нужен &quot;h2&quot; в списке ALPN. Добавьте его или оставьте ALPN пустым.</translation>
     </message>
     <message>
@@ -4965,7 +4965,7 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
         <translation>HTTP/3 требует TLS.</translation>
     </message>
     <message>
-        <source>Stop after must be between %1 and %2 results; leave it empty for no limit.</source>
+        <source>Stop after must be between %1 and %2 results. Leave it empty for no limit.</source>
         <translation>Лимит результатов должен быть от %1 до %2. Оставьте поле пустым, чтобы снять ограничение.</translation>
     </message>
     <message>
@@ -5079,7 +5079,7 @@ Close without saving?</source>
         <translation>Для этого сканирования еще не зарегистрировано устройство.</translation>
     </message>
     <message>
-        <source>The registered device is for %1; register a new one for this mode.</source>
+        <source>The registered device is for %1. Register a new one for this mode.</source>
         <translation>Зарегистрированное устройство предназначено для %1. Зарегистрируйте новое для этого режима.</translation>
     </message>
     <message>
@@ -5364,7 +5364,7 @@ Close without saving?</source>
         <translation>Устранение неполадок</translation>
     </message>
     <message>
-        <source>IPv6 needs an MTU of at least %1; below that the system may drop IPv6 from the Tun.</source>
+        <source>IPv6 needs an MTU of at least %1. Below that the system may drop IPv6 from the Tun.</source>
         <translation>Для IPv6 нужен MTU не меньше %1. При меньшем значении система может отключить IPv6 на интерфейсе TUN.</translation>
     </message>
     <message>
@@ -5406,7 +5406,7 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>Автоматическое перенаправление</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Forwards bypassed traffic straight out of the network interface instead of rebuilding it as a new connection, which is faster and keeps NAT intact for games and P2P. Applies to UDP and ICMP only; TCP still needs to be sniffed and keeps taking the normal direct path.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Forwards bypassed traffic straight out of the network interface instead of rebuilding it as a new connection, which is faster and keeps NAT intact for games and P2P. Applies to UDP and ICMP only. TCP still needs to be sniffed and keeps taking the normal direct path.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Направляет обойдённый (bypassed) трафик напрямую через сетевой интерфейс без пересборки в новое соединение. Это быстрее и сохраняет исходный тип NAT для игр и P2P-сетей. Применяется только к UDP и ICMP. TCP-трафик по-прежнему должен проходить сниффинг и направляется по обычному прямому маршруту.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
@@ -6046,7 +6046,7 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>необязательно — наследует «URL проверки Direct»</translation>
     </message>
     <message>
-        <source>Fetched WITHOUT the proxy to tell a dead internet connection apart from dead servers, and to notice the moment it comes back. Leave empty to inherit the Direct Test URL from Basic Settings, and empty there too to rely on the operating system&apos;s network state. A URL that turns out to be blocked can only delay a resume by a few minutes; it can never keep the selector paused.</source>
+        <source>Fetched WITHOUT the proxy to tell a dead internet connection apart from dead servers, and to notice the moment it comes back. Leave empty to inherit the Direct Test URL from Basic Settings, and empty there too to rely on the operating system&apos;s network state. A URL that turns out to be blocked can only delay a resume by a few minutes. It can never keep the selector paused.</source>
         <translation>Запрашивается БЕЗ прокси, чтобы отличить отсутствие интернета от неработающих серверов и сразу заметить, когда связь вернется. Оставьте пустым, чтобы использовать «URL проверки Direct» из основных настроек. Если пусто и там, используется состояние сети операционной системы. Если этот URL окажется заблокирован, это лишь задержит возобновление на несколько минут, но никогда не оставит автовыбор на паузе.</translation>
     </message>
     <message>
@@ -6070,11 +6070,11 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>%1 — выбран вами, поэтому автовыбор останется на нём, пока профиль работает</translation>
     </message>
     <message>
-        <source>The best profile carries all traffic; the other ready profiles are kept verified so one can take over instantly.</source>
+        <source>The best profile carries all traffic. The other ready profiles are kept verified so one can take over instantly.</source>
         <translation>Лучший профиль обрабатывает весь трафик. Остальные готовые профили регулярно проверяются, чтобы любой из них мог мгновенно его заменить.</translation>
     </message>
     <message>
-        <source>New connections move to another good profile on each rotation; open ones are left alone and finish where they started. Traffic is counted exactly.</source>
+        <source>New connections move to another good profile on each rotation. Open ones are left alone and finish where they started. Traffic is counted exactly.</source>
         <translation>При каждой ротации новые подключения переходят на другой хороший профиль. Открытые остаются на прежнем и завершаются там же. Трафик подсчитывается точно.</translation>
     </message>
     <message>
@@ -6086,11 +6086,11 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>Отметьте хотя бы одну группу, за которой будет следить этот автовыбор.</translation>
     </message>
     <message>
-        <source>%1 of %2 profiles in the checked groups can be used; %3 would run.</source>
+        <source>%1 of %2 profiles in the checked groups can be used, and %3 would run.</source>
         <translation>Профилей в отмеченных группах: %2, можно использовать: %1, будет запущено: %3.</translation>
     </message>
     <message numerus="yes">
-        <source>%n tracked group(s) no longer exist and are ignored; saving removes them.</source>
+        <source>%n tracked group(s) no longer exist and are ignored. Saving removes them.</source>
         <translation>
             <numerusform>%n отслеживаемая группа больше не существует и игнорируется. При сохранении она будет удалена.</numerusform>
             <numerusform>%n отслеживаемые группы больше не существуют и игнорируются. При сохранении они будут удалены.</numerusform>
@@ -6137,7 +6137,7 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>Выбор профиля</translation>
     </message>
     <message>
-        <source>A custom %1 config cannot be a hop; only custom outbounds can.</source>
+        <source>A custom %1 config cannot be a hop. Only custom outbounds can.</source>
         <translation>Пользовательская конфигурация %1 не может быть звеном. Звеньями могут быть только пользовательские outbound.</translation>
     </message>
     <message>
@@ -6157,15 +6157,15 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>Пользовательская конфигурация Xray не может находиться в одной цепочке с другими профилями Xray.</translation>
     </message>
     <message>
-        <source>An Extra Core profile can only be the final hop; move it to the top of the list.</source>
+        <source>An Extra Core profile can only be the final hop. Move it to the top of the list.</source>
         <translation>Профиль с доп. ядром может быть только последним звеном. Переместите его в начало списка.</translation>
     </message>
     <message>
-        <source>A custom Xray config can only be the final hop; move it to the top of the list.</source>
+        <source>A custom Xray config can only be the final hop. Move it to the top of the list.</source>
         <translation>Пользовательская конфигурация Xray может быть только последним звеном. Переместите ее в начало списка.</translation>
     </message>
     <message>
-        <source>The chain switches between %1 and Xray too often; keep the Xray hops together, between %1 hops.</source>
+        <source>The chain switches between %1 and Xray too often. Keep the Xray hops together, between %1 hops.</source>
         <translation>Цепочка слишком часто переключается между %1 и Xray. Расположите звенья Xray подряд, между звеньями %1.</translation>
     </message>
     <message>
@@ -6177,7 +6177,7 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>Звенья</translation>
     </message>
     <message numerus="yes">
-        <source>%n hop(s) no longer exist or cannot be hops, so they were left out; saving removes them.</source>
+        <source>%n hop(s) no longer exist or cannot be hops, so they were left out. Saving removes them.</source>
         <translation>
             <numerusform>%n звено больше не существует или не может быть звеном, поэтому оно пропущено. При сохранении оно будет удалено.</numerusform>
             <numerusform>%n звена больше не существуют или не могут быть звеньями, поэтому они пропущены. При сохранении они будут удалены.</numerusform>
@@ -6185,7 +6185,7 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         </translation>
     </message>
     <message>
-        <source>Hop %1 no longer exists; replace or remove it.</source>
+        <source>Hop %1 no longer exists. Replace or remove it.</source>
         <translation>Звено %1 больше не существует. Замените или удалите его.</translation>
     </message>
     <message>
@@ -6402,7 +6402,7 @@ rendezvous service. Replaces the server address and port.</source>
         <translation>Параметры Realm</translation>
     </message>
     <message>
-        <source>Gecko obfuscation needs a password; without one, obfuscation is off.</source>
+        <source>Gecko obfuscation needs a password. Without one, obfuscation is off.</source>
         <translation>Для обфускации gecko нужен пароль. Без него обфускация выключена.</translation>
     </message>
 </context>
@@ -6477,7 +6477,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
 <context>
     <name>EditMasque</name>
     <message>
-        <source>Base64 DER of the enrolled ECDSA P-256 key; it signs the TLS client certificate.</source>
+        <source>Base64 DER of the enrolled ECDSA P-256 key. It signs the TLS client certificate.</source>
         <translation>Зарегистрированный ключ ECDSA P-256 в формате Base64 DER. Им подписывается клиентский TLS-сертификат.</translation>
     </message>
     <message>
@@ -6505,7 +6505,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>MTU</translation>
     </message>
     <message>
-        <source>HTTP/3 runs over UDP; HTTP/2 runs over TLS on TCP and works where UDP is blocked.</source>
+        <source>HTTP/3 runs over UDP. HTTP/2 runs over TLS on TCP and works where UDP is blocked.</source>
         <translation>HTTP/3 работает по протоколу UDP. HTTP/2 работает по протоколу TLS над TCP и поддерживается там, где UDP заблокирован.</translation>
     </message>
     <message>
@@ -6650,7 +6650,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Путь на сервере</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Preferred tunnel MTU. Values below 576 are treated as 576; the maximum is 65535.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Preferred tunnel MTU. Values below 576 are treated as 576. The maximum is 65535.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Предпочтительный MTU туннеля. Значения меньше 576 считаются равными 576. Максимум — 65535.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
@@ -6662,7 +6662,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>OTP</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Traffic that falls through to this profile reaches the tunnel only when the destination is inside a subnet the VPN server advertises; anything else is blocked. Routing rules that name this profile explicitly are not affected and always win.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Traffic that falls through to this profile reaches the tunnel only when the destination is inside a subnet the VPN server advertises. Anything else is blocked. Routing rules that name this profile explicitly are not affected and always win.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Трафик, попадающий в этот профиль по умолчанию, идет в туннель, только если адрес назначения входит в подсеть, объявленную VPN-сервером. Остальной трафик блокируется. Правила маршрутизации, явно указывающие этот профиль, не затрагиваются и всегда имеют приоритет.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
@@ -6686,7 +6686,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>TLS</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Disables verification of the server certificate and hostname. This lets an active attacker impersonate the VPN server; prefer a CA certificate or a peer fingerprint.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Disables verification of the server certificate and hostname. This lets an active attacker impersonate the VPN server. Prefer a CA certificate or a peer fingerprint.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Отключает проверку сертификата и имени хоста сервера. Это позволяет активному злоумышленнику выдать себя за VPN-сервер. Лучше используйте сертификат CA или отпечаток сервера.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
@@ -6754,7 +6754,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Этот протокол не принимает значение «Сообщаемая ОС» &quot;%1&quot;, заданное в разделе «Дополнительно».</translation>
     </message>
     <message>
-        <source>The token or form entries under Advanced use %1; select an authenticator entry.</source>
+        <source>The token or form entries under Advanced use %1. Select an authenticator entry.</source>
         <translation>Токен или поля формы в разделе «Дополнительно» используют %1. Выберите запись аутентификатора.</translation>
     </message>
     <message>
@@ -6833,7 +6833,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Режим</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A Base32 secret, a base32: prefixed secret or an otpauth:// URI for totp and hotp; the encoded CTF content for stoken; the access token for oidc. Conflicts with the secret path.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;For totp and hotp, a Base32 secret, a base32: prefixed secret or an otpauth:// URI. For stoken, the encoded CTF content. For oidc, the access token. Conflicts with the secret path.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Для totp и hotp — Secret в формате Base32, Secret с префиксом base32: или URI otpauth://. Для stoken — закодированное содержимое CTF. Для oidc — токен доступа. Несовместимо с полем «Путь к Secret».&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
@@ -7328,7 +7328,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>OTP</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Traffic that falls through to this profile reaches the tunnel only when the destination is inside a subnet the VPN server advertises; anything else is blocked. Routing rules that name this profile explicitly are not affected and always win.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Traffic that falls through to this profile reaches the tunnel only when the destination is inside a subnet the VPN server advertises. Anything else is blocked. Routing rules that name this profile explicitly are not affected and always win.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Трафик, попадающий в этот профиль по умолчанию, идет в туннель, только если адрес назначения входит в подсеть, объявленную VPN-сервером. Остальной трафик блокируется. Правила маршрутизации, явно указывающие этот профиль, не затрагиваются и всегда имеют приоритет.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
@@ -7388,7 +7388,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Ключ</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;tls-auth key direction. Only used when the type is tls_auth; the key is bidirectional when empty.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;tls-auth key direction. Only used when the type is tls_auth. The key is bidirectional when empty.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Направление ключа tls-auth. Используется, только если выбран тип tls_auth. Если пусто, ключ двунаправленный.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
@@ -7443,7 +7443,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Сессия</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OpenVPN session mode. tls is used by default; static_key is a deprecated mode without a TLS control channel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OpenVPN session mode. tls is used by default, and static_key is a deprecated mode without a TLS control channel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Режим сессии OpenVPN. По умолчанию используется tls, а static_key — устаревший режим без управляющего канала TLS.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
@@ -7655,7 +7655,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>EKU сертификата сервера</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Peer certificate purpose check. server is used by default; none disables the check.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Peer certificate purpose check. server is used by default, and none disables the check.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Проверка назначения сертификата сервера. По умолчанию используется server, а none отключает проверку.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
@@ -7663,7 +7663,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Назначение сертификата (remote-cert-tls)</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;legacy is used by default. insecure accepts MD5 and SHA-1 signed chains; preferred requires stronger signatures and keys.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;legacy is used by default. insecure accepts MD5 and SHA-1 signed chains, and preferred requires stronger signatures and keys.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;По умолчанию используется legacy. insecure принимает цепочки с подписями MD5 и SHA-1, а preferred требует более стойких подписей и ключей.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
@@ -7759,7 +7759,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Отключить ограничение MSS</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;mtu also accounts for the outer IP and transport headers; fixed treats MSS Fix as an inner IPv4 packet size. Requires MSS Fix.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;mtu also accounts for the outer IP and transport headers, and fixed treats MSS Fix as an inner IPv4 packet size. Requires MSS Fix.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;mtu также учитывает внешние заголовки IP и транспорта, а fixed считает MSS Fix размером внутреннего IPv4-пакета. Требует MSS Fix.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
@@ -8011,7 +8011,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Фильтры pull</translation>
     </message>
     <message>
-        <source>Static key mode does not use the credentials, certificates or control channel wrap on the profile page; clear them there.</source>
+        <source>Static key mode does not use the credentials, certificates or control channel wrap on the profile page. Clear them there.</source>
         <translation>В режиме статического ключа учетные данные, сертификаты и защита управляющего канала со страницы профиля не используются. Очистите их там.</translation>
     </message>
 </context>
@@ -8239,7 +8239,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Пользовательский SNI</translation>
     </message>
     <message>
-        <source>Server name sent in the TLS ClientHello instead of the TLS server name, which is still used to verify the certificate; not compatible with ECH or REALITY</source>
+        <source>Server name sent in the TLS ClientHello instead of the TLS server name, which is still used to verify the certificate. Not compatible with ECH or REALITY</source>
         <translation>Имя сервера, отправляемое в TLS ClientHello вместо имени сервера TLS (оно по-прежнему используется для проверки сертификата). Несовместимо с ECH и REALITY</translation>
     </message>
     <message>
@@ -8251,7 +8251,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Client Random</translation>
     </message>
     <message>
-        <source>TLS ClientHello random prefix required by the server&apos;s client_random_prefix rule; not compatible with ECH or REALITY</source>
+        <source>TLS ClientHello random prefix required by the server&apos;s client_random_prefix rule. Not compatible with ECH or REALITY</source>
         <translation>Префикс поля random в TLS ClientHello, которого требует правило client_random_prefix на сервере. Несовместимо с ECH и REALITY</translation>
     </message>
     <message>
@@ -8502,7 +8502,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Signature Packet (I5)</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fills the signature packets with the first QUIC packets Chrome would send to the given domain, so the handshake starts like an HTTP/3 connection to it. Generated locally; nothing is sent. Replaces I1-I5.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fills the signature packets with the first QUIC packets Chrome would send to the given domain, so the handshake starts like an HTTP/3 connection to it. Generated locally. Nothing is sent. Replaces I1-I5.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Заполняет пакеты-сигнатуры первыми QUIC-пакетами, которые Chrome отправил бы на указанный домен, чтобы хендшейк начинался как HTTP/3-соединение с ним. Генерируется локально, ничего не отправляется. Заменяет I1-I5.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
@@ -8620,7 +8620,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
 <context>
     <name>Engine::ConnectionManager</name>
     <message>
-        <source>A background Throne (PID %1) owns Tun on this computer; stop it or use thronectl.</source>
+        <source>A background Throne (PID %1) owns Tun on this computer. Stop it or use thronectl.</source>
         <translation>Туннелем на этом компьютере владеет фоновый Throne (PID %1). Остановите его или работайте через thronectl.</translation>
     </message>
 </context>
@@ -8754,7 +8754,7 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>Диагностика</translation>
     </message>
     <message>
-        <source>The client checks itself and says what to fix. Everything here runs on this computer; nothing is sent anywhere.</source>
+        <source>The client checks itself and says what to fix. Everything here runs on this computer. Nothing is sent anywhere.</source>
         <translation>Клиент проверяет себя сам и говорит, что чинить. Всё это выполняется на вашем компьютере, никуда ничего не отправляется.</translation>
     </message>
     <message>
@@ -9416,7 +9416,7 @@ You can change this later in settings.</source>
         <translation>Throne работает в фоновом режиме</translation>
     </message>
     <message>
-        <source>A background Throne (PID %1) is running on this computer (data directory: %2). Tun mode is unavailable here while it runs; stop it or use thronectl.</source>
+        <source>A background Throne (PID %1) is running on this computer (data directory: %2). Tun mode is unavailable here while it runs. Stop it or use thronectl.</source>
         <translation>На этом компьютере работает фоновый Throne (PID %1, каталог данных: %2). Пока он работает, режим Tun здесь недоступен. Остановите его или используйте thronectl.</translation>
     </message>
 </context>
@@ -9780,7 +9780,7 @@ You can change this later in settings.</source>
         <translation>Расширенный режим</translation>
     </message>
     <message>
-        <source>Show every option. Simple mode hides the advanced ones; they keep their values and still apply.</source>
+        <source>Show every option. Simple mode hides the advanced ones. They keep their values and still apply.</source>
         <translation>Показывать все настройки. Простой режим прячет расширенные — значения сохраняются и продолжают действовать.</translation>
     </message>
     <message>
@@ -10230,7 +10230,7 @@ Download them now?</source>
         <translation>Остался адаптер Tun</translation>
     </message>
     <message>
-        <source>Windows was still holding the Tun adapter from an earlier session that did not close cleanly. Starting the profile again usually works; if it keeps failing, restart Windows.
+        <source>Windows was still holding the Tun adapter from an earlier session that did not close cleanly. Starting the profile again usually works. If it keeps failing, restart Windows.
 
 Error: %1</source>
         <translation>Windows всё ещё держал адаптер Tun от прошлой сессии, которая завершилась неправильно. Обычно хватает запустить профиль ещё раз, а если не помогает — перезагрузить Windows.
@@ -10510,7 +10510,7 @@ Error: %1</source>
         <translation>API sing-box отключен. Укажите прослушиваемый порт в разделе Настройки &gt; Основные настройки &gt; Ядро.</translation>
     </message>
     <message>
-        <source>Start a profile first; the dashboard is served by the running core.</source>
+        <source>Start a profile first. The dashboard is served by the running core.</source>
         <translation>Сначала запустите профиль. Веб-панель обслуживается запущенным ядром.</translation>
     </message>
     <message>
@@ -10752,11 +10752,11 @@ Name: %1</source>
         <translation>Правила отдельного сервера</translation>
     </message>
     <message>
-        <source>Routing profile &quot;%1&quot;. Checked targets go %2; unchecking one removes its rule.</source>
+        <source>Routing profile &quot;%1&quot;. Checked targets go %2. Unchecking one removes its rule.</source>
         <translation>Профиль маршрутизации &quot;%1&quot;. Отмеченные цели попадают в правила «%2». Снятие флажка удаляет правило.</translation>
     </message>
     <message>
-        <source>Routing profile &quot;%1&quot;. Checked targets go through the chosen server; unchecking one removes its rule.</source>
+        <source>Routing profile &quot;%1&quot;. Checked targets go through the chosen server. Unchecking one removes its rule.</source>
         <translation>Профиль маршрутизации «%1». Отмеченные цели идут через выбранный сервер, снятая отметка убирает правило.</translation>
     </message>
     <message>
@@ -10910,7 +10910,7 @@ Name: %1</source>
         <translation>Эта группа была удалена, пока вы её редактировали.</translation>
     </message>
     <message>
-        <source>Update is unavailable while a background Throne (PID %1) runs from this installation; stop it first.</source>
+        <source>Update is unavailable while a background Throne (PID %1) runs from this installation. Stop it first.</source>
         <translation>Обновление недоступно, пока из этой установки работает фоновый Throne (PID %1). Сначала остановите его.</translation>
     </message>
     <message>
@@ -11186,7 +11186,7 @@ Details: %3</source>
         <translation type="unfinished">[Автовыбор] Запущены лучшие профили: %1 из %2.</translation>
     </message>
     <message>
-        <source>[Auto selector] Reusing existing test results; ranked %1 profiles.</source>
+        <source>[Auto selector] Reusing existing test results. Ranked %1 profiles.</source>
         <translation type="unfinished">[Автовыбор] Использованы сохранённые результаты замеров. Ранжировано профилей: %1.</translation>
     </message>
     <message>
@@ -11298,11 +11298,11 @@ Details: %3</source>
         <translation type="unfinished">[VPN] %1: выполнен повторный вход с новым одноразовым кодом.</translation>
     </message>
     <message>
-        <source>[VPN] %1 rejected the saved credentials; restarting the profile with a new one-time code.</source>
+        <source>[VPN] %1 rejected the saved credentials. Restarting the profile with a new one-time code.</source>
         <translation type="unfinished">[VPN] %1: сохраненные учетные данные отклонены. Профиль перезапускается с новым одноразовым кодом.</translation>
     </message>
     <message>
-        <source>The server refused the credentials saved with this profile. Enter the ones to use for this session; the profile itself is left unchanged.</source>
+        <source>The server refused the credentials saved with this profile. Enter the ones to use for this session. The profile itself is left unchanged.</source>
         <translation>Сервер отклонил сохранённые в профиле данные для входа. Введите те, которыми войти в этот раз — сам профиль останется без изменений.</translation>
     </message>
     <message>
@@ -11365,7 +11365,7 @@ Details: %3</source>
         <translation>TCP Brutal</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TCP Brutal congestion control at the speeds below; the server must support it. Every stream then shares one connection, so the mode is ignored.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TCP Brutal congestion control at the speeds below. The server must support it. Every stream then shares one connection, so the mode is ignored.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Управление перегрузкой TCP Brutal на скоростях ниже, сервер должен его поддерживать. Все потоки при этом идут в одном соединении, так что режим не учитывается.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
@@ -11988,7 +11988,7 @@ Release note:
         <translation>Не удалось проверить профиль: ядро недоступно</translation>
     </message>
     <message>
-        <source>The profile is not valid; the log has the details</source>
+        <source>The profile is not valid. The log has the details</source>
         <translation>Профиль недействителен. Подробности в логе</translation>
     </message>
     <message>
@@ -12552,7 +12552,7 @@ Release note:
         <translation>Проигнорирован нечитаемый отпечаток сервера: %1</translation>
     </message>
     <message>
-        <source>PKCS#12 bundles are not supported; export the CA, certificate and key as PEM.</source>
+        <source>PKCS#12 bundles are not supported. Export the CA, certificate and key as PEM.</source>
         <translation>Пакеты PKCS#12 не поддерживаются. Экспортируйте CA, сертификат и ключ в формате PEM.</translation>
     </message>
     <message>
@@ -12564,7 +12564,7 @@ Release note:
         <translation>Это конфигурация сервера OpenVPN (%1), а не клиентский профиль.</translation>
     </message>
     <message>
-        <source>TAP (layer 2) tunnels are not supported; only `dev tun` profiles can be imported.</source>
+        <source>TAP (layer 2) tunnels are not supported. Only `dev tun` profiles can be imported.</source>
         <translation>Туннели TAP (уровень 2) не поддерживаются. Импортировать можно только профили с `dev tun`.</translation>
     </message>
     <message>
@@ -12584,11 +12584,11 @@ Release note:
         <translation>Проигнорирован нечитаемый IPv6-адрес интерфейса: %1</translation>
     </message>
     <message>
-        <source>Credentials live in %1; enter them in the profile editor.</source>
+        <source>Credentials live in %1. Enter them in the profile editor.</source>
         <translation>Учётные данные хранятся в %1. Введите их в редакторе профиля.</translation>
     </message>
     <message>
-        <source>A hash-directory CRL is not supported; point `crl-verify` at a PEM or DER file.</source>
+        <source>A hash-directory CRL is not supported. Point `crl-verify` at a PEM or DER file.</source>
         <translation>CRL в виде каталога хешей не поддерживается. Укажите в `crl-verify` файл PEM или DER.</translation>
     </message>
     <message>
@@ -12612,7 +12612,7 @@ Release note:
         <translation>Неизвестная директива OpenVPN, проигнорирована: %1</translation>
     </message>
     <message>
-        <source>`%1` turns the client certificate off; it was dropped and the server has to accept password login.</source>
+        <source>`%1` turns the client certificate off. It was dropped and the server has to accept password login.</source>
         <translation>`%1` отключает сертификат клиента. Он был удалён, и сервер должен разрешать вход по паролю.</translation>
     </message>
     <message>
@@ -12632,7 +12632,7 @@ Release note:
         <translation>Проигнорирован нечитаемый адрес интерфейса: %1</translation>
     </message>
     <message>
-        <source>`remote-cert-eku` replaces `remote-cert-tls`; the latter was dropped.</source>
+        <source>`remote-cert-eku` replaces `remote-cert-tls`. The latter was dropped.</source>
         <translation>`remote-cert-eku` заменяет `remote-cert-tls`. Последний был удалён.</translation>
     </message>
     <message>
@@ -12912,7 +12912,7 @@ Release note:
         <translation>Зарегистрируйте новый идентификатор для этого режима</translation>
     </message>
     <message>
-        <source>The WARP identity could not be read; register a new one</source>
+        <source>The WARP identity could not be read. Register a new one</source>
         <translation>Не удалось прочитать идентификатор WARP. Зарегистрируйте новый</translation>
     </message>
     <message>
@@ -13260,11 +13260,11 @@ Release note:
         <translation>Сервер недоступен.</translation>
     </message>
     <message>
-        <source>The server answered with a redirect (HTTP %1); check the server URL.</source>
+        <source>The server answered with a redirect (HTTP %1). Check the server URL.</source>
         <translation>Сервер ответил перенаправлением (HTTP %1) — проверьте адрес сервера.</translation>
     </message>
     <message>
-        <source>The server redirected to %1; check the server URL.</source>
+        <source>The server redirected to %1. Check the server URL.</source>
         <translation>Сервер перенаправил на %1 — проверьте адрес сервера.</translation>
     </message>
     <message>
@@ -13316,7 +13316,7 @@ Release note:
         <translation>Не удалось создать временный файл: %1</translation>
     </message>
     <message>
-        <source>The downloaded backup does not match the backup list; it may have been replaced or damaged.</source>
+        <source>The downloaded backup does not match the backup list. It may have been replaced or damaged.</source>
         <translation>Скачанная копия не совпадает со списком копий — возможно, её подменили или повредили.</translation>
     </message>
     <message>
@@ -13605,7 +13605,7 @@ outbound и другие функции Throne могут не работать.
         <translation type="unfinished">FakeIP: отключить IPv6</translation>
     </message>
     <message>
-        <source>Hand out no fake IPv6 addresses; AAAA queries are answered empty.</source>
+        <source>Hand out no fake IPv6 addresses. AAAA queries are answered empty.</source>
         <translation type="unfinished">Не выдавать FakeIP-адреса IPv6. На запросы AAAA даются пустые ответы.</translation>
     </message>
     <message>
@@ -13730,7 +13730,7 @@ Your local edits are overwritten on each update.</source>
         <translation>Блокировать</translation>
     </message>
     <message>
-        <source>OpenVPN / OpenConnect profiles started alongside this routing profile. Traffic for the networks they advertise goes through them; everything else follows this profile&apos;s rules. Each endpoint gets a rule in the Advanced tab that you can move among your own rules. A chain endpoint can hand out one rule per inner OpenVPN / OpenConnect hop too, so traffic can be routed to a hop before the exit.</source>
+        <source>OpenVPN / OpenConnect profiles started alongside this routing profile. Traffic for the networks they advertise goes through them. Everything else follows this profile&apos;s rules. Each endpoint gets a rule in the Advanced tab that you can move among your own rules. A chain endpoint can hand out one rule per inner OpenVPN / OpenConnect hop too, so traffic can be routed to a hop before the exit.</source>
         <translation>Профили OpenVPN / OpenConnect, запускаемые вместе с этим профилем маршрутизации. Трафик для сетей, которые они анонсируют, идёт через них. Всё остальное подчиняется правилам этого профиля. Для каждой конечной точки на вкладке «Дополнительно» создаётся правило, которое можно перемещать среди ваших правил. Конечная точка-цепочка также может выдавать по правилу на каждое внутреннее звено OpenVPN / OpenConnect, чтобы трафик можно было направить на звено до выхода.</translation>
     </message>
     <message>
@@ -13796,7 +13796,7 @@ Your local edits are overwritten on each update.</source>
         <translation>Правило &quot;%1&quot; › %2</translation>
     </message>
     <message>
-        <source>Check attributes to show as tabs; unchecking clears their values.</source>
+        <source>Check attributes to show as tabs. Unchecking clears their values.</source>
         <translation>Отметьте атрибуты, чтобы отобразить их во вкладках. Снятие отметки очистит их значения.</translation>
     </message>
     <message>
@@ -14353,7 +14353,7 @@ Remove that endpoint from this routing profile as well?</source>
         <translation type="unfinished">Базовый список IP пуст</translation>
     </message>
     <message>
-        <source>The base IP list holds only IPv6 ranges; enable IPv6 scanning</source>
+        <source>The base IP list holds only IPv6 ranges. Enable IPv6 scanning</source>
         <translation type="unfinished">Базовый список IP содержит только диапазоны IPv6. Включите сканирование IPv6</translation>
     </message>
     <message>
@@ -14369,7 +14369,7 @@ Remove that endpoint from this routing profile as well?</source>
         <translation type="unfinished">Базовый список IP не содержит допустимых целей</translation>
     </message>
     <message>
-        <source>The result list holds only IPv6 entries; enable IPv6 scanning</source>
+        <source>The result list holds only IPv6 entries. Enable IPv6 scanning</source>
         <translation type="unfinished">Список результатов содержит только записи IPv6. Включите сканирование IPv6</translation>
     </message>
     <message>
@@ -14385,15 +14385,15 @@ Remove that endpoint from this routing profile as well?</source>
         <translation type="unfinished">Список результатов не содержит допустимых целей</translation>
     </message>
     <message>
-        <source>The copy of the result list is gone; rescan the results again</source>
+        <source>The copy of the result list is gone. Rescan the results again</source>
         <translation type="unfinished">Копия списка результатов пропала. Повторите сканирование результатов</translation>
     </message>
     <message>
-        <source>The copy of the base IP list is gone; restart the scan</source>
+        <source>The copy of the base IP list is gone. Restart the scan</source>
         <translation type="unfinished">Копия базового списка IP пропала. Перезапустите сканирование</translation>
     </message>
     <message numerus="yes">
-        <source>Found %n result(s); stopping as configured</source>
+        <source>Found %n result(s). Stopping as configured</source>
         <translation type="unfinished">
             <numerusform>Найден %n результат. Остановка согласно настройкам</numerusform>
             <numerusform>Найдено %n результата. Остановка согласно настройкам</numerusform>
@@ -14401,11 +14401,11 @@ Remove that endpoint from this routing profile as well?</source>
         </translation>
     </message>
     <message>
-        <source>IPv6 is unreachable from this network; scan paused (turn off IPv6 scanning to go on)</source>
+        <source>IPv6 is unreachable from this network. Scan paused (turn off IPv6 scanning to go on)</source>
         <translation type="unfinished">IPv6 недоступен из этой сети. Сканирование приостановлено (чтобы продолжить, отключите сканирование IPv6)</translation>
     </message>
     <message>
-        <source>Network appears to be down; scan paused</source>
+        <source>Network appears to be down. Scan paused</source>
         <translation type="unfinished">Похоже, сеть недоступна. Сканирование приостановлено</translation>
     </message>
     <message>
@@ -14413,11 +14413,11 @@ Remove that endpoint from this routing profile as well?</source>
         <translation type="unfinished">Сканирование %1: ошибка проверки сети: %2</translation>
     </message>
     <message>
-        <source>IPv4 is unreachable from this network; IPv4 results were kept</source>
+        <source>IPv4 is unreachable from this network. IPv4 results were kept</source>
         <translation type="unfinished">IPv4 недоступен из этой сети. Результаты IPv4 сохранены</translation>
     </message>
     <message>
-        <source>IPv6 is unreachable from this network; IPv6 results were kept</source>
+        <source>IPv6 is unreachable from this network. IPv6 results were kept</source>
         <translation type="unfinished">IPv6 недоступен из этой сети. Результаты IPv6 сохранены</translation>
     </message>
     <message>
@@ -14429,7 +14429,7 @@ Remove that endpoint from this routing profile as well?</source>
         <translation type="unfinished">Сканирование в ядре не продвинулось</translation>
     </message>
     <message numerus="yes">
-        <source>%n result(s) passed only on a retry; the network fails some attempts at random</source>
+        <source>%n result(s) passed only on a retry. The network fails some attempts at random</source>
         <translation type="unfinished">
             <numerusform>%n результат прошел проверку только с повторной попытки. Сеть случайным образом обрывает часть попыток</numerusform>
             <numerusform>%n результата прошли проверку только с повторной попытки. Сеть случайным образом обрывает часть попыток</numerusform>
@@ -15119,15 +15119,15 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Добавьте в цепочку хотя бы один профиль.</translation>
     </message>
     <message>
-        <source>A quote is not closed; end it with the same quote mark.</source>
+        <source>A quote is not closed. End it with the same quote mark.</source>
         <translation>Кавычка не закрыта. Закройте ее такой же кавычкой.</translation>
     </message>
     <message>
-        <source>The arguments end with a backslash; remove it or add the character it escapes.</source>
+        <source>The arguments end with a backslash. Remove it or add the character it escapes.</source>
         <translation>Аргументы заканчиваются обратной косой чертой. Удалите ее или добавьте символ, который она экранирует.</translation>
     </message>
     <message>
-        <source>Add %s to the arguments where the config file path goes; without it the config is not used.</source>
+        <source>Add %s to the arguments where the config file path goes. Without it the config is not used.</source>
         <translation>Добавьте %s в аргументы на место пути к файлу конфигурации. Без него конфигурация не используется.</translation>
     </message>
     <message>
@@ -15147,7 +15147,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>TCP Brutal работает только со своим мультиплексом. Выберите в мультиплексе «Свой».</translation>
     </message>
     <message>
-        <source>TCP Brutal needs both speeds; a missing one is sent as 1 Mbps.</source>
+        <source>TCP Brutal needs both speeds. A missing one is sent as 1 Mbps.</source>
         <translation>Для TCP Brutal нужны обе скорости. Отсутствующая отправляется как 1 Мбит/с.</translation>
     </message>
     <message>
@@ -15155,7 +15155,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Максимальный размер фрагмента должен быть не меньше 1 байта, например 10-100.</translation>
     </message>
     <message>
-        <source>Fragments above 400 bytes can fail the connection when the ClientHello is very large; a maximum of 400 or less is always safe.</source>
+        <source>Fragments above 400 bytes can fail the connection when the ClientHello is very large. A maximum of 400 or less is always safe.</source>
         <translation>Фрагменты больше 400 байт могут привести к сбою соединения, если ClientHello очень большой. Максимум 400 или меньше всегда безопасен.</translation>
     </message>
     <message>
@@ -15199,7 +15199,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Каждый pin должен быть хешем SHA-256 в шестнадцатеричном виде (64 символа, двоеточия допускаются).</translation>
     </message>
     <message>
-        <source>sing-box refuses this suite because Go lists it as insecure (CBC-SHA256, RC4, 3DES and RSA key exchange); only VLESS profiles running on Xray can use it.</source>
+        <source>sing-box refuses this suite because Go lists it as insecure (CBC-SHA256, RC4, 3DES and RSA key exchange). Only VLESS profiles running on Xray can use it.</source>
         <translation>sing-box отклоняет этот набор шифров, поскольку Go считает его небезопасным (CBC-SHA256, RC4, 3DES и обмен ключами RSA). Использовать его могут только профили VLESS, работающие на Xray.</translation>
     </message>
     <message>
@@ -15235,7 +15235,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Вставьте закрытый ключ в виде текста PEM, начиная с -----BEGIN PRIVATE KEY-----.</translation>
     </message>
     <message>
-        <source>This is a hexadecimal SHA-256; write it in base64 (44 characters ending in =).</source>
+        <source>This is a hexadecimal SHA-256. Write it in base64 (44 characters ending in =).</source>
         <translation>Это SHA-256 в шестнадцатеричном виде. Укажите его в base64 (44 символа, в конце =).</translation>
     </message>
     <message>
@@ -15255,7 +15255,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Reality нельзя совмещать с подменой TLS. Установите для «Подмена TLS» значение «Выкл.» в разделе «Доп. настройки».</translation>
     </message>
     <message>
-        <source>A custom certificate cannot be combined with certificate pins; keep only one of them.</source>
+        <source>A custom certificate cannot be combined with certificate pins. Keep only one of them.</source>
         <translation>Собственный сертификат нельзя совмещать с закреплением сертификатов (pinning). Оставьте что-то одно.</translation>
     </message>
     <message>
@@ -15371,7 +15371,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>REALITY работает только с транспортом raw, xhttp или grpc.</translation>
     </message>
     <message>
-        <source>REALITY cannot use the hellogolang fingerprint; choose another one.</source>
+        <source>REALITY cannot use the hellogolang fingerprint. Choose another one.</source>
         <translation>REALITY не может использовать fingerprint hellogolang. Выберите другой.</translation>
     </message>
     <message>
@@ -15395,7 +15395,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Должен быть ECHConfigList в base64 или domain+https://dns/dns-query для получения через DNS.</translation>
     </message>
     <message>
-        <source>Fetching ECH over DNS needs a domain SNI; otherwise write it as domain+https://dns/dns-query.</source>
+        <source>Fetching ECH over DNS needs a domain SNI. Otherwise write it as domain+https://dns/dns-query.</source>
         <translation>Для получения ECH через DNS нужен SNI с доменным именем. Иначе укажите его как domain+https://dns/dns-query.</translation>
     </message>
     <message>
@@ -15423,7 +15423,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Укажите длину session ID с нижней границей больше 0, например 8-16.</translation>
     </message>
     <message>
-        <source>The table and length allow too few session IDs; use a longer length (for example 8-16) or a larger table.</source>
+        <source>The table and length allow too few session IDs. Use a longer length (for example 8-16) or a larger table.</source>
         <translation>Таблица и длина допускают слишком мало session ID. Увеличьте длину (например, 8-16) или используйте таблицу побольше.</translation>
     </message>
     <message>
@@ -15471,7 +15471,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>&quot;%1&quot; — недопустимое имя интерфейса.</translation>
     </message>
     <message>
-        <source>&quot;%1&quot; is not a supported DNS scheme; use udp, tcp, tls, quic, https, h3, dhcp or local.</source>
+        <source>&quot;%1&quot; is not a supported DNS scheme. Use udp, tcp, tls, quic, https, h3, dhcp or local.</source>
         <translation>&quot;%1&quot; — неподдерживаемая схема DNS. Используйте udp, tcp, tls, quic, https, h3, dhcp или local.</translation>
     </message>
     <message>
@@ -15491,7 +15491,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>&quot;%1&quot; — недопустимый адрес IPv6.</translation>
     </message>
     <message>
-        <source>&quot;%1&quot; is not a valid IPv6 address; put it in brackets to add a port.</source>
+        <source>&quot;%1&quot; is not a valid IPv6 address. Put it in brackets to add a port.</source>
         <translation>&quot;%1&quot; — недопустимый адрес IPv6. Чтобы указать порт, заключите адрес в квадратные скобки.</translation>
     </message>
     <message>
@@ -15511,7 +15511,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>После двоеточия не указан порт.</translation>
     </message>
     <message>
-        <source>&quot;%1&quot; is not a valid port; use a number from 1 to 65535.</source>
+        <source>&quot;%1&quot; is not a valid port. Use a number from 1 to 65535.</source>
         <translation>&quot;%1&quot; — недопустимый порт. Укажите число от 1 до 65535.</translation>
     </message>
     <message>
@@ -15543,7 +15543,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Часто проверяемых профилей не может быть больше, чем запускаемых (%1).</translation>
     </message>
     <message>
-        <source>Removed the Tor executable path from the imported configuration; add it back only if you trust that program.</source>
+        <source>Removed the Tor executable path from the imported configuration. Add it back only if you trust that program.</source>
         <translation>Путь к исполняемому файлу Tor удален из импортированной конфигурации. Верните его, только если доверяете этой программе.</translation>
     </message>
     <message>
@@ -15563,7 +15563,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Параметр Tor %1 удален из импортированной конфигурации: он заставляет Tor запускать программу на этом компьютере.</translation>
     </message>
     <message>
-        <source>Removed the %1 wrapper path from the imported configuration; add it back only if you trust that program.</source>
+        <source>Removed the %1 wrapper path from the imported configuration. Add it back only if you trust that program.</source>
         <translation>Путь к обертке %1 удален из импортированной конфигурации. Верните его, только если доверяете этой программе.</translation>
     </message>
     <message>
@@ -15635,7 +15635,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Не должно содержать пробелов.</translation>
     </message>
     <message>
-        <source>Enter a user name too; without one the password is not sent.</source>
+        <source>Enter a user name too. Without one the password is not sent.</source>
         <translation>Введите также имя пользователя. Без него пароль не отправляется.</translation>
     </message>
     <message>
@@ -15655,7 +15655,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Не должно быть меньше «Hop Interval».</translation>
     </message>
     <message>
-        <source>Ignored without a Hop Interval; set one as well, for example 30s with a maximum of 60s.</source>
+        <source>Ignored without a Hop Interval. Set one as well, for example 30s with a maximum of 60s.</source>
         <translation>Игнорируется без «Hop Interval». Задайте и его, например 30s при максимуме 60s.</translation>
     </message>
     <message>
@@ -15663,11 +15663,11 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Для Hysteria v1 нужны и «Up Mbps», и «Down Mbps», например 100.</translation>
     </message>
     <message>
-        <source>Packet sizes must be from 0 to 2048; 0 uses the default.</source>
+        <source>Packet sizes must be from 0 to 2048, where 0 uses the default.</source>
         <translation>Размеры пакетов должны быть от 0 до 2048, где 0 — значение по умолчанию.</translation>
     </message>
     <message>
-        <source>The minimum packet size must not exceed the maximum; 0 means the default, 512 for the minimum and 1200 for the maximum.</source>
+        <source>The minimum packet size must not exceed the maximum, where 0 means the default, 512 for the minimum and 1200 for the maximum.</source>
         <translation>Минимальный размер пакета не должен превышать максимальный, а 0 означает значение по умолчанию: 512 для минимального и 1200 для максимального.</translation>
     </message>
     <message>
@@ -15675,7 +15675,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Недопустимый base64. Для payload в виде обычного текста выберите тип аутентификации STRING.</translation>
     </message>
     <message>
-        <source>Choose an authentication type; without one the payload is not sent.</source>
+        <source>Choose an authentication type. Without one the payload is not sent.</source>
         <translation>Выберите тип аутентификации. Без него payload не отправляется.</translation>
     </message>
     <message>
@@ -15711,7 +15711,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Pin сертификата должен быть хешем SHA-256 в hex (64 символа) или base64 (44 символа).</translation>
     </message>
     <message>
-        <source>Only the server&apos;s own certificate is checked against this pin; if it is the hash of an intermediate or root certificate, the connection will fail.</source>
+        <source>Only the server&apos;s own certificate is checked against this pin. If it is the hash of an intermediate or root certificate, the connection will fail.</source>
         <translation>С этим pin сверяется только собственный сертификат сервера. Если это хеш промежуточного или корневого сертификата, подключение не удастся.</translation>
     </message>
     <message>
@@ -15735,11 +15735,11 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Порты должны быть от 1 до 65535.</translation>
     </message>
     <message>
-        <source>The range starts after it ends; write it as %1-%2.</source>
+        <source>The range starts after it ends. Write it as %1-%2.</source>
         <translation>Начало диапазона больше его конца. Укажите его как %1-%2.</translation>
     </message>
     <message>
-        <source>The = padding at the end is missing; copy the whole pattern.</source>
+        <source>The = padding at the end is missing. Copy the whole pattern.</source>
         <translation>Нет дополнения = в конце. Скопируйте шаблон целиком.</translation>
     </message>
     <message>
@@ -15751,11 +15751,11 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Имя заголовка &quot;%1&quot;: %2</translation>
     </message>
     <message>
-        <source>A header line without a name and a colon was ignored; write each line as Name: value.</source>
+        <source>A header line without a name and a colon was ignored. Write each line as Name: value.</source>
         <translation>Строка заголовка без имени и двоеточия проигнорирована. Указывайте каждую строку как Name: value.</translation>
     </message>
     <message>
-        <source>Remove the part from ? or #; the server takes only a path such as /vpn.</source>
+        <source>Remove the part from ? or #. The server takes only a path such as /vpn.</source>
         <translation>Удалите часть, начиная с ? или #. Сервер принимает только путь, например /vpn.</translation>
     </message>
     <message>
@@ -15807,7 +15807,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Для программного токена нужен Secret — напрямую или файлом.</translation>
     </message>
     <message>
-        <source>Without a token mode these settings are not used or saved; pick a mode or clear them.</source>
+        <source>Without a token mode these settings are not used or saved. Pick a mode or clear them.</source>
         <translation>Без режима токена эти настройки не используются и не сохраняются. Выберите режим или очистите их.</translation>
     </message>
     <message>
@@ -15823,19 +15823,19 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Сжатие отключено, поэтому режим должен быть пустым или stateless.</translation>
     </message>
     <message>
-        <source>Removed the link to a one-time password entry; choose the entry again in the profile&apos;s settings.</source>
+        <source>Removed the link to a one-time password entry. Choose the entry again in the profile&apos;s settings.</source>
         <translation>Удалена ссылка на запись одноразового пароля. Выберите запись снова в настройках профиля.</translation>
     </message>
     <message>
-        <source>Removed the CSD wrapper path from the imported profile; set it again in Advanced settings if you trust it.</source>
+        <source>Removed the CSD wrapper path from the imported profile. Set it again in Advanced settings if you trust it.</source>
         <translation>Путь к обертке CSD удален из импортированного профиля. Если доверяете ей, укажите его снова в разделе «Дополнительно».</translation>
     </message>
     <message>
-        <source>Removed the HIP wrapper path from the imported profile; set it again in Advanced settings if you trust it.</source>
+        <source>Removed the HIP wrapper path from the imported profile. Set it again in Advanced settings if you trust it.</source>
         <translation>Путь к обертке HIP удален из импортированного профиля. Если доверяете ей, укажите его снова в разделе «Дополнительно».</translation>
     </message>
     <message>
-        <source>Removed the TNCC wrapper path from the imported profile; set it again in Advanced settings if you trust it.</source>
+        <source>Removed the TNCC wrapper path from the imported profile. Set it again in Advanced settings if you trust it.</source>
         <translation>Путь к обертке TNCC удален из импортированного профиля. Если доверяете ей, укажите его снова в разделе «Дополнительно».</translation>
     </message>
     <message>
@@ -15883,19 +15883,19 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Укажите IPv6-адрес без квадратных скобок.</translation>
     </message>
     <message>
-        <source>Static key mode does not use this setting; clear it or switch the mode to TLS.</source>
+        <source>Static key mode does not use this setting. Clear it or switch the mode to TLS.</source>
         <translation>Режим статического ключа не использует этот параметр. Очистите его или переключите режим на TLS.</translation>
     </message>
     <message>
-        <source>Only static key mode uses Cipher; in TLS mode list the cipher under Data Ciphers.</source>
+        <source>Only static key mode uses Cipher. In TLS mode list the cipher under Data Ciphers.</source>
         <translation>Шифр (cipher) используется только в режиме статического ключа. В режиме TLS укажите шифр в поле «Шифры данных».</translation>
     </message>
     <message>
-        <source>Key direction applies only to static key mode; for tls_auth set the control channel wrap direction.</source>
+        <source>Key direction applies only to static key mode. For tls_auth set the control channel wrap direction.</source>
         <translation>Направление ключа применяется только в режиме статического ключа. Для tls_auth задайте направление защиты управляющего канала.</translation>
     </message>
     <message>
-        <source>Only static key mode uses a static key; clear it or switch the mode to static_key.</source>
+        <source>Only static key mode uses a static key. Clear it or switch the mode to static_key.</source>
         <translation>Статический ключ используется только в режиме статического ключа. Очистите его или переключите режим на static_key.</translation>
     </message>
     <message>
@@ -15943,11 +15943,11 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Добавьте сертификат клиента, соответствующий этому ключу.</translation>
     </message>
     <message>
-        <source>Set both pasted and as a file; keep only one of them.</source>
+        <source>Set both pasted and as a file. Keep only one of them.</source>
         <translation>Задано и вставленное значение, и файл. Оставьте только одно из них.</translation>
     </message>
     <message>
-        <source>Static key mode does not use the control channel wrap; clear its key.</source>
+        <source>Static key mode does not use the control channel wrap. Clear its key.</source>
         <translation>Режим статического ключа не использует защиту управляющего канала. Очистите ее ключ.</translation>
     </message>
     <message>
@@ -15971,11 +15971,11 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Максимальная версия TLS ниже минимальной, которая равна 1.2, если не задана.</translation>
     </message>
     <message>
-        <source>MSS clamping is disabled; clear the MSS fix value or enable it.</source>
+        <source>MSS clamping is disabled. Clear the MSS fix value or enable it.</source>
         <translation>Ограничение MSS отключено. Очистите значение MSS Fix или включите ограничение.</translation>
     </message>
     <message>
-        <source>MSS clamping is disabled; clear the MSS fix mode or enable it.</source>
+        <source>MSS clamping is disabled. Clear the MSS fix mode or enable it.</source>
         <translation>Ограничение MSS отключено. Очистите режим MSS Fix или включите ограничение.</translation>
     </message>
     <message>
@@ -15983,11 +15983,11 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Для режима MSS Fix нужно значение MSS Fix.</translation>
     </message>
     <message>
-        <source>Ping restart is disabled; clear the restart time or enable it.</source>
+        <source>Ping restart is disabled. Clear the restart time or enable it.</source>
         <translation>Перезапуск по ping отключен. Очистите время перезапуска или включите его.</translation>
     </message>
     <message>
-        <source>Renegotiation is disabled; clear the interval or enable it.</source>
+        <source>Renegotiation is disabled. Clear the interval or enable it.</source>
         <translation>Пересогласование отключено. Очистите интервал или включите его.</translation>
     </message>
     <message>
@@ -16003,7 +16003,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>У каждого параметра должно быть имя, например obfs=http;obfs-host=example.com.</translation>
     </message>
     <message>
-        <source>2022-blake3-chacha20-poly1305 takes a single key; several keys joined with : need an AES 2022 method.</source>
+        <source>2022-blake3-chacha20-poly1305 takes a single key. Several keys joined with : need an AES 2022 method.</source>
         <translation>2022-blake3-chacha20-poly1305 принимает один ключ. Для нескольких ключей, соединенных через :, нужен метод AES 2022.</translation>
     </message>
     <message>
@@ -16035,7 +16035,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Декодированный userinfo должен иметь вид method:password, например aes-256-gcm:secret.</translation>
     </message>
     <message>
-        <source>Unsupported plugin; only obfs and v2ray-plugin work.</source>
+        <source>Unsupported plugin. Only obfs and v2ray-plugin work.</source>
         <translation>Плагин не поддерживается. Работают только obfs и v2ray-plugin.</translation>
     </message>
     <message>
@@ -16051,7 +16051,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Поддерживаются только версии Snell 4 и 6.</translation>
     </message>
     <message>
-        <source>Unsupported obfuscation; Snell can use only none, http or tls.</source>
+        <source>Unsupported obfuscation. Snell can use only none, http or tls.</source>
         <translation>Обфускация не поддерживается. Snell может использовать только none, http или tls.</translation>
     </message>
     <message>
@@ -16059,7 +16059,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Неизвестная сеть, поэтому используются и TCP, и UDP. Укажите tcp или udp.</translation>
     </message>
     <message>
-        <source>Must be at most 255 bytes; this one is %1 bytes.</source>
+        <source>Must be at most 255 bytes. This one is %1 bytes.</source>
         <translation>Должно быть не больше 255 байт. Текущая длина в байтах: %1.</translation>
     </message>
     <message>
@@ -16087,11 +16087,11 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Элемент, не являющийся допустимым base64, проигнорирован.</translation>
     </message>
     <message>
-        <source>This is a public key; paste the private key, the block that starts with -----BEGIN and ends with PRIVATE KEY-----.</source>
+        <source>This is a public key. Paste the private key, the block that starts with -----BEGIN and ends with PRIVATE KEY-----.</source>
         <translation>Это публичный ключ. Вставьте закрытый ключ — блок, который начинается с -----BEGIN и заканчивается на PRIVATE KEY-----.</translation>
     </message>
     <message>
-        <source>PuTTY keys are not supported; export the key in OpenSSH format with PuTTYgen.</source>
+        <source>PuTTY keys are not supported. Export the key in OpenSSH format with PuTTYgen.</source>
         <translation>Ключи PuTTY не поддерживаются. Экспортируйте ключ в формате OpenSSH с помощью PuTTYgen.</translation>
     </message>
     <message>
@@ -16111,15 +16111,15 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Без пароля или закрытого ключа этот профиль примет только сервер, разрешающий вход без аутентификации.</translation>
     </message>
     <message>
-        <source>Both a pasted key and a key file are set; the pasted key is used.</source>
+        <source>Both a pasted key and a key file are set. The pasted key is used.</source>
         <translation>Заданы и вставленный ключ, и файл ключа. Используется вставленный ключ.</translation>
     </message>
     <message>
-        <source>Do not advertise the default route; tick Advertise exit node instead.</source>
+        <source>Do not advertise the default route. Tick Advertise exit node instead.</source>
         <translation>Не объявляйте маршрут по умолчанию. Вместо этого включите «Объявлять выходной узел».</translation>
     </message>
     <message>
-        <source>A node that advertises itself as an exit node cannot use another one; clear the exit node or untick Advertise exit node.</source>
+        <source>A node that advertises itself as an exit node cannot use another one. Clear the exit node or untick Advertise exit node.</source>
         <translation>Узел, объявляющий себя выходным, не может использовать другой выходной узел. Очистите «Выходной узел» или отключите «Объявлять выходной узел».</translation>
     </message>
     <message>
@@ -16155,7 +16155,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Client Random нельзя совмещать с пользовательским uTLS fingerprint.</translation>
     </message>
     <message numerus="yes">
-        <source>The link lists %n more server address(es); only the first one was imported.</source>
+        <source>The link lists %n more server address(es). Only the first one was imported.</source>
         <translation>
             <numerusform>В ссылке указан еще %n адрес сервера. Импортирован только первый.</numerusform>
             <numerusform>В ссылке указано еще %n адреса сервера. Импортирован только первый.</numerusform>
@@ -16163,7 +16163,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         </translation>
     </message>
     <message>
-        <source>Missing UUID. TUIC v4 (token authentication) is not supported; only TUIC v5 servers work.</source>
+        <source>Missing UUID. TUIC v4 (token authentication) is not supported. Only TUIC v5 servers work.</source>
         <translation>Отсутствует UUID. TUIC v4 (аутентификация по токену) не поддерживается. Работают только серверы TUIC v5.</translation>
     </message>
     <message>
@@ -16171,7 +16171,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Неизвестная кодировка пакетов, поэтому кодировка не применяется. Укажите packetaddr или xudp.</translation>
     </message>
     <message>
-        <source>sing-box does not support xtls-rprx-vision-udp443; use xtls-rprx-vision, or the Xray VLESS type.</source>
+        <source>sing-box does not support xtls-rprx-vision-udp443. Use xtls-rprx-vision, or the Xray VLESS type.</source>
         <translation>sing-box не поддерживает xtls-rprx-vision-udp443. Используйте xtls-rprx-vision или тип Xray VLESS.</translation>
     </message>
     <message>
@@ -16183,7 +16183,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Неизвестное значение security, поэтому использовано auto. Укажите auto, none, zero, aes-128-gcm, chacha20-poly1305 или aes-128-cfb.</translation>
     </message>
     <message>
-        <source>Unsupported TLS mode; a VMess link can use only tls or none.</source>
+        <source>Unsupported TLS mode. A VMess link can use only tls or none.</source>
         <translation>Неподдерживаемый режим TLS. В ссылке VMess можно использовать только tls или none.</translation>
     </message>
     <message>
@@ -16191,11 +16191,11 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Укажите три числа от 0 до 255, например 12,34,56.</translation>
     </message>
     <message>
-        <source>H%1 and H%2 overlap; each magic header needs its own number or range (unset ones are 1, 2, 3 and 4).</source>
+        <source>H%1 and H%2 overlap. Each magic header needs its own number or range (unset ones are 1, 2, 3 and 4).</source>
         <translation>H%1 и H%2 пересекаются. Каждому магическому заголовку нужно свое число или диапазон (незаданные равны 1, 2, 3 и 4).</translation>
     </message>
     <message>
-        <source>Header protection needs S1 to S4 of at least 12 each; S%1 is %2.</source>
+        <source>Header protection needs S1 to S4 of at least 12 each. S%1 is %2.</source>
         <translation>Для Header Protection значения S1–S4 должны быть не меньше 12. Сейчас S%1 = %2.</translation>
     </message>
     <message>
@@ -16223,7 +16223,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Неизвестный тег &lt;%1&gt;. Используйте &lt;b 0x...&gt;, &lt;r N&gt;, &lt;rc N&gt;, &lt;rd N&gt;, &lt;dz N&gt;, &lt;t&gt;, &lt;d&gt; или &lt;ds&gt;.</translation>
     </message>
     <message>
-        <source>Ignored; Throne resolves names with its own DNS settings.</source>
+        <source>Ignored. Throne resolves names with its own DNS settings.</source>
         <translation>Игнорируется. Throne разрешает имена через собственные настройки DNS.</translation>
     </message>
     <message>
@@ -16235,7 +16235,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Используется только последняя из %1 секций [Peer].</translation>
     </message>
     <message>
-        <source>Ignored; Throne sends all traffic of this profile through the tunnel.</source>
+        <source>Ignored. Throne sends all traffic of this profile through the tunnel.</source>
         <translation>Игнорируется. Throne направляет весь трафик этого профиля через туннель.</translation>
     </message>
     <message>
@@ -16275,7 +16275,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>XDRIVE требует шифрования VLESS — вставьте строку mlkem768x25519plus, которую даёт сервер.</translation>
     </message>
     <message>
-        <source>XDRIVE does not support a flow; clear it.</source>
+        <source>XDRIVE does not support a flow. Clear it.</source>
         <translation>XDRIVE не поддерживает flow — очистите его.</translation>
     </message>
     <message>
@@ -16283,11 +16283,11 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>XDRIVE требует мультиплекс — включите его или оставьте по умолчанию.</translation>
     </message>
     <message>
-        <source>Expected a whole number; ignored.</source>
+        <source>Expected a whole number. Ignored.</source>
         <translation>Ожидалось целое число. Игнорируется.</translation>
     </message>
     <message>
-        <source>Expected true or false; ignored.</source>
+        <source>Expected true or false. Ignored.</source>
         <translation>Ожидалось true или false. Игнорируется.</translation>
     </message>
     <message>
@@ -16327,7 +16327,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Профили не найдены.</translation>
     </message>
     <message>
-        <source>The group %1 was created, but its first download failed. Update it to try again; if the download keeps failing, try another TLS version, HTTP version or User Agent in the group&apos;s Advanced settings.</source>
+        <source>The group %1 was created, but its first download failed. Update it to try again. If the download keeps failing, try another TLS version, HTTP version or User Agent in the group&apos;s Advanced settings.</source>
         <translation>Группа %1 создана, но первая загрузка не удалась. Обновите группу, чтобы повторить попытку. Если загрузка по-прежнему не удается, попробуйте другую версию TLS, версию HTTP или User Agent в доп. настройках группы.</translation>
     </message>
     <message>
@@ -16671,7 +16671,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Начните строку с processName: или processPath:.</translation>
     </message>
     <message>
-        <source>Write only the domain, without a scheme such as https://; as written, this never matches.</source>
+        <source>Write only the domain, without a scheme such as https://. As written, this never matches.</source>
         <translation>Укажите только домен, без схемы вроде https://. В таком виде правило никогда не сработает.</translation>
     </message>
     <message>
@@ -16679,19 +16679,19 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>В домене не бывает пробелов, поэтому правило никогда не сработает.</translation>
     </message>
     <message>
-        <source>Write only the domain, without a path; as written, this never matches.</source>
+        <source>Write only the domain, without a path. As written, this never matches.</source>
         <translation>Укажите только домен, без пути. В таком виде правило никогда не сработает.</translation>
     </message>
     <message>
-        <source>A domain has no port or &apos;:&apos; in it, so this never matches; match ports and IP addresses with conditions of their own.</source>
+        <source>A domain has no port or &apos;:&apos; in it, so this never matches. Match ports and IP addresses with conditions of their own.</source>
         <translation>В домене не бывает порта или &apos;:&apos;, поэтому правило никогда не сработает. Для портов и IP-адресов используйте отдельные условия.</translation>
     </message>
     <message>
-        <source>The core compares lowercase host names, so this never matches; write it in lowercase.</source>
+        <source>The core compares lowercase host names, so this never matches. Write it in lowercase.</source>
         <translation>Ядро сравнивает имена хостов в нижнем регистре, поэтому правило никогда не сработает. Напишите его строчными буквами.</translation>
     </message>
     <message>
-        <source>Write an IPv6 address as 2001:db8::1 or [2001:db8::1]; a port goes in override_port.</source>
+        <source>Write an IPv6 address as 2001:db8::1 or [2001:db8::1]. A port goes in override_port.</source>
         <translation>Записывайте IPv6-адрес как 2001:db8::1 или [2001:db8::1]. Порт указывается в override_port.</translation>
     </message>
     <message>
@@ -16699,7 +16699,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Укажите порт в override_port, а здесь — только адрес, например 1.2.3.4 или example.com.</translation>
     </message>
     <message>
-        <source>An IP address sends no server name; use a host name such as www.example.com.</source>
+        <source>An IP address sends no server name. Use a host name such as www.example.com.</source>
         <translation>IP-адрес не передает имя сервера. Используйте имя хоста, например www.example.com.</translation>
     </message>
     <message>
@@ -16707,11 +16707,11 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Укажите только имя хоста, без порта.</translation>
     </message>
     <message>
-        <source>Not a valid outbound; pick another one.</source>
+        <source>Not a valid outbound. Pick another one.</source>
         <translation>Недопустимый outbound. Выберите другой.</translation>
     </message>
     <message>
-        <source>The outbound profile no longer exists; pick another one.</source>
+        <source>The outbound profile no longer exists. Pick another one.</source>
         <translation>Профиль outbound больше не существует. Выберите другой.</translation>
     </message>
     <message>
@@ -16719,7 +16719,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>В правилах маршрутизации нельзя использовать &quot;%1&quot;: профили с дополнительным ядром и полные конфигурации не поддерживаются. Выберите другой outbound.</translation>
     </message>
     <message>
-        <source>The chain &quot;%1&quot; has no hops; pick another outbound.</source>
+        <source>The chain &quot;%1&quot; has no hops. Pick another outbound.</source>
         <translation>В цепочке &quot;%1&quot; нет звеньев. Выберите другой outbound.</translation>
     </message>
     <message>
@@ -16735,7 +16735,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Диапазон указывается в source_port_range, в виде 1000:2000.</translation>
     </message>
     <message>
-        <source>Write only the program&apos;s file name, such as chrome.exe; a name with a path never matches. Match a full path with a process path condition instead.</source>
+        <source>Write only the program&apos;s file name, such as chrome.exe. A name with a path never matches. Match a full path with a process path condition instead.</source>
         <translation>Укажите только имя файла программы, например chrome.exe. Имя с путем никогда не сработает. Чтобы сопоставить полный путь, используйте условие по пути процесса.</translation>
     </message>
     <message>
@@ -16747,7 +16747,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Неизвестный набор правил. Используйте встроенное имя, например geosite-google, или http(s) URL бинарного файла .srs.</translation>
     </message>
     <message>
-        <source>A route-options rule cannot turn on both tls_fragment and tls_record_fragment; keep one, or use a route rule, which accepts both.</source>
+        <source>A route-options rule cannot turn on both tls_fragment and tls_record_fragment. Keep one, or use a route rule, which accepts both.</source>
         <translation>Правило route-options не может одновременно включать tls_fragment и tls_record_fragment. Оставьте один из них или используйте правило route, которое принимает оба.</translation>
     </message>
     <message>
@@ -16767,7 +16767,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Не действует с методом drop.</translation>
     </message>
     <message>
-        <source>A %1 rule ignores it; it applies only to these actions: %2.</source>
+        <source>A %1 rule ignores it. It applies only to these actions: %2.</source>
         <translation>Правило с действием %1 это игнорирует. Параметр применяется только к действиям: %2.</translation>
     </message>
     <message>
@@ -16887,11 +16887,11 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Порты не могут быть больше 65535.</translation>
     </message>
     <message>
-        <source>&quot;%1&quot; is a single port; write it as %1:%1.</source>
+        <source>&quot;%1&quot; is a single port. Write it as %1:%1.</source>
         <translation>&quot;%1&quot; — это один порт. Запишите его как %1:%1.</translation>
     </message>
     <message>
-        <source>&quot;%1&quot; is a single port; write it as %1-%1.</source>
+        <source>&quot;%1&quot; is a single port. Write it as %1-%1.</source>
         <translation>&quot;%1&quot; — это один порт. Запишите его как %1-%1.</translation>
     </message>
     <message>
@@ -16903,7 +16903,7 @@ Paste the link your provider gave you and the servers will appear here.</source>
         <translation>Должно быть целым числом или диапазоном вида 10-20.</translation>
     </message>
     <message>
-        <source>The range starts after it ends; put the smaller number first.</source>
+        <source>The range starts after it ends. Put the smaller number first.</source>
         <translation>Начало диапазона больше его конца. Укажите сначала меньшее число.</translation>
     </message>
     <message>

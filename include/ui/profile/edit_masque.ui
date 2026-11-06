@@ -20,7 +20,7 @@
       <item row="0" column="0">
        <widget class="QLabel" name="private_key_l">
         <property name="toolTip">
-         <string>Base64 DER of the enrolled ECDSA P-256 key; it signs the TLS client certificate.</string>
+         <string>Base64 DER of the enrolled ECDSA P-256 key. It signs the TLS client certificate.</string>
         </property>
         <property name="text">
          <string>Private Key</string>
@@ -85,7 +85,7 @@
       <item row="4" column="0">
        <widget class="QLabel" name="http_version_l">
         <property name="toolTip">
-         <string>HTTP/3 runs over UDP; HTTP/2 runs over TLS on TCP and works where UDP is blocked.</string>
+         <string>HTTP/3 runs over UDP. HTTP/2 runs over TLS on TCP and works where UDP is blocked.</string>
         </property>
         <property name="text">
          <string>HTTP Version</string>
@@ -98,7 +98,7 @@
       <item row="4" column="1">
        <widget class="QComboBox" name="http_version">
         <property name="toolTip">
-         <string>HTTP/3 runs over UDP; HTTP/2 runs over TLS on TCP and works where UDP is blocked.</string>
+         <string>HTTP/3 runs over UDP. HTTP/2 runs over TLS on TCP and works where UDP is blocked.</string>
         </property>
         <item>
          <property name="text">

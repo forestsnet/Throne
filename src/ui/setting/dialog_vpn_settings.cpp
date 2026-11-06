@@ -57,7 +57,7 @@ DialogVPNSettings::DialogVPNSettings(QWidget *parent) : QDialog(parent), ui(new 
     form->addRule({ui->vpn_mtu, ui->vpn_ipv6}, [this] {
         const auto mtu = ToInt(ui->vpn_mtu->currentText());
         if (!ui->vpn_ipv6->isChecked() || !mtu || *mtu >= kVpnMinIPv6Mtu || *mtu < kVpnMinMtu) return QString();
-        return tr("IPv6 needs an MTU of at least %1; below that the system may drop IPv6 from the Tun.").arg(kVpnMinIPv6Mtu);
+        return tr("IPv6 needs an MTU of at least %1. Below that the system may drop IPv6 from the Tun.").arg(kVpnMinIPv6Mtu);
     }, this, Severity::Warning, ui->label_10->text());
     form->bind(ui->tun_ipv4_cidr, Rules::Cidr(Family::V4));
     form->bind(ui->tun_ipv6_cidr, Rules::Cidr(Family::V6));

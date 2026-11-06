@@ -998,7 +998,7 @@ void DialogManageRoutes::updateRemoteProfiles(const QList<std::shared_ptr<Config
             reloadProfileItems();
             const QString details = warned.join("\n\n");
             const QString note = warned.isEmpty() ? QString()
-                                                  : "\n\n" + tr("%n profile(s) were updated with warnings; see the details.", "", static_cast<int>(warned.size()));
+                                                  : "\n\n" + tr("%n profile(s) were updated with warnings. See the details.", "", static_cast<int>(warned.size()));
             if (cancelled) {
                 manageRoutesPlainBox(this, QMessageBox::Information, tr("Update cancelled"),
                                      tr("Cancelled: updated %1 of %2, %3 failed.").arg(ok).arg(total).arg(failures.size()) + note, details);

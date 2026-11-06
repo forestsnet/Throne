@@ -40,9 +40,9 @@ namespace Configs
                 }
             }
             if (state == Single || state == Double || state == DoubleEscape) {
-                return QCoreApplication::translate("Validation", "A quote is not closed; end it with the same quote mark.");
+                return QCoreApplication::translate("Validation", "A quote is not closed. End it with the same quote mark.");
             }
-            if (state == Escape) return QCoreApplication::translate("Validation", "The arguments end with a backslash; remove it or add the character it escapes.");
+            if (state == Escape) return QCoreApplication::translate("Validation", "The arguments end with a backslash. Remove it or add the character it escapes.");
             return {};
         }
 
@@ -50,7 +50,7 @@ namespace Configs
         inline QString ExtraCoreConfigArg(const QString &args, const QString &config)
         {
             if (config.trimmed().isEmpty() || args.contains("%s")) return {};
-            return QCoreApplication::translate("Validation", "Add %s to the arguments where the config file path goes; without it the config is not used.");
+            return QCoreApplication::translate("Validation", "Add %s to the arguments where the config file path goes. Without it the config is not used.");
         }
     }
 

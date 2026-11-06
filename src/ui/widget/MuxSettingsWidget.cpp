@@ -96,7 +96,7 @@ MuxSettingsWidget::MuxSettingsWidget(QWidget *parent) : QWidget(parent) {
     grid->addWidget(m_padding, 3, 0, 1, 4);
     m_brutal = new QCheckBox(tr("TCP Brutal"), this);
     m_brutal->setObjectName("mux_brutal");
-    m_brutal->setToolTip(tr("<html><head/><body><p>TCP Brutal congestion control at the speeds below; the server must support it. "
+    m_brutal->setToolTip(tr("<html><head/><body><p>TCP Brutal congestion control at the speeds below. The server must support it. "
                             "Every stream then shares one connection, so the mode is ignored.</p></body></html>"));
     grid->addWidget(m_brutal, 4, 0, 1, 4);
     m_brutalUp = numberEdit();

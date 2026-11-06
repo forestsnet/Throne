@@ -364,7 +364,7 @@ void DialogEditProfile::updateCommonRows() {
     const QString own = ui->address->text().trimmed();
     addressEffective->setToolTip(!overridden ? QString()
                                  : own.isEmpty() ? tr("Set by %1.").arg(endpoint.origin)
-                                                 : tr("Set by %1; the profile's own address is %2.").arg(endpoint.origin, own));
+                                                 : tr("Set by %1. The profile's own address is %2.").arg(endpoint.origin, own));
     UiMode::SetVisible(ui->advanced_button, server || type == "direct");
 }
 

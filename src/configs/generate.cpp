@@ -2862,7 +2862,7 @@ namespace Configs {
         static const QStringList plainSchemes = {"udp", "tcp", "tls", "quic"};
         static const QStringList pathSchemes = {"https", "h3"};
         if (!plainSchemes.contains(scheme) && !pathSchemes.contains(scheme))
-            return fail(QCoreApplication::translate("Validation", "\"%1\" is not a supported DNS scheme; use udp, tcp, tls, quic, https, h3, dhcp or local.").arg(scheme));
+            return fail(QCoreApplication::translate("Validation", "\"%1\" is not a supported DNS scheme. Use udp, tcp, tls, quic, https, h3, dhcp or local.").arg(scheme));
         res.type = scheme;
 
         if (const auto slash = rest.indexOf(u'/'); slash >= 0) {
@@ -2891,7 +2891,7 @@ namespace Configs {
         } else if (rest.count(u':') > 1) {
             // A bare IPv6 cannot carry a port: its last group would read as one.
             if (!isIPv6Literal(rest, true))
-                return fail(QCoreApplication::translate("Validation", "\"%1\" is not a valid IPv6 address; put it in brackets to add a port.").arg(rest));
+                return fail(QCoreApplication::translate("Validation", "\"%1\" is not a valid IPv6 address. Put it in brackets to add a port.").arg(rest));
         } else {
             if (const auto colon = rest.indexOf(u':'); colon >= 0) {
                 host = rest.left(colon);
@@ -2915,7 +2915,7 @@ namespace Configs {
             static const QRegularExpression portRe(R"(^[0-9]{1,5}$)");
             const int port = portRe.match(portText).hasMatch() ? portText.toInt() : 0;
             if (port < 1 || port > 65535)
-                return fail(QCoreApplication::translate("Validation", "\"%1\" is not a valid port; use a number from 1 to 65535.").arg(portText));
+                return fail(QCoreApplication::translate("Validation", "\"%1\" is not a valid port. Use a number from 1 to 65535.").arg(portText));
             res.port = port;
         }
         res.server = toAceHost(host);
@@ -3536,7 +3536,7 @@ namespace Configs {
         bool coreUnreachable = false;
         if (IsValid(clone, &coreUnreachable)) return {};
         if (coreUnreachable) return QObject::tr("The profile could not be checked: core unreachable");
-        return QObject::tr("The profile is not valid; the log has the details");
+        return QObject::tr("The profile is not valid. The log has the details");
     }
 
     ScanTestBuild BuildScanTestConfig(const std::shared_ptr<Profile> &base, const QList<ScanTestTarget> &targets)

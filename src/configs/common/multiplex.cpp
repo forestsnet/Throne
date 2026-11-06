@@ -265,7 +265,7 @@ namespace Configs {
         if (const auto message = Checks::MuxProtocol(protocol); !message.isEmpty()) issues.append({Severity::Error, "multiplex.protocol", message, protocol});
         if (brutal->enabled && (brutal->up_mbps <= 0 || brutal->down_mbps <= 0)) {
             issues.append({Severity::Warning, "multiplex.brutal",
-                           QCoreApplication::translate("Validation", "TCP Brutal needs both speeds; a missing one is sent as 1 Mbps.")});
+                           QCoreApplication::translate("Validation", "TCP Brutal needs both speeds. A missing one is sent as 1 Mbps.")});
         }
     }
 }

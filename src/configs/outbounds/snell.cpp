@@ -21,7 +21,7 @@ namespace Configs {
         // Clash also offers shadow-tls / restls / jls obfs, none of which the core's Snell client implements.
         bool supportedObfsMode(const QString& mode) {
             if (snellObfsModes.contains(mode)) return true;
-            ParseDiag::Error("obfs", QCoreApplication::translate("Validation", "Unsupported obfuscation; Snell can use only none, http or tls."), mode);
+            ParseDiag::Error("obfs", QCoreApplication::translate("Validation", "Unsupported obfuscation. Snell can use only none, http or tls."), mode);
             return false;
         }
 
@@ -44,7 +44,7 @@ namespace Configs {
         QString SnellUserKey(const QString &userkey) {
             const auto bytes = userkey.toUtf8().size();
             if (bytes <= 255) return {};
-            return QCoreApplication::translate("Validation", "Must be at most 255 bytes; this one is %1 bytes.").arg(bytes);
+            return QCoreApplication::translate("Validation", "Must be at most 255 bytes. This one is %1 bytes.").arg(bytes);
         }
     }
 

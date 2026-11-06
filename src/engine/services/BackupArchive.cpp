@@ -366,7 +366,7 @@ namespace Engine::BackupArchive {
         ENGINE_CHECK_MAIN_THREAD();
         if (result != nullptr) *result = {};
         // An update writes through repo caches that the restore leaves stale.
-        if (!Subscription::updater()->IsIdle()) return QStringLiteral("A subscription update is running; try again when it finishes.");
+        if (!Subscription::updater()->IsIdle()) return QStringLiteral("A subscription update is running. Try again when it finishes.");
         quint32 formatVersion = 0;
         QJsonObject meta;
         QMap<QString, QByteArray> files;

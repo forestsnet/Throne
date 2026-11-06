@@ -124,7 +124,7 @@ namespace Scanner {
             if (profile->outbound == nullptr || !profile->outbound->ParseFromJson(opt.generatedIdentity)) profile = nullptr;
         }
         if (profile == nullptr || profile->outbound == nullptr) {
-            scanProfilesSetError(error, QObject::tr("The WARP identity could not be read; register a new one"));
+            scanProfilesSetError(error, QObject::tr("The WARP identity could not be read. Register a new one"));
             return nullptr;
         }
 

@@ -330,7 +330,7 @@ namespace Configs
             const auto type = o.value("type").toString();
             if (type == "tor") {
                 strip("executable_path",
-                      QCoreApplication::translate("Validation", "Removed the Tor executable path from the imported configuration; add it back only if you trust that program."),
+                      QCoreApplication::translate("Validation", "Removed the Tor executable path from the imported configuration. Add it back only if you trust that program."),
                       true);
                 strip("extra_args",
                       QCoreApplication::translate("Validation", "Removed the Tor command-line arguments from the imported configuration: they can make Tor start other programs."),
@@ -366,7 +366,7 @@ namespace Configs
                         for (const auto& key : keysNamed(wrapper, "wrapper_path")) {
                             if (isBlank(wrapper.value(key))) continue;
                             report(sectionKey + "." + key,
-                                   QCoreApplication::translate("Validation", "Removed the %1 wrapper path from the imported configuration; add it back only if you trust that program.").arg(section.toUpper()),
+                                   QCoreApplication::translate("Validation", "Removed the %1 wrapper path from the imported configuration. Add it back only if you trust that program.").arg(section.toUpper()),
                                    wrapper.value(key).toString());
                             wrapper.remove(key);
                             wrapperChanged = true;

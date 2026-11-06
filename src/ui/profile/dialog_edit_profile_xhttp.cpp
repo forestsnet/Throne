@@ -96,10 +96,10 @@ void DialogEditProfile::setupXrayXHTTPDescriptions() {
                      tr("Packet-up server upload queue size per proxied connection. Default: 30."));
     setXrayXHTTPHelp(ui->xray_uplink_http_method_l, ui->xray_uplink_http_method,
                      tr("Uplink HTTP Method"), "uplinkHTTPMethod",
-                     tr("HTTP method for upload requests. Default: POST. Xray uppercases it; GET is accepted only in packet-up mode."));
+                     tr("HTTP method for upload requests. Default: POST. Xray uppercases it. GET is accepted only in packet-up mode."));
     setXrayXHTTPHelp(ui->xray_uplink_data_placement_l, ui->xray_uplink_data_placement,
                      tr("Uplink Data Placement"), "uplinkDataPlacement",
-                     tr("Where upload data is placed. Default: auto. cookie/header are accepted only in packet-up mode; auto/body are always accepted."));
+                     tr("Where upload data is placed. Default: auto. cookie/header are accepted only in packet-up mode, and auto/body are always accepted."));
     setXrayXHTTPHelp(ui->xray_uplink_data_key_l, ui->xray_uplink_data_key,
                      tr("Uplink Data Key"), "uplinkDataKey",
                      tr("Key used when upload data is placed in a cookie or header. Defaults: X-Data for auto/header, x_data for cookie."));
@@ -113,7 +113,7 @@ void DialogEditProfile::setupXrayXHTTPDescriptions() {
                      tr("Server-side downstream/stream-one option: do not send Content-Type: text/event-stream in responses."));
     setXrayXHTTPHelp(ui->xray_scStreamUpServerSecs_l, ui->xray_scStreamUpServerSecs,
                      tr("Stream Up Server Seconds"), "scStreamUpServerSecs",
-                     tr("Stream-up server interval for periodic xPaddingBytes keepalive writes, in seconds. Default: 20-80; values <= 0 disable periodic padding."));
+                     tr("Stream-up server interval for periodic xPaddingBytes keepalive writes, in seconds. Default: 20-80. Values <= 0 disable periodic padding."));
     setXrayXHTTPHelp(ui->xray_session_placement_l, ui->xray_session_placement,
                      tr("Session Placement"), "sessionIDPlacement",
                      tr("Where the XHTTP session id is sent: path, cookie, header, or query. Default: path."));
@@ -128,7 +128,7 @@ void DialogEditProfile::setupXrayXHTTPDescriptions() {
     setXrayXHTTPHelp(ui->xray_session_id_length_l, ui->xray_session_id_length,
                      tr("Session ID Length"), "sessionIDLength",
                      tr("Length range of the generated session id, e.g. 8-16. "
-                        "Only used together with sessionIDTable; \"from\" must be greater than 0."));
+                        "Only used together with sessionIDTable, and \"from\" must be greater than 0."));
     setXrayXHTTPHelp(ui->xray_seq_placement_l, ui->xray_seq_placement,
                      tr("Sequence Placement"), "seqPlacement",
                      tr("Where the XHTTP packet sequence is sent: path, cookie, header, or query. Default: path."));
@@ -153,7 +153,7 @@ void DialogEditProfile::setupXrayXHTTPDescriptions() {
                      tr("Client-side H2/H3 xmux limit: maximum seconds an underlying connection stays reusable. Empty xmux defaults to 1800-3000."));
     setXrayXHTTPHelp(ui->xray_keep_alive_period_l, ui->xray_keep_alive_period,
                      tr("Keep Alive Period"), "xmux.hKeepAlivePeriod",
-                     tr("Client-side H2/H3 keepalive interval for underlying connections, in seconds. 0 uses Xray defaults; negative values disable keepalive where supported."));
+                     tr("Client-side H2/H3 keepalive interval for underlying connections, in seconds. 0 uses Xray defaults. Negative values disable keepalive where supported."));
     setXrayXHTTPHelp(ui->xray_downloadsettings_l, ui->xray_downloadsettings_edit,
                      tr("Download Settings"), "downloadSettings",
                      tr("Client-only downstream streamSettings, including address and port, for an independent download path. Not allowed in stream-one and removed when saving stream-one mode."));

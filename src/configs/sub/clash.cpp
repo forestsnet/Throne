@@ -122,7 +122,7 @@ inline void load_opt<MyInt>(const fkyaml::node& node, const char* key, MyInt& ta
     const bool ok = clashReadInt(value, parsed);
     target.value = ok ? parsed : 0;
     if (ok || !Configs::ParseDiag::Active()) return;
-    Configs::ParseDiag::Warn(QString::fromUtf8(key), QCoreApplication::translate("Validation", "Expected a whole number; ignored."),
+    Configs::ParseDiag::Warn(QString::fromUtf8(key), QCoreApplication::translate("Validation", "Expected a whole number. Ignored."),
                              clashNodeText(value));
 }
 
@@ -135,7 +135,7 @@ inline void load_opt<MyBool>(const fkyaml::node& node, const char* key, MyBool& 
     const bool ok = clashReadBool(value, parsed);
     target.value = ok && parsed;
     if (ok || !Configs::ParseDiag::Active()) return;
-    Configs::ParseDiag::Warn(QString::fromUtf8(key), QCoreApplication::translate("Validation", "Expected true or false; ignored."),
+    Configs::ParseDiag::Warn(QString::fromUtf8(key), QCoreApplication::translate("Validation", "Expected true or false. Ignored."),
                              clashNodeText(value));
 }
 

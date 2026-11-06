@@ -126,7 +126,7 @@ RouteDnsEditor::RouteDnsEditor(const Configs::RouteProfile& profile, QWidget* pa
 
     fakeIP = new QCheckBox(tr("Enable FakeIP"), fields);
     fakeIPDisableIPv6 = new QCheckBox(tr("FakeIP Disable IPv6"), fields);
-    fakeIPDisableIPv6->setToolTip(tr("Hand out no fake IPv6 addresses; AAAA queries are answered empty."));
+    fakeIPDisableIPv6->setToolTip(tr("Hand out no fake IPv6 addresses. AAAA queries are answered empty."));
     auto* fakeRow = new QHBoxLayout();
     fakeRow->addWidget(fakeIP);
     fakeRow->addWidget(fakeIPDisableIPv6);

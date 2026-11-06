@@ -337,15 +337,15 @@ namespace Configs {
         {
             if (!OpenVPNModeConflicts(profile).contains(key)) return {};
             if (ovpnStaticMode(profile)) {
-                return QCoreApplication::translate("Validation", "Static key mode does not use this setting; clear it or switch the mode to TLS.");
+                return QCoreApplication::translate("Validation", "Static key mode does not use this setting. Clear it or switch the mode to TLS.");
             }
             if (key == "cipher") {
-                return QCoreApplication::translate("Validation", "Only static key mode uses Cipher; in TLS mode list the cipher under Data Ciphers.");
+                return QCoreApplication::translate("Validation", "Only static key mode uses Cipher. In TLS mode list the cipher under Data Ciphers.");
             }
             if (key == "key_direction") {
-                return QCoreApplication::translate("Validation", "Key direction applies only to static key mode; for tls_auth set the control channel wrap direction.");
+                return QCoreApplication::translate("Validation", "Key direction applies only to static key mode. For tls_auth set the control channel wrap direction.");
             }
-            return QCoreApplication::translate("Validation", "Only static key mode uses a static key; clear it or switch the mode to static_key.");
+            return QCoreApplication::translate("Validation", "Only static key mode uses a static key. Clear it or switch the mode to static_key.");
         }
 
         QString OpenVPNStaticKeyMissing(const openvpn& profile)
@@ -407,7 +407,7 @@ namespace Configs {
         QString VpnMaterialConflict(const QStringList& inlineValue, const QString& path)
         {
             if (inlineValue.isEmpty() || path.trimmed().isEmpty()) return {};
-            return QCoreApplication::translate("Validation", "Set both pasted and as a file; keep only one of them.");
+            return QCoreApplication::translate("Validation", "Set both pasted and as a file. Keep only one of them.");
         }
 
         QString OpenVPNControlWrapKey(const openvpn& profile)
@@ -416,7 +416,7 @@ namespace Configs {
             const bool key = !wrap.key.isEmpty() || !wrap.key_path.trimmed().isEmpty();
             if (wrap.type.isEmpty()) {
                 if (!key) return {};
-                if (ovpnStaticMode(profile)) return QCoreApplication::translate("Validation", "Static key mode does not use the control channel wrap; clear its key.");
+                if (ovpnStaticMode(profile)) return QCoreApplication::translate("Validation", "Static key mode does not use the control channel wrap. Clear its key.");
                 return QCoreApplication::translate("Validation", "Pick the control channel wrap type for this key: tls_auth, tls_crypt or tls_crypt_v2.");
             }
             if (auto message = Validation::OneOf(wrap.type, {"tls_auth", "tls_crypt", "tls_crypt_v2"}); !message.isEmpty()) return message;
@@ -454,10 +454,10 @@ namespace Configs {
         QString OpenVPNMssFix(const openvpn& profile)
         {
             if (profile.mss_fix_disabled && profile.mss_fix > 0) {
-                return QCoreApplication::translate("Validation", "MSS clamping is disabled; clear the MSS fix value or enable it.");
+                return QCoreApplication::translate("Validation", "MSS clamping is disabled. Clear the MSS fix value or enable it.");
             }
             if (profile.mss_fix_disabled && !profile.mss_fix_mode.isEmpty()) {
-                return QCoreApplication::translate("Validation", "MSS clamping is disabled; clear the MSS fix mode or enable it.");
+                return QCoreApplication::translate("Validation", "MSS clamping is disabled. Clear the MSS fix mode or enable it.");
             }
             if (profile.mss_fix <= 0 && !profile.mss_fix_mode.isEmpty()) {
                 return QCoreApplication::translate("Validation", "The MSS fix mode needs an MSS fix value.");
@@ -468,13 +468,13 @@ namespace Configs {
         QString OpenVPNPingRestart(const openvpn& profile)
         {
             if (!profile.ping_restart_disabled || ovpnDurationNs(profile.ping_restart).value_or(0) <= 0) return {};
-            return QCoreApplication::translate("Validation", "Ping restart is disabled; clear the restart time or enable it.");
+            return QCoreApplication::translate("Validation", "Ping restart is disabled. Clear the restart time or enable it.");
         }
 
         QString OpenVPNRenegotiate(const openvpn& profile)
         {
             if (!profile.renegotiate_disabled || ovpnDurationNs(profile.renegotiate_interval).value_or(0) <= 0) return {};
-            return QCoreApplication::translate("Validation", "Renegotiation is disabled; clear the interval or enable it.");
+            return QCoreApplication::translate("Validation", "Renegotiation is disabled. Clear the interval or enable it.");
         }
 
         QString OtpPlaceholderUnbound(const QString& value, int otpProfileId)
@@ -968,7 +968,7 @@ namespace Configs {
         if (otp_profile_id < 0) return;
         otp_profile_id = -1;
         issues << Validation::Issue{Validation::Severity::Warning, "otp_profile_id",
-                                    QCoreApplication::translate("Validation", "Removed the link to a one-time password entry; choose the entry again in the profile's settings."), {}};
+                                    QCoreApplication::translate("Validation", "Removed the link to a one-time password entry. Choose the entry again in the profile's settings."), {}};
     }
 
     void openvpn::Validate(Validation::Issues& issues)

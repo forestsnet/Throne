@@ -145,7 +145,7 @@ void EditHysteria::bindValidation(Validation::Form &form) {
 
     form.bind(ui->obfs, [this](const QString &text) {
         if (!isV2() || ui->obfuscation_type->currentText() != "gecko" || !text.isEmpty()) return QString();
-        return tr("Gecko obfuscation needs a password; without one, obfuscation is off.");
+        return tr("Gecko obfuscation needs a password. Without one, obfuscation is off.");
     }, this).raw().warning();
     form.bind(ui->min_packet_size, Rules::Int(0, 2048), this);
     form.bind(ui->max_packet_size, Rules::Int(0, 2048), this);

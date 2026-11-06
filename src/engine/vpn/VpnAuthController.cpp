@@ -433,7 +433,7 @@ namespace Engine {
         m_vpnAutoRestarts[profileID] = m_vpnAutoRestarts.value(profileID) + 1;
         m_vpnAutoRestartAt = now;
 
-        MW_show_log(MainWindowTr::tr("[VPN] %1 rejected the saved credentials; restarting the profile with a new one-time code.")
+        MW_show_log(MainWindowTr::tr("[VPN] %1 rejected the saved credentials. Restarting the profile with a new one-time code.")
                         .arg(Stats::VpnEndpointDisplayName(endpointTag)));
         const int runningID = running->id;
         m_vpnAuthRestartID = runningID;
@@ -483,7 +483,7 @@ namespace Engine {
         else return;
         challenge.error = error;
         challenge.message = MainWindowTr::tr("The server refused the credentials saved with this profile. Enter the ones "
-                                             "to use for this session; the profile itself is left unchanged.");
+                                             "to use for this session. The profile itself is left unchanged.");
 
         m_vpnAuthPrompted[profileID] = m_vpnAuthPrompted.value(profileID) + 1;
         MW_show_log(MainWindowTr::tr("[VPN] %1 rejected the saved credentials.").arg(Stats::VpnEndpointDisplayName(endpointTag)));

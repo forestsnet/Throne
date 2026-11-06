@@ -26,7 +26,7 @@ namespace Configs {
         {
             if (password.isEmpty()) return {};
             if (version == 4) return QCoreApplication::translate("Validation", "SOCKS4 sends no password, so it is ignored.");
-            if (username.isEmpty()) return QCoreApplication::translate("Validation", "Enter a user name too; without one the password is not sent.");
+            if (username.isEmpty()) return QCoreApplication::translate("Validation", "Enter a user name too. Without one the password is not sent.");
             return {};
         }
     }

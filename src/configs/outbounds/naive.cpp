@@ -70,7 +70,7 @@ namespace Configs {
                 if (name.isEmpty()) {
                     // The line may carry a credential, so it is not echoed.
                     if (!line.trimmed().isEmpty()) {
-                        ParseDiag::Warn("extra-headers", QCoreApplication::translate("Validation", "A header line without a name and a colon was ignored; write each line as Name: value."));
+                        ParseDiag::Warn("extra-headers", QCoreApplication::translate("Validation", "A header line without a name and a colon was ignored. Write each line as Name: value."));
                     }
                     continue;
                 }

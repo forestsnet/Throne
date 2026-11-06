@@ -665,9 +665,9 @@ void MainWindow::onConnectionContextMenu(const QPoint& pos)
         QDialog dialog(this);
         dialog.setWindowTitle(ra ? tr("%1 rules").arg(ra->label) : tr("Specific server rules"));
         auto* layout = new QVBoxLayout(&dialog);
-        auto* hint = new QLabel(ra ? tr("Routing profile \"%1\". Checked targets go %2; unchecking one removes its rule.")
+        auto* hint = new QLabel(ra ? tr("Routing profile \"%1\". Checked targets go %2. Unchecking one removes its rule.")
                                          .arg(currentRoute->name, ra->label)
-                                   : tr("Routing profile \"%1\". Checked targets go through the chosen server; unchecking one removes its rule.")
+                                   : tr("Routing profile \"%1\". Checked targets go through the chosen server. Unchecking one removes its rule.")
                                          .arg(currentRoute->name), &dialog);
         hint->setWordWrap(true);
         layout->addWidget(hint);

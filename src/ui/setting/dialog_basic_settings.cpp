@@ -137,7 +137,7 @@ namespace {
         QT_TRANSLATE_NOOP("DialogBasicSettings", "The backup's database is damaged: %1"),
         QT_TRANSLATE_NOOP("DialogBasicSettings", "Failed to restore database: %1"),
         QT_TRANSLATE_NOOP("DialogBasicSettings", "There is nothing to back up"),
-        QT_TRANSLATE_NOOP("DialogBasicSettings", "A subscription update is running; try again when it finishes."),
+        QT_TRANSLATE_NOOP("DialogBasicSettings", "A subscription update is running. Try again when it finishes."),
     };
 
     QString basicSettingsBackupError(const QString &error) {

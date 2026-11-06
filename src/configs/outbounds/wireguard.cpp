@@ -91,7 +91,7 @@ namespace Configs {
             for (qsizetype i = 0; i < ranges.size(); ++i) {
                 for (qsizetype j = i + 1; j < ranges.size(); ++j) {
                     if (ranges[i].first <= ranges[j].second && ranges[j].first <= ranges[i].second) {
-                        return QCoreApplication::translate("Validation", "H%1 and H%2 overlap; each magic header needs its own number or range (unset ones are 1, 2, 3 and 4).")
+                        return QCoreApplication::translate("Validation", "H%1 and H%2 overlap. Each magic header needs its own number or range (unset ones are 1, 2, 3 and 4).")
                             .arg(i + 1)
                             .arg(j + 1);
                     }
@@ -104,7 +104,7 @@ namespace Configs {
             if (key.trimmed().isEmpty()) return {};
             for (qsizetype i = 0; i < paddings.size(); ++i) {
                 if (paddings[i] < 12) {
-                    return QCoreApplication::translate("Validation", "Header protection needs S1 to S4 of at least 12 each; S%1 is %2.").arg(i + 1).arg(paddings[i]);
+                    return QCoreApplication::translate("Validation", "Header protection needs S1 to S4 of at least 12 each. S%1 is %2.").arg(i + 1).arg(paddings[i]);
                 }
             }
             return {};
@@ -352,7 +352,7 @@ namespace Configs {
                 else if (key == "randomtrailers" || key == "random_trailers") random_trailers = ParseAmneziaBool(value), enable_amnezia = true;
                 else if (key == "disablecookies" || key == "disable_cookies") disable_cookies = ParseAmneziaBool(value), enable_amnezia = true;
                 else if (key == "dns") {
-                    ParseDiag::Warn(rawKey, QCoreApplication::translate("Validation", "Ignored; Throne resolves names with its own DNS settings."), value);
+                    ParseDiag::Warn(rawKey, QCoreApplication::translate("Validation", "Ignored. Throne resolves names with its own DNS settings."), value);
                 }
                 else if (key == "allowedips") allowedIps << value.remove(' ').split(',', Qt::SkipEmptyParts);
                 else if (key != "listenport" && key != "table" && key != "fwmark" && key != "saveconfig" && key != "preup" &&
@@ -364,7 +364,7 @@ namespace Configs {
                 ParseDiag::Warn("[Peer]", QCoreApplication::translate("Validation", "Only the last of the %1 [Peer] sections is used.").arg(peers));
             }
             if (!allowedIps.isEmpty() && !allowedIps.contains(QStringLiteral("0.0.0.0/0"))) {
-                ParseDiag::Warn("AllowedIPs", QCoreApplication::translate("Validation", "Ignored; Throne sends all traffic of this profile through the tunnel."),
+                ParseDiag::Warn("AllowedIPs", QCoreApplication::translate("Validation", "Ignored. Throne sends all traffic of this profile through the tunnel."),
                                 allowedIps.join(", "));
             }
             FixAddress();

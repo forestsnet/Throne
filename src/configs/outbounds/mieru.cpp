@@ -44,7 +44,7 @@ namespace Configs {
             const int begin = sides[0].toInt(), end = sides[1].toInt();
             if (begin == 0 || end == 0) return QCoreApplication::translate("Validation", "Ports must be from 1 to 65535.");
             if (begin > end)
-                return QCoreApplication::translate("Validation", "The range starts after it ends; write it as %1-%2.").arg(QString::number(end), QString::number(begin));
+                return QCoreApplication::translate("Validation", "The range starts after it ends. Write it as %1-%2.").arg(QString::number(end), QString::number(begin));
             return {};
         }
     }
@@ -57,7 +57,7 @@ namespace Configs {
         QString MieruTrafficPattern(const QString &pattern) {
             if (auto message = Validation::Base64(pattern); !message.isEmpty()) return message;
             if (pattern.trimmed().size() % 4 == 0) return {};
-            return QCoreApplication::translate("Validation", "The = padding at the end is missing; copy the whole pattern.");
+            return QCoreApplication::translate("Validation", "The = padding at the end is missing. Copy the whole pattern.");
         }
     }
 

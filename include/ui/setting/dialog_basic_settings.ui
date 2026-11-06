@@ -1167,7 +1167,7 @@
           <string notr="true">advanced</string>
          </property>
          <property name="toolTip">
-          <string>Subscriptions whose server sends an update interval (profile-update-interval) follow it; the interval above applies when a server sends none. Groups can override this in their Advanced settings.</string>
+          <string>Subscriptions whose server sends an update interval (profile-update-interval) follow it. The interval above applies when a server sends none. Groups can override this in their Advanced settings.</string>
          </property>
          <property name="text">
           <string>Use the update interval sent by the server</string>
@@ -1229,7 +1229,7 @@
           <string notr="true">advanced</string>
          </property>
          <property name="toolTip">
-          <string>TLS versions offered when fetching subscriptions. Some servers answer the default handshake with a CAPTCHA or a block page; TLS 1.2 often gets through.</string>
+          <string>TLS versions offered when fetching subscriptions. Some servers answer the default handshake with a CAPTCHA or a block page. TLS 1.2 often gets through.</string>
          </property>
          <property name="text">
           <string>TLS Version</string>
@@ -1988,7 +1988,7 @@
           <item>
            <widget class="QLabel" name="label_restore_desc">
             <property name="text">
-             <string>Restore from a backup file. You can choose which parts to restore; each selected part replaces the current data. The application restarts after restore.</string>
+             <string>Restore from a backup file. You can choose which parts to restore. Each selected part replaces the current data. The application restarts after restore.</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>

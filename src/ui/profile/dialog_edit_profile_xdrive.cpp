@@ -85,7 +85,7 @@ void DialogEditProfile::setupXrayXDriveDescriptions() {
                      tr("Port of the front address. Default: 443."));
 
     setXrayXHTTPHelp(ui->xray_xdrive_segment_bytes_l, ui->xray_xdrive_segment_bytes, tr("Segment Bytes"), "segmentBytes",
-                     tr("Largest upload per file, in bytes. Default: 524288; Xray caps it at 16 MiB."));
+                     tr("Largest upload per file, in bytes. Default: 524288. Xray caps it at 16 MiB."));
     setXrayXHTTPHelp(ui->xray_xdrive_flush_interval_l, ui->xray_xdrive_flush_interval, tr("Flush Interval"), "flushIntervalMs",
                      tr("How long writes are gathered before an upload, in milliseconds. Default: 20."));
     setXrayXHTTPHelp(ui->xray_xdrive_poll_interval_l, ui->xray_xdrive_poll_interval, tr("Poll Interval"), "pollIntervalMs",
@@ -100,7 +100,7 @@ void DialogEditProfile::setupXrayXDriveDescriptions() {
     setXrayXHTTPHelp(ui->xray_xdrive_session_ttl_l, ui->xray_xdrive_session_ttl, tr("Session TTL"), "sessionTtlSeconds",
                      tr("How long an idle session lives before its files are cleaned up, in seconds. Default: 300."));
     setXrayXHTTPHelp(ui->xray_xdrive_concurrency_l, ui->xray_xdrive_concurrency, tr("Concurrency"), "concurrency",
-                     tr("Parallel storage requests per stream. Default: 8; Xray caps it at 64."));
+                     tr("Parallel storage requests per stream. Default: 8. Xray caps it at 64."));
 }
 
 void DialogEditProfile::loadXrayXDrive(const Configs::xrayXDrive &xdrive) {

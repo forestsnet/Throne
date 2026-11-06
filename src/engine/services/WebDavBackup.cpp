@@ -258,8 +258,8 @@ namespace Engine::WebDavBackup {
             if (!r.error.isEmpty()) return r.error;
             if (r.status >= 300 && r.status < 400) {
                 const QString location = QString::fromUtf8(r.location).simplified().left(200);
-                if (location.isEmpty()) return QObject::tr("The server answered with a redirect (HTTP %1); check the server URL.").arg(r.status);
-                return QObject::tr("The server redirected to %1; check the server URL.").arg(location);
+                if (location.isEmpty()) return QObject::tr("The server answered with a redirect (HTTP %1). Check the server URL.").arg(r.status);
+                return QObject::tr("The server redirected to %1. Check the server URL.").arg(location);
             }
             if (r.status == 401) return QObject::tr("Wrong username or password.");
             if (r.status == 403) return QObject::tr("Permission denied.");
@@ -646,7 +646,7 @@ namespace Engine::WebDavBackup {
             error = QObject::tr("Could not write the downloaded backup: %1").arg(out.errorString());
         } else if (entry.indexed && ((entry.size >= 0 && response.sunk != entry.size) ||
                                      (!entry.sha256.isEmpty() && hash.result().toHex() != entry.sha256.toLatin1()))) {
-            error = QObject::tr("The downloaded backup does not match the backup list; it may have been replaced or damaged.");
+            error = QObject::tr("The downloaded backup does not match the backup list. It may have been replaced or damaged.");
         }
         if (!error.isEmpty()) QFile::remove(localPath);
         return error;

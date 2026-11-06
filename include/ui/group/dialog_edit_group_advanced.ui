@@ -88,7 +88,7 @@
       <item row="1" column="0">
        <widget class="QLabel" name="tls_version_l">
         <property name="toolTip">
-         <string>TLS versions offered when fetching this subscription. Some servers answer the default handshake with a CAPTCHA or a block page; TLS 1.2 often gets through. Keep Default follows the Subscription settings.</string>
+         <string>TLS versions offered when fetching this subscription. Some servers answer the default handshake with a CAPTCHA or a block page. TLS 1.2 often gets through. Keep Default follows the Subscription settings.</string>
         </property>
         <property name="text">
          <string>TLS Version</string>
@@ -251,7 +251,7 @@
         <item row="1" column="0">
          <widget class="QLabel" name="server_interval_l">
           <property name="toolTip">
-           <string>Use the update interval sent by the subscription server; the interval above applies when it sends none. Keep Default follows the Subscription settings.</string>
+           <string>Use the update interval sent by the subscription server. The interval above applies when it sends none. Keep Default follows the Subscription settings.</string>
           </property>
           <property name="text">
            <string>Server Interval</string>

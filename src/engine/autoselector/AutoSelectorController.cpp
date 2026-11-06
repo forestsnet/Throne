@@ -102,7 +102,7 @@ namespace Engine {
         const auto needed = Configs::AutoSelectorUnmeasuredCandidates(ent, stale);
         if (needed.isEmpty()) {
             const auto ranked = Configs::RerankAutoSelectorPool(ent);
-            MW_show_log(MainWindowTr::tr("[Auto selector] Reusing existing test results; ranked %1 profiles.").arg(ranked.size()));
+            MW_show_log(MainWindowTr::tr("[Auto selector] Reusing existing test results. Ranked %1 profiles.").arg(ranked.size()));
             return;
         }
 

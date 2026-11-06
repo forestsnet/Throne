@@ -145,7 +145,7 @@ namespace {
     // Without "h2" the server never agrees to HTTP/2 and every target fails.
     QString scanInstanceAlpnError(const QString &httpVersion, const QStringList &alpn) {
         if (httpVersion != QStringLiteral("2") || alpn.isEmpty() || alpn.contains(QStringLiteral("h2"))) return {};
-        return DialogScanInstance::tr("HTTP/2 needs \"h2\" in the ALPN list; add it or leave ALPN empty.");
+        return DialogScanInstance::tr("HTTP/2 needs \"h2\" in the ALPN list. Add it or leave ALPN empty.");
     }
 
     QString scanInstanceNeedsTlsError(bool tls, const QString &method, const QString &httpVersion) {
@@ -407,7 +407,7 @@ void DialogScanInstance::setupTargets() {
     ui->port_mode->addItem(tr("Merge with the list's ports"), static_cast<int>(PortMode::Merge));
     ui->port_mode->addItem(tr("Only the list's ports"), static_cast<int>(PortMode::List));
     ui->port_mode->setItemData(
-        2, tr("Your ports are ignored; entries without a port are probed on port 443 (80 for plain HTTP)."), Qt::ToolTipRole);
+        2, tr("Your ports are ignored. Entries without a port are probed on port 443 (80 for plain HTTP)."), Qt::ToolTipRole);
     connect(ui->port_mode, &QComboBox::currentIndexChanged, this, [this] {
         const bool ownPorts = ui->port_mode->currentData().toInt() != static_cast<int>(PortMode::List);
         ui->ports->setEnabled(ownPorts);
@@ -838,7 +838,7 @@ bool DialogScanInstance::collect(Configs::ScanConfig &out, int &baseListId, QStr
     out.stopAfter = 0;
     if (!ui->stop_after->text().trimmed().isEmpty() &&
         !number(ui->stop_after, out.stopAfter, true,
-                tr("Stop after must be between %1 and %2 results; leave it empty for no limit.")))
+                tr("Stop after must be between %1 and %2 results. Leave it empty for no limit.")))
         return false;
     if (!number(ui->concurrency, out.concurrency, true, tr("Concurrency must be between %1 and %2."))) return false;
     if (!number(ui->spawn_interval, out.spawnIntervalMs, true, tr("Spawn interval must be between %1 and %2 ms.")))
@@ -1175,7 +1175,7 @@ void DialogScanInstance::updateWarpIdentityStatus() {
     } else if (warp.generatedMode != transport) {
         const QString registered = warp.generatedMode == QStringLiteral("masque") ? QStringLiteral("MASQUE")
                                                                                  : QStringLiteral("WireGuard");
-        text = tr("The registered device is for %1; register a new one for this mode.").arg(registered);
+        text = tr("The registered device is for %1. Register a new one for this mode.").arg(registered);
     } else {
         text = tr("A WARP device is registered for this scan.");
     }

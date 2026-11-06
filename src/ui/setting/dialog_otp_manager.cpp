@@ -180,7 +180,7 @@ void DialogOtpManager::refreshOtpCodes() const {
 void DialogOtpManager::copyOtpCode(const std::shared_ptr<Configs::OtpProfile> &profile) const {
     const auto code = profile->CurrentCode();
     if (code.isEmpty()) {
-        MessageBoxWarning(tr("OTP"), tr("No usable code; check the secret."));
+        MessageBoxWarning(tr("OTP"), tr("No usable code. Check the secret."));
         return;
     }
     QGuiApplication::clipboard()->setText(code);
