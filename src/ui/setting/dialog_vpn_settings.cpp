@@ -17,7 +17,7 @@
 namespace {
     const QString kDefaultTunIPv4CIDR = "172.19.0.1/24";
     const QString kDefaultTunIPv6CIDR = "fdfe:dcba:9876::1/96";
-    constexpr int kVpnMinMtu = 1000;
+    constexpr int kVpnMinMtu = Configs::SettingsRepo::kTunMinIPv6Mtu;
     constexpr int kVpnMaxMtu = 10000;
     constexpr int kVpnMinIPv6Mtu = Configs::SettingsRepo::kTunMinIPv6Mtu;
 
@@ -62,7 +62,7 @@ DialogVPNSettings::DialogVPNSettings(QWidget *parent) : QDialog(parent), ui(new 
         return tr("IPv6 needs an MTU of at least %1. Below that the Tun carries no IPv6 at all, and the system sends it "
                   "around the tunnel instead.")
             .arg(kVpnMinIPv6Mtu);
-    }, this, Severity::Warning, ui->label_10->text());
+    }, this, Severity::Error, ui->label_10->text());
     form->bind(ui->tun_ipv4_cidr, Rules::Cidr(Family::V4));
     form->bind(ui->tun_ipv6_cidr, Rules::Cidr(Family::V6));
     form->bindLines(ui->priv_ranges, [](const QString &range) {

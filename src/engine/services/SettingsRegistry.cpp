@@ -244,7 +244,10 @@ namespace Engine::SettingsRegistryImpl {
 #ifdef Q_OS_LINUX
             list << boolKey(QStringLiteral("tun_auto_redirect"), &Settings::vpn_auto_redirect, Restart::Tun, ApplyKillSwitch);
 #endif
-            list << intKey(QStringLiteral("tun_mtu"), &Settings::vpn_mtu, 1000, 10000, Restart::Tun, ApplyKillSwitch);
+            // Нижняя граница — порог IPv6: ниже него интерфейс не получает адрес v6,
+            // туннель не забирает ::/0, и весь IPv6 уходит мимо него.
+            list << intKey(QStringLiteral("tun_mtu"), &Settings::vpn_mtu, Settings::kTunMinIPv6Mtu, 10000,
+                           Restart::Tun, ApplyKillSwitch);
             list << boolKey(QStringLiteral("tun_ipv6"), &Settings::vpn_ipv6, Restart::Tun, ApplyKillSwitch);
             auto tunIpv4Cidr = stringKey(QStringLiteral("tun_ipv4_cidr"), &Settings::vpn_tun_ipv4_cidr, Restart::Tun,
                                          [](const QString &text) { return Validation::Cidr(text, Validation::Family::V4).isEmpty(); },

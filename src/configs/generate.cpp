@@ -1424,7 +1424,11 @@ namespace Configs {
                 inboundObj["type"] = "tun";
                 inboundObj["interface_name"] = genTunName();
                 inboundObj["auto_route"] = true;
-                inboundObj["mtu"] = settings.vpn_mtu;
+                // Зажим по нижней границе IPv6: настройки ниже неё уже не принимают, но
+                // в базе от прежних сборок такое значение остаться может, а на нём
+                // интерфейс не получает адрес v6 и весь IPv6 уходит мимо туннеля.
+                const int tunMtu = qMax(settings.vpn_mtu, Configs::SettingsRepo::kTunMinIPv6Mtu);
+                inboundObj["mtu"] = tunMtu;
                 inboundObj["strict_route"] = settings.vpn_strict_route;
                 if (ctx.os == Linux && settings.vpn_auto_redirect) inboundObj["auto_redirect"] = true;
                 const auto tunIPv4CIDR = settings.vpn_tun_ipv4_cidr;
@@ -1434,7 +1438,7 @@ namespace Configs {
                 // ::/0, системный маршрут остаётся на физическом интерфейсе, и весь
                 // IPv6 идёт мимо туннеля открытым. Отказывает дальше правило
                 // маршрутизации, так что снятый флажок глушит IPv6, а не выпускает.
-                const bool tunCarriesIPv6 = settings.vpn_mtu >= Configs::SettingsRepo::kTunMinIPv6Mtu;
+                const bool tunCarriesIPv6 = tunMtu >= Configs::SettingsRepo::kTunMinIPv6Mtu;
                 auto tunAddress = QJsonArray{tunIPv4CIDR};
                 if (tunCarriesIPv6) tunAddress += tunIPv6CIDR;
                 inboundObj["address"] = tunAddress;
@@ -1463,9 +1467,15 @@ namespace Configs {
                     excludedRanges = subtractPrefix(excludedRanges, tunIPv4CIDR);
                     if (tunCarriesIPv6) excludedRanges = subtractPrefix(excludedRanges, tunIPv6CIDR);
                 }
+                // Refusing IPv6 means the Tun has to see it. A prefix left out of its routes never
+                // reaches the rule and goes out on the physical interface instead.
+                if (tunCarriesIPv6 && !settings.vpn_ipv6) {
+                    excludedRanges.removeIf([](const QString &range) { return range.contains(u':'); });
+                }
                 for (const auto &range : excludedRanges) routeExcludeAddrs << range;
                 // An IPv4-only Tun's strict route rejects every IPv6 flow, [::1] included; the static exclusion is checked first.
-                if (ctx.os == Linux && settings.vpn_strict_route && !settings.vpn_ipv6) routeExcludeAddrs << "::1/128";
+                // Keyed on what the interface actually carries: with the box ticked but the MTU too low there is still no address.
+                if (ctx.os == Linux && settings.vpn_strict_route && !tunCarriesIPv6) routeExcludeAddrs << "::1/128";
                 inboundObj["route_exclude_address"] = routeExcludeAddrs;
                 if (!routeExcludeSets.isEmpty()) inboundObj["route_exclude_address_set"] = routeExcludeSets;
                 inbounds += inboundObj;
@@ -2376,6 +2386,19 @@ namespace Configs {
             routeChain = std::make_shared<RouteProfile>(*routeChain);
             const auto &routeDeps = ctx.prerequisites.routing;
 
+            // Туннель держит ::/0 всегда, поэтому IPv6 доходит сюда, а не уходит
+            // наружу. Снятый флажок обрывает его тут, до правил пользователя: любое
+            // из них могло бы отправить адрес v6 в direct, и это была бы та же
+            // утечка, только через наше же правило.
+            QJsonObject tunIPv6Reject;
+            if (!ctx.forTest && settings.spmode_vpn && !settings.vpn_ipv6) {
+                tunIPv6Reject = QJsonObject{
+                    {"inbound", tags::tunIn},
+                    {"ip_version", 6},
+                    {"action", "reject"},
+                };
+            }
+
             QJsonObject rawRouteObj;
             if (routeChain->isRaw) {
                 rawRouteObj = QString2QJsonObject(routeChain->rawRoute);
@@ -2385,6 +2408,15 @@ namespace Configs {
                 }
                 rawRouteObj = RouteProfile::TranslateRawOutbounds(rawRouteObj, routeDeps.outboundMap);
                 if (routeChain->preventModifications) {
+                    // Отказ по IPv6 ставим и сюда, первым правилом. Профиль сохраняют
+                    // дословно, но адрес v6 интерфейсу выдан, и без этого правила
+                    // любое direct в нём выпускает IPv6 мимо туннеля — ровно то, от
+                    // чего настройка и защищает.
+                    if (!tunIPv6Reject.isEmpty()) {
+                        auto rawRules = rawRouteObj.value("rules").toArray();
+                        rawRules.prepend(tunIPv6Reject);
+                        rawRouteObj["rules"] = rawRules;
+                    }
                     // The raw JSON is verbatim, but endpoint tags are internal so the user cannot name them.
                     if (!ctx.vpnAuxTags.isEmpty()) {
                         auto rawRules = rawRouteObj.value("rules").toArray();
@@ -2411,19 +2443,9 @@ namespace Configs {
                 QJsonObject tunIPv6Reject;
             } injected;
 
-            // Туннель держит ::/0 всегда, поэтому IPv6 доходит сюда, а не уходит
-            // наружу. Снятый флажок обрывает его тут, до правил пользователя: любое
-            // из них могло бы отправить адрес v6 в direct, и это была бы та же
-            // утечка, только через наше же правило. После hijack-dns, иначе
-            // перестали бы отвечать запросы DNS к адресам v6.
-            if (!ctx.forTest && settings.spmode_vpn && !settings.vpn_ipv6
-                && settings.vpn_mtu >= Configs::SettingsRepo::kTunMinIPv6Mtu) {
-                injected.tunIPv6Reject = QJsonObject{
-                    {"inbound", tags::tunIn},
-                    {"ip_version", 6},
-                    {"action", "reject"},
-                };
-            }
+            // Порядок важен: после hijack-dns, иначе перестали бы отвечать запросы
+            // DNS к адресам v6, и до правил профиля.
+            injected.tunIPv6Reject = tunIPv6Reject;
 
             if (systemDnsInbound(ctx)) {
                 injected.dnsSystem = QJsonObject{
