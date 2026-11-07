@@ -9,6 +9,7 @@
 #include "include/api/remote/Router.hpp"
 #include "include/api/remote/Server.hpp"
 #include "include/configs/generate.h"
+#include "include/database/ProfilesRepo.h"
 #include "include/configs/sub/GroupUpdater.hpp"
 #include "include/configs/sub/RouteUpdater.hpp"
 #include "include/engine/EngineEvents.h"
@@ -239,11 +240,6 @@ namespace Engine {
             // The job's own count: the global may already belong to the next job.
             MW_show_log(MainWindowTr::tr("Imported %1 profile(s)").arg(importedCount >= 0 ? importedCount : Configs::dataManager->settingsRepo->imported_count));
         });
-        connect(EngineEvents::instance(), &EngineEvents::subscriptionReplacedRunning, this, [this](int profileId) {
-            // Whatever the user started since the refresh stopped the old profile wins.
-            if (connectionState() != ConnectionState::Idle) return;
-            start(StartRequest{profileId, false});
-        });
         connect(EngineEvents::instance(), &EngineEvents::routingRestartNeeded, this, [this] { noteRestartNeeded(RestartReason::Routing); });
         // Queued and connected before the window's model refresh, so posted-event order clears the cache first.
         auto *ipLists = Scanner::IpListUpdater::instance();
@@ -311,6 +307,12 @@ namespace Engine {
 
         // Must precede the first coreStarted, or a remembered profile would start before the guard is even arming.
         Sys::KillSwitch::instance()->apply();
+
+        // До решения о возобновлении: выбывший профиль мог дожить до выхода, и
+        // без этого клиент поднял бы сервер, которого в подписке уже нет.
+        if (const int collected = Configs::dataManager->profilesRepo->CollectRetiredProfile(); collected >= 0) {
+            EngineEvents::ProfilesRemoved({collected});
+        }
 
         if (bootStart) {
             if (bootStart->profileId >= 0) m_connection->setBootStart(StartRequest{bootStart->profileId, false, bootStart->serial});

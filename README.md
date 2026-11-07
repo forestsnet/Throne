@@ -34,6 +34,10 @@ Two things it therefore cannot be. Not port 53: strict route, which is on by def
 
 Before each connect the configured resolver and the alternatives are queried in parallel, with the hostname of the server about to be dialled rather than some neutral name, and whichever answers first is the one the session uses. A resolver that answers one probe and then falls apart is the normal case where this audience lives, so the round is run every time rather than only when the configured one has already failed. Turn it off with "Switch automatically when it stops answering" under DNS.
 
+### Note on subscription updates while connected
+
+An update never drops the connection. When the subscription no longer carries the server the tunnel is running on, that profile leaves the list straight away, so it does not stand next to the one that replaced it, but its session keeps going until you disconnect. The moment you do, it is deleted and the selection moves to its successor: the profile with the same name, or, when the name only differs by a tag such as a speed or a flag, the one that matches without it, and otherwise the first in the group.
+
 ### GitHub Releases (Portable ZIP)
 
 [![GitHub All Releases](https://img.shields.io/github/downloads/throneproj/Throne/total?label=downloads-total&logo=github&style=flat-square)](https://github.com/throneproj/Throne/releases)

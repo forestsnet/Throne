@@ -1,3 +1,10 @@
+#### 1.4.9
+
+* Hide the server a subscription update removed instead of listing it twice, and keep its connection until you disconnect **1**
+
+**1**:
+An update that replaced the server the tunnel was running on left both of them in the list, the one that was gone and the one that came in its place, under the same name and with nothing to tell them apart. Deleting it was not an option either, because that meant cutting the connection in the middle of a refresh that nothing had asked to interrupt. It now leaves the group the moment the update lands, so only its successor is listed, while the session on it carries on untouched. When you disconnect, it is deleted and the selection moves to the successor: the profile with the same name, or the one whose name differs only by a tag, since a provider rewriting "[25 Gbps]" to "[20 Gbps]" is the same server to everyone except an exact comparison, and otherwise the first in the group. A profile left behind by a client that was closed while connected is collected at the next start, before anything is resumed, so a server the subscription has dropped is never brought back up. The setting that allowed an update to stop the active profile is gone with it, since no update stops anything now.
+
 #### 1.4.8
 
 * Stop IPv6 from leaving outside the tunnel **1**

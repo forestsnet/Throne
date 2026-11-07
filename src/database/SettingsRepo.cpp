@@ -88,7 +88,6 @@ namespace Configs {
             {"warp_tos_accepted",             &warp_tos_accepted},
             {"enable_dns_routing",            &enable_dns_routing},
             {"inbound_auth",                  &inbound_auth},
-            {"allow_stopping_active_profile", &allow_stopping_active_profile},
             {"disable_mixed_inbound",         &disable_mixed_inbound},
             {"url_scheme_auto_register",      &url_scheme_auto_register},
             {"file_assoc_auto_register",      &file_assoc_auto_register},
@@ -121,6 +120,7 @@ namespace Configs {
             {"mux_brutal_down_mbps",   &mux_brutal_down_mbps},
             {"test_concurrent",        &test_concurrent},
             {"remember_id",            &remember_id},
+            {"retired_profile_id",     &retired_profile_id},
             {"language",               &language},
             {"ui_mode",                &ui_mode},
             {"simple_transport",       &simple_transport},
@@ -379,7 +379,7 @@ namespace Configs {
         // и отличить его от осознанного выбора нельзя. Поэтому ключ снимается
         // один раз, а дальше держится уже то, что человек поставил сам
         // (private_relay_block).
-        db.exec("DELETE FROM settings WHERE key IN ('direct_dns_strategy', 'remote_dns_strategy', 'log_auto_scroll', 'block_private_relay')");
+        db.exec("DELETE FROM settings WHERE key IN ('direct_dns_strategy', 'remote_dns_strategy', 'log_auto_scroll', 'block_private_relay', 'allow_stopping_active_profile')");
     }
 
     void SettingsRepo::saveAllSettings() const {

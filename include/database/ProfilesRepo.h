@@ -85,6 +85,19 @@ namespace Configs {
         // Runs deleteRows under this repo's lock; when it returns true, the ids it filled leave the identity map and are
         // tombstoned. Lock order: this repo, then GroupsRepo.
         bool DeleteAndForget(const std::function<bool(QList<int>& deletedIds)>& deleteRows);
+
+        // Убирает профиль из группы, оставляя строку в базе: соединение на нём
+        // живёт дальше, а в списках его больше нет.
+        void RetireProfile(int id);
+
+        // Удаляет выбывший профиль, когда тот больше не работает, и переводит
+        // запомненный выбор на замену. Возвращает удалённый id или -1, если
+        // забирать было нечего. Зовущий сам сообщает об этом интерфейсу.
+        int CollectRetiredProfile();
+
+        // Замена выбывшему в его же группе: точное совпадение имени, затем имя
+        // без пометок, затем первый в группе. -1, если группы или профилей нет.
+        int SuccessorFor(const Profile& gone);
         
         QList<int> GetAllProfileIds() const;
 

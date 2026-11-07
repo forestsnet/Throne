@@ -12,6 +12,15 @@ target_link_libraries(ProviderPolicyTest PRIVATE Qt6::Test)
 
 add_test(NAME ProviderPolicyTest COMMAND ProviderPolicyTest)
 
+qt_add_executable(ProfileSuccessorTest
+        ProfileSuccessorTest.cpp
+        ../src/configs/sub/ProfileSuccessor.cpp
+)
+target_include_directories(ProfileSuccessorTest PRIVATE ${CMAKE_SOURCE_DIR})
+target_link_libraries(ProfileSuccessorTest PRIVATE Qt6::Test)
+
+add_test(NAME ProfileSuccessorTest COMMAND ProfileSuccessorTest)
+
 qt_add_executable(UiModeTest
         UiModeTest.cpp
         ../src/ui/fsnt/UiMode.cpp

@@ -10,7 +10,6 @@
 #include "include/database/GroupsRepo.h"
 #include "include/database/ProfilesRepo.h"
 #include "include/engine/EngineEvents.h"
-#include "include/engine/Lifecycle.h"
 #include "include/global/HTTPRequestHelper.hpp"
 #include "include/global/Notice.hpp"
 #include "include/global/Utils.hpp"
@@ -116,48 +115,30 @@ namespace Subscription {
             bool ok = false;
             QList<int> deleted;
             QList<int> kept;
-            // The running profile this delete stopped (allow_stopping_active_profile).
-            std::shared_ptr<Configs::Profile> stopped;
+            // Профиль, на котором держится соединение: удалить его нельзя, в
+            // группе его уже нет. См. ProfilesRepo::RetireProfile.
+            int retired = Configs::NoProfileId;
         };
 
-        // stopRunning = false зовут изнутри транзакции: остановка туннеля ходит
-        // в движок и ждёт другой поток, а под замком записи базы этого делать
-        // нельзя. Такой вызывающий останавливает профиль заранее, сам.
-        DeleteOutcome deleteProfiles(QList<int> ids, bool stopRunning = true) {
+        // Соединение обновление подписки не рвёт: работающий профиль
+        // BatchDeleteProfiles оставляет себе, а мы убираем его из группы. Он
+        // доживает до отключения, и тогда ProfilesRepo::CollectRetiredProfile
+        // удаляет строку и переводит выбор на замену.
+        DeleteOutcome deleteProfiles(QList<int> ids) {
             DeleteOutcome outcome;
             const QSet<int> requested(ids.begin(), ids.end());
-            const auto &settings = Configs::dataManager->settingsRepo;
-            const int startedId = settings->started_id;
-            const bool stops = stopRunning && settings->allow_stopping_active_profile;
-            const auto running = stops && requested.contains(startedId)
-                                     ? Configs::dataManager->profilesRepo->GetProfile(startedId)
-                                     : nullptr;
-            outcome.ok = Configs::dataManager->profilesRepo->BatchDeleteProfiles(ids, stops, false);
+            const int startedId = Configs::dataManager->settingsRepo->started_id;
+            outcome.ok = Configs::dataManager->profilesRepo->BatchDeleteProfiles(ids, false, false);
             const QSet<int> deleted(ids.begin(), ids.end());
             outcome.deleted = std::move(ids);
             for (int id : requested) {
                 if (!deleted.contains(id)) outcome.kept << id;
             }
-            if (outcome.ok && running != nullptr && deleted.contains(startedId)) outcome.stopped = running;
+            if (outcome.ok && requested.contains(startedId) && !deleted.contains(startedId)) {
+                outcome.retired = startedId;
+                Configs::dataManager->profilesRepo->RetireProfile(startedId);
+            }
             return outcome;
-        }
-
-        // #2051: only an unambiguous successor takes over; with none or several, the profile stays stopped.
-        void reconnectSuccessor(const QList<int> &ids, const std::shared_ptr<Configs::Profile> &stopped) {
-            const auto name = stopped->outbound->name;
-            QList<int> matches;
-            if (!name.isEmpty()) {
-                forEachProfile(ids, [&](const std::shared_ptr<Configs::Profile> &ent) {
-                    if (ent->type == stopped->type && ent->outbound->name == name) matches << ent->id;
-                });
-            }
-            const auto display = stopped->outbound->DisplayTypeAndName();
-            if (matches.size() != 1) {
-                MW_show_log(QObject::tr("%1 was removed by the update and stays stopped: no single profile with the same name replaces it.").arg(display));
-                return;
-            }
-            MW_show_log(QObject::tr("%1 was replaced by the update. Connecting to the profile with the same name.").arg(display));
-            Engine::EngineEvents::SubscriptionReplacedRunning(matches.first());
         }
 
         // Inserts in chunks; only per-profile digests survive a flush.
@@ -475,7 +456,7 @@ namespace Subscription {
                 reportDeleteFailure();
             }
             report += sections;
-            if (!outcome.kept.isEmpty()) report += "\n" + QObject::tr("The running profile was kept.");
+            if (outcome.retired >= 0) report += "\n" + QObject::tr("The connected profile is gone from the subscription. It stays connected until you disconnect.");
             return outcome;
         }
 
@@ -496,7 +477,7 @@ namespace Subscription {
                     }
                     deleted = outcome.deleted;
                     report += "\n" + QObject::tr("Removed %1 unavailable profiles:").arg(names.size()) + "\n" + notice(names, "[-]", "removed");
-                    if (!outcome.kept.isEmpty()) report += "\n" + QObject::tr("The running profile was kept.");
+                    if (outcome.retired >= 0) report += "\n" + QObject::tr("The connected profile is gone from the subscription. It stays connected until you disconnect.");
                 }
             }
             if (options.sort_by_latency) {
@@ -1121,7 +1102,6 @@ namespace Subscription {
         bool deleteFailed = false;
         bool cleared = false;
         QList<int> doomed;
-        std::shared_ptr<Configs::Profile> stoppedRunning;
         if (settings->sub_clear) {
             MW_show_log(QObject::tr("Clearing servers..."));
             doomed = members();
@@ -1161,19 +1141,6 @@ namespace Subscription {
         ParseDocument(std::move(body), sinkFor(sink, report));
         MW_show_log(">>>>>>>> " + QObject::tr("Process complete, applying..."));
 
-        // Остановку туннеля делаем здесь, до транзакции: она ходит в движок и
-        // ждёт другой поток, а внутри транзакции мы держим замок записи базы.
-        // Неманульная остановка оставляет started_id называть профиль, поэтому
-        // сбрасываем его сами — ровно так же поступает GroupService::Delete.
-        if (settings->allow_stopping_active_profile && doomedIds.contains(settings->started_id)) {
-            // Профиль забираем до остановки: дальше started_id уже NoProfileId, и
-            // deleteProfiles внутри транзакции его не найдёт — а это ровно тот, кому
-            // ищут замену в конце обновления.
-            stoppedRunning = profilesRepo->GetProfile(settings->started_id);
-            Engine::Lifecycle::StopRunningProfile(false, true, false, false);
-            settings->UpdateStartedId(Configs::NoProfileId);
-        }
-
         // Удаление и вставка — одной транзакцией. Раньше удаление коммитилось
         // само по себе, а вставка шла следом кусками: процесс, не доживший до
         // неё, оставлял подписку пустой, и на следующем запуске человек видел
@@ -1185,7 +1152,7 @@ namespace Subscription {
             const bool applied = Configs::dataManager->getDatabase().transaction(
                 "GroupUpdater::applyRefresh", [&] {
                     if (!doomed.isEmpty()) {
-                        const auto outcome = deleteProfiles(doomed, false);
+                        const auto outcome = deleteProfiles(doomed);
                         if (!outcome.ok) return false;
                         deletedIds = outcome.deleted;
                     }
@@ -1257,13 +1224,14 @@ namespace Subscription {
                 deleteFailed = true;
             }
             disturbed << outcome.deleted;
-            if (outcome.stopped != nullptr) stoppedRunning = outcome.stopped;
             // stale also lists the fresh rows that only carried an update into an old id.
             const QSet<int> deletedIds(outcome.deleted.begin(), outcome.deleted.end());
             for (const auto &entry : old) {
                 if (deletedIds.contains(entry.id)) ++result.removed;
             }
-            for (int id : outcome.kept) keptIds << id;
+            for (int id : outcome.kept) {
+                if (id != outcome.retired) keptIds << id;
+            }
             for (int id : keptWorking) keptIds << id;
 
             // Nothing rebuilds group->profiles from the rows: a survivor left out here is orphaned.
@@ -1275,7 +1243,17 @@ namespace Subscription {
                 return true;
             };
             QString notice_kept;
+            QString retiredName;
             for (int id : outcome.kept) {
+                // Выбывший в список не возвращаем: ради этого всё и затевалось.
+                // Строка его жива, соединение на ней держится, но в группе
+                // теперь стоит только пришедший ему на смену.
+                if (id == outcome.retired) {
+                    if (const auto ent = profilesRepo->GetProfile(id); ent != nullptr) {
+                        retiredName = ent->outbound->DisplayTypeAndName();
+                    }
+                    continue;
+                }
                 if (!restore(id)) continue;
                 if (const auto ent = profilesRepo->GetProfile(id); ent != nullptr) {
                     notice_kept += "[=] " + ent->outbound->DisplayTypeAndName() + "\n";
@@ -1307,6 +1285,9 @@ namespace Subscription {
             if (!notice_kept.isEmpty()) {
                 change_text += "\n" + QObject::tr("Still in use, so kept instead of deleted:\n%1").arg(notice_kept);
             }
+            if (!retiredName.isEmpty()) {
+                change_text += "\n" + QObject::tr("Gone from the subscription, staying connected until you disconnect:\n[=] %1").arg(retiredName);
+            }
             if (!workingNames.isEmpty()) {
                 change_text += "\n" + QObject::tr("Working, so kept instead of deleted:\n%1").arg(notice(workingNames, "[=]", "kept"));
             }
@@ -1317,7 +1298,6 @@ namespace Subscription {
 
         const auto flagged = removeFlagged(members(), options, change_text);
         disturbed << flagged.deleted;
-        if (flagged.stopped != nullptr) stoppedRunning = flagged.stopped;
         result.removed += static_cast<int>(flagged.deleted.size());
         for (int id : flagged.kept) keptIds << id;
         result.kept = static_cast<int>(keptIds.size());
@@ -1346,7 +1326,6 @@ namespace Subscription {
         } else if (surface != Surface::Log && report.hasProblems()) {
             ShowImportReport(reportTitle(surface, group->name), report);
         }
-        if (stoppedRunning != nullptr) reconnectSuccessor(members(), stoppedRunning);
         // Auto selectors resolve members from the group at build time, so a refresh can invalidate an untouched one.
         Engine::EngineEvents::SubscriptionGroupChanged(group->id, disturbed);
         Engine::EngineEvents::SubscriptionFinished(-1, true);

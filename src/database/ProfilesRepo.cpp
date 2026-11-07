@@ -7,9 +7,11 @@
 
 #include "include/database/GroupsRepo.h"
 #include "include/configs/common/OutboundFactory.h"
+#include "include/configs/sub/ProfileSuccessor.hpp"
 #include "include/engine/Lifecycle.h"
 #include "include/global/Configs.hpp"
 #include "include/global/Logger.hpp"
+#include "include/global/RunningProfiles.hpp"
 
 
 namespace Configs {
@@ -477,6 +479,62 @@ namespace Configs {
             dataManager->groupsRepo->Save(group);
         }
         return true;
+    }
+
+    void ProfilesRepo::RetireProfile(int id) {
+        const auto ent = GetProfile(id);
+        if (ent == nullptr) return;
+        if (const auto group = dataManager->groupsRepo->GetGroup(ent->gid); group != nullptr) {
+            if (group->RemoveProfileBatch({id})) dataManager->groupsRepo->Save(group);
+        }
+        dataManager->settingsRepo->retired_profile_id = id;
+        dataManager->settingsRepo->Save();
+    }
+
+    int ProfilesRepo::SuccessorFor(const Profile& gone) {
+        const auto group = dataManager->groupsRepo->GetGroup(gone.gid);
+        if (group == nullptr) return -1;
+        QList<SuccessorCandidate> candidates;
+        for (const auto& ent : GetProfileBatch(group->Profiles())) {
+            if (ent == nullptr) continue;
+            candidates << SuccessorCandidate{ent->id, ent->outbound == nullptr ? QString() : ent->outbound->name, ent->type};
+        }
+        return PickSuccessor(gone.outbound == nullptr ? QString() : gone.outbound->name, gone.type, candidates);
+    }
+
+    int ProfilesRepo::CollectRetiredProfile() {
+        const auto& settings = dataManager->settingsRepo;
+        const int retired = settings->retired_profile_id;
+        // Спрашиваем не started_id, а что в действительности поднято: на старте
+        // клиента started_id ещё называет профиль прошлого сеанса, хотя ядро
+        // ничего не ведёт.
+        if (retired < 0 || RunningUsesProfile(retired)) return -1;
+
+        settings->retired_profile_id = NoProfileId;
+        const auto gone = GetProfile(retired);
+        if (gone == nullptr) {
+            settings->Save();
+            return -1;
+        }
+        const int successor = SuccessorFor(*gone);
+        // Снимаем метку запуска до удаления: работающий профиль
+        // BatchDeleteProfiles не трогает, и строка осталась бы висеть ничьей.
+        // Пишем прямо в поле, а не через UpdateStartedId: тот заодно уносит
+        // remember_id, а замену мы ставим туда сами парой строк ниже.
+        if (settings->started_id == retired) settings->started_id = NoProfileId;
+        QList<int> doomed{retired};
+        if (!BatchDeleteProfiles(doomed, false, false) || doomed.isEmpty()) {
+            MW_show_log("Could not delete the retired profile " + Int2String(retired));
+            settings->Save();
+            return -1;
+        }
+        // Запомненный выбор трогаем, только когда он больше никуда не ведёт:
+        // человек мог выбрать другой сервер, пока этот доживал.
+        if (successor >= 0 && (settings->remember_id < 0 || GetProfile(settings->remember_id) == nullptr)) {
+            settings->remember_id = successor;
+        }
+        settings->Save();
+        return retired;
     }
 
     bool ProfilesRepo::DeleteAndForget(const std::function<bool(QList<int>& deletedIds)>& deleteRows) {

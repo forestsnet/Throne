@@ -176,6 +176,8 @@ set(PROJECT_SOURCES
 
         include/configs/sub/GroupUpdater.hpp
         src/configs/sub/GroupUpdater.cpp
+        include/configs/sub/ProfileSuccessor.hpp
+        src/configs/sub/ProfileSuccessor.cpp
         src/configs/sub/ProviderPolicy.cpp
         src/configs/sub/SubscriptionUsage.cpp
         include/configs/sub/SubscriptionScan.hpp

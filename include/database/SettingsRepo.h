@@ -225,7 +225,6 @@ namespace Configs {
         bool sub_show_change_popup = true;
         bool sub_send_hwid = true;
         QString sub_custom_hwid_params = "";
-        bool allow_stopping_active_profile = false;
 
         // Security
         bool skip_cert = false;
@@ -257,6 +256,12 @@ namespace Configs {
         bool remember_system_proxy = false;
         bool remember_tun = false;
         int remember_id = NoProfileId;
+        // Профиль, который обновление подписки унесло из группы, пока на нём
+        // держалось соединение. Строка в базе осталась — её ещё показывает
+        // панель, — но в списках профиля уже нет, иначе рядом с пришедшим ему
+        // на смену стоял бы второй такой же. Забирает его
+        // ProfilesRepo::CollectRetiredProfile, когда соединение кончится.
+        int retired_profile_id = NoProfileId;
         bool remember_enable = true;
         bool windows_set_admin = true;
         QMap<QString, QKeySequence> shortcuts;

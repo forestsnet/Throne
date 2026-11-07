@@ -12,6 +12,7 @@
 #include "include/database/DatabaseManager.h"
 #include "include/database/GroupsRepo.h"
 #include "include/database/ProfilesRepo.h"
+#include "include/engine/EngineEvents.h"
 #include "include/engine/EnginePolicy.h"
 #include "include/engine/EngineTr.h"
 #include "include/engine/ThreadCheck.h"
@@ -511,6 +512,15 @@ namespace Engine {
 
                 mu_stopping.unlock();
                 emit stopFinished(id);
+                // Профиль, который унесло обновление подписки, дожил до конца
+                // соединения: в списках его не было, а строка ждала этой минуты.
+                // Только на осознанной остановке: перезапуск и переключение
+                // профиля — не то отключение, которого он ждал.
+                if (manual) {
+                    if (const int collected = Configs::dataManager->profilesRepo->CollectRetiredProfile(); collected >= 0) {
+                        Engine::EngineEvents::ProfilesRemoved({collected});
+                    }
+                }
             }, true);
         }, block);
     }

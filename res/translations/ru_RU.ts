@@ -1074,14 +1074,6 @@ The local network stays reachable unless Private Range Bypass is turned off in T
         <translation>Использовать интервал обновления, установленный сервером подписки</translation>
     </message>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When enabled, If the currently active profile needs to be removed, it will be stopped and removed, otherwise it will not be removed at all&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Если включено и активный профиль нужно удалить (например, при обновлении подписки), он будет остановлен и удален. Если выключено, активный профиль не удаляется.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Allow stopping the active profile</source>
-        <translation>Разрешить остановку активного профиля</translation>
-    </message>
-    <message>
         <source>TLS versions offered when fetching subscriptions. Some servers answer the default handshake with a CAPTCHA or a block page. TLS 1.2 often gets through.</source>
         <translation>Версии TLS, предлагаемые при загрузке подписок. Некоторые серверы отвечают на стандартный TLS-хендшейк капчей или страницей блокировки. С TLS 1.2 это часто удается обойти.</translation>
     </message>
@@ -11830,14 +11822,6 @@ How to update?</source>
         <translation>Идёт обработка данных подписки...</translation>
     </message>
     <message>
-        <source>%1 was removed by the update and stays stopped: no single profile with the same name replaces it.</source>
-        <translation>%1 удалён при обновлении и остаётся остановленным: нет единственного профиля с тем же названием, который бы его заменил.</translation>
-    </message>
-    <message>
-        <source>%1 was replaced by the update. Connecting to the profile with the same name.</source>
-        <translation>%1 заменён обновлением. Подключаемся к профилю с тем же именем.</translation>
-    </message>
-    <message>
         <source>Removed %1 duplicate profiles:</source>
         <translation>Удалено дубликатов профилей (%1):</translation>
     </message>
@@ -11854,8 +11838,8 @@ How to update?</source>
         <translation>Удалено недействительных профилей (%1):</translation>
     </message>
     <message>
-        <source>The running profile was kept.</source>
-        <translation>Запущенный профиль сохранён.</translation>
+        <source>The connected profile is gone from the subscription. It stays connected until you disconnect.</source>
+        <translation>Профиль, на котором держится соединение, пропал из подписки. Он останется подключённым, пока вы не отключитесь.</translation>
     </message>
     <message>
         <source>Removed %1 unavailable profiles:</source>
@@ -11908,6 +11892,12 @@ Deleted %5 Profiles:
 %1</source>
         <translation>Используются, поэтому сохранены, а не удалены:
 %1</translation>
+    </message>
+    <message>
+        <source>Gone from the subscription, staying connected until you disconnect:
+[=] %1</source>
+        <translation>Пропал из подписки, остаётся подключённым до отключения:
+[=] %1</translation>
     </message>
     <message>
         <source>Working, so kept instead of deleted:
