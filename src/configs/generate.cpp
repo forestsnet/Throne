@@ -3,6 +3,7 @@
 #include "include/global/ServerAddressPins.hpp"
 #include "include/global/Logger.hpp"
 #include "include/configs/XrayDnsStrip.hpp"
+#include "include/configs/TunIPv6Policy.hpp"
 #include "include/configs/generate.h"
 #include "include/configs/sub/ProviderPolicy.hpp"
 #include "include/api/RPC.h"
@@ -2386,19 +2387,6 @@ namespace Configs {
             routeChain = std::make_shared<RouteProfile>(*routeChain);
             const auto &routeDeps = ctx.prerequisites.routing;
 
-            // Туннель держит ::/0 всегда, поэтому IPv6 доходит сюда, а не уходит
-            // наружу. Снятый флажок обрывает его тут, до правил пользователя: любое
-            // из них могло бы отправить адрес v6 в direct, и это была бы та же
-            // утечка, только через наше же правило.
-            QJsonObject tunIPv6Reject;
-            if (!ctx.forTest && settings.spmode_vpn && !settings.vpn_ipv6) {
-                tunIPv6Reject = QJsonObject{
-                    {"inbound", tags::tunIn},
-                    {"ip_version", 6},
-                    {"action", "reject"},
-                };
-            }
-
             QJsonObject rawRouteObj;
             if (routeChain->isRaw) {
                 rawRouteObj = QString2QJsonObject(routeChain->rawRoute);
@@ -2408,15 +2396,6 @@ namespace Configs {
                 }
                 rawRouteObj = RouteProfile::TranslateRawOutbounds(rawRouteObj, routeDeps.outboundMap);
                 if (routeChain->preventModifications) {
-                    // Отказ по IPv6 ставим и сюда, первым правилом. Профиль сохраняют
-                    // дословно, но адрес v6 интерфейсу выдан, и без этого правила
-                    // любое direct в нём выпускает IPv6 мимо туннеля — ровно то, от
-                    // чего настройка и защищает.
-                    if (!tunIPv6Reject.isEmpty()) {
-                        auto rawRules = rawRouteObj.value("rules").toArray();
-                        rawRules.prepend(tunIPv6Reject);
-                        rawRouteObj["rules"] = rawRules;
-                    }
                     // The raw JSON is verbatim, but endpoint tags are internal so the user cannot name them.
                     if (!ctx.vpnAuxTags.isEmpty()) {
                         auto rawRules = rawRouteObj.value("rules").toArray();
@@ -2440,12 +2419,7 @@ namespace Configs {
                 QJsonObject dnsHijack;
                 QJsonObject dnsInReject;
                 QJsonObject dnsSystem;
-                QJsonObject tunIPv6Reject;
             } injected;
-
-            // Порядок важен: после hijack-dns, иначе перестали бы отвечать запросы
-            // DNS к адресам v6, и до правил профиля.
-            injected.tunIPv6Reject = tunIPv6Reject;
 
             if (systemDnsInbound(ctx)) {
                 injected.dnsSystem = QJsonObject{
@@ -2591,7 +2565,6 @@ namespace Configs {
             appendIfSet(injected.resolve);
             appendIfSet(injected.dnsHijack);
             appendIfSet(injected.dnsInReject);
-            appendIfSet(injected.tunIPv6Reject);
             // Отказ по имени из рукопожатия, после sniff. Одного NXDOMAIN мало:
             // руководство Apple написано для сети, в которую устройство входит
             // заново, а туннель поднимается посреди сеанса — адреса реле у
@@ -3049,6 +3022,11 @@ namespace Configs {
 
         buildRouteSection(ctx);
         if (failed()) return ctx.result;
+
+        // Apply to the completed sections so raw routes and custom DNS obey the
+        // same tunnel policy. The test box and system-proxy-only builds do not.
+        if (ctx.tunEnabled && !dataManager->settingsRepo->vpn_ipv6)
+            ApplyTunIPv6Policy(ctx.result->coreConfig, tags::tunIn, tags::dnsSystem);
 
         buildExperimentalSection(ctx);
         if (failed()) return ctx.result;

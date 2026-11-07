@@ -3,6 +3,14 @@ find_package(Qt6 REQUIRED COMPONENTS Test Widgets)
 # Класс теста объявлен прямо в .cpp и включает свой .moc — нужен AUTOMOC.
 set(CMAKE_AUTOMOC ON)
 
+qt_add_executable(TunIPv6PolicyTest
+        TunIPv6PolicyTest.cpp
+        ../src/configs/TunIPv6Policy.cpp
+)
+target_include_directories(TunIPv6PolicyTest PRIVATE ${CMAKE_SOURCE_DIR})
+target_link_libraries(TunIPv6PolicyTest PRIVATE Qt6::Test)
+add_test(NAME TunIPv6PolicyTest COMMAND TunIPv6PolicyTest)
+
 qt_add_executable(ProviderPolicyTest
         ProviderPolicyTest.cpp
         ../src/configs/sub/ProviderPolicy.cpp

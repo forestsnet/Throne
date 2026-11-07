@@ -1,3 +1,9 @@
+#### 1.4.10
+
+* Fix websites failing to open in TUN mode when IPv6 is disabled
+
+The IPv6 leak protection added in 1.4.8 rejected connections after protocol sniffing had already accepted TCP. Browsers could select that connection and then fail instead of trying IPv4. IPv6 is now refused before the handshake, including under sustained load, while DNS over the tunnel's IPv6 address remains available. Tunnel DNS no longer returns AAAA addresses while IPv6 is disabled. The same protection applies to raw routing profiles and custom DNS settings. IPv6 stays inside the tunnel, and system proxy mode keeps its existing behavior.
+
 #### 1.4.9
 
 * Hide the server a subscription update removed instead of listing it twice, and keep its connection until you disconnect **1**

@@ -727,6 +727,7 @@ set(PROJECT_SOURCES
         src/global/SystemStateJournal.cpp
         src/global/DnsAutoSelect.cpp
         src/configs/XrayDnsStrip.cpp
+        src/configs/TunIPv6Policy.cpp
 
         include/configs/DnsAddress.hpp
         include/configs/DnsCatalog.hpp
@@ -734,6 +735,7 @@ set(PROJECT_SOURCES
         include/global/SystemStateJournal.hpp
         include/global/DnsAutoSelect.hpp
         include/configs/XrayDnsStrip.hpp
+        include/configs/TunIPv6Policy.hpp
         include/configs/common/utils.h
         src/configs/common/utils.cpp
         include/configs/outbounds/custom.h
