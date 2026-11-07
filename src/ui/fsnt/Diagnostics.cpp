@@ -17,7 +17,7 @@
 #include "include/global/Utils.hpp"
 #include "include/global/DnsAutoSelect.hpp"
 #include "include/database/ProfilesRepo.h"
-#include "include/global/DnsProbe.hpp"
+#include "include/global/DirectDnsProbe.hpp"
 #include <QHostAddress>
 #include "include/engine/EngineHost.h"
 #include "include/engine/connection/ConnectionManager.h"
@@ -188,19 +188,12 @@ namespace Fsnt {
                     if (!addr.isEmpty() && QHostAddress(addr).isNull()) serverName = addr;
                 }
 
-                // Проба синхронная: проверка и так крутится в рабочем потоке,
-                // а свой цикл событий здесь проще, чем тащить асинхронность
-                // через весь контракт проверок.
-                QEventLoop loop;
-                Configs::DnsProbe probe;
-                QList<Configs::DnsProbeResult> results;
-                QObject::connect(&probe, &Configs::DnsProbe::Finished, &loop,
-                                 [&](const QList<Configs::DnsProbeResult> &r) {
-                                     results = r;
-                                     loop.quit();
-                                 });
-                probe.Start({address}, 3000, serverName);
-                loop.exec();
+                // This check already runs on a worker thread.
+                const auto round = Configs::ProbeDirectDns({address}, 3000, serverName);
+                const auto &results = round.results;
+                if (!round.error.isEmpty()) {
+                    return diagFailed(Configs::DirectDnsFailureText(Configs::DirectDnsFailure::ProbeUnavailable));
+                }
 
                 if (!results.isEmpty() && results.first().ok) return diagOk();
 
@@ -208,13 +201,13 @@ namespace Fsnt {
                 // Это причина, а не следствие: пока имя сервера не разрешается,
                 // подключаться некуда, и всё остальное ниже будет красным зря.
                 return diagFailed(
-                    QObject::tr("%1 does not answer (%2). Names of the VPN servers are resolved "
-                                "through it, so nothing can connect until it does.")
+                    QObject::tr("The direct DNS check for %1 failed (%2). Try another DNS or check the network connection.")
                         .arg(address, why),
                     QObject::tr("Find a working one"), [serverName](const auto &done) {
                         auto *select = new Configs::DnsAutoSelect(GetMainWindow());
                         QObject::connect(select, &Configs::DnsAutoSelect::Selected, select,
-                                         [select, done](const QString &found, bool) {
+                                         [select, done](const QString &found, bool, const QStringList &,
+                                                        Configs::DirectDnsFailure failure) {
                                              select->deleteLater();
                                              auto &st = Configs::dataManager->settingsRepo;
                                              if (found.isEmpty()) {
@@ -223,9 +216,7 @@ namespace Fsnt {
                                                  // журнал он не видит.
                                                  MessageBoxWarning(
                                                      QObject::tr("Direct DNS"),
-                                                     QObject::tr("No DNS server answered. Check the "
-                                                                 "connection, or set your own address "
-                                                                 "in the settings."));
+                                                     Configs::DirectDnsFailureText(failure));
                                              } else {
                                                  // В сам адрес, а не в подобранный на сессию: с
                                                  // выключенным автопереключением подобранный не

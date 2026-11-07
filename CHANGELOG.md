@@ -1,3 +1,11 @@
+#### 1.4.11
+
+* Check direct DNS through the core's network interface, including while another Throne tunnel is running
+* Distinguish unanswered DNS requests, responses unsuitable for the tunnel, and responses without a VPN server address
+* Allow subscription import before the first connection when system proxy mode is selected, and show the actual import error
+
+DNS selection and diagnostics no longer send their probes through the current tunnel or reuse its DNS cache. Resolver checks use the same physical egress as the core, with certificate validation for encrypted DNS. A failed tunnel preflight leaves the existing connection running. Explicit proxy settings remain enforced when importing subscriptions.
+
 #### 1.4.10
 
 * Fix websites failing to open in TUN mode when IPv6 is disabled

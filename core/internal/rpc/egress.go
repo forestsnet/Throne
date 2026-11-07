@@ -36,9 +36,13 @@ func defaultInterfaceFinder() string {
 var autoRedirectMark atomic.Uint32
 
 // The interface choice of sing-box's auto_detect_interface: the running box's own, else the same rule on the core's monitor.
-type scanEgress struct{}
+type scanEgress struct{ requireBinding bool }
 
-func (scanEgress) Control() (control.Func, error) {
+func allowUnboundEgress(err error, hasBox, requireBinding bool) bool {
+	return !requireBinding && !hasBox && errors.Is(err, os.ErrPermission)
+}
+
+func (e scanEgress) Control() (control.Func, error) {
 	box := currentBox()
 	if netmon.DefaultInterface() == nil {
 		if box != nil {
@@ -58,8 +62,9 @@ func (scanEgress) Control() (control.Func, error) {
 	}
 	controlFunc := control.Func(func(network, address string, conn syscall.RawConn) error {
 		err := bind(network, address, conn)
-		// Linux before 5.7 refuses SO_BINDTODEVICE without CAP_NET_RAW; with no box there is no Tun to steer around.
-		if err != nil && currentBox() == nil && errors.Is(err, os.ErrPermission) {
+		// Legacy scans tolerate Linux before 5.7 refusing SO_BINDTODEVICE without
+		// CAP_NET_RAW when no profile is running. DNS probes always require binding.
+		if allowUnboundEgress(err, currentBox() != nil, e.requireBinding) {
 			return nil
 		}
 		return err

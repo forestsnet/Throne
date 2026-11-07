@@ -49,6 +49,7 @@ service LibcoreService {
   rpc ScanCheckNetwork(ScanCheckNetworkRequest) returns (ScanCheckNetworkResponse);
   rpc ParseRuleSet(ParseRuleSetRequest) returns (ParseRuleSetResponse);
   rpc ResolveDomains(ResolveDomainsRequest) returns (ResolveDomainsResponse);
+  rpc ProbeDNS(DNSProbeRequest) returns (DNSProbeResponse);
 }
 
 message EmptyReq {}
@@ -685,4 +686,36 @@ message ResolvedDomain {
   optional string domain = 1 [default = ""];
   repeated string addresses = 2;
   optional string error = 3 [default = ""];
+}
+
+// Direct DNS checks use the physical egress, independently of the running profile.
+message DNSProbeTarget {
+  optional string address = 1 [default = ""];
+  optional string type = 2 [default = ""];
+  optional string host = 3 [default = ""];
+  optional uint32 port = 4 [default = 0];
+  optional string path = 5 [default = ""];
+}
+
+message DNSProbeRequest {
+  repeated DNSProbeTarget targets = 1;
+  optional string probe_name = 2 [default = "example.com"];
+  optional int32 timeout_ms = 3 [default = 2500];
+}
+
+message DNSProbeResult {
+  optional string address = 1 [default = ""];
+  // A valid DNS reply, including NXDOMAIN and NODATA.
+  optional bool responded = 2 [default = false];
+  optional bool ok = 3 [default = false];
+  optional int32 latency_ms = 4 [default = -1];
+  optional string error = 5 [default = ""];
+  repeated string addresses = 6;
+}
+
+message DNSProbeResponse {
+  repeated DNSProbeResult results = 1;
+  optional string error = 2 [default = ""];
+  optional string interface_name = 3 [default = ""];
+  optional int32 interface_index = 4 [default = 0];
 }

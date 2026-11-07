@@ -863,6 +863,23 @@ namespace API {
         }
     }
 
+    libcore::DNSProbeResponse Client::ProbeDNS(bool *rpcOK, const libcore::DNSProbeRequest &request,
+                                              QString *coreError) const
+    {
+        libcore::DNSProbeResponse reply;
+        std::vector<uint8_t> resp;
+        auto status = channel->Call("ProbeDNS", spb::pb::serialize<std::string>(request), resp,
+                                    request.timeout_ms.value_or(2500) + 5000);
+        if (status == LocalSocketChannel::CallOK && tryDeserialize(resp, reply)) {
+            *rpcOK = true;
+            return reply;
+        }
+        if (coreError && !resp.empty())
+            *coreError = QString::fromUtf8(reinterpret_cast<const char *>(resp.data()), static_cast<int>(resp.size()));
+        NOT_OK
+        return {};
+    }
+
     libcore::ResolveDomainsResponse Client::ResolveDomains(bool *rpcOK, const QStringList &domains, const QString &config,
                                                            QString *coreError) const
     {

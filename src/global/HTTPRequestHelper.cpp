@@ -57,6 +57,10 @@ namespace Configs_network {
         const auto &settings = Configs::dataManager->settingsRepo;
         if (!settings->net_use_proxy && !settings->spmode_system_proxy && !useProxy) return false;
         if (settings->started_id < 0) {
+            // A saved system-proxy mode has no listener until a profile starts.
+            // Allow bootstrap imports, but keep explicit proxy requests and
+            // the kill switch fail-closed while disconnected.
+            if (!settings->net_use_proxy && !useProxy && !settings->kill_switch) return false;
             *error = QObject::tr("Request with proxy but no profile started.");
             return false;
         }

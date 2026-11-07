@@ -198,19 +198,15 @@ namespace Engine {
         next.dnsChecked = true;
         connect(select, &Configs::DnsAutoSelect::Selected, this,
                 [this, next, select, serverName](const QString &address, bool fellBack,
-                                                 const QStringList &serverAddresses) {
+                                                 const QStringList &serverAddresses, Configs::DirectDnsFailure failure) {
                     select->deleteLater();
                     auto &s = Configs::dataManager->settingsRepo;
 
-                    // Имя сервера уже разрешено, пока туннеля не было. Отдаём
-                    // адрес ядру готовым, иначе оно пойдёт спрашивать его снова
-                    // и снова, уже из-под туннеля, где спрашивать нечем.
+                    // Pass the addresses obtained through the physical egress to the new profile.
                     Configs::SetServerAddressPin(serverName, serverAddresses);
 
                     if (address.isEmpty()) {
-                        const auto text = MainWindowTr::tr(
-                            "No DNS server answered, so the address of the VPN server cannot be "
-                            "resolved. Check the connection or set another DNS in the settings.");
+                        const auto text = Configs::DirectDnsFailureText(failure);
                         MW_show_log(text);
                         // В режиме туннеля это не просто отказ подключиться:
                         // туннель забрал бы маршруты и оставил машину без сети.

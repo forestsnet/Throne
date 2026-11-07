@@ -4,12 +4,8 @@
 <context>
     <name>AddSubscriptionDialog</name>
     <message>
-        <source>Could not open the subscription. Most likely it is blocked by %1 — such programs rewrite network packets, and the provider&apos;s site stops answering. Close it and try again.</source>
-        <translation>Не удалось открыть подписку. Скорее всего мешает %1 — такие программы правят сетевые пакеты, и сайт провайдера перестаёт отвечать. Закройте её и попробуйте снова.</translation>
-    </message>
-    <message>
-        <source>Could not open the subscription. Check the link, and if it opens in a browser — look for an anti-censorship tool or antivirus that filters traffic on this computer.</source>
-        <translation>Не удалось открыть подписку. Проверьте ссылку, а если в браузере она открывается — ищите обходчик блокировок или антивирус, который фильтрует трафик на этом компьютере.</translation>
+        <source>Could not open the subscription. Check the link and your connection.</source>
+        <translation>Не удалось открыть подписку. Проверьте ссылку и подключение к сети.</translation>
     </message>
     <message>
         <source>Add a server</source>
@@ -11430,10 +11426,6 @@ Details: %3</source>
         <translation>Сейчас разрешается адрес другого сервера.</translation>
     </message>
     <message>
-        <source>No DNS server answered, so the address of the VPN server cannot be resolved. Check the connection or set another DNS in the settings.</source>
-        <translation>Ни один DNS-сервер не ответил, поэтому адрес VPN-сервера определить нельзя. Проверьте подключение или укажите другой DNS в настройках.</translation>
-    </message>
-    <message>
         <source>Direct DNS</source>
         <translation>DNS для прямых запросов</translation>
     </message>
@@ -13274,8 +13266,8 @@ Release note:
         <translation>Задан вручную в объекте DNS.</translation>
     </message>
     <message>
-        <source>%1 does not answer (%2). Names of the VPN servers are resolved through it, so nothing can connect until it does.</source>
-        <translation>%1 не отвечает (%2). Через него разрешаются имена серверов VPN, поэтому подключиться не получится, пока он молчит.</translation>
+        <source>The direct DNS check for %1 failed (%2). Try another DNS or check the network connection.</source>
+        <translation>Проверка прямого DNS %1 не прошла (%2). Попробуйте другой DNS или проверьте подключение к сети.</translation>
     </message>
     <message>
         <source>Find a working one</source>
@@ -13350,8 +13342,20 @@ Release note:
         <translation>Прямой DNS</translation>
     </message>
     <message>
-        <source>No DNS server answered. Check the connection, or set your own address in the settings.</source>
-        <translation>Ни один DNS-сервер не ответил. Проверьте подключение или задайте свой адрес в настройках.</translation>
+        <source>Could not get a direct DNS response. Check the connection or choose another DNS in the settings.</source>
+        <translation>Не удалось получить прямой ответ от DNS-серверов. Проверьте подключение или выберите другой DNS в настройках.</translation>
+    </message>
+    <message>
+        <source>DNS servers answered, but none is suitable for the current tunnel settings. Choose an available encrypted DNS with an IP address.</source>
+        <translation>DNS-серверы ответили, но ни один не подходит для текущих настроек туннеля. Выберите доступный зашифрованный DNS, заданный IP-адресом.</translation>
+    </message>
+    <message>
+        <source>DNS servers answered, but did not return an address for the requested name. Try another DNS.</source>
+        <translation>DNS-серверы ответили, но не вернули IP-адрес для проверяемого имени. Попробуйте другой DNS.</translation>
+    </message>
+    <message>
+        <source>Could not check direct DNS through the core. Check that the core is running and the network connection is available.</source>
+        <translation>Не удалось проверить прямой DNS через ядро. Проверьте, что ядро запущено и есть подключение к сети.</translation>
     </message>
     <message>
         <source>System proxy is selected, but it is not active.</source>

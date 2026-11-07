@@ -133,9 +133,6 @@ namespace Engine {
         }
 #endif
 
-        // До всего остального: если прямой DNS молчит, поднимать туннель нельзя.
-        if (!resolved.dnsChecked && deferStartForDns(resolved)) return;
-
         auto *killSwitch = Sys::KillSwitch::instance();
         if (killSwitch->state() == Sys::KillSwitch::State::Arming) {
             // Only the latest request survives, so repeated clicks while arming start one profile.
@@ -168,6 +165,23 @@ namespace Engine {
             restartCoreForGuard(resolved);
             return;
         }
+
+        // Direct DNS probes use the core's physical egress, so wait for its RPC first.
+        if (m_coreSupervisor->awaitingCoreStarted()) {
+            deferStartToCore(resolved);
+            m_coreSupervisor->setStartWhenUp(resolved.profileId);
+            return;
+        }
+        if (!API::defaultClient->IsConnected()) {
+            if (!m_coreSupervisor->canStartCore()) {
+                failStart(resolved, StartOutcome::CoreUnavailable, QStringLiteral("Throne"), m_coreSupervisor->lastFailure());
+                return;
+            }
+            deferStartToCore(resolved);
+            m_coreSupervisor->restartNotListening(resolved.profileId);
+            return;
+        }
+        if (!resolved.dnsChecked && deferStartForDns(resolved)) return;
 
         // Ranking must run before the config is built and it blocks, so hop off the UI thread.
         if (m_autoSelector->rankBeforeStart(ent, resolved.interactive, [=, this] { start(resolved); })) return;

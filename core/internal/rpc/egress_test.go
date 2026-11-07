@@ -1,11 +1,36 @@
 package rpc
 
 import (
+	"errors"
+	"fmt"
+	"os"
 	"runtime"
 	"testing"
 
 	tun "github.com/sagernet/sing-tun"
 )
+
+func TestUnboundEgressFallbackPolicy(t *testing.T) {
+	for _, tc := range []struct {
+		name                         string
+		err                          error
+		hasBox, requireBinding, want bool
+	}{
+		{"DNS before profile refuses permission failure", os.ErrPermission, false, true, false},
+		{"DNS refuses wrapped permission failure", fmt.Errorf("bind: %w", os.ErrPermission), false, true, false},
+		{"DNS with profile refuses permission failure", os.ErrPermission, true, true, false},
+		{"legacy scan without profile keeps permission fallback", os.ErrPermission, false, false, true},
+		{"legacy scan with profile refuses permission failure", os.ErrPermission, true, false, false},
+		{"legacy scan preserves other errors", errors.New("interface disappeared"), false, false, false},
+		{"successful bind needs no fallback", nil, false, false, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := allowUnboundEgress(tc.err, tc.hasBox, tc.requireBinding); got != tc.want {
+				t.Fatalf("allow unbound fallback = %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
 
 func TestConfigAutoRedirectMark(t *testing.T) {
 	for _, tc := range []struct {

@@ -3,6 +3,41 @@ find_package(Qt6 REQUIRED COMPONENTS Test Widgets)
 # Класс теста объявлен прямо в .cpp и включает свой .moc — нужен AUTOMOC.
 set(CMAKE_AUTOMOC ON)
 
+# Compile the real request helper and dialog against isolated application
+# services. Networking and widget event delivery use Qt itself.
+qt_add_executable(HTTPRequestHelperTest
+        HTTPRequestHelperTest.cpp
+        ../include/global/HTTPRequestHelper.hpp
+        ../src/global/HTTPRequestHelper.cpp
+        ../src/global/NetworkFailureText.cpp
+)
+target_include_directories(HTTPRequestHelperTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/http_import_stubs ${CMAKE_SOURCE_DIR})
+target_link_libraries(HTTPRequestHelperTest PRIVATE Qt6::Test Qt6::Network)
+add_test(NAME HTTPRequestHelperTest COMMAND HTTPRequestHelperTest)
+
+qt_add_executable(AddSubscriptionDialogTest
+        AddSubscriptionDialogTest.cpp
+        ../include/ui/fsnt/AddSubscriptionDialog.h
+        ../src/ui/fsnt/AddSubscriptionDialog.cpp
+)
+target_include_directories(AddSubscriptionDialogTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/http_import_stubs ${CMAKE_SOURCE_DIR})
+target_link_libraries(AddSubscriptionDialogTest PRIVATE Qt6::Test Qt6::Widgets)
+add_test(NAME AddSubscriptionDialogTest COMMAND AddSubscriptionDialogTest)
+if (WIN32)
+    set_tests_properties(AddSubscriptionDialogTest PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=windows")
+else ()
+    set_tests_properties(AddSubscriptionDialogTest PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+endif ()
+
+qt_add_executable(DirectDnsSelectionTest
+        DirectDnsSelectionTest.cpp
+        ../src/global/DirectDnsSelection.cpp
+        ../src/configs/DnsAddress.cpp
+)
+target_include_directories(DirectDnsSelectionTest PRIVATE ${CMAKE_SOURCE_DIR})
+target_link_libraries(DirectDnsSelectionTest PRIVATE Qt6::Test)
+add_test(NAME DirectDnsSelectionTest COMMAND DirectDnsSelectionTest)
+
 qt_add_executable(TunIPv6PolicyTest
         TunIPv6PolicyTest.cpp
         ../src/configs/TunIPv6Policy.cpp

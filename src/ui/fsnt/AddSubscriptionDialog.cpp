@@ -1,7 +1,5 @@
 #include "include/ui/fsnt/AddSubscriptionDialog.h"
 
-#include "include/ui/mainwindow.h"
-
 #include <QApplication>
 #include <QClipboard>
 #include <QCoreApplication>
@@ -15,6 +13,7 @@
 
 #include "include/database/GroupsRepo.h"
 #include "include/configs/sub/GroupUpdater.hpp"
+#include "include/global/Configs.hpp"
 #include "include/global/Utils.hpp"
 #include "include/ui/fsnt/FsntTheme.hpp"
 
@@ -137,24 +136,6 @@ void AddSubscriptionDialog::setBusy(const bool busy) {
     m_add->setText(busy ? tr("Adding…") : tr("Add"));
 }
 
-QString AddSubscriptionDialog::subscriptionFailureHint() {
-    // Чаще всего дело не в ссылке. У людей с обходчиками блокировок запрос к
-    // провайдеру умирает на рукопожатии TLS: пакеты правит сторонний драйвер,
-    // и клиент видит «wrong version number». Поэтому сначала называем причину,
-    // которую человек в состоянии проверить сам.
-    QStringList conflicts;
-    if (auto *mw = GetMainWindow(); mw != nullptr) conflicts = mw->CheckConflictingProcesses();
-    if (!conflicts.isEmpty()) {
-        return tr("Could not open the subscription. Most likely it is blocked by %1 — such programs "
-                  "rewrite network packets, and the provider's site stops answering. Close it and try "
-                  "again.")
-            .arg(conflicts.join(", "));
-    }
-    return tr("Could not open the subscription. Check the link, and if it opens in a browser — look "
-              "for an anti-censorship tool or antivirus that filters traffic on this computer.");
-}
-
-// Самое нужное в объяснении стоит в конце — что именно искать на компьютере.
 // Метка переносит по словам, а высота переноса известна только когда известна
 // ширина: окно, размер которого посчитан по пустой метке, само под текст не
 // растёт, и хвост уезжает под кнопки. Поэтому высоту пересчитываем руками.
@@ -268,12 +249,14 @@ void AddSubscriptionDialog::submit() {
     QPointer<AddSubscriptionDialog> self(this);
     Subscription::updater()->SubscribeUrlWithOutcome(link, [self](const Subscription::UpdateOutcome &outcome) {
         const bool ok = outcome.ok();
-        QMetaObject::invokeMethod(QCoreApplication::instance(), [self, ok] {
+        const auto reportError = outcome.report.fatalReasons().join('\n');
+        const auto error = reportError.isEmpty() ? outcome.error : reportError;
+        QMetaObject::invokeMethod(QCoreApplication::instance(), [self, ok, error] {
             if (self.isNull()) return;
             auto *const dialog = self.data();
             dialog->m_guard->stop();
             if (!ok) {
-                dialog->fail(subscriptionFailureHint());
+                dialog->fail(error.isEmpty() ? tr("Could not open the subscription. Check the link and your connection.") : error);
                 return;
             }
             dialog->accept();

@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QString>
 
-#include "include/global/DnsProbe.hpp"
+#include "include/global/DirectDnsSelection.hpp"
 
 namespace Configs {
     // Подбирает рабочий прямой DNS перед подключением.
@@ -12,7 +12,8 @@ namespace Configs {
     // Прямой DNS разрешает имя нашего же сервера. Пока он молчит, подключаться
     // некуда, а туннель к этому моменту уже забрал маршруты — машина остаётся
     // без сети вообще, и клиент бесконечно ретраит вместо того, чтобы сказать
-    // правду. Поэтому подбор идёт до поднятия туннеля.
+    // правду. Поэтому подбор идёт до поднятия туннеля, через физический путь ядра
+    // даже при переключении с уже работающего профиля.
     class DnsAutoSelect : public QObject {
         Q_OBJECT
 
@@ -30,13 +31,14 @@ namespace Configs {
         void Start(const QString &configured, int timeoutMs = 2500, const QString &probeName = {});
 
     signals:
-        // address пуст, если не ответил никто из тех, кто переживёт туннель:
-        // подключаться в этом случае нельзя.
+        // address is empty if no eligible resolver returned an address.
+        // failure distinguishes no response from an unsuitable or negative response.
         // fellBack — выбрали не то, что задано, и об этом стоит сказать.
         // serverAddresses — чем ответили по имени сервера, к которому идём.
         // Их прибивают в конфиг, и тогда под туннелем это имя разрешать уже не
-        // надо. Пусты, если имя не задавали или не ответил вообще никто.
-        void Selected(const QString &address, bool fellBack, const QStringList &serverAddresses);
+        // надо. Пусты, если ни один ответ не содержал адреса.
+        void Selected(const QString &address, bool fellBack, const QStringList &serverAddresses,
+                      Configs::DirectDnsFailure failure);
 
     private:
         // Для журнала: почему заданный сервер не подошёл.

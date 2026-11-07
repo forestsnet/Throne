@@ -15,15 +15,12 @@ namespace Configs {
         // Что он ответил по проверяемому имени. Это и есть адрес нашего же
         // сервера: разрешать его второй раз, уже под туннелем, незачем.
         QStringList addresses;
+        // A valid negative DNS response still proves the server answered.
+        bool responded = false;
     };
 
-    // Настоящий запрос к DNS-серверу, а не проверка «порт открыт». Открытый порт
-    // ничего не доказывает: у человека, с которого всё началось, 853 именно
-    // отвечал молчанием до таймаута.
-    //
-    // Нужен до поднятия туннеля: именно прямой DNS разрешает имя нашего же
-    // сервера, и если он недоступен, подключаться некуда, а туннель к этому
-    // моменту уже забрал маршруты и оставил машину без сети.
+    // A Qt DNS protocol probe that follows OS routes. NoProxy does not bypass TUN.
+    // Direct DNS selection and diagnostics must use ProbeDirectDns instead.
     class DnsProbe : public QObject {
         Q_OBJECT
 

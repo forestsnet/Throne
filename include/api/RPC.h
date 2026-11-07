@@ -38,6 +38,9 @@ namespace API {
         // False until the GUI accepts the core's socket, which is after the core reports itself connected.
         [[nodiscard]] bool IsConnected() const;
 
+        libcore::DNSProbeResponse ProbeDNS(bool *rpcOK, const libcore::DNSProbeRequest &request,
+                                          QString *coreError = nullptr) const;
+
         // QString returns is error string
 
         QString Start(bool *rpcOK, const libcore::LoadConfigReq &request);

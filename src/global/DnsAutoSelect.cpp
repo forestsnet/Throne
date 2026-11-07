@@ -2,7 +2,9 @@
 
 #include "include/configs/DnsAddress.hpp"
 #include "include/configs/DnsCatalog.hpp"
-#include "include/global/DnsProbe.hpp"
+#include "include/global/DirectDnsProbe.hpp"
+#include <QThread>
+#include <memory>
 #include "include/global/Logger.hpp"
 
 #include <algorithm>
@@ -21,12 +23,9 @@ namespace Configs {
         // что у нас, и гадать об этом бессмысленно.
         QString roundSummary(const QList<DnsProbeResult> &results) {
             QStringList answered;
-            int silent = 0;
             for (const auto &result : results) {
-                if (result.ok) {
+                if (result.responded || result.ok) {
                     answered << QString("%1 %2ms").arg(result.address).arg(result.latencyMs);
-                } else {
-                    ++silent;
                 }
             }
             std::sort(answered.begin(), answered.end(), [](const QString &a, const QString &b) {
@@ -61,86 +60,59 @@ namespace Configs {
         m_probeName = probeName.trimmed();
         m_timeoutMs = timeoutMs;
 
-        // Кандидаты уже отсортированы по предпочтению и очищены от того, что под
-        // туннелем не живёт, — заданный сервер в том числе, если он на 53-м
-        // порту. Поэтому «ответил» и «подойдёт» здесь одно и то же.
         auto candidates = DnsCandidates(m_configured, true);
         if (candidates.size() > kMaxProbes) candidates = candidates.mid(0, kMaxProbes);
         if (candidates.isEmpty()) {
             LOG_WARN("direct DNS: nothing left to try");
-            emit Selected({}, true, {});
+            emit Selected({}, true, {}, DirectDnsFailure::ProbeUnavailable);
             return;
         }
 
-        auto *probe = new DnsProbe(this);
-        connect(probe, &DnsProbe::Finished, this, [this, probe](const QList<DnsProbeResult> &all) {
-            probe->deleteLater();
-            LOG_INFO("direct DNS round: " + roundSummary(all));
-
-            // Два разных вопроса к одному кругу. Первый: чем резолвить дальше —
-            // тут годится только то, что переживёт туннель. Второй: какой адрес
-            // у нашего сервера — тут годится ответ любого, кто ответил, потому
-            // что отвечали все до того, как туннель что-либо закрыл.
-            const bool mustSurvive = PlainDnsBlockedByTunnel();
-            const auto survives = [mustSurvive](const DnsProbeResult &result) {
-                return result.ok && (!mustSurvive || Fsnt::DnsUsableUnderTunnel(result.address));
-            };
-
-            QString chosen;
+        auto round = std::make_shared<DirectDnsProbeRound>();
+        auto *worker = QThread::create([round, candidates, timeout = m_timeoutMs, name = m_probeName] {
+            *round = ProbeDirectDns(candidates, timeout, name);
+        });
+        connect(worker, &QThread::finished, worker, &QObject::deleteLater);
+        const bool mustSurvive = PlainDnsBlockedByTunnel();
+        connect(worker, &QThread::finished, this, [this, round, mustSurvive] {
+            if (!round->error.isEmpty()) {
+                LOG_WARN("direct DNS probe failed: " + round->error);
+                emit Selected({}, true, {}, DirectDnsFailure::ProbeUnavailable);
+                return;
+            }
+            const auto &all = round->results;
+            LOG_INFO("direct DNS round outside the tunnel: " + roundSummary(all));
+            const auto selection = SelectDirectDns(all, m_configured, mustSurvive, !m_probeName.isEmpty());
+            const auto &chosen = selection.address;
+            m_resolved = selection.serverAddresses;
+            if (!m_resolved.isEmpty() && !m_probeName.isEmpty()) {
+                LOG_INFO(QString("%1 resolved through direct DNS: %2").arg(m_probeName, m_resolved.join(", ")));
+            }
+            if (selection.failure != DirectDnsFailure::None) {
+                LOG_WARN(DirectDnsFailureText(selection.failure));
+                QStringList failures;
+                for (const auto &result : all) {
+                    if (!result.error.isEmpty()) failures << QString("%1: %2").arg(result.address, result.error);
+                }
+                if (!failures.isEmpty()) LOG_WARN("direct DNS probe errors: " + failures.join(" | "));
+                emit Selected({}, true, m_resolved, selection.failure);
+                return;
+            }
             int chosenLatency = -1;
             for (const auto &result : all) {
-                if (result.address == m_configured && survives(result)) {
-                    chosen = m_configured;
-                    chosenLatency = result.latencyMs;
-                    break;
-                }
-            }
-            if (chosen.isEmpty()) {
-                for (const auto &result : all) {
-                    if (!survives(result)) continue;
-                    if (chosenLatency >= 0 && result.latencyMs >= chosenLatency) continue;
-                    chosen = result.address;
-                    chosenLatency = result.latencyMs;
-                }
-            }
-
-            m_resolved.clear();
-            for (const auto &result : all) {
-                if (result.address == chosen && !result.addresses.isEmpty()) {
-                    m_resolved = result.addresses;
-                    break;
-                }
-            }
-            if (m_resolved.isEmpty()) {
-                int best = -1;
-                for (const auto &result : all) {
-                    if (!result.ok || result.addresses.isEmpty()) continue;
-                    if (best >= 0 && result.latencyMs >= best) continue;
-                    best = result.latencyMs;
-                    m_resolved = result.addresses;
-                }
-            }
-            if (!m_resolved.isEmpty() && !m_probeName.isEmpty()) {
-                LOG_INFO(QString("%1 resolved before the tunnel: %2")
-                             .arg(m_probeName, m_resolved.join(", ")));
-            }
-
-            if (chosen.isEmpty()) {
-                LOG_WARN("no usable direct DNS answered");
-                emit Selected({}, true, m_resolved);
-                return;
+                if (result.address == chosen) chosenLatency = result.latencyMs;
             }
             if (chosen == m_configured) {
                 LOG_INFO(QString("direct DNS %1 answered in %2 ms").arg(m_configured).arg(chosenLatency));
-                emit Selected(m_configured, false, m_resolved);
+                emit Selected(m_configured, false, m_resolved, DirectDnsFailure::None);
                 return;
             }
             LOG_INFO(QString("direct DNS: %1 instead of %2 (%3)")
                          .arg(chosen, m_configured.isEmpty() ? QStringLiteral("none") : m_configured,
                               whyNotConfigured(all)));
-            emit Selected(chosen, true, m_resolved);
+            emit Selected(chosen, true, m_resolved, DirectDnsFailure::None);
         });
-        probe->Start(candidates, m_timeoutMs, m_probeName);
+        worker->start();
     }
 
 } // namespace Configs
