@@ -1,6 +1,8 @@
-set(PLATFORM_SOURCES 3rdparty/WinCommander.cpp src/sys/windows/guihelper.cpp src/sys/windows/MiniDump.cpp src/sys/windows/eventHandler.cpp src/sys/windows/WinVersion.cpp src/sys/windows/AutoRun.cpp src/sys/windows/UrlScheme.cpp src/sys/windows/SystemProxy.cpp src/sys/windows/GlobalHotkeys.cpp)
+set(PLATFORM_SOURCES 3rdparty/WinCommander.cpp src/sys/windows/guihelper.cpp src/sys/windows/MiniDump.cpp src/sys/windows/eventHandler.cpp src/sys/windows/WinVersion.cpp src/sys/windows/AutoRun.cpp src/sys/windows/UrlScheme.cpp src/sys/windows/SystemProxy.cpp src/sys/windows/GlobalHotkeys.cpp src/sys/windows/TunDiagnostics.cpp)
 # dwmapi — тёмный заголовок окна в простом режиме.
-set(PLATFORM_LIBRARIES wininet wsock32 ws2_32 user32 rasapi32 iphlpapi ntdll wbemuuid psapi shell32 dwmapi advapi32)
+# setupapi/cfgmgr32 — состояние сетевых устройств для разбора отказа туннеля,
+# wintrust/version — подпись и версия драйвера Wintun.
+set(PLATFORM_LIBRARIES wininet wsock32 ws2_32 user32 rasapi32 iphlpapi ntdll wbemuuid psapi shell32 dwmapi advapi32 setupapi cfgmgr32 wintrust version)
 # Headless glue that includes <windows.h>; appended after ENGINE_SOURCES so no portable TU follows it in an MSVC unity batch.
 set(PLATFORM_HEADLESS_SOURCES src/sys/windows/ServiceManager_win.cpp src/sys/windows/HeadlessSignals.cpp src/sys/windows/HostPresence_win.cpp)
 

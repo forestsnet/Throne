@@ -645,6 +645,8 @@ private:
 
     bool offerLeftoverTunAdapterRetry(const QString &error) override;
 
+    void tunDeviceProblem(const QString &headline, const QString &details) override;
+
     void stopFailed(const QString &error) override;
 
     Engine::SlowOperation slowOperation(Engine::SlowOperationKind kind, int delayMs) override;

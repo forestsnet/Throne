@@ -26,6 +26,8 @@ namespace Engine {
 
         bool offerLeftoverTunAdapterRetry(const QString &error) override;
 
+        void tunDeviceProblem(const QString &headline, const QString &details) override;
+
         void stopFailed(const QString &error) override;
 
         SlowOperation slowOperation(SlowOperationKind kind, int delayMs) override;

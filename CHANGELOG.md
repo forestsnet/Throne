@@ -1,3 +1,31 @@
+#### 1.4.12
+
+* Say why the tunnel did not start, instead of offering a core reset that cannot help **1**
+* Refuse a start Windows has already made impossible, instead of waiting out the fifteen seconds **2**
+* Check the tunnel driver and the network devices, and put the answer in the support report **3**
+* Find the DPI and VPN drivers that a renamed process hides **4**
+* Write every refused start into the log, not only the ones nobody was watching **5**
+* Read the Windows parts of the support report as UTF-8, like the rest of it **6**
+* Stop calling an ordered core shutdown a crash
+
+**1**:
+The window for a tunnel that did not come up offered to reset the core, whatever the reason had been. When Windows itself refuses the adapter, resetting the core changes nothing, and the only thing the client suggested was the only thing that could not work. The client now asks Windows first, before it says anything: the state of every network device and of the tunnel driver. It then names what it found. Windows unable to finish setting up new network devices at all, which it reports as device problem code 56 and which no reinstall of anything touches. A driver installation put off until the next restart. An adapter disabled in the device manager. An adapter the previous attempt left behind and Windows is still unloading. A driver registered at a path with no file at it, which Windows words as "cannot find the file specified" and which is usually an antivirus deleting the file. A driver file whose signature does not hold. The window offers to collect the support report instead of the reset, and the reset is still offered when nothing on the device side explains the failure.
+
+**2**:
+Wintun waits about fifteen seconds for Windows to hand over the adapter, and every attempt that fails leaves a device operation behind that Windows takes minutes to finish. The next attempt queued another one behind it, so the waiting grew with each try. The devices are now read before the start, and a start that cannot succeed is refused at once, with the reason. Windows unable to configure new network devices, an installation waiting for a restart, the adapter disabled, the previous adapter still unloading. An adapter merely left over from an earlier session is not refused and the start goes ahead, because Wintun takes those over by itself.
+
+**3**:
+The report carried the system, the network settings, the routing table and the logs, and nothing at all about the devices the tunnel is built on. The machine where the tunnel would not start had been answering the question in one line from the first minute, and there was nowhere in the report for that line. It now holds every network-class device with its state and its problem code, the tunnel driver service with the path it is registered at, whether the file is there, how large it is, which version it is and whether its signature holds, the network filter drivers that are running, and the network-class drivers in the driver store, where a failed installation leaves its duplicates behind.
+
+**4**:
+The conflict check looked at process names. GoodbyeDPI, zapret and ByeDPI cut traffic with the WinDivert driver, and renaming winws.exe is enough to leave that list while the driver stays in the stack and carries on. Running drivers and services are now matched by name as well: WinDivert, the TAP adapters, Netfilter SDK, ZeroTier, Cloudflare WARP, the OpenVPN and WireGuard drivers, and the network filters of the common antivirus products.
+
+**5**:
+The error the core returned reached the window, and the log kept it only for starts nobody had asked for. The support report is built from the log, so the reason a start had failed was missing from exactly those reports that were collected because a start had failed. Every refused start now writes its reason, whoever asked for it.
+
+**6**:
+Three files of the report came out in the console encoding while everything around them was UTF-8: the system information, the network settings and the account. On a Russian system that is CP866 against the CP1251 that a reader would assume, so those three were read through a converter, or not read. The console is asked for UTF-8 before each of those commands now, and the whole report is one encoding.
+
 #### 1.4.11
 
 * Check direct DNS through the core's network interface, including while another Throne tunnel is running

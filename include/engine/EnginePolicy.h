@@ -63,6 +63,11 @@ namespace Engine {
         // Windows still held the Tun adapter of a session that did not close cleanly; whether to start the profile again.
         virtual bool offerLeftoverTunAdapterRetry(const QString &error) = 0;
 
+        // Windows itself will not give out the tunnel adapter, and a core reset
+        // changes nothing. headline says what it answered, details carry the
+        // device and driver state behind it, and the log already has both.
+        virtual void tunDeviceProblem(const QString &headline, const QString &details) = 0;
+
         // Interactive stops only.
         virtual void stopFailed(const QString &error) = 0;
 

@@ -16,6 +16,9 @@
 #include "include/database/SettingsRepo.h"
 #include "include/global/Configs.hpp"
 #include "include/ui/mainWindow/MainWindowInternal.h"
+#ifdef Q_OS_WIN
+#include "include/sys/TunDiagnostics.h"
+#endif
 
 // Детект программ, мешающих работе TUN-режима (VPN-клиенты, антивирусы с фильтрацией трафика).
 // Список форка: проверяется перед стартом профиля в режиме VPN.
@@ -184,6 +187,16 @@ QStringList MainWindow::CheckConflictingProcesses() {
         }
     } else {
         MW_show_log("[CheckConflict] Failed to run tasklist");
+    }
+
+    // Список процессов — не вся картина. GoodbyeDPI, zapret и ByeDPI рубят
+    // трафик драйвером WinDivert, и переименованный winws.exe в tasklist уже не
+    // узнать, а драйвер остаётся в стеке и продолжает своё. Фильтры спрашиваем у
+    // диспетчера служб, по именам служб и драйверов.
+    for (const QString &filter : Sys::WinTunDiag::RunningNetFilters()) {
+        if (conflictingProcesses.contains(filter)) continue;
+        conflictingProcesses.append(filter);
+        MW_show_log(QString("[CheckConflict] Found: %1").arg(filter));
     }
 #elif defined(Q_OS_MAC)
     // macOS: используем ps

@@ -83,6 +83,7 @@ namespace Configs_sys {
 
     void CoreProcess::Kill(int waitMs) {
         if (state() == QProcess::NotRunning) return;
+        asked_to_stop = true;
 #ifndef Q_OS_WIN
         // Сначала просьба, и только потом SIGKILL. Перехватить SIGKILL нельзя,
         // поэтому ядро не получало возможности снять туннель, его маршруты,
@@ -111,6 +112,7 @@ namespace Configs_sys {
         started = true;
         ++generation;
         failed_to_start = false;
+        asked_to_stop = false;
 
         auto env = Sys::ServiceManager::ChildEnvironment();
         env.insert("THRONE_CORE_SOCKET", m_socketName);
@@ -131,6 +133,7 @@ namespace Configs_sys {
 
     void CoreProcess::Restart() {
         restarting = true;
+        asked_to_stop = true;
         KillChildGroup(this);
         kill();
         if (!waitForFinished(2000)) {

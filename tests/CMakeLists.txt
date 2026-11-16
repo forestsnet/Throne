@@ -55,6 +55,14 @@ target_link_libraries(ProviderPolicyTest PRIVATE Qt6::Test)
 
 add_test(NAME ProviderPolicyTest COMMAND ProviderPolicyTest)
 
+qt_add_executable(TunDiagnosticsTextTest
+        TunDiagnosticsTextTest.cpp
+        ../src/sys/TunDiagnosticsText.cpp
+)
+target_include_directories(TunDiagnosticsTextTest PRIVATE ${CMAKE_SOURCE_DIR})
+target_link_libraries(TunDiagnosticsTextTest PRIVATE Qt6::Test)
+add_test(NAME TunDiagnosticsTextTest COMMAND TunDiagnosticsTextTest)
+
 qt_add_executable(ProfileSuccessorTest
         ProfileSuccessorTest.cpp
         ../src/configs/sub/ProfileSuccessor.cpp

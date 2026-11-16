@@ -46,6 +46,10 @@ namespace Configs_sys {
         // DS_cores only; failed_to_start is reset by each Start().
         bool failed_to_start = false;
         bool restarting = false;
+        // Set by Kill() and Restart(), cleared by Start(). Windows answers
+        // TerminateProcess exactly as it answers a crash, so without this the
+        // log called every ordered teardown a crash and buried the real ones.
+        bool asked_to_stop = false;
 
     private:
         QString m_socketName;

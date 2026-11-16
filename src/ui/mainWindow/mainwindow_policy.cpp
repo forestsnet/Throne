@@ -161,6 +161,23 @@ bool MainWindow::offerLeftoverTunAdapterRetry(const QString &error) {
     return msg.clickedButton() == startAgain;
 }
 
+// Windows отказала в адаптере, и ядро тут ни при чём. Сброс ядра не
+// предлагаем: он бесполезен, а человек верит подсказке и жмёт его по кругу.
+// Вместо кнопки, которая ничего не меняет, даём ту, которая правда нужна
+// дальше, — сбор отчёта поддержки.
+void MainWindow::tunDeviceProblem(const QString &headline, const QString &details) {
+    QMessageBox box(QMessageBox::Warning, tr("Windows did not give out the tunnel adapter"), headline, QMessageBox::NoButton, this);
+    box.setTextFormat(Qt::PlainText);
+    box.setDetailedText(details);
+    auto *report = box.addButton(tr("Collect the support report"), QMessageBox::ActionRole);
+    auto *close = box.addButton(QMessageBox::Close);
+    box.setDefaultButton(close);
+    box.setEscapeButton(close);
+    box.exec();
+    // После exec окно уже закрыто, и сборщик отчёта открывает своё поверх чистого экрана.
+    if (box.clickedButton() == report) on_menu_profile_debug_info_triggered();
+}
+
 void MainWindow::stopFailed(const QString &error) {
     MessageBoxWarning(tr("Stop return error"), error);
 }

@@ -28,6 +28,9 @@
 #include "include/global/RunningProfiles.hpp"
 #include "include/global/Utils.hpp"
 #include "include/sys/KillSwitch.hpp"
+#ifdef Q_OS_WIN
+#include "include/sys/TunDiagnostics.h"
+#endif
 
 #include <QHostAddress>
 #include <QJsonObject>
@@ -191,8 +194,32 @@ namespace Engine {
             failStart(resolved, StartOutcome::BuildFailed, MainWindowTr::tr("BuildConfig return error"), result->error);
             return;
         }
+#ifdef Q_OS_WIN
+        // Спрашиваем Windows до запуска. Wintun ждёт её ответа пятнадцать секунд
+        // и каждой неудачной попыткой ставит в очередь ещё одну операцию с
+        // устройством, а они идут минутами. Если Windows уже сказала, что новое
+        // сетевое устройство ей не настроить, ждать нечего.
+        if (!result->tunIPv4CIDR.isEmpty()) {
+            const auto diagnosis = Sys::WinTunDiag::Diagnose(false);
+            if (!diagnosis.headline.isEmpty()) {
+                MW_show_log(QStringLiteral("[Tun] ") + diagnosis.headline);
+                MW_show_log(diagnosis.details);
+            }
+            if (diagnosis.blocksStart) {
+                m_vpnAuth->noteStartRefused(resolved.profileId);
+                emit startFinished(resolved.serial, resolved.profileId, StartOutcome::TunFailed, diagnosis.headline);
+                if (resolved.interactive) {
+                    runOnUiThread([=, this] { policy()->tunDeviceProblem(diagnosis.headline, diagnosis.details); });
+                }
+                return;
+            }
+        }
+#endif
         const auto finish = [=, this](StartOutcome outcome, const QString &error) {
-            if (!resolved.interactive && !error.isEmpty()) MW_show_log(error);
+            // В журнал — всегда. Раньше текст доставался только неинтерактивному
+            // запуску, а человек читал его в окне, и в отчёт поддержки причина
+            // отказа не попадала вовсе: разбирали по пересказу из переписки.
+            if (!error.isEmpty()) MW_show_log(QStringLiteral("[Start] ") + error);
             runOnUiThread([=, this] { emit startFinished(resolved.serial, resolved.profileId, outcome, error); });
         };
         auto profile_start_stage2 = [=, this](const Engine::SlowOperation &slowStart) {
@@ -289,6 +316,20 @@ namespace Engine {
                         });
                         return false;
                     }
+#ifdef Q_OS_WIN
+                    // Сброс ядра лечит залипший процесс. Когда дело в устройстве
+                    // или драйвере, он не лечит ничего, и человек по его совету
+                    // жмёт «Сбросить» до утра. Состояние устройств кладём в
+                    // журнал в любом случае: в отчёте поддержки это первое, что
+                    // надо знать о такой ошибке.
+                    const auto diagnosis = Sys::WinTunDiag::Diagnose(true);
+                    MW_show_log(diagnosis.details);
+                    if (diagnosis.verdict != Sys::WinTunDiag::Verdict::Ok) {
+                        MW_show_log(QStringLiteral("[Tun] ") + diagnosis.headline);
+                        runOnUiThread([=, this] { policy()->tunDeviceProblem(diagnosis.headline, diagnosis.details); });
+                        return false;
+                    }
+#endif
                     runOnUiThread([=, this] {
                         if (policy()->offerCoreReset(error)) m_coreSupervisor->resetCore();
                     });
@@ -556,11 +597,11 @@ namespace Engine {
         // Перезапуск, если он был заказан ради авторизации, не состоялся.
         m_vpnAuth->noteStartRefused(request.profileId);
         emit startFinished(request.serial, request.profileId, outcome, error);
-        if (request.interactive) {
-            policy()->startFailed(request, outcome, title, error);
-        } else {
-            MW_show_log(title + ": " + error);
-        }
+        // Окно показываем человеку, а строку всё равно пишем: отчёт поддержки
+        // собирается из журнала, и до этой правки отказы интерактивного запуска
+        // в нём не отражались.
+        MW_show_log(title + ": " + error);
+        if (request.interactive) policy()->startFailed(request, outcome, title, error);
     }
 
     void ConnectionManager::deferStartToCore(const StartRequest &request) {

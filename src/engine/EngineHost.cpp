@@ -86,6 +86,10 @@ namespace Engine {
             return target(__func__)->offerLeftoverTunAdapterRetry(error);
         }
 
+        void tunDeviceProblem(const QString &headline, const QString &details) override {
+            target(__func__)->tunDeviceProblem(headline, details);
+        }
+
         void stopFailed(const QString &error) override {
             target(__func__)->stopFailed(error);
         }

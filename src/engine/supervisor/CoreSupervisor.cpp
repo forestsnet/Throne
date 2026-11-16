@@ -526,12 +526,17 @@ namespace Engine {
             // A start failing inside Restart() on Windows reports only here: stateChanged then still sees restarting.
             if (error == QProcess::FailedToStart) postExit(process->generation.load(), true, -1, coreSupervisorOneLine(process->errorString()));
         });
-        connect(process, &QProcess::finished, process, [](int exitCode, QProcess::ExitStatus exitStatus) {
-            const bool crashed = exitStatus == QProcess::CrashExit || exitCode != 0;
+        connect(process, &QProcess::finished, process, [process](int exitCode, QProcess::ExitStatus exitStatus) {
+            // Ядро, которое попросили остановиться, не падало. Windows отвечает
+            // на TerminateProcess тем же, чем на падение, и Qt приносит это как
+            // CrashExit с кодом 62097, так что журнал объявлял падением каждое
+            // штатное завершение — и настоящие падения в них терялись.
+            const bool asked = process->asked_to_stop || Configs::dataManager->settingsRepo->prepare_exit;
+            const bool crashed = !asked && (exitStatus == QProcess::CrashExit || exitCode != 0);
             Logging::Write(crashed ? Logging::Level::Error : Logging::Level::Info,
                            QString("core process exited: code=%1 status=%2%3")
                                .arg(exitCode)
-                               .arg(exitStatus == QProcess::CrashExit ? "crash" : "normal")
+                               .arg(asked ? "terminated" : (exitStatus == QProcess::CrashExit ? "crash" : "normal"))
                                .arg(Configs::dataManager->settingsRepo->prepare_exit ? " (during shutdown)" : ""));
         });
         const auto runningGen = std::make_shared<quint64>(0);

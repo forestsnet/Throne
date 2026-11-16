@@ -207,6 +207,11 @@ set(PROJECT_SOURCES
         include/sys/CoreDiagnostics.hpp
         src/sys/CoreDiagnostics.cpp
 
+        # Опрос сетевых устройств лежит в cmake/windows/windows.cmake: он только для Windows.
+        # Здесь — тексты, которые он показывает, чтобы их видел lupdate на любой платформе.
+        include/sys/TunDiagnostics.h
+        src/sys/TunDiagnosticsText.cpp
+
         include/sys/UrlScheme.hpp
         src/sys/UrlScheme.cpp
 

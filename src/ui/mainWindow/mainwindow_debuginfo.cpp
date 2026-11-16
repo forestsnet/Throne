@@ -21,6 +21,9 @@
 #include "include/global/Logger.hpp"
 #include "include/ui/fsnt/BusyDialog.h"
 #include "include/ui/mainWindow/MainWindowInternal.h"
+#ifdef Q_OS_WIN
+#include "include/sys/TunDiagnostics.h"
+#endif
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -40,10 +43,74 @@ namespace {
         if (dropped > 0) out += QStringLiteral(" (+%1 provider headers withheld)").arg(dropped);
         return out;
     }
+
+    // Консольные утилиты Windows отдают вывод в кодировке консоли: на русской
+    // системе это CP866. В отчёт он уезжал как есть, а из однобайтовых Qt знает
+    // только системную ANSI, то есть CP1251 — ровно то расхождение, из-за
+    // которого три файла отчёта читались через iconv, пока остальные были в
+    // UTF-8. Просим консоль перейти на UTF-8 сама: chcp действует на весь вызов.
+    //
+    // setNativeArguments, а не список аргументов: Qt закавычила бы строку с &&
+    // целиком, и cmd принял бы её за имя одной команды.
+    QByteArray runReportCommand(const QString &windowsCommand, const QString &shellCommand, int timeoutMs) {
+        QProcess process;
+#ifdef Q_OS_WIN
+        Q_UNUSED(shellCommand)
+        process.setProgram(QStringLiteral("cmd.exe"));
+        process.setNativeArguments(QStringLiteral("/c chcp 65001 >nul && ") + windowsCommand);
+        process.start();
+#else
+        Q_UNUSED(windowsCommand)
+        process.start(QStringLiteral("sh"), {QStringLiteral("-c"), shellCommand});
+#endif
+        process.waitForFinished(timeoutMs);
+        return process.readAllStandardOutput();
+    }
+
+    void writeReportFile(const QString &path, const QByteArray &content) {
+        QFile file(path);
+        if (!file.open(QIODevice::WriteOnly)) return;
+        file.write(content);
+        file.close();
+    }
+
+#ifdef Q_OS_WIN
+    // Хранилище драйверов целиком — это тысячи строк, а нужен один класс. Имя
+    // класса в выводе переведено, а его значение «Net» — нет, поэтому ищем по
+    // значению и остаёмся независимы от языка системы.
+    QString netDriversOnly(const QString &listing) {
+        // Пустая строка между записями на Windows — это CRLF CRLF, и разбор по
+        // одним переводам строки не нашёл бы ни одной границы: вместо выборки
+        // по классу в отчёт уехало бы хранилище целиком.
+        QString normalized = listing;
+        normalized.replace(QStringLiteral("\r\n"), QStringLiteral("\n"));
+        const auto blocks = normalized.split(QStringLiteral("\n\n"), Qt::SkipEmptyParts);
+        QStringList kept;
+        for (const QString &block : blocks) {
+            for (const QString &line : block.split(QLatin1Char('\n'))) {
+                const int colon = line.indexOf(QLatin1Char(':'));
+                if (colon < 0) continue;
+                if (line.mid(colon + 1).trimmed() == QLatin1String("Net")) {
+                    kept.append(block.trimmed());
+                    break;
+                }
+            }
+        }
+        if (kept.isEmpty()) return QStringLiteral("no network-class drivers in the driver store, or pnputil needs administrator rights");
+        return kept.join(QStringLiteral("\n\n"));
+    }
+#endif
 } // namespace
 
 // Сбор отладочной информации в один архив (Ctrl+Shift+D или пункт меню).
 // Действие menu_profile_debug_info объявлено в mainwindow.ui, но реализации у upstream нет.
+//
+// На Windows шагов больше: там есть опрос сетевых устройств и драйвера туннеля.
+#ifdef Q_OS_WIN
+constexpr int kReportSteps = 9;
+#else
+constexpr int kReportSteps = 8;
+#endif
 
 void MainWindow::on_menu_profile_debug_info_triggered() {
     MW_show_log(tr("Collecting debug information..."));
@@ -55,7 +122,7 @@ void MainWindow::on_menu_profile_debug_info_triggered() {
         tr("Support report"),
         tr("Collecting what support needs: system and network settings, the routing table and the "
            "client's own logs. It all goes into one archive on the desktop."),
-        8, GetMessageBoxParent());
+        kReportSteps, GetMessageBoxParent());
     progress->setAttribute(Qt::WA_DeleteOnClose);
     progress->show();
 
@@ -77,57 +144,44 @@ void MainWindow::on_menu_profile_debug_info_triggered() {
         QDir().mkpath(tempDir);
         
         // 1. Системная информация
-        QString systemInfoPath = tempDir + "/01_system_info.txt";
-        QProcess systemInfo;
-#ifdef Q_OS_WIN
-        systemInfo.start("cmd", QStringList() << "/c" << "systeminfo");
-#elif defined(Q_OS_MAC)
-        systemInfo.start("sh", QStringList() << "-c" << "system_profiler SPSoftwareDataType SPHardwareDataType");
+#if defined(Q_OS_MAC)
+        const QString systemShell = QStringLiteral("system_profiler SPSoftwareDataType SPHardwareDataType");
 #else
-        systemInfo.start("sh", QStringList() << "-c" << "uname -a && cat /proc/cpuinfo && cat /proc/meminfo");
+        const QString systemShell = QStringLiteral("uname -a && cat /proc/cpuinfo && cat /proc/meminfo");
 #endif
-        systemInfo.waitForFinished(10000);
-        QFile systemFile(systemInfoPath);
-        if (systemFile.open(QIODevice::WriteOnly)) {
-            systemFile.write(systemInfo.readAllStandardOutput());
-            systemFile.close();
-        }
+        writeReportFile(tempDir + "/01_system_info.txt", runReportCommand(QStringLiteral("systeminfo"), systemShell, 10000));
         
         // 2. Сетевая информация
         stage(tr("Network settings…"));
-        QString networkInfoPath = tempDir + "/02_network_info.txt";
-        QProcess networkInfo;
-#ifdef Q_OS_WIN
-        networkInfo.start("cmd", QStringList() << "/c" << "ipconfig /all");
-#elif defined(Q_OS_MAC)
-        networkInfo.start("sh", QStringList() << "-c" << "ifconfig && networksetup -listallhardwareports");
+#if defined(Q_OS_MAC)
+        const QString networkShell = QStringLiteral("ifconfig && networksetup -listallhardwareports");
 #else
-        networkInfo.start("sh", QStringList() << "-c" << "ip a && ip link");
+        const QString networkShell = QStringLiteral("ip a && ip link");
 #endif
-        networkInfo.waitForFinished(5000);
-        QFile networkFile(networkInfoPath);
-        if (networkFile.open(QIODevice::WriteOnly)) {
-            networkFile.write(networkInfo.readAllStandardOutput());
-            networkFile.close();
-        }
+        writeReportFile(tempDir + "/02_network_info.txt", runReportCommand(QStringLiteral("ipconfig /all"), networkShell, 5000));
+
+#ifdef Q_OS_WIN
+        // 2a. Сетевые устройства и драйвер туннеля.
+        //
+        // Та самая строка, которой не хватало в ночь на 2026-11-16: машина не
+        // умела довести до конца настройку сетевого класса, все новые сетевые
+        // устройства вставали с кодом 56, и выяснилось это на четвёртом часу. В
+        // отчёте этого не было ни в одном файле.
+        stage(tr("Network devices and drivers…"));
+        QString devicesReport = Sys::WinTunDiag::DevicesReport();
+        devicesReport += QStringLiteral("\n\n=== NET CLASS DRIVERS IN THE DRIVER STORE ===\n");
+        devicesReport += netDriversOnly(QString::fromUtf8(runReportCommand(QStringLiteral("pnputil /enum-drivers"), {}, 20000)));
+        writeReportFile(tempDir + "/02a_net_devices.txt", devicesReport.toUtf8() + '\n');
+#endif
         
         // 3. Таблица маршрутизации
         stage(tr("Routing table…"));
-        QString routingInfoPath = tempDir + "/03_routing_table.txt";
-        QProcess routingInfo;
-#ifdef Q_OS_WIN
-        routingInfo.start("cmd", QStringList() << "/c" << "route print");
-#elif defined(Q_OS_MAC)
-        routingInfo.start("netstat", QStringList() << "-rn");
+#if defined(Q_OS_MAC)
+        const QString routingShell = QStringLiteral("netstat -rn");
 #else
-        routingInfo.start("sh", QStringList() << "-c" << "ip route && route -n");
+        const QString routingShell = QStringLiteral("ip route && route -n");
 #endif
-        routingInfo.waitForFinished(5000);
-        QFile routingFile(routingInfoPath);
-        if (routingFile.open(QIODevice::WriteOnly)) {
-            routingFile.write(routingInfo.readAllStandardOutput());
-            routingFile.close();
-        }
+        writeReportFile(tempDir + "/03_routing_table.txt", runReportCommand(QStringLiteral("route print"), routingShell, 5000));
         
         // 4. Информация о версиях приложения
         stage(tr("Versions…"));
@@ -172,39 +226,17 @@ void MainWindow::on_menu_profile_debug_info_triggered() {
         
         // 5. Информация о пользователе
         stage(tr("Account and running processes…"));
-        QString userInfoPath = tempDir + "/05_user_info.txt";
-        QProcess userInfo;
-#ifdef Q_OS_WIN
-        QString username = qEnvironmentVariable("USERNAME");
-        userInfo.start("cmd", QStringList() << "/c" << "net user " + username);
-#elif defined(Q_OS_MAC)
-        userInfo.start("sh", QStringList() << "-c" << "whoami && id && sw_vers");
+#if defined(Q_OS_MAC)
+        const QString userShell = QStringLiteral("whoami && id && sw_vers");
 #else
-        userInfo.start("sh", QStringList() << "-c" << "whoami && id && cat /etc/os-release");
+        const QString userShell = QStringLiteral("whoami && id && cat /etc/os-release");
 #endif
-        userInfo.waitForFinished(5000);
-        QFile userFile(userInfoPath);
-        if (userFile.open(QIODevice::WriteOnly)) {
-            userFile.write(userInfo.readAllStandardOutput());
-            userFile.close();
-        }
+        // Имя разворачивает сама cmd, и кавычки нужны: в имени бывает пробел.
+        writeReportFile(tempDir + "/05_user_info.txt", runReportCommand(QStringLiteral("net user \"%USERNAME%\""), userShell, 5000));
         
         // 5a. Список запущенных процессов
-        QString processListPath = tempDir + "/05a_running_processes.txt";
-        QProcess processList;
-#ifdef Q_OS_WIN
-        processList.start("cmd", QStringList() << "/c" << "tasklist /v");
-#elif defined(Q_OS_MAC)
-        processList.start("sh", QStringList() << "-c" << "ps aux | head -100");
-#else
-        processList.start("sh", QStringList() << "-c" << "ps aux | head -100");
-#endif
-        processList.waitForFinished(5000);
-        QFile processFile(processListPath);
-        if (processFile.open(QIODevice::WriteOnly)) {
-            processFile.write(processList.readAllStandardOutput());
-            processFile.close();
-        }
+        writeReportFile(tempDir + "/05a_running_processes.txt",
+                        runReportCommand(QStringLiteral("tasklist /v"), QStringLiteral("ps aux | head -100"), 5000));
         
         // 6. Отдельного файла для логов ядра нет: ядро пишет в общий журнал
         // приложения, и всё его видно в 07_app_throne.log с меткой [ui].

@@ -82,6 +82,11 @@ namespace Engine {
         return false;
     }
 
+    void HeadlessPolicy::tunDeviceProblem(const QString &headline, const QString &details) {
+        MW_show_log(headline);
+        MW_show_log(details);
+    }
+
     void HeadlessPolicy::stopFailed(const QString &error) {
         MW_show_log(QStringLiteral("Stop return error: %1").arg(error));
     }

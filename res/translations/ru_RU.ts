@@ -10116,6 +10116,10 @@ You can change this later in settings.</source>
         <translation>Настройки сети…</translation>
     </message>
     <message>
+        <source>Network devices and drivers…</source>
+        <translation>Сетевые устройства и драйверы…</translation>
+    </message>
+    <message>
         <source>Routing table…</source>
         <translation>Таблица маршрутов…</translation>
     </message>
@@ -10400,6 +10404,14 @@ Error: %1</source>
     <message>
         <source>Start Again</source>
         <translation>Запустить снова</translation>
+    </message>
+    <message>
+        <source>Windows did not give out the tunnel adapter</source>
+        <translation>Windows не выдала адаптер туннеля</translation>
+    </message>
+    <message>
+        <source>Collect the support report</source>
+        <translation>Собрать отчёт для поддержки</translation>
     </message>
     <message>
         <source>FSNT Client needs your password to let the tunnel start.</source>
@@ -13572,6 +13584,34 @@ Release note:
     <message>
         <source>the core stopped with an error</source>
         <translation>ядро завершилось с ошибкой</translation>
+    </message>
+    <message>
+        <source>The tunnel adapter is left over from an earlier session, and Windows reports problem code %1 on it. The tunnel will try to take it over.</source>
+        <translation>Адаптер туннеля остался от прошлого сеанса, и Windows сообщает о нём код %1. Туннель попробует забрать его себе.</translation>
+    </message>
+    <message>
+        <source>Windows is still unloading the tunnel adapter of an earlier attempt (device problem code %1). Starting again only queues another device operation behind it, and those take minutes. Wait, or restart Windows.</source>
+        <translation>Windows ещё выгружает адаптер туннеля от прошлой попытки (код устройства %1). Новый запуск только поставит в очередь за ним ещё одну операцию с устройством, а они идут минутами. Подождите или перезагрузите Windows.</translation>
+    </message>
+    <message>
+        <source>The tunnel adapter is disabled in the Windows device manager, so the tunnel cannot use it. Enable it there, or restart Windows.</source>
+        <translation>Адаптер туннеля отключён в диспетчере устройств Windows, и воспользоваться им туннель не может. Включите его там или перезагрузите Windows.</translation>
+    </message>
+    <message>
+        <source>Windows put off installing the tunnel driver until the next restart, so the tunnel cannot start before Windows has been restarted.</source>
+        <translation>Windows отложила установку драйвера туннеля до перезагрузки, и до неё туннель не поднимется.</translation>
+    </message>
+    <message>
+        <source>Windows on this computer cannot finish setting up new network devices (device problem code 56), so the tunnel adapter cannot be created. It happens to every new network device, not only to this application, and reinstalling the application changes nothing. Repairing Windows over itself, with the files and applications kept, is what fixes it.</source>
+        <translation>Windows на этом компьютере не может довести до конца настройку новых сетевых устройств (код устройства 56), поэтому адаптер туннеля не создать. Так происходит с любым новым сетевым устройством, а не только с этим приложением, и переустановка приложения ничего не меняет. Помогает восстановление Windows поверх себя, с сохранением файлов и программ.</translation>
+    </message>
+    <message>
+        <source>The tunnel driver is registered at %1, and there is no file there. Windows words this as &quot;cannot find the file specified&quot;. Antivirus software deleting the file is the usual reason.</source>
+        <translation>Драйвер туннеля зарегистрирован по пути %1, а файла там нет. Windows говорит об этом так: «не удаётся найти указанный файл». Чаще всего файл удаляет антивирус.</translation>
+    </message>
+    <message>
+        <source>The tunnel driver file %1 did not pass the signature check (%2), so Windows will refuse to load it.</source>
+        <translation>Файл драйвера туннеля %1 не прошёл проверку подписи (%2), и загружать его Windows откажется.</translation>
     </message>
 </context>
 <context>

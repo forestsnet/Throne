@@ -38,6 +38,12 @@ Before each connect the configured resolver and the alternatives are queried in 
 
 An update never drops the connection. When the subscription no longer carries the server the tunnel is running on, that profile leaves the list straight away, so it does not stand next to the one that replaced it, but its session keeps going until you disconnect. The moment you do, it is deleted and the selection moves to its successor: the profile with the same name, or, when the name only differs by a tag such as a speed or a flag, the one that matches without it, and otherwise the first in the group.
 
+### Note on a tunnel Windows will not start
+
+On Windows the adapter is created by Wintun, and when Windows will not hand one over there is nothing in the client to fix. The client therefore asks the device manager before it says anything, both before a start and after one that failed, and names what it found: Windows unable to finish setting up new network devices at all, which it reports as device problem code 56 and which happens to every new network device on that machine, a driver installation put off until the next restart, an adapter disabled by hand, an adapter the previous attempt left behind and Windows is still unloading, or a driver registered at a path with no file at it, which is usually an antivirus having deleted it. A start that cannot succeed is refused right away rather than waiting out the fifteen seconds Wintun spends asking, because each failed attempt leaves behind a device operation that Windows takes minutes to finish and the next attempt queues another one behind it. An adapter merely left over from an earlier session is not refused, since Wintun takes those over by itself.
+
+The same answers go into the support report, under `02a_net_devices.txt`: every network-class device with its state and problem code, the tunnel driver service with the path it is registered at, the size, version and signature of the file, the network filter drivers that are running, and the network-class drivers in the driver store, where a failed installation leaves duplicates behind. A machine that cannot configure network devices is repaired by installing Windows over itself with the files and applications kept, and nothing the client does changes it.
+
 ### GitHub Releases (Portable ZIP)
 
 [![GitHub All Releases](https://img.shields.io/github/downloads/throneproj/Throne/total?label=downloads-total&logo=github&style=flat-square)](https://github.com/throneproj/Throne/releases)
