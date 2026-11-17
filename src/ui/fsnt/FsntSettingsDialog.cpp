@@ -383,6 +383,10 @@ void FsntSettingsDialog::buildDns(QVBoxLayout *column, QWidget *host) {
         card.addNote(tr("Last connection actually used %1.").arg(settings->direct_dns_effective));
     }
 
+    // Текст говорит про «Системные настройки» и про соседние устройства Apple,
+    // и то и другое — про macOS. На Windows выключателя реле у нас нет, править
+    // человеку нечего, и пункт только сбивает с толку.
+#ifdef Q_OS_MACOS
     m_blockPrivateRelay = card.addToggle(tr("Turn off iCloud Private Relay while connected"),
                                          settings->block_private_relay);
     card.addNote(tr("Apple hides the IP address of Safari behind its own relay, and it does not "
@@ -394,6 +398,7 @@ void FsntSettingsDialog::buildDns(QVBoxLayout *column, QWidget *host) {
     card.addNote(tr("Off by default: Apple does not offer the relay in every country, and where it "
                     "is not offered there is nothing to switch off, while the system still tells you "
                     "that your own network is incompatible with Private Relay."));
+#endif
 }
 
 void FsntSettingsDialog::buildSubscriptions(QVBoxLayout *column, QWidget *host) {

@@ -348,6 +348,22 @@ namespace Configs {
         // его сеть несовместима с «Частным узлом iCloud», и называют в нём его же
         // Wi-Fi. Кому реле действительно мешает, тот включает запрет сам.
         bool block_private_relay = false;
+
+        // Главный рычаг здесь — системный выключатель реле, а он живёт в
+        // настройках SystemConfiguration, и писать их умеет только macOS. Без
+        // него остаётся один запрет имён, а им уже поднятое реле не свалить:
+        // адреса входных узлов у устройства с прошлого раза есть, и оно идёт к
+        // ним по IP. Поэтому на остальных системах настройка не предлагается и
+        // ничего не делает, даже если в базе лежит включённой с прошлой жизни
+        // профиля.
+        bool BlocksPrivateRelay() const {
+#ifdef Q_OS_MACOS
+            return block_private_relay;
+#else
+            return false;
+#endif
+        }
+
         bool fake_dns = false;
         bool fakeip_disable_ipv6 = false;
         bool enable_tun_routing = true;

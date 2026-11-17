@@ -1,3 +1,10 @@
+#### 1.4.13
+
+* Offer the iCloud Private Relay switch only on the system that can actually flip it **1**
+
+**1**:
+The setting turned Apple's relay off for the network while the tunnel was up, and the text under it pointed at System Settings and warned that other Apple devices on the same network would be affected too. Both of those are macOS. The switch itself is a key in the SystemConfiguration preferences, and only macOS can write those, so on Windows the setting had no lever at all. What was left of it there was the refusal of the two relay names in DNS, and that alone does not bring down a relay that is already running, because the device keeps the addresses of its ingress nodes from the previous session and reaches them by IP. The setting is now offered only where it works, and it does nothing anywhere else even when an older profile carries it switched on.
+
 #### 1.4.12
 
 * Say why the tunnel did not start, instead of offering a core reset that cannot help **1**
