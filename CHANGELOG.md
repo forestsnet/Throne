@@ -1,9 +1,17 @@
 #### 1.4.13
 
 * Offer the iCloud Private Relay switch only on the system that can actually flip it **1**
+* Read the rest of the support report as UTF-8, whatever the console utility answers in **2**
+* Find the network drivers in the driver store by class, not by its translated name **3**
 
 **1**:
 The setting turned Apple's relay off for the network while the tunnel was up, and the text under it pointed at System Settings and warned that other Apple devices on the same network would be affected too. Both of those are macOS. The switch itself is a key in the SystemConfiguration preferences, and only macOS can write those, so on Windows the setting had no lever at all. What was left of it there was the refusal of the two relay names in DNS, and that alone does not bring down a relay that is already running, because the device keeps the addresses of its ingress nodes from the previous session and reaches them by IP. The setting is now offered only where it works, and it does nothing anywhere else even when an older profile carries it switched on.
+
+**2**:
+1.4.12 asked the console to switch to UTF-8 with chcp before every command, and two files out of six still came back in CP866. systeminfo and tasklist ask the console for its code page and follow it, while ipconfig and net take the OEM one whatever the console says. The report now decides by the bytes rather than by what was asked for: output that already is valid UTF-8 is kept untouched, and anything else is converted from the code page the system reports, so it stays right where the OEM page is not 866 either.
+
+**3**:
+The driver store section came back empty from the very machine it was built for. The filter kept the records whose class value read "Net", on the assumption that pnputil translates the names of the fields but not that value, and on a Russian system it matched nothing at all. Records are now picked by the GUID of the network class, which is never translated. And when nothing matches, the beginning of what pnputil answered is kept: an empty store, a format that was not understood and a refusal for want of administrator rights all read the same in the report, and there was no way to tell which had happened.
 
 #### 1.4.12
 

@@ -1,4 +1,4 @@
-set(PLATFORM_SOURCES 3rdparty/WinCommander.cpp src/sys/windows/guihelper.cpp src/sys/windows/MiniDump.cpp src/sys/windows/eventHandler.cpp src/sys/windows/WinVersion.cpp src/sys/windows/AutoRun.cpp src/sys/windows/UrlScheme.cpp src/sys/windows/SystemProxy.cpp src/sys/windows/GlobalHotkeys.cpp src/sys/windows/TunDiagnostics.cpp)
+set(PLATFORM_SOURCES 3rdparty/WinCommander.cpp src/sys/windows/guihelper.cpp src/sys/windows/MiniDump.cpp src/sys/windows/eventHandler.cpp src/sys/windows/WinVersion.cpp src/sys/windows/AutoRun.cpp src/sys/windows/UrlScheme.cpp src/sys/windows/SystemProxy.cpp src/sys/windows/GlobalHotkeys.cpp src/sys/windows/TunDiagnostics.cpp src/sys/windows/ConsoleText.cpp)
 # dwmapi — тёмный заголовок окна в простом режиме.
 # setupapi/cfgmgr32 — состояние сетевых устройств для разбора отказа туннеля,
 # wintrust/version — подпись и версия драйвера Wintun.

@@ -22,6 +22,7 @@
 #include "include/ui/fsnt/BusyDialog.h"
 #include "include/ui/mainWindow/MainWindowInternal.h"
 #ifdef Q_OS_WIN
+#include "include/sys/ConsoleText.h"
 #include "include/sys/TunDiagnostics.h"
 #endif
 
@@ -50,6 +51,10 @@ namespace {
     // которого три файла отчёта читались через iconv, пока остальные были в
     // UTF-8. Просим консоль перейти на UTF-8 сама: chcp действует на весь вызов.
     //
+    // Одного chcp мало: ipconfig и net берут OEM независимо от кодовой страницы
+    // консоли, и в отчёте 1.4.12 их файлы так и остались в CP866. Поэтому
+    // результат ещё и приводится к UTF-8 по самим байтам.
+    //
     // setNativeArguments, а не список аргументов: Qt закавычила бы строку с &&
     // целиком, и cmd принял бы её за имя одной команды.
     QByteArray runReportCommand(const QString &windowsCommand, const QString &shellCommand, int timeoutMs) {
@@ -64,7 +69,11 @@ namespace {
         process.start(QStringLiteral("sh"), {QStringLiteral("-c"), shellCommand});
 #endif
         process.waitForFinished(timeoutMs);
+#ifdef Q_OS_WIN
+        return Sys::ConsoleOutputToUtf8(process.readAllStandardOutput());
+#else
         return process.readAllStandardOutput();
+#endif
     }
 
     void writeReportFile(const QString &path, const QByteArray &content) {
@@ -75,9 +84,10 @@ namespace {
     }
 
 #ifdef Q_OS_WIN
-    // Хранилище драйверов целиком — это тысячи строк, а нужен один класс. Имя
-    // класса в выводе переведено, а его значение «Net» — нет, поэтому ищем по
-    // значению и остаёмся независимы от языка системы.
+    // Хранилище драйверов целиком — это тысячи строк, а нужен один класс.
+    // Отбираем по GUID класса: я считал, что значение «Net» pnputil не
+    // переводит, и на русской системе отбор не нашёл ни одной записи — в отчёте
+    // с машины клиента раздел вышел пустым. GUID не переводится никогда.
     QString netDriversOnly(const QString &listing) {
         // Пустая строка между записями на Windows — это CRLF CRLF, и разбор по
         // одним переводам строки не нашёл бы ни одной границы: вместо выборки
@@ -87,17 +97,17 @@ namespace {
         const auto blocks = normalized.split(QStringLiteral("\n\n"), Qt::SkipEmptyParts);
         QStringList kept;
         for (const QString &block : blocks) {
-            for (const QString &line : block.split(QLatin1Char('\n'))) {
-                const int colon = line.indexOf(QLatin1Char(':'));
-                if (colon < 0) continue;
-                if (line.mid(colon + 1).trimmed() == QLatin1String("Net")) {
-                    kept.append(block.trimmed());
-                    break;
-                }
+            if (block.contains(QStringLiteral("{4d36e972-e325-11ce-bfc1-08002be10318}"), Qt::CaseInsensitive)) {
+                kept.append(block.trimmed());
             }
         }
-        if (kept.isEmpty()) return QStringLiteral("no network-class drivers in the driver store, or pnputil needs administrator rights");
-        return kept.join(QStringLiteral("\n\n"));
+        if (!kept.isEmpty()) return kept.join(QStringLiteral("\n\n"));
+        // Пустое хранилище, непонятый формат и отказ по правам выглядели в
+        // отчёте одинаково, и выяснить по нему, что из трёх, было нельзя.
+        // Оставляем начало вывода — оно и отвечает.
+        const QString head = normalized.trimmed().left(400);
+        if (head.isEmpty()) return QStringLiteral("pnputil printed nothing");
+        return QStringLiteral("no driver package of the network class matched, pnputil said:\n") + head;
     }
 #endif
 } // namespace
