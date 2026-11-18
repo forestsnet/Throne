@@ -3,6 +3,7 @@ package probe
 import (
 	"context"
 	"net/http"
+	"net/http/httptrace"
 	"time"
 
 	"github.com/sagernet/sing-box/adapter"
@@ -57,14 +58,15 @@ func BatchURLTestTo(ctx context.Context, i Box, outboundTags []string, url strin
 func urlTest(ctx context.Context, client *http.Client, url string, method string, timeout time.Duration) (time.Duration, error) {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
+	var recorder stageRecorder
 	begin := time.Now()
-	req, err := http.NewRequestWithContext(ctx, method, url, nil)
+	req, err := http.NewRequestWithContext(httptrace.WithClientTrace(ctx, recorder.trace()), method, url, nil)
 	if err != nil {
 		return 0, err
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return 0, err
+		return 0, describeRequestFailure(err, recorder.snapshot(), testTargetName(url))
 	}
 	_ = resp.Body.Close()
 	return time.Since(begin), nil
