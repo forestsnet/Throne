@@ -148,6 +148,16 @@ namespace Subscription {
         bool fetch(const QString &url, const QString &name, const RequestIdentity &identity, QByteArray &body,
                    Configs::SubUserInfo &subInfo, QString *error = nullptr, QString *policyJson = nullptr,
                    QString *routing = nullptr);
+        // Зеркала из политики провайдера, по порядку. Отдаёт адрес, который ответил,
+        // и заполняет из него body, subInfo, policyJson и routing. Пусто, если не ответил никто.
+        QString fetchFromMirrors(const Configs::Group &group, const QString &url, const RequestIdentity &identity,
+                                 QByteArray &body, Configs::SubUserInfo &subInfo, QString &policyJson,
+                                 QString &routing);
+        // Запоминает адрес, по которому группа обновляется: зеркало, которое ответило, или
+        // домен, названный панелью. Названный домен сначала проверяется запросом: опечатка в
+        // заголовке иначе отрезала бы от подписки всех разом.
+        void keepSubscriptionAddress(const std::shared_ptr<Configs::Group> &group, const QString &answered,
+                                     const QString &policyJson, const RequestIdentity &identity);
         [[nodiscard]] qint64 autoUpdateDue(const Configs::Group &group, qint64 interval) const;
 
         // UI thread only: in-memory, so a restart retries a failing group once.

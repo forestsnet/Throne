@@ -195,6 +195,9 @@ void FsntWindow::observeEngine() {
         refreshConnectionState();
         onSubscriptionUpdated();
     });
+    connect(events, &Engine::EngineEvents::subscriptionMoved, this, [this](int gid, const QString &host) {
+        onSubscriptionMoved(gid, host);
+    });
     const auto refreshBoth = [this] {
         refreshServerList();
         refreshConnectionState();
@@ -498,6 +501,22 @@ void FsntWindow::onConnectionChanged(bool connected, const QString &server) {
                              : (connected ? tr("Traffic goes through the tunnel.")
                                           : tr("Traffic goes directly again."));
     announce(Fsnt::NotifyKind::Connection, title, body, QString(), [self] {
+                 if (self.isNull()) return;
+                 self->show();
+                 self->raise();
+                 self->activateWindow();
+             });
+}
+
+// Адрес подписки сменился сам: провайдер назвал новый домен или ответило
+// зеркало. Говорим об этом один раз — переезд случается один раз.
+void FsntWindow::onSubscriptionMoved(int gid, const QString &host) {
+    const auto group = Configs::dataManager->groupsRepo->GetGroup(gid);
+    const QString name = group != nullptr && !group->name.isEmpty() ? group->name : tr("The subscription");
+    QPointer<FsntWindow> self = this;
+    announce(Fsnt::NotifyKind::Subscription, tr("Subscription address updated"),
+             tr("%1 is updated from %2 from now on.").arg(name, host),
+             tr("Subscription address updated: %1").arg(host), [self] {
                  if (self.isNull()) return;
                  self->show();
                  self->raise();

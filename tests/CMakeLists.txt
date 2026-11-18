@@ -174,3 +174,12 @@ target_link_libraries(WheelGuardTest PRIVATE Qt6::Test Qt6::Widgets)
 
 add_test(NAME WheelGuardTest COMMAND WheelGuardTest)
 set_tests_properties(WheelGuardTest PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+
+qt_add_executable(SubscriptionHostTest
+        SubscriptionHostTest.cpp
+        ../src/configs/sub/SubscriptionHost.cpp
+)
+target_include_directories(SubscriptionHostTest PRIVATE ${CMAKE_SOURCE_DIR})
+target_link_libraries(SubscriptionHostTest PRIVATE Qt6::Test)
+
+add_test(NAME SubscriptionHostTest COMMAND SubscriptionHostTest)

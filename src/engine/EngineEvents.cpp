@@ -32,6 +32,10 @@ namespace Engine {
         emit instance()->subscriptionDiff(title, body);
     }
 
+    void EngineEvents::SubscriptionMoved(int groupId, const QString &host) {
+        emit instance()->subscriptionMoved(groupId, host);
+    }
+
     void EngineEvents::RoutingRestartNeeded() {
         emit instance()->routingRestartNeeded();
     }

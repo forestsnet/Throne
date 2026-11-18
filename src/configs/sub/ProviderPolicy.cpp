@@ -47,6 +47,7 @@ namespace Subscription {
             && refillDate == 0 && updateIntervalHours == 0
             && !tunEnable && !alwaysHwid && !autoUpdate && !dnsFromJson
             && !hideSettings && !hideUrl && !pin && !collapse && !pingOnOpen
+            && subDomain.isEmpty() && subMirrors.isEmpty()
             && perAppProxyList.isEmpty() && perAppBypassList.isEmpty() && unknown.isEmpty();
     }
 
@@ -108,6 +109,8 @@ namespace Subscription {
             if (name == "support-url")                          { p.supportUrl = value; continue; }
             if (name == "profile-web-page-url")                 { p.webPageUrl = value; continue; }
             if (name == "providerid")                           { p.providerId = value; continue; }
+            if (name == "x-fsnt-sub-domain")                    { p.subDomain = value; continue; }
+            if (name == "x-fsnt-sub-mirrors")                   { p.subMirrors = value; continue; }
             if (name == "per-app-proxy-list")                   { p.perAppProxyList = value; continue; }
             if (name == "per-app-bypass-list")                  { p.perAppBypassList = value; continue; }
 
@@ -150,6 +153,8 @@ namespace Subscription {
         if (!policy.providerId.isEmpty())      o["providerId"] = policy.providerId;
         if (policy.refillDate != 0)            o["refillDate"] = policy.refillDate;
         if (policy.updateIntervalHours != 0)   o["updateIntervalHours"] = policy.updateIntervalHours;
+        if (!policy.subDomain.isEmpty())       o["subDomain"] = policy.subDomain;
+        if (!policy.subMirrors.isEmpty())      o["subMirrors"] = policy.subMirrors;
         if (!policy.perAppProxyList.isEmpty()) o["perAppProxyList"] = policy.perAppProxyList;
         if (!policy.perAppBypassList.isEmpty()) o["perAppBypassList"] = policy.perAppBypassList;
 
@@ -184,6 +189,8 @@ namespace Subscription {
         p.providerId          = o.value("providerId").toString();
         p.refillDate          = o.value("refillDate").toVariant().toLongLong();
         p.updateIntervalHours = o.value("updateIntervalHours").toInt(0);
+        p.subDomain           = o.value("subDomain").toString();
+        p.subMirrors          = o.value("subMirrors").toString();
         p.perAppProxyList     = o.value("perAppProxyList").toString();
         p.perAppBypassList    = o.value("perAppBypassList").toString();
 

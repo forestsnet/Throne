@@ -1,5 +1,7 @@
 #include "include/configs/sub/GroupUpdater.hpp"
+
 #include "include/configs/sub/ProviderPolicy.hpp"
+#include "include/configs/sub/SubscriptionHost.hpp"
 
 #include "include/configs/generate.h"
 #include "include/configs/sub/ImportReport.hpp"
@@ -1013,14 +1015,21 @@ namespace Subscription {
         QString error;
         QString policyJson;
         QString routing;
-        if (!fetch(url, group->name, ResolveIdentity(group.get()), body, subInfo, &error, &policyJson, &routing)) {
-            auto outcome = groupUpdaterFailure(gid, UpdateOutcome::Failure::Fetch, groupUpdaterFetchError(error));
-            outcome.report.addFatal(fetchFailure(error));
-            if (surface == Surface::Report) {
-                outcome.report.addFatal(QCoreApplication::translate("Validation", "The group %1 was created, but its first download failed. Update it to try again. If the download keeps failing, try another TLS version, HTTP version or User Agent in the group's Advanced settings.").arg(group->name));
+        const auto identity = ResolveIdentity(group.get());
+        QString answered = url;
+        if (!fetch(url, group->name, identity, body, subInfo, &error, &policyJson, &routing)) {
+            // The address itself may be what is blocked, so the mirrors the provider named
+            // while it was still reachable are tried before the group is called unreachable.
+            answered = fetchFromMirrors(*group, url, identity, body, subInfo, policyJson, routing);
+            if (answered.isEmpty()) {
+                auto outcome = groupUpdaterFailure(gid, UpdateOutcome::Failure::Fetch, groupUpdaterFetchError(error));
+                outcome.report.addFatal(fetchFailure(error));
+                if (surface == Surface::Report) {
+                    outcome.report.addFatal(QCoreApplication::translate("Validation", "The group %1 was created, but its first download failed. Update it to try again. If the download keeps failing, try another TLS version, HTTP version or User Agent in the group's Advanced settings.").arg(group->name));
+                }
+                if (surface != Surface::Log) ShowImportReport(reportTitle(surface, group->name), outcome.report);
+                return outcome;
             }
-            if (surface != Surface::Log) ShowImportReport(reportTitle(surface, group->name), outcome.report);
-            return outcome;
         }
         const bool importRoute = group->import_sub_route;
         // "off" means the header carries nothing; the link may then sit in the body instead.
@@ -1030,8 +1039,64 @@ namespace Subscription {
         UpdateOutcome outcome;
         outcome.gid = gid;
         applyRefresh(group, url, std::move(body), subInfo, policyJson, surface, outcome);
+        // Only after the import: an address is worth keeping once something came from it.
+        if (outcome.ok()) keepSubscriptionAddress(group, answered, policyJson, identity);
         if (importRoute && outcome.ok()) RouteUpdate::ImportSubscriptionRoute(gid, routing);
         return outcome;
+    }
+
+    QString GroupUpdater::fetchFromMirrors(const Configs::Group &group, const QString &url,
+                                           const RequestIdentity &identity, QByteArray &body,
+                                           Configs::SubUserInfo &subInfo, QString &policyJson, QString &routing) {
+        const auto stored = Subscription::DeserializeProviderPolicy(group.provider_policy_json);
+        for (const QString &candidate : Subscription::MirrorCandidates(url, stored.subMirrors)) {
+            MW_show_log(QObject::tr("%1 did not answer at %2, trying the mirror %3.")
+                            .arg(group.name, Subscription::SubscriptionHost(url),
+                                 Subscription::SubscriptionHost(candidate)));
+            // Fresh locals per attempt: a failed one leaves its half-read headers behind.
+            QByteArray mirrorBody;
+            Configs::SubUserInfo mirrorInfo;
+            QString mirrorPolicy;
+            QString mirrorRouting;
+            if (!fetch(candidate, group.name, identity, mirrorBody, mirrorInfo, nullptr, &mirrorPolicy,
+                       &mirrorRouting)) {
+                continue;
+            }
+            body = std::move(mirrorBody);
+            subInfo = mirrorInfo;
+            policyJson = mirrorPolicy;
+            routing = mirrorRouting;
+            return candidate;
+        }
+        return {};
+    }
+
+    void GroupUpdater::keepSubscriptionAddress(const std::shared_ptr<Configs::Group> &group, const QString &answered,
+                                               const QString &policyJson, const RequestIdentity &identity) {
+        const QString current = group->url.trimmed();
+        // A mirror needs no checking: the profiles that were just imported came from it.
+        QString moved = (!answered.isEmpty() && answered != current) ? answered : QString();
+
+        const auto policy = Subscription::DeserializeProviderPolicy(policyJson);
+        const QString named = Subscription::SwapSubscriptionHost(moved.isEmpty() ? current : moved, policy.subDomain);
+        if (!named.isEmpty()) {
+            QByteArray probeBody;
+            Configs::SubUserInfo probeInfo;
+            ImportReport probeReport;
+            if (fetch(named, group->name, identity, probeBody, probeInfo) && yieldsProfile(probeBody, probeReport)) {
+                moved = named;
+            } else {
+                MW_show_log(QObject::tr("%1 was moved to %2, but nothing came from there: the address was left as it was.")
+                                .arg(group->name, Subscription::SubscriptionHost(named)));
+            }
+        }
+
+        if (moved.isEmpty() || moved == current) return;
+        group->url = moved;
+        Configs::dataManager->groupsRepo->Save(group);
+        const QString host = Subscription::SubscriptionHost(moved);
+        MW_show_log(QObject::tr("The subscription %1 is updated from %2 from now on.").arg(group->name, host));
+        Engine::EngineEvents::SubscriptionMoved(group->id, host);
     }
 
     void GroupUpdater::applyRefresh(const std::shared_ptr<Configs::Group> &group, const QString &url, QByteArray body,

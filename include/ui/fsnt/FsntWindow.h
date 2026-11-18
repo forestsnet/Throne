@@ -93,6 +93,7 @@ private:
                   const QString &inWindow, const std::function<void()> &onActivated = {});
     void onConnectionChanged(bool connected, const QString &server);
     void onSubscriptionUpdated();
+    void onSubscriptionMoved(int gid, const QString &host);
     void onUpdateFound(const QString &tag, const QString &notes);
     void maybeAskAboutAutoUpdate();
     void showUpdateCard();

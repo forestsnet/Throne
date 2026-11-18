@@ -1,3 +1,10 @@
+#### 1.4.16
+
+* Let a provider move its subscription to another domain, and name the hosts to fall back to **1**
+
+**1**:
+A blocked domain is the usual way a subscription stops working, and the way out of it was the user retyping an address or writing to support. The panel already configures the client through the headers of its answer, so the address now travels the same way. `x-fsnt-sub-domain` names the host the subscription lives on from now on, and only the host changes: the path and the query carry the subscriber's token, and the port follows only when the header names one. The new address is fetched once and has to answer with servers before it is stored, so a typo in a panel's configuration cannot cut every client off at once. That covers a planned move, where the header still arrives from the old domain. `x-fsnt-sub-mirrors` covers the other case: the list is stored while the subscription is still reachable and comes into play only when the current address does not answer at all, and the mirror that answered becomes the address the group updates from. Both are honoured on https alone, because on plain HTTP anyone on the path can write them and a move is permanent, and both take a bare host or `host:port` and refuse anything carrying a scheme, a path, a query or credentials. The client says once that the address has changed.
+
 #### 1.4.15
 
 * Give the first request of a latency test room for the connection it sets up **1**

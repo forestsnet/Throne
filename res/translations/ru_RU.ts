@@ -9470,6 +9470,22 @@ You can change this later in settings.</source>
         <source>Open the config folder</source>
         <translation>Открыть папку конфигурации</translation>
     </message>
+    <message>
+        <source>The subscription</source>
+        <translation>Подписка</translation>
+    </message>
+    <message>
+        <source>Subscription address updated</source>
+        <translation>Адрес подписки обновлён</translation>
+    </message>
+    <message>
+        <source>%1 is updated from %2 from now on.</source>
+        <translation>%1 теперь обновляется с адреса %2.</translation>
+    </message>
+    <message>
+        <source>Subscription address updated: %1</source>
+        <translation>Адрес подписки обновлён: %1</translation>
+    </message>
     <message numerus="yes">
         <source>%n server(s) available.</source>
         <translation>
@@ -11860,6 +11876,18 @@ How to update?</source>
     <message>
         <source>Process complete, applying...</source>
         <translation>Процесс завершён, применение...</translation>
+    </message>
+    <message>
+        <source>%1 did not answer at %2, trying the mirror %3.</source>
+        <translation>%1 не ответила по адресу %2, пробуем зеркало %3.</translation>
+    </message>
+    <message>
+        <source>%1 was moved to %2, but nothing came from there: the address was left as it was.</source>
+        <translation>%1 перенесена на %2, но оттуда ничего не пришло — адрес оставлен прежним.</translation>
+    </message>
+    <message>
+        <source>The subscription %1 is updated from %2 from now on.</source>
+        <translation>Подписка %1 теперь обновляется с адреса %2.</translation>
     </message>
     <message>
         <source>The URL of %1 changed during the update, so the result was discarded.</source>

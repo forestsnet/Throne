@@ -34,6 +34,12 @@ namespace Subscription {
         std::optional<bool> collapse;     // subscriptions-collapse
         std::optional<bool> pingOnOpen;   // subscription-ping-onopen-enabled
 
+        // Адрес самой подписки. subDomain переносит её на новый домен, subMirrors
+        // хранит запасные на случай, когда текущий перестал отвечать. Разбор и
+        // проверки — в SubscriptionHost.hpp: здесь лежит присланное как есть.
+        QString subDomain;                // x-fsnt-sub-domain
+        QString subMirrors;               // x-fsnt-sub-mirrors
+
         // Списки приложений от провайдера. per-app-proxy-list — что вести через
         // туннель, per-app-bypass-list — что пускать мимо: провайдеры так
         // отсекают торренты, которые им запрещено пропускать.

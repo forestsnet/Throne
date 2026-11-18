@@ -179,6 +179,23 @@ private slots:
         QVERIFY(!PolicyBlocksDeletion(7));
     }
 
+    // Адрес подписки приезжает тем же путём, что и всё остальное, и доезжает до
+    // базы внутри политики: отдельного столбца у зеркал нет.
+    void subscriptionAddressHeadersParsedAndKept() {
+        const auto parsed = ParseProviderPolicy(H({
+            {"x-fsnt-sub-domain", "sub2.example.com"},
+            {"x-fsnt-sub-mirrors", "base64:bTEuZXhhbXBsZS5jb20sIG0yLmV4YW1wbGUuY29t"},
+        }));
+        QCOMPARE(parsed.subDomain, QStringLiteral("sub2.example.com"));
+        QCOMPARE(parsed.subMirrors, QStringLiteral("m1.example.com, m2.example.com"));
+        QVERIFY(!parsed.isEmpty());
+        QVERIFY(parsed.unknown.isEmpty());
+
+        const auto restored = DeserializeProviderPolicy(SerializeProviderPolicy(parsed));
+        QCOMPARE(restored.subDomain, parsed.subDomain);
+        QCOMPARE(restored.subMirrors, parsed.subMirrors);
+    }
+
     void roundTripPreservesEverything() {
         const auto original = ParseProviderPolicy(H({
             {"profile-title", "base64:VmxleFZQTiB8IERFVg=="},

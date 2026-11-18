@@ -17,6 +17,7 @@ namespace Engine {
         static void SubscriptionFinished(int importedCount, bool quiet);
         static void SubscriptionGroupChanged(int groupId, const QList<int> &disturbedProfileIds);
         static void SubscriptionDiff(const QString &title, const QString &body);
+        static void SubscriptionMoved(int groupId, const QString &host);
         static void RoutingRestartNeeded();
         static void GroupOrderChanged(const QList<int> &groupIds);
         static void ExtraCoreExited();
@@ -32,6 +33,8 @@ namespace Engine {
         void subscriptionFinished(int importedCount, bool quiet);
         void subscriptionGroupChanged(int groupId, const QList<int> &disturbedProfileIds);
         void subscriptionDiff(const QString &title, const QString &body);
+        // The group now updates from another host: the provider moved it, or a mirror answered for it.
+        void subscriptionMoved(int groupId, const QString &host);
         // A refresh deleted the running profile; profileId is its only same-name successor in the group.
         // The routing profile the running config uses changed underneath it.
         void routingRestartNeeded();

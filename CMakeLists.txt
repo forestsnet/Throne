@@ -179,6 +179,8 @@ set(PROJECT_SOURCES
         include/configs/sub/ProfileSuccessor.hpp
         src/configs/sub/ProfileSuccessor.cpp
         src/configs/sub/ProviderPolicy.cpp
+        include/configs/sub/SubscriptionHost.hpp
+        src/configs/sub/SubscriptionHost.cpp
         src/configs/sub/SubscriptionUsage.cpp
         include/configs/sub/SubscriptionScan.hpp
         include/configs/sub/SubscriptionParser.hpp
