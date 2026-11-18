@@ -24,7 +24,16 @@ type Box interface {
 const FetchServersTimeout = 8 * time.Second
 const MaxConcurrentTests = 100
 
-const TunnelStartupTimeout = 5 * time.Second
+// What a cold probe is given on top of the per-request timeout. The first
+// request pays for the whole setup before its own first byte: the node's name
+// resolved, TCP, the proxy's handshake (REALITY alone is a round trip of its
+// own), then TLS with the test target and the GET -- five to seven round trips,
+// none of which the warm request pays, because it rides a connection that
+// already exists. Holding both to the same budget declares a working node dead
+// as soon as the user is far from it: at 200 ms of latency the setup alone eats
+// more than three seconds. The reported figure comes from the second request,
+// so widening the first costs no accuracy.
+const ColdStartAllowance = 7 * time.Second
 
 // Bounds the wait for a tunnel that refuses dials until its handshake completes.
 const TunnelHandshakeTimeout = 10 * time.Second
@@ -346,17 +355,13 @@ func awaitTunnels(ctx context.Context, i Box, tag string) error {
 	return nil
 }
 
-func firstRequestTimeout(i Box, tag string, cold bool, timeout time.Duration) time.Duration {
+// The allowance is flat: a tunnel still coming up in the first dial was the
+// case this used to cover, and it is not the only one that pays for a setup.
+func firstRequestTimeout(cold bool, timeout time.Duration) time.Duration {
 	if !cold {
 		return timeout
 	}
-	for _, endpoint := range tunnelEndpoints(i, tag) {
-		// An awaited tunnel is already up; only the others can still be holding the first dial.
-		if handshakeOf(endpoint) == nil {
-			return timeout + TunnelStartupTimeout
-		}
-	}
-	return timeout
+	return timeout + ColdStartAllowance
 }
 
 func getNetDialer(dialer func(ctx context.Context, network string, destination metadata.Socksaddr) (net.Conn, error)) func(ctx context.Context, network string, address string) (net.Conn, error) {

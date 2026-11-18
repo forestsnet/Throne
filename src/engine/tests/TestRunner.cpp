@@ -49,9 +49,9 @@ namespace Engine {
             return ent != nullptr && (ent->type == "openvpn" || ent->type == "openconnect");
         }
 
-        // Mirror the core's URLTestTimeout, TunnelStartupTimeout, TunnelHandshakeTimeout and normalizeConcurrency.
+        // Mirror the core's URLTestTimeout, ColdStartAllowance, TunnelHandshakeTimeout and normalizeConcurrency.
         constexpr int kTestRunnerCoreDefaultTimeoutMs = 3000;
-        constexpr int kTestRunnerTunnelStartupMs = 5000;
+        constexpr int kTestRunnerColdStartAllowanceMs = 7000;
         constexpr int kTestRunnerTunnelHandshakeMs = 10000;
         constexpr int kTestRunnerCoreMaxConcurrency = 100;
         constexpr int kTestRunnerRpcSlackMs = 30000;
@@ -63,7 +63,7 @@ namespace Engine {
             if (concurrency <= 0 || concurrency >= 500) concurrency = kTestRunnerCoreMaxConcurrency;
             const qint64 timeoutMs = settings->url_test_timeout_ms > 0 ? settings->url_test_timeout_ms : kTestRunnerCoreDefaultTimeoutMs;
             const qint64 rounds = (qMax<qsizetype>(tagCount, 1) + concurrency - 1) / concurrency;
-            const qint64 total = rounds * (kTestRunnerTunnelHandshakeMs + requestsPerTag * timeoutMs + kTestRunnerTunnelStartupMs) + kTestRunnerRpcSlackMs;
+            const qint64 total = rounds * (kTestRunnerTunnelHandshakeMs + requestsPerTag * timeoutMs + kTestRunnerColdStartAllowanceMs) + kTestRunnerRpcSlackMs;
             return static_cast<int>(qMin<qint64>(total, std::numeric_limits<int>::max()));
         }
 

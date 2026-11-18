@@ -24,9 +24,9 @@ namespace Scanner {
         constexpr int kScanWorkerPollIntervalMs = 250;
         constexpr int kScanWorkerCountTimeoutMs = 60000;
         constexpr int kScanWorkerNetworkCheckTimeoutMs = 3000;
-        // Mirror the core's TunnelHandshakeTimeout, TunnelStartupTimeout and normalizeConcurrency.
+        // Mirror the core's TunnelHandshakeTimeout, ColdStartAllowance and normalizeConcurrency.
         constexpr qint64 kScanWorkerTunnelHandshakeMs = 10000;
-        constexpr qint64 kScanWorkerTunnelStartupMs = 5000;
+        constexpr qint64 kScanWorkerColdStartAllowanceMs = 7000;
         constexpr int kScanWorkerCoreMaxConcurrency = 100;
         // Targets left without any port.
         constexpr int kScanWorkerFallbackPort = 443;
@@ -175,7 +175,7 @@ namespace Scanner {
             const qint64 requests = test.warmLatency ? 2 : 1;
             const qint64 rounds = (std::max<qsizetype>(tagCount, 1) + concurrency - 1) / concurrency;
             return scanWorkerClampTimeout(
-                rounds * (kScanWorkerTunnelHandshakeMs + requests * test.timeoutMs + kScanWorkerTunnelStartupMs) +
+                rounds * (kScanWorkerTunnelHandshakeMs + requests * test.timeoutMs + kScanWorkerColdStartAllowanceMs) +
                 kScanWorkerRpcSlackMs);
         }
     } // namespace

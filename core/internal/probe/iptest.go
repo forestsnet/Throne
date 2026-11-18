@@ -38,7 +38,7 @@ func BatchIPTest(ctx context.Context, i Box, outboundTags []string, maxConcurren
 			}
 			client, closeClient := outboundHTTPClient(ctx, i, tag, outbound)
 			defer closeClient()
-			info, err := ipTest(ctx, client, firstRequestTimeout(i, tag, cold, timeout))
+			info, err := ipTest(ctx, client, firstRequestTimeout(cold, timeout))
 			return &IPTestResult{Result: info, Tag: tag, Error: err}
 		},
 		fail: func(tag string, err error) *IPTestResult {
