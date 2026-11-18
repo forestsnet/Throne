@@ -1,3 +1,14 @@
+#### 1.4.18
+
+* Come back from an update the way the client was left, not in front of everything **1**
+* Say once that an update installed itself **2**
+
+**1**:
+The client installs updates by itself, and it came back by putting its window in front of whatever the person was doing. An update that starts in the tray, with the window closed, has no reason to open it. The updater cannot be told otherwise: the copy that performs the install is the one the previous version shipped, so an argument added today would only start working one update later, and on Linux the updater is a third-party program. The client therefore writes down how it was being held before it leaves. A window closed to the tray comes back to the tray, a minimized window comes back minimized, and an open window opens as it did. The note is cleared by the start that reads it, so it describes one restart rather than every later one. In the simple interface the minimized state belongs to the face alone, because the engineering window is hidden right after it is built and a minimized window is one macOS keeps in the Dock anyway.
+
+**2**:
+An update installed in the tray said nothing at all. The client announced that it was about to restart, came back silently, and whether the new version was the one now running could be seen only in the log. It says so once now, as a line in the window while the person is in it and as a system notification when the window is not there, and only when the version the update was aiming at is the one that started. The question about installing updates by itself, which is asked once per version and waits for an active window, was calling itself back every twenty seconds for a window that was never going to appear, so with the setting already on it asks nothing and just records the version it came back as.
+
 #### 1.4.17
 
 * Read a header sent twice as its last value, the way the provider policy already did **1**

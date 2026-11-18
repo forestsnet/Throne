@@ -613,6 +613,21 @@ bool MainWindow::PrepareUpdateEnvironment() {
     return true;
 }
 
+namespace {
+
+// В каком виде человек держит клиент прямо сейчас. В простом режиме лицом
+// работает FsntWindow, а инженерное окно спрятано всегда — смотреть надо на то,
+// что человек видел.
+Configs::UpdateReturn windowReturnState(QWidget *engineWindow) {
+    QWidget *face = GetFacadeWindow();
+    if (face == nullptr) face = engineWindow;
+    if (face == nullptr || face->isHidden()) return Configs::UpdateReturn::Tray;
+    if (face->isMinimized()) return Configs::UpdateReturn::Minimized;
+    return Configs::UpdateReturn::Window;
+}
+
+} // namespace
+
 void MainWindow::InstallUpdateAndRestart(const QString &version) {
     MW_show_log("[Update] Starting update installation...");
 
@@ -670,8 +685,12 @@ void MainWindow::InstallUpdateAndRestart(const QString &version) {
         settings->remember_tun = settings->spmode_vpn;
         settings->remember_system_proxy = settings->spmode_system_proxy;
         settings->resume_after_update = true;
-        settings->Save();
     }
+
+    // Возвращаемся туда, где человек оставил клиент: окна поверх чужой работы
+    // он не просил, а кнопку, пропавшую из панели задач, искать не должен.
+    settings->update_restart_state = static_cast<int>(windowReturnState(this));
+    settings->Save();
 
     this->exit_reason = ExitReason::RunUpdater;
     MW_show_log("[Update] Closing application to start updater...");
@@ -695,6 +714,16 @@ void MainWindow::ReportPreviousUpdate() {
     const QString wantedDigits = QString(wanted).remove(QRegularExpression("[^0-9.]"));
     if (wantedDigits.isEmpty() || wantedDigits == QString(NKR_VERSION)) {
         MW_show_log("[Update] Updated to " + QString(NKR_VERSION));
+        // Человек затевал обновление не глядя и не знает, что оно доехало.
+        // Лицо скажет само: строкой в окне, пока оно перед ним, и системным
+        // уведомлением, когда клиент вернулся в трей. Метка без цифр молчит:
+        // по ней не видно, встала новая версия или осталась прежняя.
+        if (!wantedDigits.isEmpty()) {
+            if (auto *facade = GetFacadeWindow(); facade != nullptr) {
+                QMetaObject::invokeMethod(facade, "announceUpdateInstalled", Qt::QueuedConnection,
+                                          Q_ARG(QString, QString(NKR_VERSION)));
+            }
+        }
         return;
     }
 

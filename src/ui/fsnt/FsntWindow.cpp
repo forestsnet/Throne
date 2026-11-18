@@ -92,14 +92,21 @@ FsntWindow::FsntWindow(QWidget *parent) : QMainWindow(parent) {
     applyTheme();
     connect(themeManager(), &ThemeManager::themeChanged, this, [this] { applyTheme(); });
 
-    // Как и MainWindow: при запуске в трей окно не показываем.
-    if (!Configs::dataManager->settingsRepo->flag_tray) show();
+    // Как и MainWindow: при запуске в трей окно не показываем. Свёрнутым оно
+    // уходило на обновление — свёрнутым и возвращается.
+    const auto &settings = Configs::dataManager->settingsRepo;
+    const bool returnMinimized =
+        settings->flag_update_return == static_cast<int>(Configs::UpdateReturn::Minimized);
+    if (!settings->flag_tray) {
+        if (returnMinimized) showMinimized();
+        else show();
+    }
 
     // Экскурсию запускаем после первого прохода цикла событий: до него у
     // виджетов ещё нет окончательной геометрии, а подсвечивать надо по ней.
     // Если она всё же окажется неточной, оверлей пересчитает вырез сам по
     // событию Resize.
-    if (!Configs::dataManager->settingsRepo->flag_tray && shouldRunTour()) {
+    if (!settings->flag_tray && !returnMinimized && shouldRunTour()) {
         QTimer::singleShot(0, this, [this] { runTour(); });
     }
 }
@@ -439,6 +446,15 @@ void FsntWindow::maybeAskAboutAutoUpdate() {
     const QString current = QStringLiteral(NKR_VERSION);
     if (current.isEmpty() || settings->last_run_version == current) return;
 
+    // Уже разрешено — спрашивать не о чем, и ждать для этого окна не нужно:
+    // после тихого обновления в трее оно может не появиться вовсе, а проверка
+    // ниже звонила бы себе каждые двадцать секунд до конца дня.
+    if (settings->auto_update) {
+        settings->last_run_version = current;
+        settings->Save();
+        return;
+    }
+
     // Пока идёт экскурсия по окну, лезть со своим вопросом некуда: человек
     // читает подсказку, а сверху падает модальное окно. Подождём и спросим,
     // когда он закончит.
@@ -453,8 +469,6 @@ void FsntWindow::maybeAskAboutAutoUpdate() {
     const bool first = settings->last_run_version.isEmpty();
     settings->last_run_version = current;
     settings->Save();
-
-    if (settings->auto_update) return;   // уже разрешено, спрашивать не о чем
 
     const bool agreed = Fsnt::Confirm(
         this, tr("Update by itself?"),
@@ -584,6 +598,18 @@ void FsntWindow::onUpdateFound(const QString &tag, const QString &notes) {
                  self->raise();
                  self->activateWindow();
                  self->showUpdateCard();
+             });
+}
+
+void FsntWindow::announceUpdateInstalled(const QString &version) {
+    QPointer<FsntWindow> self = this;
+    announce(Fsnt::NotifyKind::Update, tr("Updated to %1").arg(version),
+             tr("The client installed the update by itself and is running again."),
+             tr("Updated to %1").arg(version), [self] {
+                 if (self.isNull()) return;
+                 self->show();
+                 self->raise();
+                 self->activateWindow();
              });
 }
 

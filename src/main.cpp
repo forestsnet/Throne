@@ -218,6 +218,18 @@ int main(int argc, char* argv[]) {
 
     if (Configs::dataManager->settingsRepo->start_minimal) Configs::dataManager->settingsRepo->flag_tray = true;
 
+    // Перезапуск после обновления возвращает окно туда, где человек его
+    // оставил: спрятанное — в трей, свёрнутое — свёрнутым. Метку гасим сразу:
+    // она описывает один перезапуск, а не все следующие.
+    if (const auto &settings = Configs::dataManager->settingsRepo; settings->update_restart_state != 0) {
+        settings->flag_update_return = settings->update_restart_state;
+        settings->update_restart_state = static_cast<int>(Configs::UpdateReturn::None);
+        settings->Save();
+        if (settings->flag_update_return == static_cast<int>(Configs::UpdateReturn::Tray)) {
+            settings->flag_tray = true;
+        }
+    }
+
     GuiStartup::LoadTranslator();
 
 #ifdef Q_OS_WIN

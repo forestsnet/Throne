@@ -120,6 +120,7 @@ namespace Configs {
             {"mux_brutal_down_mbps",   &mux_brutal_down_mbps},
             {"test_concurrent",        &test_concurrent},
             {"remember_id",            &remember_id},
+            {"update_restart_state",   &update_restart_state},
             {"retired_profile_id",     &retired_profile_id},
             {"language",               &language},
             {"ui_mode",                &ui_mode},

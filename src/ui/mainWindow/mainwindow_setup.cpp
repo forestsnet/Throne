@@ -1204,7 +1204,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         refreshScannerDataView(true);
     }, Qt::QueuedConnection);
 
-    if (!Configs::dataManager->settingsRepo->flag_tray) show();
+    if (!Configs::dataManager->settingsRepo->flag_tray) {
+        // Свёрнутым окно уходило на обновление — свёрнутым и возвращается.
+        // Только в своём режиме: в простом лицом работает FsntWindow, а это
+        // окно прячут сразу после создания, и свёрнутое macOS из Dock уже не
+        // убирает — рядом с лицом осталась бы вторая, мёртвая иконка.
+        const auto &settings = Configs::dataManager->settingsRepo;
+        const bool simple = settings->ui_mode == static_cast<int>(Fsnt::UiMode::Simple);
+        if (!simple && settings->flag_update_return == static_cast<int>(Configs::UpdateReturn::Minimized)) {
+            showMinimized();
+        } else {
+            show();
+        }
+    }
     else if (tray->isVisible()) HideWindow(this);
 
     ui->data_view->setStyleSheet("background: transparent; border: none;");

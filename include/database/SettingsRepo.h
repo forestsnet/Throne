@@ -20,6 +20,10 @@ namespace Configs {
                 "fc00::/7", "fe80::/10", "ff00::/8"};
     }
 
+    // Куда вернуть окно после перезапуска на обновление: человек оставил
+    // клиент в каком-то виде, и обновление не повод этот вид менять.
+    enum class UpdateReturn { None = 0, Window = 1, Minimized = 2, Tray = 3 };
+
     class SettingsRepo {
     private:
         Database& db;
@@ -62,6 +66,10 @@ namespace Configs {
         bool flag_use_appdata = false;
         bool flag_many = false;
         bool flag_tray = false;
+        // Этот запуск — возвращение после обновления: значение UpdateReturn,
+        // снятое с метки в настройках. Саму метку гасит старт, иначе она
+        // описывала бы и все следующие запуски.
+        int flag_update_return = 0;
         bool flag_debug = false;
         bool flag_restart_tun_on = false;
 
@@ -90,6 +98,10 @@ namespace Configs {
         // возвращаем и сервер, и режим, даже если «подключаться при запуске»
         // выключено. Человек не просил его отключать — он просил обновиться.
         bool resume_after_update = false;
+        // Окно уходило на обновление спрятанным, свёрнутым или открытым:
+        // значение UpdateReturn. Клиент возвращается в том же виде — окна
+        // поверх чужой работы человек не просил.
+        int update_restart_state = 0;
         // Ставить новые версии самому, без вопросов. Спрашиваем об этом один
         // раз — при первом запуске новой версии.
         bool auto_update = false;

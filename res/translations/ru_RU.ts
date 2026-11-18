@@ -9495,6 +9495,14 @@ You can change this later in settings.</source>
         </translation>
     </message>
     <message>
+        <source>Updated to %1</source>
+        <translation>Обновлено до %1</translation>
+    </message>
+    <message>
+        <source>The client installed the update by itself and is running again.</source>
+        <translation>Клиент поставил обновление сам и снова работает.</translation>
+    </message>
+    <message>
         <source>The tunnel is up, but no traffic goes through it. Usually another program on this computer intercepts network packets: an antivirus, a DPI-bypass tool or what another VPN left behind. Try switching the connection mode to system proxy in the settings, or turn those programs off one by one.</source>
         <translation>Туннель поднят, но трафик через него не идёт. Обычно пакеты перехватывает другая программа на этом компьютере: антивирус, обходчик блокировок или остатки другого VPN. Попробуйте переключить режим подключения на системный прокси в настройках или по очереди выключить такие программы.</translation>
     </message>
