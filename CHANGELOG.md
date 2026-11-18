@@ -1,3 +1,18 @@
+#### 1.4.15
+
+* Give the first request of a latency test room for the connection it sets up **1**
+* Name the leg of a probe that did not finish, instead of a bare deadline **2**
+* Wait for a config's observatory before testing through the balancer that picks by it **3**
+
+**1**:
+A test makes two requests and reports the second one. The first pays for the whole setup before its own first byte: the node's name resolved, TCP, the proxy's handshake, which for REALITY is a round trip of its own, then TLS with the test target and the GET. The second rides the connection the first one left open and pays for none of that. Both were held to the same three seconds, and the allowance on top of them went only to a tunnel endpoint that was still coming up inside the first dial, so an ordinary VLESS node got none of it. At 200 ms to the server the setup alone eats more than the entire budget, which is why a node that answered a browser perfectly came out red for everyone far from it and looked fine to everyone near it. The first request now gets seven seconds of its own above the configured timeout. The figure that is reported still comes from the second request, so nothing about the measurement changed.
+
+**2**:
+"context deadline exceeded" names no stage. A node that never took the connection read exactly like a test target that answered slower than the budget allowed, and both came out as the same red server, with the difference visible nowhere except the log the user sends when he says the server works. How far the request got is now recorded through httptrace, which the transport drives itself over whatever dialer the outbound hands it, and the leg that stopped is named: the hop to the node, TLS with the test target, its answer, or a connection that was already open and went quiet mid-request. That last one is what a session cut from outside looks like, and until now it was indistinguishable from a node that was never reachable at all. The error underneath is kept whole.
+
+**3**:
+A full Xray config whose routing picks an outbound by leastPing routes nowhere until its observatory has rated a node. The strategy answers with an empty tag, the route resolves to nothing and the request fails at once, which is why no timeout ever helped here: nothing about it was slow. The plain observer probes its subjects one at a time and sleeps ten seconds between them by default, so the first rating arrives long after the test has given up, and a provider's balancing profile came out dead with every node in it working. The test now waits for that first rating, up to twenty seconds, and only where there is an observatory to wait for, so a config without one costs nothing. The wait runs after the core is up, because the observatory's own probes resolve their names through it, and all configs wait at the same time, so the cost is the slowest of them rather than their sum. The timeout aborts nothing: a config whose nodes are all genuinely dead still has to come out of the test as dead.
+
 #### 1.4.14
 
 * Put the reading of a pasted config under test, where the names of its nodes come from **1**
