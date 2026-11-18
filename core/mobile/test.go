@@ -2,9 +2,11 @@ package mobile
 
 import (
 	"context"
+	stdlog "log"
 	"time"
 
 	"ThroneCore/internal/probe"
+	"ThroneCore/internal/xray"
 
 	box "github.com/sagernet/sing-box"
 	"github.com/sagernet/sing-box/adapter"
@@ -170,6 +172,14 @@ func prepareTestEnv(current *Instance, testCurrent bool, platform PlatformInterf
 	if err = boxInstance.Start(); err != nil {
 		unwind()
 		return nil, E.Cause(err, "start service")
+	}
+
+	// After the box, not before it: the observatory's own probes resolve names
+	// through it, and a config whose balancer picks by an observation routes
+	// nowhere until the first node is rated.
+	if pending := xray.AwaitObservations(probe.TestContext(), fullXray, xray.ObservationTimeout); len(pending) > 0 {
+		stdlog.Printf("xray full config %v: the observatory rated no node within %s, a balancer picking by it has nothing to choose",
+			pending, xray.ObservationTimeout)
 	}
 
 	outTags := request.tags

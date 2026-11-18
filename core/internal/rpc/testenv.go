@@ -90,6 +90,14 @@ func prepareTestEnv(current bool, needXray bool, xrayConfig string, xrayFullConf
 		box.CloseWithTimeout(cancel, 2*time.Second, log.Println, false)
 	})
 
+	// After the box, not before it: the observatory's own probes resolve names
+	// through it, and a config whose balancer picks by an observation routes
+	// nowhere until the first node is rated.
+	if pending := xray.AwaitObservations(probe.TestContext(), fullXray, xray.ObservationTimeout); len(pending) > 0 {
+		log.Printf("xray full config %v: the observatory rated no node within %s, a balancer picking by it has nothing to choose",
+			pending, xray.ObservationTimeout)
+	}
+
 	outTags := tags
 	if useDefaultOutbound {
 		outTags = []string{box.Outbound().Default().Tag()}

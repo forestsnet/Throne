@@ -49,10 +49,14 @@ namespace Engine {
             return ent != nullptr && (ent->type == "openvpn" || ent->type == "openconnect");
         }
 
-        // Mirror the core's URLTestTimeout, ColdStartAllowance, TunnelHandshakeTimeout and normalizeConcurrency.
+        // Mirror the core's URLTestTimeout, ColdStartAllowance, TunnelHandshakeTimeout,
+        // ObservationTimeout and normalizeConcurrency.
         constexpr int kTestRunnerCoreDefaultTimeoutMs = 3000;
         constexpr int kTestRunnerColdStartAllowanceMs = 7000;
         constexpr int kTestRunnerTunnelHandshakeMs = 10000;
+        // Paid once for the whole batch, not per round: the core waits for the observatories
+        // of every full Xray config at the same time, while it builds the environment.
+        constexpr int kTestRunnerObservationMs = 20000;
         constexpr int kTestRunnerCoreMaxConcurrency = 100;
         constexpr int kTestRunnerRpcSlackMs = 30000;
 
@@ -63,7 +67,8 @@ namespace Engine {
             if (concurrency <= 0 || concurrency >= 500) concurrency = kTestRunnerCoreMaxConcurrency;
             const qint64 timeoutMs = settings->url_test_timeout_ms > 0 ? settings->url_test_timeout_ms : kTestRunnerCoreDefaultTimeoutMs;
             const qint64 rounds = (qMax<qsizetype>(tagCount, 1) + concurrency - 1) / concurrency;
-            const qint64 total = rounds * (kTestRunnerTunnelHandshakeMs + requestsPerTag * timeoutMs + kTestRunnerColdStartAllowanceMs) + kTestRunnerRpcSlackMs;
+            const qint64 total = rounds * (kTestRunnerTunnelHandshakeMs + requestsPerTag * timeoutMs + kTestRunnerColdStartAllowanceMs)
+                                 + kTestRunnerObservationMs + kTestRunnerRpcSlackMs;
             return static_cast<int>(qMin<qint64>(total, std::numeric_limits<int>::max()));
         }
 
