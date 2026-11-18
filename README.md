@@ -123,7 +123,9 @@ A panel can configure the client through the headers of its subscription
 response. Everything below is what this fork actually reads, and the whole set
 is kept with the group it came from, so the next update does not have to repeat
 it. A header name's case does not matter, and any value may arrive as
-`base64:<payload>` when it carries non-ASCII text or commas.
+`base64:<payload>` when it carries non-ASCII text or commas. A header sent twice
+is read as its last value, so a proxy in front of a panel can override what the
+panel itself sends.
 
 ### What the panel can say
 
@@ -200,7 +202,9 @@ refused, and so is a single-label name such as `localhost`.
 
 The headers are a property of the response, so they are usually set in front of
 the panel rather than in it. `always` matters: without it nginx drops them from
-error responses, which is exactly when an announcement is worth reading.
+error responses, which is exactly when an announcement is worth reading. A
+header the panel already sends does not have to be hidden first, because the one
+added in front of it comes last and wins.
 
 ```nginx
 location /sub/ {

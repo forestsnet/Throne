@@ -1,3 +1,10 @@
+#### 1.4.17
+
+* Read a header sent twice as its last value, the way the provider policy already did **1**
+
+**1**:
+A subscription answer carries the same header twice as soon as anything sits in front of the panel: the panel sends its own, and the proxy appends another. The client read those by two different rules. The provider policy took the last value, so `hide-url`, `tun-enable`, the per-app lists and the address headers could be overridden from the front. The title, the announcement, the support link, the web page, the user info and the update interval went through a lookup that returned the first value instead, so there the panel always won and nothing in front of it could change what it said. There is one rule now, and it is the last value, because the end of the list is the only place anything in front of a panel can write. The metadata a panel can put in the first lines of the body is untouched, and a header still beats such a comment.
+
 #### 1.4.16
 
 * Let a provider move its subscription to another domain, and name the hosts to fall back to **1**

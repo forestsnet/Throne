@@ -144,12 +144,17 @@ namespace Configs_network {
         return result;
     }
 
+    // Один и тот же заголовок в ответе дважды — обычное дело: панель прислала
+    // своё, прокси перед ней дописал своё в конец. Берём последнее, как и
+    // ParseProviderPolicy: иначе настройку панели нечем было бы перебить, а
+    // снаружи доступен только конец списка.
     QString NetworkRequestHelper::GetHeader(const QList<QPair<QByteArray, QByteArray>> &header, const QString &name) {
         const QByteArray needle = name.toLatin1();
+        QString value;
         for (const auto &p: header) {
-            if (p.first.compare(needle, Qt::CaseInsensitive) == 0) return p.second;
+            if (p.first.compare(needle, Qt::CaseInsensitive) == 0) value = p.second;
         }
-        return {};
+        return value;
     }
 
     QString NetworkRequestHelper::DownloadAsset(const QString &url, const QString &fileName, bool useProxy, bool strictTls,

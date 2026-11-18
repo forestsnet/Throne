@@ -38,6 +38,22 @@ private slots:
         QNetworkProxy::setApplicationProxy(QNetworkProxy::NoProxy);
     }
 
+    // Панель и прокси перед ней шлют один заголовок каждый. Снаружи дописывают
+    // в конец, поэтому последнее значение и есть то, которым перебивают.
+    void headerLookupTakesTheLastOfDuplicates() {
+        const QList<QPair<QByteArray, QByteArray>> header = {
+            {"Server", "nginx"},
+            {"Profile-Title", "from the panel"},
+            {"profile-title", "from the proxy"},
+            {"Support-Url", "https://example.invalid/help"},
+        };
+        QCOMPARE(NetworkRequestHelper::GetHeader(header, "Profile-Title"), QStringLiteral("from the proxy"));
+        QCOMPARE(NetworkRequestHelper::GetHeader(header, "profile-TITLE"), QStringLiteral("from the proxy"));
+        QCOMPARE(NetworkRequestHelper::GetHeader(header, "Support-Url"),
+                 QStringLiteral("https://example.invalid/help"));
+        QVERIFY(NetworkRequestHelper::GetHeader(header, "Announce").isEmpty());
+    }
+
     void requestPolicy_data() {
         QTest::addColumn<bool>("systemProxy");
         QTest::addColumn<bool>("globalForce");
