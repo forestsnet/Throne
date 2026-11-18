@@ -3,6 +3,7 @@
 * Offer the iCloud Private Relay switch only on the system that can actually flip it **1**
 * Read the rest of the support report as UTF-8, whatever the console utility answers in **2**
 * Find the network drivers in the driver store by class, not by its translated name **3**
+* Wait for the core to come up, instead of refusing the first lookups of every start **4**
 
 **1**:
 The setting turned Apple's relay off for the network while the tunnel was up, and the text under it pointed at System Settings and warned that other Apple devices on the same network would be affected too. Both of those are macOS. The switch itself is a key in the SystemConfiguration preferences, and only macOS can write those, so on Windows the setting had no lever at all. What was left of it there was the refusal of the two relay names in DNS, and that alone does not bring down a relay that is already running, because the device keeps the addresses of its ingress nodes from the previous session and reaches them by IP. The setting is now offered only where it works, and it does nothing anywhere else even when an older profile carries it switched on.
@@ -12,6 +13,9 @@ The setting turned Apple's relay off for the network while the tunnel was up, an
 
 **3**:
 The driver store section came back empty from the very machine it was built for. The filter kept the records whose class value read "Net", on the assumption that pnputil translates the names of the fields but not that value, and on a Russian system it matched nothing at all. Records are now picked by the GUID of the network class, which is never translated. And when nothing matches, the beginning of what pnputil answered is kept: an empty store, a format that was not understood and a refusal for want of administrator rights all read the same in the report, and there was no way to tell which had happened.
+
+**4**:
+Xray starts before sing-box and asks for the address of its own server straight away, so a refusal in that moment is how the client works, not a fault. It refused instantly all the same: "sing-box instance is not up yet" while there was no instance, and then, once there was one, a refusal from the socket itself while the interface monitor had not yet found a network. Xray spent its retries on those refusals within milliseconds and gave up, and the system resolver went on repeating the same queries for a minute with nothing answering them. Measured on a customer's machine, two seconds passed between Xray's first line and the core reporting itself started. The lookup now waits for the instance and asks again while the answer is only that there is no route yet, both within one deadline. A name that was resolved before the start is still answered from the pinned table ahead of all of this, so the wait never stands in the way of the server's own address.
 
 #### 1.4.12
 

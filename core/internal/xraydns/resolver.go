@@ -8,6 +8,9 @@ package xraydns
 
 import (
 	"context"
+	"errors"
+	"net/netip"
+	"strings"
 	"sync"
 	"time"
 
@@ -15,6 +18,7 @@ import (
 
 	"github.com/sagernet/sing-box/adapter"
 	C "github.com/sagernet/sing-box/constant"
+	tun "github.com/sagernet/sing-tun"
 	E "github.com/sagernet/sing/common/exceptions"
 	"github.com/sagernet/sing/service"
 	"github.com/xtls/xray-core/common/net"
@@ -25,6 +29,25 @@ import (
 const directTransportTag = "dns-direct"
 
 const lookupTimeout = 5 * time.Second
+
+// Xray поднимается раньше sing-box и спрашивает адрес сервера сразу, так что
+// отказ в эту секунду — это норма работы, а не поломка. До появления этого
+// ожидания такой запрос падал мгновенно: пока нет коробки — "sing-box instance
+// is not up yet", а как появилась, но монитор интерфейсов ещё не нашёл сеть —
+// tun.ErrNoRoute с самого сокета. Xray тратил на эти отказы свои попытки за
+// миллисекунды и сдавался, а системный резолвер потом минутами повторял одни и
+// те же запросы, которым никто не отвечал.
+//
+// Замер по журналам с машин клиента 18.11.2026: между первой строкой Xray и
+// "sing-box started" прошло 2 секунды на одной машине и 0.3 на другой. Ждём с
+// запасом, и только на старте — дальше имя уже либо в таблице закреплённых,
+// либо в кэше ядра.
+//
+// Переменные, а не константы: тесты укорачивают ожидание.
+var (
+	readyWait = 5 * time.Second
+	readyPoll = 25 * time.Millisecond
+)
 
 // Read per lookup, not captured: the box is always built after the Xray instances that resolve through it.
 type BoxProvider func() context.Context
@@ -60,19 +83,16 @@ func (r *resolver) LookupIP(domain string, option dnsfeature.IPOption) ([]net.IP
 		}
 		return ips, 0, nil
 	}
-	ctx := r.provider()
-	if ctx == nil {
-		return nil, 0, E.New("throne-dns: sing-box instance is not up yet")
+	deadline := time.Now().Add(readyWait)
+	ctx, err := waitForBox(r.provider, deadline)
+	if err != nil {
+		return nil, 0, err
 	}
 	router := service.FromContext[adapter.DNSRouter](ctx)
 	if router == nil {
 		return nil, 0, E.New("throne-dns: sing-box DNS router is not registered")
 	}
-	addresses, err := router.Lookup(ctx, domain, adapter.DNSQueryOptions{
-		Transport: r.directTransport(ctx),
-		Strategy:  strategyFor(option),
-		Timeout:   lookupTimeout,
-	})
+	addresses, err := r.lookupOnceRouted(ctx, router, domain, option, deadline)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -86,6 +106,49 @@ func (r *resolver) LookupIP(domain string, option dnsfeature.IPOption) ([]net.IP
 	}
 	// LookupForIPWithClient discards the TTL and sing-box owns the cache.
 	return ips, 0, nil
+}
+
+// Ждёт коробку: она создаётся после инстансов Xray, которые через неё резолвят,
+// поэтому первые запросы приходят раньше неё всегда.
+func waitForBox(provider BoxProvider, deadline time.Time) (context.Context, error) {
+	for {
+		if ctx := provider(); ctx != nil {
+			return ctx, nil
+		}
+		if !time.Now().Before(deadline) {
+			return nil, E.New("throne-dns: sing-box instance is not up yet")
+		}
+		time.Sleep(readyPoll)
+	}
+}
+
+// Прямой запрос уходит с сокета, прибитого к интерфейсу по умолчанию, и пока
+// монитор его не нашёл, control-функция отвечает tun.ErrNoRoute
+// (sing-box route/network.go, AutoDetectInterfaceFunc). Отказ приходит на самом
+// сокете, не выходя в сеть, то есть переспросить стоит доли миллисекунды —
+// дешевле, чем отдать Xray ошибку, которую тот примет за недоступный узел.
+func (r *resolver) lookupOnceRouted(ctx context.Context, router adapter.DNSRouter, domain string,
+	option dnsfeature.IPOption, deadline time.Time) ([]netip.Addr, error) {
+	for {
+		addresses, err := router.Lookup(ctx, domain, adapter.DNSQueryOptions{
+			Transport: r.directTransport(ctx),
+			Strategy:  strategyFor(option),
+			Timeout:   lookupTimeout,
+		})
+		if err == nil || !noRouteYet(err) || !time.Now().Before(deadline) {
+			return addresses, err
+		}
+		time.Sleep(readyPoll)
+	}
+}
+
+// tun.ErrNoRoute приезжает завёрнутым в несколько слоёв — в журнале это
+// "dial TLS connection: dial tcp 77.88.8.8:853: no route to internet", — и
+// ручаться за Unwrap по всей цепочке нельзя. Поэтому сверяем и через errors.Is,
+// и по тексту самой библиотечной переменной: так проверка не разойдётся с ней
+// при обновлении sing-tun.
+func noRouteYet(err error) bool {
+	return errors.Is(err, tun.ErrNoRoute) || strings.Contains(err.Error(), tun.ErrNoRoute.Error())
 }
 
 // nil leaves the query unpinned and on the config's own DNS rules, which is what a raw DNS object asks for.
