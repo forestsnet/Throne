@@ -209,6 +209,8 @@ set(PROJECT_SOURCES
 
         # Опрос сетевых устройств лежит в cmake/windows/windows.cmake: он только для Windows.
         # Здесь — тексты, которые он показывает, чтобы их видел lupdate на любой платформе.
+        include/configs/CustomOutbounds.hpp
+        src/configs/CustomOutbounds.cpp
         include/sys/TunDiagnostics.h
         include/sys/ConsoleText.h
         src/sys/TunDiagnosticsText.cpp

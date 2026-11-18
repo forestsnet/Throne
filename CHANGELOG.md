@@ -1,3 +1,10 @@
+#### 1.4.14
+
+* Put the reading of a pasted config under test, where the names of its nodes come from **1**
+
+**1**:
+Reading the outbounds of a config somebody pasted in whole is pure logic, and all of it sat inside the file that draws conclusions from it, where no test could reach it. That is where the address of a profile comes from, and its SNI, and since the previous release the list of every node it dials. Xray keeps one spelling of a key and which one is unknown, so disagreeing spellings are not a value but an absence, and inventing an address for them would pin a name the core never dials. Only VMess and VLESS read vnext, the rest read servers and do not see a vnext list at all. None of that was covered. The reading now lives on its own and carries twelve cases: a provider's balancing profile with a node per country, the infrastructure outbounds that dial nothing, repeated names, disagreeing spellings, mixed key case, which protocol reads which list, an inline address replacing the list, the sing-box groups that have no address of their own, and configs with nothing usable in them. Nothing about behaviour changed.
+
 #### 1.4.13
 
 * Offer the iCloud Private Relay switch only on the system that can actually flip it **1**

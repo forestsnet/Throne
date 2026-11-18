@@ -1,5 +1,6 @@
 #include "include/configs/outbounds/custom.h"
 
+#include "include/configs/CustomOutbounds.hpp"
 #include "include/configs/common/OutboundFactory.h"
 #include "include/configs/common/utils.h"
 #include "include/configs/outbounds/xrayVless.h"
@@ -16,11 +17,6 @@ namespace Configs
 {
     namespace
     {
-        bool isSingBoxInfra(const QString& t)
-        {
-            return t == "direct" || t == "block" || t == "dns";
-        }
-
         SecurityInfo analyzeSingBoxOutbound(const QJsonObject& o)
         {
             const auto type = o["type"].toString();
@@ -73,78 +69,10 @@ namespace Configs
         }
 
         // The core matches object keys case-insensitively, so every spelling of a key sets the same option.
-        QStringList keysNamed(const QJsonObject& o, const QString& name)
-        {
-            QStringList keys;
-            for (const auto& key : o.keys()) {
-                if (key.compare(name, Qt::CaseInsensitive) == 0) keys << key;
-            }
-            return keys;
-        }
-
         QJsonValue customValueNamed(const QJsonObject& o, const QString& name)
         {
             const auto keys = keysNamed(o, name);
             return keys.isEmpty() ? QJsonValue() : o.value(keys.first());
-        }
-
-        bool isXrayInfra(const QString& p)
-        {
-            // direct and block are Xray's aliases of freedom and blackhole.
-            return p == "freedom" || p == "direct" || p == "blackhole" || p == "block" || p == "dns" || p == "loopback";
-        }
-
-        // Xray keeps one spelling of a key, so a label trusts only a value every spelling agrees on: undefined when they differ.
-        QJsonValue xrayAgreed(const QJsonObject& o, const QString& name)
-        {
-            const auto keys = keysNamed(o, name);
-            for (const auto& key : keys) {
-                if (o.value(key) != o.value(keys.first())) return QJsonValue(QJsonValue::Undefined);
-            }
-            return keys.isEmpty() ? QJsonValue(QJsonValue::Undefined) : o.value(keys.first());
-        }
-
-        // For names Xray lower-cases; empty when there are none, nullopt when they differ.
-        std::optional<QString> xrayAgreedName(const QStringList& lowerCased)
-        {
-            if (lowerCased.isEmpty()) return QString();
-            if (lowerCased.count(lowerCased.first()) != lowerCased.size()) return std::nullopt;
-            return lowerCased.first();
-        }
-
-        std::optional<QString> xrayAgreedProtocol(const QJsonObject& o)
-        {
-            QStringList protocols;
-            for (const auto& key : keysNamed(o, "protocol")) protocols << o.value(key).toString().toLower();
-            return xrayAgreedName(protocols);
-        }
-
-        // Xray lets a non-null top-level address replace vnext/servers, taking the inline user with it; nullopt when the spellings disagree.
-        std::optional<bool> xrayInlinePeer(const QJsonObject& settings)
-        {
-            bool set = false;
-            bool unset = false;
-            for (const auto& key : keysNamed(settings, "address")) (settings.value(key).isNull() ? unset : set) = true;
-            if (set && unset) return std::nullopt;
-            return set;
-        }
-
-        // Only VMess and VLESS read vnext; the other protocols read servers and ignore a vnext list.
-        QJsonObject xrayPeer(const QJsonObject& settings, const QString& protocol)
-        {
-            const auto inlinePeer = xrayInlinePeer(settings);
-            if (!inlinePeer) return {};
-            if (*inlinePeer) return settings;
-            const auto list = protocol == "vmess" || protocol == "vless" ? QStringLiteral("vnext") : QStringLiteral("servers");
-            return xrayAgreed(settings, list).toArray().at(0).toObject();
-        }
-
-        // Empty when the protocol is missing or its spellings disagree, which leaves the list Xray reads unknown.
-        QJsonObject xrayOutboundPeer(const QJsonObject& o)
-        {
-            const auto protocol = xrayAgreedProtocol(o);
-            if (!protocol || protocol->isEmpty()) return {};
-            return xrayPeer(xrayAgreed(o, "settings").toObject(), *protocol);
         }
 
         QString xrayVlessEncryption(const QJsonObject& settings)
@@ -153,11 +81,6 @@ namespace Configs
             if (!inlinePeer) return {};
             const auto user = *inlinePeer ? settings : xrayAgreed(xrayPeer(settings, "vless"), "users").toArray().at(0).toObject();
             return xrayAgreed(user, "encryption").toString();
-        }
-
-        QString xrayOutboundAddress(const QJsonObject& o)
-        {
-            return xrayAgreed(xrayOutboundPeer(o), "address").toString();
         }
 
         SecurityInfo xrayOutboundSecurity(const QJsonObject& o)
@@ -257,14 +180,6 @@ namespace Configs
         }
 
         // Xray routes to the first outbound by default; pick the first real proxy.
-        QJsonObject firstXrayEgress(const QJsonArray& outbounds)
-        {
-            for (const auto& v : outbounds) {
-                if (auto obj = v.toObject(); !isXrayInfra(obj["protocol"].toString())) return obj;
-            }
-            return {};
-        }
-
         // Узел полного конфига Xray: сам конфиг — это файл со списком
         // аутбаундов, а не один аутбаунд, и адрес с портом лежат в том из них,
         // куда Xray маршрутизирует по умолчанию.
@@ -702,38 +617,13 @@ namespace Configs
         return {};
     }
 
-    // Полный конфиг — файл со списком исходящих, и узел в нём не один.
-    // Инфраструктурные (freedom, blackhole, dns у Xray, direct, block, dns у
-    // sing-box) никуда не звонят, их адреса — не адреса. Группы выбора узлов
-    // своего адреса не имеют, а их участники лежат в том же списке и
-    // просматриваются сами.
+    // Полный конфиг — файл со списком исходящих, и узел в нём не один. Сам
+    // разбор лежит в CustomOutbounds.cpp, потому что проверить его можно только
+    // тестом, а здесь из него делают вывод.
     QStringList Custom::GetAddresses()
     {
-        const auto gather = [](const QJsonArray &outbounds, const auto &addressOf) {
-            QStringList names;
-            for (const auto &value : outbounds) {
-                const auto name = addressOf(value.toObject()).trimmed();
-                if (name.isEmpty() || names.contains(name, Qt::CaseInsensitive)) continue;
-                names.append(name);
-            }
-            return names;
-        };
-        if (type == CustomXrayFullConfig) {
-            const auto root = QString2QJsonObject(config);
-            return gather(xrayAgreed(root, "outbounds").toArray(), [](const QJsonObject &o) -> QString {
-                const auto protocol = xrayAgreedProtocol(o);
-                if (!protocol || protocol->isEmpty() || isXrayInfra(*protocol)) return {};
-                return xrayOutboundAddress(o);
-            });
-        }
-        if (type == CustomFullConfig) {
-            const auto root = QString2QJsonObject(config);
-            return gather(root["outbounds"].toArray(), [](const QJsonObject &o) -> QString {
-                const auto kind = o["type"].toString();
-                if (kind.isEmpty() || isSingBoxInfra(kind)) return {};
-                return o["server"].toString();
-            });
-        }
+        if (type == CustomXrayFullConfig) return XrayConfigServerNames(QString2QJsonObject(config));
+        if (type == CustomFullConfig) return SingBoxConfigServerNames(QString2QJsonObject(config));
         return outbound::GetAddresses();
     }
 

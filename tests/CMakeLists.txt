@@ -90,6 +90,14 @@ target_link_libraries(SubscriptionUsageTest PRIVATE Qt6::Test)
 
 add_test(NAME SubscriptionUsageTest COMMAND SubscriptionUsageTest)
 
+qt_add_executable(CustomOutboundsTest
+        CustomOutboundsTest.cpp
+        ../src/configs/CustomOutbounds.cpp
+)
+target_include_directories(CustomOutboundsTest PRIVATE ${CMAKE_SOURCE_DIR})
+target_link_libraries(CustomOutboundsTest PRIVATE Qt6::Test)
+add_test(NAME CustomOutboundsTest COMMAND CustomOutboundsTest)
+
 qt_add_executable(XrayDnsStripTest
         XrayDnsStripTest.cpp
         ../src/configs/XrayDnsStrip.cpp
