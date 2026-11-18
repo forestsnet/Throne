@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/netip"
+	"strings"
 	"sync/atomic"
 	"syscall"
 	"testing"
@@ -96,7 +97,7 @@ func TestEncryptedTransportsVerifyCertificateAndUseEgress(t *testing.T) {
 			endpoint := netip.MustParseAddrPort(addr)
 			target := Target{Address: network + "://" + addr, Type: network, Host: endpoint.Addr().String(), Port: endpoint.Port(), Path: "/custom-dns"}
 			egress := &testEgress{}
-			untrusted, err := Run(context.Background(), egress, []Target{target}, "probe.example", time.Second, nil)
+			untrusted, err := Run(context.Background(), egress, []Target{target}, "probe.example", nil, time.Second, nil)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -106,7 +107,7 @@ func TestEncryptedTransportsVerifyCertificateAndUseEgress(t *testing.T) {
 			pool := x509.NewCertPool()
 			pool.AddCert(httpServer.Certificate())
 			ctx := service.ContextWith[adapter.CertificateStore](context.Background(), testCertificates{pool: pool})
-			results, err := Run(ctx, egress, []Target{target}, "probe.example", time.Second, nil)
+			results, err := Run(ctx, egress, []Target{target}, "probe.example", nil, time.Second, nil)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -124,7 +125,7 @@ func TestEveryTransportFailsClosedWhenSocketBindingFails(t *testing.T) {
 	for _, typ := range []string{"udp", "tcp", "tls", "https", "quic", "h3"} {
 		t.Run(typ, func(t *testing.T) {
 			egress := &testEgress{socketErr: errors.New("physical bind refused")}
-			results, err := Run(context.Background(), egress, []Target{{Type: typ, Host: "192.0.2.1"}}, "probe.example", time.Second, nil)
+			results, err := Run(context.Background(), egress, []Target{{Type: typ, Host: "192.0.2.1"}}, "probe.example", nil, time.Second, nil)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -150,7 +151,7 @@ func TestSilentDNSRespectsDeadline(t *testing.T) {
 	defer pc.Close()
 	endpoint := netip.MustParseAddrPort(pc.LocalAddr().String())
 	begin := time.Now()
-	results, err := Run(context.Background(), &testEgress{}, []Target{{Type: "udp", Host: endpoint.Addr().String(), Port: endpoint.Port()}}, "probe.example", 50*time.Millisecond, nil)
+	results, err := Run(context.Background(), &testEgress{}, []Target{{Type: "udp", Host: endpoint.Addr().String(), Port: endpoint.Port()}}, "probe.example", nil, 50*time.Millisecond, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -220,7 +221,7 @@ func TestMalformedDNSResponseIsNotAnAnswer(t *testing.T) {
 				}
 				_ = w.WriteMsg(r)
 			}))
-			results, err := Run(context.Background(), &testEgress{}, []Target{target}, "probe.example", 100*time.Millisecond, nil)
+			results, err := Run(context.Background(), &testEgress{}, []Target{target}, "probe.example", nil, 100*time.Millisecond, nil)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -242,7 +243,7 @@ func TestAAAAFallbackSharesTheCandidateDeadline(t *testing.T) {
 		}
 	}))
 	begin := time.Now()
-	results, err := Run(context.Background(), &testEgress{}, []Target{target}, "probe.example", 80*time.Millisecond, nil)
+	results, err := Run(context.Background(), &testEgress{}, []Target{target}, "probe.example", nil, 80*time.Millisecond, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -292,7 +293,7 @@ func TestProbeClosesTCPConnectionBeforeReturning(t *testing.T) {
 		}
 	}()
 	endpoint := netip.MustParseAddrPort(ln.Addr().String())
-	results, err := Run(context.Background(), &testEgress{}, []Target{{Type: "tcp", Host: endpoint.Addr().String(), Port: endpoint.Port()}}, "probe.example", time.Second, nil)
+	results, err := Run(context.Background(), &testEgress{}, []Target{{Type: "tcp", Host: endpoint.Addr().String(), Port: endpoint.Port()}}, "probe.example", nil, time.Second, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -324,7 +325,7 @@ func TestDirectExchangeUsesEgressAndDistinguishesAnswers(t *testing.T) {
 			t.Run(network+"/"+tc.name, func(t *testing.T) {
 				target := serveDNS(t, network, tc.rcode, tc.answer)
 				egress := &testEgress{}
-				results, err := Run(context.Background(), egress, []Target{target}, "probe.example", time.Second, nil)
+				results, err := Run(context.Background(), egress, []Target{target}, "probe.example", nil, time.Second, nil)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -344,7 +345,7 @@ func TestDirectExchangeUsesEgressAndDistinguishesAnswers(t *testing.T) {
 
 func TestNoEgressRefusesBatch(t *testing.T) {
 	want := errors.New("egress unavailable")
-	_, err := Run(context.Background(), &testEgress{err: want}, []Target{{Type: "udp", Host: "192.0.2.1", Port: 53}}, "probe.example", time.Second, nil)
+	_, err := Run(context.Background(), &testEgress{err: want}, []Target{{Type: "udp", Host: "192.0.2.1", Port: 53}}, "probe.example", nil, time.Second, nil)
 	if !errors.Is(err, want) {
 		t.Fatalf("got %v, want %v", err, want)
 	}
@@ -352,7 +353,7 @@ func TestNoEgressRefusesBatch(t *testing.T) {
 
 func TestHostnameWithoutPhysicalBootstrapFailsClosed(t *testing.T) {
 	egress := &testEgress{}
-	results, err := Run(context.Background(), egress, []Target{{Address: "tls://dns.example", Type: "tls", Host: "dns.example", Port: 853}}, "probe.example", time.Second, nil)
+	results, err := Run(context.Background(), egress, []Target{{Address: "tls://dns.example", Type: "tls", Host: "dns.example", Port: 853}}, "probe.example", nil, time.Second, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -365,13 +366,88 @@ func TestHostnameWithoutPhysicalBootstrapFailsClosed(t *testing.T) {
 }
 
 func TestUnsupportedLocalIsNotSuccessful(t *testing.T) {
-	results, err := Run(context.Background(), &testEgress{}, []Target{{Address: "local", Type: "local"}, {Address: "dhcp://auto", Type: "dhcp"}}, "probe.example", time.Second, nil)
+	results, err := Run(context.Background(), &testEgress{}, []Target{{Address: "local", Type: "local"}, {Address: "dhcp://auto", Type: "dhcp"}}, "probe.example", nil, time.Second, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 	for _, r := range results {
 		if r.OK || r.Responded || r.Error == "" {
 			t.Fatalf("unexpected result: %+v", r)
+		}
+	}
+}
+
+// Остальные имена конфига разрешаются тем же, уже поднятым транспортом, и
+// неудача одного имени не отменяет остальные: закрепить надо то, что ответило.
+func TestExtraNamesResolveThroughTheSameTransport(t *testing.T) {
+	known := map[string]string{
+		"probe.example": "192.0.2.1",
+		"first.example": "192.0.2.2",
+		"third.example": "192.0.2.4",
+	}
+	target := serveDNSHandler(t, "udp", dns.HandlerFunc(func(w dns.ResponseWriter, q *dns.Msg) {
+		r := new(dns.Msg)
+		r.SetReply(q)
+		address, found := known[strings.TrimSuffix(q.Question[0].Name, ".")]
+		switch {
+		case !found:
+			r.Rcode = dns.RcodeNameError
+		case q.Question[0].Qtype == dns.TypeA:
+			r.Answer = []dns.RR{&dns.A{Hdr: dns.RR_Header{Name: q.Question[0].Name, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: 60}, A: net.ParseIP(address)}}
+		}
+		_ = w.WriteMsg(r)
+	}))
+	extra := []string{"first.example", "second.example", "third.example"}
+	results, err := Run(context.Background(), &testEgress{}, []Target{target}, "probe.example", extra, time.Second, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !results[0].OK || len(results[0].Addresses) != 1 || results[0].Addresses[0] != "192.0.2.1" {
+		t.Fatalf("проверяемое имя: %+v", results[0])
+	}
+	if len(results[0].Extra) != len(extra) {
+		t.Fatalf("остальных имён в ответе %d, спрашивали %d", len(results[0].Extra), len(extra))
+	}
+	for i, want := range []struct{ name, address string }{
+		{"first.example", "192.0.2.2"},
+		{"second.example", ""},
+		{"third.example", "192.0.2.4"},
+	} {
+		got := results[0].Extra[i]
+		if got.Name != want.name {
+			t.Fatalf("порядок не сохранён: на месте %s стоит %s", want.name, got.Name)
+		}
+		if want.address == "" {
+			if got.Error == "" || len(got.Addresses) != 0 {
+				t.Fatalf("%s должно было не разрешиться: %+v", want.name, got)
+			}
+			continue
+		}
+		if len(got.Addresses) != 1 || got.Addresses[0] != want.address {
+			t.Fatalf("%s: %+v", want.name, got)
+		}
+	}
+}
+
+// Круг по всем кандидатам с полным списком имён — это десятки запросов в
+// секунду с одного адреса, и отказать на это резолвер вправе. Второй проход
+// идёт по одной цели, и держится это проверкой, а не обычаем.
+func TestExtraNamesRequireASingleTarget(t *testing.T) {
+	targets := []Target{serveDNS(t, "udp", dns.RcodeSuccess, true), serveDNS(t, "udp", dns.RcodeSuccess, true)}
+	_, err := Run(context.Background(), &testEgress{}, targets, "probe.example", []string{"first.example"}, time.Second, nil)
+	if err == nil {
+		t.Fatal("ждали отказа на список имён при двух целях")
+	}
+}
+
+// Имена приходят из конфига подписки, то есть снаружи. Негодное имя должно
+// отбиваться до того, как уйдёт в сеть.
+func TestExtraNamesAreValidated(t *testing.T) {
+	target := serveDNS(t, "udp", dns.RcodeSuccess, true)
+	for _, bad := range []string{"", "   ", "a..b", strings.Repeat("a", 300)} {
+		_, err := Run(context.Background(), &testEgress{}, []Target{target}, "probe.example", []string{bad}, time.Second, nil)
+		if err == nil {
+			t.Fatalf("приняли негодное имя %q", bad)
 		}
 	}
 }

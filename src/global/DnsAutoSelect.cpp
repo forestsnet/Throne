@@ -55,16 +55,54 @@ namespace Configs {
         return QStringLiteral("not probed");
     }
 
-    void DnsAutoSelect::Start(const QString &configured, int timeoutMs, const QString &probeName) {
+    // Второй проход: остальные имена конфига, уже по выбранному резолверу.
+    // Неразрешённое имя не отменяет подключения — его спросят под туннелем, как
+    // было до этого всегда, и отказываться из-за него было бы хуже.
+    void DnsAutoSelect::finish(const QString &chosen, const bool fellBack, const DirectDnsFailure failure) {
+        if (chosen.isEmpty() || m_extraNames.isEmpty()) {
+            emit Selected(chosen, fellBack, m_pins, failure);
+            return;
+        }
+        auto round = std::make_shared<DirectDnsProbeRound>();
+        auto *worker = QThread::create([round, chosen, timeout = m_timeoutMs, name = m_probeName, extra = m_extraNames] {
+            *round = ProbeDirectDns({chosen}, timeout, name, extra);
+        });
+        connect(worker, &QThread::finished, worker, &QObject::deleteLater);
+        connect(worker, &QThread::finished, this, [this, chosen, fellBack, failure, round] {
+            if (!round->error.isEmpty()) {
+                LOG_WARN("direct DNS second pass failed: " + round->error);
+            } else if (!round->results.isEmpty()) {
+                const auto &extra = round->results.first().extraAddresses;
+                for (auto it = extra.cbegin(); it != extra.cend(); ++it) {
+                    if (it.value().isEmpty()) continue;
+                    m_pins.insert(it.key(), it.value());
+                }
+            }
+            const int asked = m_extraNames.size() + (m_probeName.isEmpty() ? 0 : 1);
+            LOG_INFO(QString("pinned %1 of %2 server names through %3").arg(m_pins.size()).arg(asked).arg(chosen));
+            emit Selected(chosen, fellBack, m_pins, failure);
+        });
+        worker->start();
+    }
+
+    void DnsAutoSelect::Start(const QString &configured, int timeoutMs, const QString &probeName,
+                              const QStringList &extraNames) {
         m_configured = configured.trimmed();
         m_probeName = probeName.trimmed();
+        m_extraNames.clear();
+        for (const auto &extra : extraNames) {
+            const auto name = extra.trimmed();
+            if (name.isEmpty() || name.compare(m_probeName, Qt::CaseInsensitive) == 0) continue;
+            if (m_extraNames.contains(name, Qt::CaseInsensitive)) continue;
+            m_extraNames.append(name);
+        }
         m_timeoutMs = timeoutMs;
 
         auto candidates = DnsCandidates(m_configured, true);
         if (candidates.size() > kMaxProbes) candidates = candidates.mid(0, kMaxProbes);
         if (candidates.isEmpty()) {
             LOG_WARN("direct DNS: nothing left to try");
-            emit Selected({}, true, {}, DirectDnsFailure::ProbeUnavailable);
+            finish({}, true, DirectDnsFailure::ProbeUnavailable);
             return;
         }
 
@@ -77,16 +115,18 @@ namespace Configs {
         connect(worker, &QThread::finished, this, [this, round, mustSurvive] {
             if (!round->error.isEmpty()) {
                 LOG_WARN("direct DNS probe failed: " + round->error);
-                emit Selected({}, true, {}, DirectDnsFailure::ProbeUnavailable);
+                finish({}, true, DirectDnsFailure::ProbeUnavailable);
                 return;
             }
             const auto &all = round->results;
             LOG_INFO("direct DNS round outside the tunnel: " + roundSummary(all));
             const auto selection = SelectDirectDns(all, m_configured, mustSurvive, !m_probeName.isEmpty());
             const auto &chosen = selection.address;
-            m_resolved = selection.serverAddresses;
-            if (!m_resolved.isEmpty() && !m_probeName.isEmpty()) {
-                LOG_INFO(QString("%1 resolved through direct DNS: %2").arg(m_probeName, m_resolved.join(", ")));
+            m_pins.clear();
+            if (!selection.serverAddresses.isEmpty() && !m_probeName.isEmpty()) {
+                m_pins.insert(m_probeName, selection.serverAddresses);
+                LOG_INFO(QString("%1 resolved through direct DNS: %2")
+                             .arg(m_probeName, selection.serverAddresses.join(", ")));
             }
             if (selection.failure != DirectDnsFailure::None) {
                 LOG_WARN(DirectDnsFailureText(selection.failure));
@@ -95,7 +135,7 @@ namespace Configs {
                     if (!result.error.isEmpty()) failures << QString("%1: %2").arg(result.address, result.error);
                 }
                 if (!failures.isEmpty()) LOG_WARN("direct DNS probe errors: " + failures.join(" | "));
-                emit Selected({}, true, m_resolved, selection.failure);
+                finish({}, true, selection.failure);
                 return;
             }
             int chosenLatency = -1;
@@ -104,13 +144,13 @@ namespace Configs {
             }
             if (chosen == m_configured) {
                 LOG_INFO(QString("direct DNS %1 answered in %2 ms").arg(m_configured).arg(chosenLatency));
-                emit Selected(m_configured, false, m_resolved, DirectDnsFailure::None);
+                finish(m_configured, false, DirectDnsFailure::None);
                 return;
             }
             LOG_INFO(QString("direct DNS: %1 instead of %2 (%3)")
                          .arg(chosen, m_configured.isEmpty() ? QStringLiteral("none") : m_configured,
                               whyNotConfigured(all)));
-            emit Selected(chosen, true, m_resolved, DirectDnsFailure::None);
+            finish(chosen, true, DirectDnsFailure::None);
         });
         worker->start();
     }

@@ -65,7 +65,7 @@ func (s *server) ProbeDNS(ctx context.Context, in *gen.DNSProbeRequest) (*gen.DN
 		}
 		targets = append(targets, dnsprobe.Target{Address: target.GetAddress(), Type: target.GetType(), Host: target.GetHost(), Port: uint16(target.GetPort()), Path: target.GetPath()})
 	}
-	results, err := dnsprobe.Run(ctx, scanEgress{requireBinding: true}, targets, in.GetProbeName(), time.Duration(in.GetTimeoutMs())*time.Millisecond, physicalDNSServers(ctx))
+	results, err := dnsprobe.Run(ctx, scanEgress{requireBinding: true}, targets, in.GetProbeName(), in.GetExtraNames(), time.Duration(in.GetTimeoutMs())*time.Millisecond, physicalDNSServers(ctx))
 	if err != nil {
 		response.Error = To(err.Error())
 		return response, nil
@@ -76,7 +76,11 @@ func (s *server) ProbeDNS(ctx context.Context, in *gen.DNSProbeRequest) (*gen.DN
 		return response, nil
 	}
 	for _, result := range results {
-		response.Results = append(response.Results, &gen.DNSProbeResult{Address: To(result.Address), Responded: To(result.Responded), Ok: To(result.OK), LatencyMs: To(result.LatencyMS), Error: To(result.Error), Addresses: result.Addresses})
+		item := &gen.DNSProbeResult{Address: To(result.Address), Responded: To(result.Responded), Ok: To(result.OK), LatencyMs: To(result.LatencyMS), Error: To(result.Error), Addresses: result.Addresses}
+		for _, extra := range result.Extra {
+			item.ExtraNames = append(item.ExtraNames, &gen.DNSProbeNameResult{Name: To(extra.Name), Addresses: extra.Addresses, Error: To(extra.Error)})
+		}
+		response.Results = append(response.Results, item)
 	}
 	return response, nil
 }

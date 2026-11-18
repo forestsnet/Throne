@@ -86,6 +86,17 @@ namespace Configs
             return server;
         }
 
+        // Все имена, к которым пойдёт соединение. У обычного исходящего это
+        // одно, его адрес. Полный конфиг набирает по узлу на страну, и
+        // балансировщик провайдера ходит ко всем — разрешать перед подключением
+        // надо каждое, иначе закрепить удастся только первое, а остальные уйдут
+        // спрашивать имя уже под туннелем, где спрашивать может быть нечем.
+        virtual QStringList GetAddresses()
+        {
+            const auto single = GetAddress().trimmed();
+            return single.isEmpty() ? QStringList{} : QStringList{single};
+        }
+
         virtual void SetPort(int newPort) {
             server_port = newPort;
         }

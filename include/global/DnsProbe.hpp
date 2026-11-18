@@ -2,6 +2,7 @@
 
 #include <QByteArray>
 #include <QList>
+#include <QMap>
 #include <QObject>
 #include <QString>
 #include <QStringList>
@@ -17,6 +18,10 @@ namespace Configs {
         QStringList addresses;
         // A valid negative DNS response still proves the server answered.
         bool responded = false;
+        // Остальные имена конфига и чем по ним ответили. Заполняется только во
+        // втором проходе, по уже выбранному резолверу: круг по всем кандидатам
+        // разом дал бы десятки запросов в секунду с одного адреса.
+        QMap<QString, QStringList> extraAddresses;
     };
 
     // A Qt DNS protocol probe that follows OS routes. NoProxy does not bypass TUN.

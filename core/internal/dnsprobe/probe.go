@@ -42,17 +42,48 @@ type Result struct {
 	LatencyMS int32
 	Error     string
 	Addresses []string
+	// Остальные имена конфига, в том порядке, в каком их спросили.
+	Extra []NameResult
+}
+
+// Одно имя и то, чем по нему ответили. Неразрешённое имя несёт свою ошибку и
+// остальным не мешает: в конфиг уедет то, что разрешилось.
+type NameResult struct {
+	Name      string
+	Addresses []string
+	Error     string
 }
 
 // Bootstrap contains physical-network DNS servers already discovered by the caller.
 // An empty list explicitly disables hostname bootstrap and local/DHCP probes.
-func Run(ctx context.Context, egress scan.Egress, targets []Target, name string, timeout time.Duration, bootstrap []netip.AddrPort) ([]Result, error) {
+func Run(ctx context.Context, egress scan.Egress, targets []Target, name string, extraNames []string,
+	timeout time.Duration, bootstrap []netip.AddrPort) ([]Result, error) {
 	if len(targets) > 64 {
 		return nil, errors.New("too many DNS probe targets")
 	}
 	name = strings.TrimSpace(name)
 	if _, valid := dns.IsDomainName(dns.Fqdn(name)); name == "" || !valid {
 		return nil, errors.New("invalid DNS probe name")
+	}
+	if len(extraNames) > 0 {
+		// Остальные имена спрашиваются у одного, уже выбранного резолвера: круг
+		// по всем кандидатам разом дал бы десятки запросов в секунду с одного
+		// адреса, и отказать на это резолвер вправе.
+		if len(targets) != 1 {
+			return nil, errors.New("extra DNS probe names need exactly one target")
+		}
+		if len(extraNames) > 64 {
+			return nil, errors.New("too many extra DNS probe names")
+		}
+		trimmed := make([]string, 0, len(extraNames))
+		for _, extra := range extraNames {
+			extra = strings.TrimSpace(extra)
+			if _, valid := dns.IsDomainName(dns.Fqdn(extra)); extra == "" || !valid {
+				return nil, errors.New("invalid extra DNS probe name")
+			}
+			trimmed = append(trimmed, extra)
+		}
+		extraNames = trimmed
 	}
 	if timeout <= 0 || timeout > 10*time.Second {
 		return nil, errors.New("DNS probe timeout must be between 1 ms and 10 s")
@@ -72,7 +103,7 @@ func Run(ctx context.Context, egress scan.Egress, targets []Target, name string,
 			defer wg.Done()
 			probeCtx, cancel := context.WithTimeout(ctx, timeout)
 			defer cancel()
-			results[i] = probe(probeCtx, egress, target, name, bootstrap)
+			results[i] = probe(probeCtx, egress, target, name, extraNames, bootstrap)
 		}()
 	}
 	wg.Wait()
@@ -82,7 +113,8 @@ func Run(ctx context.Context, egress scan.Egress, targets []Target, name string,
 	return results, nil
 }
 
-func probe(ctx context.Context, egress scan.Egress, target Target, name string, bootstrap []netip.AddrPort) Result {
+func probe(ctx context.Context, egress scan.Egress, target Target, name string, extraNames []string,
+	bootstrap []netip.AddrPort) Result {
 	result := Result{Address: target.Address, LatencyMS: -1}
 	begin := time.Now()
 	if target.Type == "local" || target.Type == "dhcp" {
@@ -96,7 +128,7 @@ func probe(ctx context.Context, egress scan.Egress, target Target, name string, 
 		}
 		for _, server := range bootstrap {
 			attempt := Target{Address: target.Address, Type: "udp", Host: server.Addr().String(), Port: server.Port()}
-			result = probe(ctx, egress, attempt, name, nil)
+			result = probe(ctx, egress, attempt, name, extraNames, nil)
 			if result.Responded || ctx.Err() != nil {
 				break
 			}
@@ -111,7 +143,7 @@ func probe(ctx context.Context, egress scan.Egress, target Target, name string, 
 			return result
 		}
 		for _, server := range bootstrap {
-			resolved := probe(ctx, egress, Target{Type: "udp", Host: server.Addr().String(), Port: server.Port()}, host, nil)
+			resolved := probe(ctx, egress, Target{Type: "udp", Host: server.Addr().String(), Port: server.Port()}, host, nil, nil)
 			if resolved.OK {
 				ip = netip.MustParseAddr(resolved.Addresses[0])
 				break
@@ -140,36 +172,55 @@ func probe(ctx context.Context, egress scan.Egress, target Target, name string, 
 		result.Error = err.Error()
 		return result
 	}
+	addresses, responded, failure := exchange(probeCtx, upstream, target.Type, name)
+	result.Responded = responded
+	if responded {
+		result.LatencyMS = int32(time.Since(begin).Milliseconds())
+	}
+	result.Addresses = addresses
+	result.Error = failure
+	result.OK = failure == "" && len(addresses) > 0
+	if !result.OK {
+		return result
+	}
+	// Транспорт уже поднят, и соединение к резолверу живо: остальные имена
+	// стоят по запросу каждое, а не по кругу проб. Ошибка одного имени
+	// записывается ему же и остальных не отменяет.
+	for _, extra := range extraNames {
+		found, _, extraFailure := exchange(probeCtx, upstream, target.Type, extra)
+		result.Extra = append(result.Extra, NameResult{Name: extra, Addresses: found, Error: extraFailure})
+	}
+	return result
+}
+
+// Спрашивает A и AAAA по одному имени через уже поднятый транспорт. responded
+// отвечает на другой вопрос, чем addresses: отказ NXDOMAIN адресов не даёт, а
+// резолвер при этом жив, и подбор прямого DNS различает это одно от другого.
+func exchange(ctx context.Context, upstream adapter.DNSTransport, kind string,
+	name string) (addresses []string, responded bool, failure string) {
 	for _, qtype := range []uint16{dns.TypeA, dns.TypeAAAA} {
 		query := new(dns.Msg)
 		query.SetQuestion(dns.Fqdn(name), qtype)
-		response, err := upstream.Exchange(probeCtx, query)
+		response, err := upstream.Exchange(ctx, query)
 		if err != nil {
-			result.Error = err.Error()
-			return result
+			return nil, responded, err.Error()
 		}
 		expectedID := query.Id
-		if target.Type == "https" || target.Type == "h3" || target.Type == "quic" {
+		if kind == "https" || kind == "h3" || kind == "quic" {
 			expectedID = 0
 		}
 		if response == nil || !response.Response || response.Id != expectedID || len(response.Question) != 1 || !strings.EqualFold(response.Question[0].Name, query.Question[0].Name) || response.Question[0].Qtype != qtype || response.Question[0].Qclass != dns.ClassINET {
-			result.Error = "invalid DNS response"
-			return result
+			return nil, responded, "invalid DNS response"
 		}
-		result.Responded = true
-		result.LatencyMS = int32(time.Since(begin).Milliseconds())
+		responded = true
 		if response.Rcode != dns.RcodeSuccess {
-			result.Error = "DNS " + dns.RcodeToString[response.Rcode]
-			return result
+			return nil, true, "DNS " + dns.RcodeToString[response.Rcode]
 		}
-		result.Addresses = answerAddresses(response, name)
-		if len(result.Addresses) > 0 {
-			result.OK = true
-			return result
+		if found := answerAddresses(response, name); len(found) > 0 {
+			return found, true, ""
 		}
 	}
-	result.Error = "DNS response contains no address"
-	return result
+	return nil, responded, "DNS response contains no address"
 }
 
 func answerAddresses(response *dns.Msg, name string) []string {

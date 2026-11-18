@@ -701,6 +701,17 @@ message DNSProbeRequest {
   repeated DNSProbeTarget targets = 1;
   optional string probe_name = 2 [default = "example.com"];
   optional int32 timeout_ms = 3 [default = 2500];
+  // The other names the same config dials. Resolved through the transport that
+  // is already up, which is why this needs exactly one target: a round over
+  // every candidate would mean dozens of queries a second from one address,
+  // and a resolver is entitled to refuse that.
+  repeated string extra_names = 4;
+}
+
+message DNSProbeNameResult {
+  optional string name = 1 [default = ""];
+  repeated string addresses = 2;
+  optional string error = 3 [default = ""];
 }
 
 message DNSProbeResult {
@@ -711,6 +722,9 @@ message DNSProbeResult {
   optional int32 latency_ms = 4 [default = -1];
   optional string error = 5 [default = ""];
   repeated string addresses = 6;
+  // One entry per requested extra name, in the order they were asked for. A
+  // name that did not resolve carries its error and does not spoil the rest.
+  repeated DNSProbeNameResult extra_names = 7;
 }
 
 message DNSProbeResponse {

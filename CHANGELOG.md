@@ -4,6 +4,7 @@
 * Read the rest of the support report as UTF-8, whatever the console utility answers in **2**
 * Find the network drivers in the driver store by class, not by its translated name **3**
 * Wait for the core to come up, instead of refusing the first lookups of every start **4**
+* Resolve every server name a config dials before the tunnel takes the routes, not only the first **5**
 
 **1**:
 The setting turned Apple's relay off for the network while the tunnel was up, and the text under it pointed at System Settings and warned that other Apple devices on the same network would be affected too. Both of those are macOS. The switch itself is a key in the SystemConfiguration preferences, and only macOS can write those, so on Windows the setting had no lever at all. What was left of it there was the refusal of the two relay names in DNS, and that alone does not bring down a relay that is already running, because the device keeps the addresses of its ingress nodes from the previous session and reaches them by IP. The setting is now offered only where it works, and it does nothing anywhere else even when an older profile carries it switched on.
@@ -16,6 +17,9 @@ The driver store section came back empty from the very machine it was built for.
 
 **4**:
 Xray starts before sing-box and asks for the address of its own server straight away, so a refusal in that moment is how the client works, not a fault. It refused instantly all the same: "sing-box instance is not up yet" while there was no instance, and then, once there was one, a refusal from the socket itself while the interface monitor had not yet found a network. Xray spent its retries on those refusals within milliseconds and gave up, and the system resolver went on repeating the same queries for a minute with nothing answering them. Measured on a customer's machine, two seconds passed between Xray's first line and the core reporting itself started. The lookup now waits for the instance and asks again while the answer is only that there is no route yet, both within one deadline. A name that was resolved before the start is still answered from the pinned table ahead of all of this, so the wait never stands in the way of the server's own address.
+
+**5**:
+What the client resolves before it connects is answered from a table inside the core, so the name of the server is never asked a second time once the tunnel holds the routes, where on Windows with strict routing there can be nothing left to ask it of. That table was filled for one name: the address of the profile, which for a full Xray config is its first egress. A provider's balancing profile carries a node per country inside one config, so eight names out of nine were left to be resolved later, and on a customer's machine one of those eight was exactly what failed. Every name the config dials is now listed before the start. The resolver is still validated against the first of them, as it was, and the rest are asked of that same resolver through the transport it already has up, which is why they go in one round and not in a round per name. A name that does not answer is simply not pinned and is asked later, the way all of them were until now.
 
 #### 1.4.12
 

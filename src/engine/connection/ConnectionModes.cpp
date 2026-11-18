@@ -183,27 +183,46 @@ namespace Engine {
         // по нему. Отвечающий на постороннее имя вполне может не знать нужного
         // или отдать по нему подменённый адрес, и тогда «рабочим» окажется
         // сервер, который нам ничем не поможет.
-        QString serverName;
+        //
+        // Имя не одно: полный конфиг набирает по узлу на страну, и
+        // балансировщик провайдера ходит ко всем. Резолвер проверяем первым
+        // именем, а закрепляем все — незакреплённое уйдёт спрашивать себя уже
+        // под туннелем, где спрашивать может быть нечем.
+        QString primary;
+        QStringList names;
         if (const auto ent = Configs::dataManager->profilesRepo->GetProfile(request.profileId);
             ent != nullptr && ent->outbound != nullptr) {
-            serverName = ent->outbound->GetAddress().trimmed();
+            primary = ent->outbound->GetAddress().trimmed();
+            for (const auto &candidate : ent->outbound->GetAddresses()) {
+                const auto name = candidate.trimmed();
+                // Адрес, а не имя: разрешать нечего.
+                if (name.isEmpty() || !QHostAddress(name).isNull()) continue;
+                if (names.contains(name, Qt::CaseInsensitive)) continue;
+                names.append(name);
+            }
         }
         // Сервер задан адресом, а не именем — разрешать нечего, и держать из-за
-        // этого запуск незачем.
-        if (!serverName.isEmpty() && !QHostAddress(serverName).isNull()) return false;
+        // этого запуск незачем. Если имя есть хоть у одного узла, проход нужен:
+        // у полного конфига первый узел бывает задан адресом, а остальные нет.
+        if (names.isEmpty() && !primary.isEmpty() && !QHostAddress(primary).isNull()) return false;
+
+        const QString serverName = names.isEmpty() ? QString() : names.takeFirst();
 
         auto *select = new Configs::DnsAutoSelect(this);
         m_dnsSelect = select;
         StartRequest next = request;
         next.dnsChecked = true;
         connect(select, &Configs::DnsAutoSelect::Selected, this,
-                [this, next, select, serverName](const QString &address, bool fellBack,
-                                                 const QStringList &serverAddresses, Configs::DirectDnsFailure failure) {
+                [this, next, select](const QString &address, bool fellBack,
+                                     const QMap<QString, QStringList> &serverAddresses,
+                                     Configs::DirectDnsFailure failure) {
                     select->deleteLater();
                     auto &s = Configs::dataManager->settingsRepo;
 
                     // Pass the addresses obtained through the physical egress to the new profile.
-                    Configs::SetServerAddressPin(serverName, serverAddresses);
+                    for (auto pin = serverAddresses.cbegin(); pin != serverAddresses.cend(); ++pin) {
+                        Configs::SetServerAddressPin(pin.key(), pin.value());
+                    }
 
                     if (address.isEmpty()) {
                         const auto text = Configs::DirectDnsFailureText(failure);
@@ -236,7 +255,7 @@ namespace Engine {
                     }
                     start(next);
                 });
-        select->Start(settings->direct_dns, 2500, serverName);
+        select->Start(settings->direct_dns, 2500, serverName, names);
         return true;
     }
 

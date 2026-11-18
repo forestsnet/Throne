@@ -702,6 +702,41 @@ namespace Configs
         return {};
     }
 
+    // Полный конфиг — файл со списком исходящих, и узел в нём не один.
+    // Инфраструктурные (freedom, blackhole, dns у Xray, direct, block, dns у
+    // sing-box) никуда не звонят, их адреса — не адреса. Группы выбора узлов
+    // своего адреса не имеют, а их участники лежат в том же списке и
+    // просматриваются сами.
+    QStringList Custom::GetAddresses()
+    {
+        const auto gather = [](const QJsonArray &outbounds, const auto &addressOf) {
+            QStringList names;
+            for (const auto &value : outbounds) {
+                const auto name = addressOf(value.toObject()).trimmed();
+                if (name.isEmpty() || names.contains(name, Qt::CaseInsensitive)) continue;
+                names.append(name);
+            }
+            return names;
+        };
+        if (type == CustomXrayFullConfig) {
+            const auto root = QString2QJsonObject(config);
+            return gather(xrayAgreed(root, "outbounds").toArray(), [](const QJsonObject &o) -> QString {
+                const auto protocol = xrayAgreedProtocol(o);
+                if (!protocol || protocol->isEmpty() || isXrayInfra(*protocol)) return {};
+                return xrayOutboundAddress(o);
+            });
+        }
+        if (type == CustomFullConfig) {
+            const auto root = QString2QJsonObject(config);
+            return gather(root["outbounds"].toArray(), [](const QJsonObject &o) -> QString {
+                const auto kind = o["type"].toString();
+                if (kind.isEmpty() || isSingBoxInfra(kind)) return {};
+                return o["server"].toString();
+            });
+        }
+        return outbound::GetAddresses();
+    }
+
     QString Custom::DisplayAddress()
     {
         if (type == CustomOutbound) {

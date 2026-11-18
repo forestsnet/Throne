@@ -4,7 +4,8 @@
 #include "include/configs/DnsAddress.hpp"
 
 namespace Configs {
-    DirectDnsProbeRound ProbeDirectDns(const QStringList &addresses, int timeoutMs, const QString &probeName) {
+    DirectDnsProbeRound ProbeDirectDns(const QStringList &addresses, int timeoutMs, const QString &probeName,
+                                       const QStringList &extraNames) {
         DirectDnsProbeRound round;
         if (!API::defaultClient || !API::defaultClient->IsConnected()) {
             round.error = QStringLiteral("core is not connected");
@@ -13,6 +14,10 @@ namespace Configs {
         libcore::DNSProbeRequest request;
         request.probe_name = probeName.trimmed().isEmpty() ? "example.com" : probeName.trimmed().toStdString();
         request.timeout_ms = timeoutMs;
+        for (const auto &extra : extraNames) {
+            const auto name = extra.trimmed();
+            if (!name.isEmpty()) request.extra_names.push_back(name.toStdString());
+        }
         for (const auto &address : addresses) {
             const auto parsed = Fsnt::ParseDnsAddress(address);
             if (!parsed.valid) {
@@ -44,6 +49,13 @@ namespace Configs {
             item.latencyMs = result.latency_ms.value_or(-1);
             item.error = QString::fromStdString(result.error.value_or(""));
             for (const auto &address : result.addresses) item.addresses.append(QString::fromStdString(address));
+            for (const auto &extra : result.extra_names) {
+                const auto name = QString::fromStdString(extra.name.value_or(""));
+                if (name.isEmpty()) continue;
+                QStringList resolved;
+                for (const auto &address : extra.addresses) resolved.append(QString::fromStdString(address));
+                item.extraAddresses.insert(name, resolved);
+            }
             round.results.append(std::move(item));
         }
         return round;

@@ -40,6 +40,7 @@ namespace Configs
         }
 
         QString GetAddress() override;
+        QStringList GetAddresses() override;
 
         QString DisplayAddress() override;
 

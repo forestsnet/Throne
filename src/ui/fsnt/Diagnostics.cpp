@@ -206,7 +206,8 @@ namespace Fsnt {
                     QObject::tr("Find a working one"), [serverName](const auto &done) {
                         auto *select = new Configs::DnsAutoSelect(GetMainWindow());
                         QObject::connect(select, &Configs::DnsAutoSelect::Selected, select,
-                                         [select, done](const QString &found, bool, const QStringList &,
+                                         [select, done](const QString &found, bool,
+                                                        const QMap<QString, QStringList> &,
                                                         Configs::DirectDnsFailure failure) {
                                              select->deleteLater();
                                              auto &st = Configs::dataManager->settingsRepo;
