@@ -1,9 +1,13 @@
 #### 1.4.16
 
 * Let a provider move its subscription to another domain, and name the hosts to fall back to **1**
+* Write down in the README every header a subscription response can carry **2**
 
 **1**:
 A blocked domain is the usual way a subscription stops working, and the way out of it was the user retyping an address or writing to support. The panel already configures the client through the headers of its answer, so the address now travels the same way. `x-fsnt-sub-domain` names the host the subscription lives on from now on, and only the host changes: the path and the query carry the subscriber's token, and the port follows only when the header names one. The new address is fetched once and has to answer with servers before it is stored, so a typo in a panel's configuration cannot cut every client off at once. That covers a planned move, where the header still arrives from the old domain. `x-fsnt-sub-mirrors` covers the other case: the list is stored while the subscription is still reachable and comes into play only when the current address does not answer at all, and the mirror that answered becomes the address the group updates from. Both are honoured on https alone, because on plain HTTP anyone on the path can write them and a move is permanent, and both take a bare host or `host:port` and refuse anything carrying a scheme, a path, a query or credentials. The client says once that the address has changed.
+
+**2**:
+The client acts on about twenty headers of a subscription answer, and none of them were written down anywhere, so the only way to find out what a panel can say was to read the parser. The README now lists every one of them with what it does, says that a switch takes true, 1, yes, on and their opposites and that an absent header is not false but a restriction that is simply not in force, names the two that are read and kept while nothing acts on them yet, mentions that a panel which cannot set headers can put the same values in the first lines of the body and that a header wins over such a comment, and ends with an nginx block that sets a realistic set and the one command that reads back what a client was actually given.
 
 #### 1.4.15
 

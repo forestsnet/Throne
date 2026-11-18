@@ -117,6 +117,120 @@ brew install --cask throneproj/tap/throne
 
 Various formats are supported, including share links, various JSON representation of Sing-box configs, and v2rayN link format as well as limited support for Shadowsocks and Clash formats.
 
+## Subscription response headers
+
+A panel can configure the client through the headers of its subscription
+response. Everything below is what this fork actually reads, and the whole set
+is kept with the group it came from, so the next update does not have to repeat
+it. A header name's case does not matter, and any value may arrive as
+`base64:<payload>` when it carries non-ASCII text or commas.
+
+### What the panel can say
+
+| Header | Effect |
+| --- | --- |
+| `profile-title` | The name of the group in the client. |
+| `announce` | A line shown with the subscription. Panels use it to say why a list came back empty. |
+| `support-url` | Where the client sends a user asking for help. |
+| `profile-web-page-url` | The panel's own page for this subscription. |
+| `profile-update-interval` | Hours between automatic updates. `x-profile-update-interval` is accepted too. It is followed only when the client, or the group, is set to respect the server's interval. |
+| `subscription-userinfo` | Traffic and expiry, as `upload=`, `download=`, `total=`, `expire=`. Feeds the usage bar and the expiry date. |
+| `subscription-refill-date` | Unix seconds. Shown as the date the quota refills. |
+| `tun-enable` | Puts the client into VPN mode, or takes it out, when a server of this subscription connects. |
+| `hide-settings` | Hides the settings while a server of this subscription runs, and with them the server configuration. |
+| `hide-url` | Hides the subscription address, and with it the share links of its servers: a `vless://` link carries the same credentials. |
+| `subscription-pin` | The group cannot be deleted while a server of it runs. Other subscriptions stay deletable. |
+| `subscription-auto-update-enable` | Turns automatic subscription updates on or off. |
+| `subscription-always-hwid-enable` | Sends the device id with every subscription request. |
+| `dns-from-json-enable` | `false` stops the client from taking the DNS section out of a provider's whole-config profile. |
+| `subscription-ping-onopen-enabled` | Tests latency as soon as the server list is opened. |
+| `per-app-proxy-list` | Applications to route through the tunnel. Separated by commas, semicolons or newlines, a `processName:` prefix is tolerated, and the whole value may be base64 or a JSON array. |
+| `per-app-bypass-list` | Applications to leave outside the tunnel. Providers use it for the traffic they are not allowed to carry. |
+| `routing` | A routing profile link, imported when the group has the import of a subscription route turned on. `off` means the header carries nothing, and the link may then sit in the body instead. |
+| `x-fsnt-sub-domain` | Moves the subscription to another host. See below. |
+| `x-fsnt-sub-mirrors` | Hosts to fall back to when the current one stops answering. See below. |
+
+`providerid` and `subscriptions-collapse` are read and kept, but nothing in the
+client acts on them yet. Any other header that is not an ordinary server header
+is kept with the group as well, so a panel can send something this version does
+not know yet and a later one will find it.
+
+A switch is three-valued: a header that is absent is not `false`. `true`, `1`,
+`yes` and `on` turn it on, `false`, `0`, `no` and `off` turn it off, and nothing
+at all leaves the client's own setting alone. The restrictions — hiding and
+pinning — hold only while a server of that subscription is running, so stopping
+it always gives the user the full interface back.
+
+An update that answers without any of these headers does not wipe what was
+stored before: a panel may drop them for one response, and the client keeps the
+last set it was given.
+
+Panels that cannot set headers can put the same values in the first lines of the
+subscription body, as `#subscription-userinfo: ...` or `// profile-title: ...`.
+Only `subscription-userinfo`, `profile-update-interval`, `profile-title`,
+`profile-web-page-url`, `support-url` and `announce` (or `notice`) are read that
+way, and a header always wins over the comment.
+
+### Moving a subscription to another domain
+
+A blocked domain is the usual reason a subscription stops working, and these two
+headers let the panel deal with it without the user retyping anything.
+
+`x-fsnt-sub-domain` names the host the subscription lives on from now on. The
+client replaces the host of the stored address, and the port when the header
+names one, keeping the path and the query untouched because the subscriber's
+token is in them. Before the new address is stored it is fetched once and has to
+answer with servers, so a typo in a panel's configuration cannot cut every
+client off at once.
+
+`x-fsnt-sub-mirrors` lists hosts to try when the current address does not answer
+at all. The list is stored while the subscription is still reachable, which is
+the point: once a domain is blocked there is nothing left to read a header from.
+The mirror that answers becomes the address the group updates from, so the
+list is worth keeping complete on every host it is served from, the current
+one included: a client that has moved to a mirror learns its next list from
+that mirror.
+
+Both are honoured only on an `https` subscription. On plain HTTP anyone on the
+path could write them, and a move is permanent. The value has to be a bare host
+or `host:port` — anything carrying a scheme, a path, a query or credentials is
+refused, and so is a single-label name such as `localhost`.
+
+### Example
+
+The headers are a property of the response, so they are usually set in front of
+the panel rather than in it. `always` matters: without it nginx drops them from
+error responses, which is exactly when an announcement is worth reading.
+
+```nginx
+location /sub/ {
+    proxy_pass http://127.0.0.1:3010;
+
+    add_header Profile-Title "base64:RlNOVCBWUE4=" always;
+    add_header Profile-Update-Interval "6" always;
+    add_header Support-Url "https://t.me/example_support" always;
+    add_header Announce "base64:0J/Qu9Cw0L3QvtCy0YvQtSDRgNCw0LHQvtGC0Ysg0LIg0YHRg9Cx0LHQvtGC0YMg0YEgMDI6MDAg0LTQviAwNDowMA==" always;
+    add_header Subscription-Pin "true" always;
+    add_header Hide-Url "true" always;
+    add_header Per-App-Bypass-List "qbittorrent.exe,transmission.exe" always;
+
+    # Where to go when this domain stops answering.
+    add_header X-Fsnt-Sub-Mirrors "sub2.example.com, sub3.example.com:8443" always;
+}
+```
+
+Announcing a move, on the old domain and while it still answers:
+
+```nginx
+add_header X-Fsnt-Sub-Domain "sub2.example.com" always;
+```
+
+What a client got can be read back from the command line:
+
+```bash
+curl -s -D - -o /dev/null "https://sub.example.com/sub/<token>" | grep -iE 'profile-|subscription-|announce|x-fsnt-'
+```
+
 ## Deep links
 
 The client registers the `throne://` URL scheme, so a link on a web page, in a
