@@ -110,6 +110,8 @@ set(PROJECT_SOURCES
         src/global/CountryHelper.cpp
         include/global/ExitLookup.hpp
         src/global/ExitLookup.cpp
+        include/global/ExitLookupPlan.hpp
+        src/global/ExitLookupPlan.cpp
         include/global/LocalNetwork.hpp
         src/global/LocalNetwork.cpp
         include/global/OTP.hpp

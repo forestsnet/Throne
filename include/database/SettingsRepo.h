@@ -83,7 +83,10 @@ namespace Configs {
         // Both keys are shared with the Android app's settings table; the provider is a Configs_network::ExitLookupProviders() id.
         bool exit_country_lookup = true;
         QString exit_lookup_provider = "auto";
-        int url_test_timeout_ms = 3000;
+        // Пять секунд, а не три: конфигу с балансировщиком надо успеть
+        // оценить свои узлы, и на трёх секундах живой провайдер выходил
+        // «без ответа». Прогрев первого запроса идёт сверх этого срока.
+        int url_test_timeout_ms = 5000;
         // Чем меряем задержку: 0 ICMP, 1 TCP до порта из конфига, 2 рукопожатие
         // TLS, 3 запрос GET через туннель, 4 запрос HEAD. По умолчанию запрос:
         // он один меряет весь путь целиком, а не дорогу до сервера.

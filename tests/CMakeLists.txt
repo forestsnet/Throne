@@ -183,3 +183,12 @@ target_include_directories(SubscriptionHostTest PRIVATE ${CMAKE_SOURCE_DIR})
 target_link_libraries(SubscriptionHostTest PRIVATE Qt6::Test)
 
 add_test(NAME SubscriptionHostTest COMMAND SubscriptionHostTest)
+
+qt_add_executable(ExitLookupPlanTest
+        ExitLookupPlanTest.cpp
+        ../src/global/ExitLookupPlan.cpp
+)
+target_include_directories(ExitLookupPlanTest PRIVATE ${CMAKE_SOURCE_DIR})
+target_link_libraries(ExitLookupPlanTest PRIVATE Qt6::Test Qt6::Network)
+
+add_test(NAME ExitLookupPlanTest COMMAND ExitLookupPlanTest)

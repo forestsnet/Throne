@@ -329,6 +329,13 @@ namespace Configs {
                 remote_dns_disable_ipv6 = str == "ipv4_only";
                 continue;
             }
+            // Умолчание было 3000, и трёх секунд не хватает конфигам с
+            // балансировщиком. Переносим только тех, у кого стоит ровно
+            // старое умолчание: свой выбор человека не трогаем.
+            if (key == "url_test_timeout_ms" && str == "3000") {
+                url_test_timeout_ms = 5000;
+                continue;
+            }
             if (key == "route_auto_update_last") {
                 route_auto_update_last = str.toLongLong();
                 continue;

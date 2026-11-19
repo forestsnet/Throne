@@ -29,6 +29,12 @@ namespace Configs_network {
         QList<QPair<QByteArray, QByteArray>> headers;
         QSsl::SslProtocol tlsProtocol = QSsl::SecureProtocols;
         bool http2 = true;
+        // Срок на передачу. Короче умолчания берут там, где за одной попыткой
+        // стоит очередь следующих и ждать её полную минуту незачем.
+        int timeoutMs = 10000;
+        // Имя для SNI и проверки сертификата, когда в URL стоит адрес.
+        // Заголовок Host вызывающий ставит сам: Qt берёт его из URL.
+        QString peerVerifyName;
         // Verifies the certificate even when net_insecure is on.
         bool strictTls = false;
     };

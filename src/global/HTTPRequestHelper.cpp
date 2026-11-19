@@ -87,7 +87,7 @@ namespace Configs_network {
         const qint64 maxBytes = options.maxBytes;
         QNetworkRequest request;
         QNetworkAccessManager accessManager;
-        accessManager.setTransferTimeout(10000);
+        accessManager.setTransferTimeout(options.timeoutMs > 0 ? options.timeoutMs : 10000);
         request.setUrl(url);
         QString proxyError;
         if (RequestUsesMixedInbound(options.useProxy, &proxyError)) accessManager.setProxy(MixedInboundProxy());
@@ -101,6 +101,7 @@ namespace Configs_network {
         ssl.setProtocol(options.tlsProtocol);
         if (insecure) ssl.setPeerVerifyMode(QSslSocket::PeerVerifyMode::VerifyNone);
         request.setSslConfiguration(ssl);
+        if (!options.peerVerifyName.isEmpty()) request.setPeerVerifyName(options.peerVerifyName);
         for (const auto &[name, value] : options.headers) request.setRawHeader(name, value);
         auto _reply = accessManager.get(request);
         connect(_reply, &QNetworkReply::sslErrors, _reply, [insecure](const QList<QSslError> &errors) {

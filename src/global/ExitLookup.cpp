@@ -1,17 +1,24 @@
 #include "include/global/ExitLookup.hpp"
 
 #include "include/global/CountryHelper.hpp"
+#include "include/global/ExitLookupPlan.hpp"
 #include "include/global/HTTPRequestHelper.hpp"
 
 #include <QElapsedTimer>
+#include <QHostAddress>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QStringList>
+#include <QUrl>
 
 namespace Configs_network {
     namespace {
         constexpr qint64 kExitLookupAutoBudgetMs = 20000;
+        // Срок одной попытки. Десять секунд умолчания съедали весь бюджет за
+        // две неудачи, и до проверки по адресу очередь не доходила.
+        constexpr int kExitLookupAttemptMs = 6000;
+        constexpr int kDohAttemptMs = 4000;
 
         enum class ExitLookupFormat { IpApi, IpWho, IpInfo, IpApiCo, Ip2Location, FreeIpApi, CloudflareTrace };
 
@@ -31,6 +38,13 @@ namespace Configs_network {
                 {{QStringLiteral("freeipapi"), QStringLiteral("FreeIPAPI"), QStringLiteral("https://free.freeipapi.com/api/v1/json")},
                  ExitLookupFormat::FreeIpApi},
                 {{QStringLiteral("cloudflare"), QStringLiteral("Cloudflare"), QStringLiteral("https://www.cloudflare.com/cdn-cgi/trace")},
+                 ExitLookupFormat::CloudflareTrace},
+                // Без имени: сертификат Cloudflare выписан и на эти адреса, а
+                // trace у них тот же и со строкой loc. Отвечают там, где DNS
+                // ядра уже молчит, и разрешать для них нечего.
+                {{QStringLiteral("cloudflare-ip"), QStringLiteral("Cloudflare (1.1.1.1)"), QStringLiteral("https://1.1.1.1/cdn-cgi/trace")},
+                 ExitLookupFormat::CloudflareTrace},
+                {{QStringLiteral("cloudflare-ip2"), QStringLiteral("Cloudflare (1.0.0.1)"), QStringLiteral("https://1.0.0.1/cdn-cgi/trace")},
                  ExitLookupFormat::CloudflareTrace},
             };
             return entries;
@@ -112,15 +126,58 @@ namespace Configs_network {
             return {};
         }
 
-        bool exitLookupTry(const ExitLookupEntry &entry, ExitInfo *info, QString *error) {
-            const auto resp = NetworkRequestHelper::HttpGet(entry.provider.url, true);
+        // Имя провайдера разрешает ядро, и под туннелем оно иногда молчит до
+        // самого таймаута. Тогда разрешаем сами — по адресам резолверов, так
+        // что для самого резолва имя уже не нужно, и не одним сервером.
+        QStringList resolveViaDoh(const QString &host) {
+            if (host.isEmpty() || !QHostAddress(host).isNull()) return {};
+            static const QStringList resolvers = {
+                QStringLiteral("https://1.1.1.1/dns-query?type=A&name=%1"),
+                QStringLiteral("https://8.8.8.8/resolve?type=A&name=%1"),
+            };
+            const QString name = QString::fromUtf8(QUrl::toPercentEncoding(host));
+            for (const QString &resolver : resolvers) {
+                HttpGetOptions options;
+                options.useProxy = true;
+                options.timeoutMs = kDohAttemptMs;
+                options.headers << qMakePair(QByteArray("Accept"), QByteArray("application/dns-json"));
+                const auto resp = NetworkRequestHelper::HttpGet(resolver.arg(name), options);
+                if (!resp.error.isEmpty()) continue;
+                const auto addresses = ParseDohAddresses(resp.data);
+                if (!addresses.isEmpty()) return addresses;
+            }
+            return {};
+        }
+
+        // address пуст — обычный запрос по имени. Иначе идём на адрес, а имя
+        // уносим в Host и в проверку сертификата: у провайдеров за CDN без
+        // него отвечает чужой сайт или не отвечает никто.
+        bool exitLookupTry(const ExitLookupEntry &entry, const QString &address, ExitInfo *info, QString *error) {
+            HttpGetOptions options;
+            options.useProxy = true;
+            options.timeoutMs = kExitLookupAttemptMs;
+            QString url = entry.provider.url;
+            if (!address.isEmpty()) {
+                const QString host = QUrl(entry.provider.url, QUrl::StrictMode).host();
+                url = UrlWithAddress(entry.provider.url, address);
+                if (url.isEmpty() || host.isEmpty()) {
+                    *error = entry.provider.label + QStringLiteral(": could not ask %1 directly").arg(address);
+                    return false;
+                }
+                // HTTP/2 берёт authority из URL, и имя до сервера не доедет.
+                options.http2 = false;
+                options.peerVerifyName = host;
+                options.headers << qMakePair(QByteArray("Host"), host.toUtf8());
+            }
+            const auto resp = NetworkRequestHelper::HttpGet(url, options);
             QString reason = resp.error;
             if (reason.isEmpty()) reason = exitLookupParse(entry.format, resp.data, info);
             info->countryCode = exitLookupCountryCode(info->countryCode);
             if (info->country.isEmpty() && !info->countryCode.isEmpty()) info->country = CountryCodeToName(info->countryCode);
             if (reason.isEmpty() && !info->hasCountry()) reason = QStringLiteral("no country in the answer");
             if (reason.isEmpty()) return true;
-            *error = entry.provider.label + QStringLiteral(": ") + reason;
+            *error = entry.provider.label + (address.isEmpty() ? QString() : QStringLiteral(" (%1)").arg(address)) +
+                     QStringLiteral(": ") + reason;
             return false;
         }
     } // namespace
@@ -135,30 +192,53 @@ namespace Configs_network {
     }
 
     ExitInfo LookupExit(const QString &providerId, QString *error) {
-        QList<const ExitLookupEntry *> chain;
-        if (const auto *chosen = exitLookupFind(providerId)) {
-            chain << chosen;
-        } else {
-            // ip2location first: the IP & country test asks it too, so both name the same country.
-            for (const char *id : {"ip2location", "ip-api", "ipwho", "ipinfo", "cloudflare"}) {
-                if (const auto *entry = exitLookupFind(QString::fromLatin1(id))) chain << entry;
-            }
-        }
+        QStringList known;
+        for (const auto &entry : exitLookupEntries()) known << entry.provider.id;
 
         QElapsedTimer elapsed;
         elapsed.start();
         QStringList errors;
         QString answeredIp;
-        for (const auto *entry : chain) {
-            if (!errors.isEmpty() && elapsed.elapsed() >= kExitLookupAutoBudgetMs) break;
-            ExitInfo info;
-            QString reason;
-            if (exitLookupTry(*entry, &info, &reason)) {
-                if (error != nullptr) error->clear();
-                return info;
-            }
-            errors << reason;
+        // Имя уже один раз не разрешилось силами ядра, а своими разрешилось:
+        // у остальных провайдеров ждать его повторно незачем, они резолвятся
+        // тем же мёртвым резолвером и сгорят по тому же сроку.
+        bool preferAddress = false;
+        const auto keep = [&](const ExitInfo &info) {
             if (answeredIp.isEmpty()) answeredIp = info.ip;
+        };
+
+        for (const QString &id : ExitLookupChain(providerId, known)) {
+            const auto *entry = exitLookupFind(id);
+            if (entry == nullptr) continue;
+            if (!errors.isEmpty() && elapsed.elapsed() >= kExitLookupAutoBudgetMs) break;
+            const QString host = QUrl(entry->provider.url, QUrl::StrictMode).host();
+
+            QStringList addresses;
+            if (preferAddress) addresses = resolveViaDoh(host);
+            if (addresses.isEmpty()) {
+                ExitInfo info;
+                QString reason;
+                if (exitLookupTry(*entry, {}, &info, &reason)) {
+                    if (error != nullptr) error->clear();
+                    return info;
+                }
+                errors << reason;
+                keep(info);
+                if (elapsed.elapsed() >= kExitLookupAutoBudgetMs) break;
+                addresses = resolveViaDoh(host);
+            }
+            // Один адрес: не ответил он — соседние из того же ответа стоят за
+            // тем же сервером и ответят так же.
+            if (addresses.isEmpty()) continue;
+            preferAddress = true;
+            ExitInfo viaAddress;
+            QString addressReason;
+            if (exitLookupTry(*entry, addresses.first(), &viaAddress, &addressReason)) {
+                if (error != nullptr) error->clear();
+                return viaAddress;
+            }
+            errors << addressReason;
+            keep(viaAddress);
         }
         if (error != nullptr) *error = errors.join(QStringLiteral(" · "));
         ExitInfo partial;
