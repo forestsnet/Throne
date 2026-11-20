@@ -1,3 +1,10 @@
+#### 1.4.19
+
+* Ask for a subscription by the other path when the first one does not answer **1**
+
+**1**:
+A subscription that will not update leaves the person with the servers they already have and no way to get newer ones, and the reason is usually one of two opposite ones. The provider's own name is blocked by the person's ISP, and then the request has to go through the tunnel. Or the tunnel is up and dead, which takes the request down with it, and then the request has to go out past it. The client now tries the other path once after the first one fails, and only where there is another path to try: with a running profile it asks through the core after a direct attempt, and past the core after an attempt that went through it. In Tun Mode both paths end in the same tunnel, so nothing is repeated there, and with nothing running there is nowhere to repeat it through. The mirrors a provider named keep their place in the queue and are asked the same way.
+
 #### 1.4.18
 
 * Come back from an update the way the client was left, not in front of everything **1**

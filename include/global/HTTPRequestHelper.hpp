@@ -37,6 +37,9 @@ namespace Configs_network {
         QString peerVerifyName;
         // Verifies the certificate even when net_insecure is on.
         bool strictTls = false;
+        // Ignores net_use_proxy and a saved system-proxy mode: the request goes
+        // out the way the system routes it. For a second attempt past the core.
+        bool bypassProxy = false;
     };
 
     // Explicit net_use_proxy/useProxy needs a running profile. A saved system

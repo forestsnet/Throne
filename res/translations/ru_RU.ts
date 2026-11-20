@@ -11886,6 +11886,14 @@ How to update?</source>
         <translation>Процесс завершён, применение...</translation>
     </message>
     <message>
+        <source>%1 did not answer, asking again through the tunnel.</source>
+        <translation>%1 не ответила, пробуем через туннель.</translation>
+    </message>
+    <message>
+        <source>%1 did not answer through the tunnel, asking again past it.</source>
+        <translation>%1 не ответила через туннель, пробуем мимо него.</translation>
+    </message>
+    <message>
         <source>%1 did not answer at %2, trying the mirror %3.</source>
         <translation>%1 не ответила по адресу %2, пробуем зеркало %3.</translation>
     </message>

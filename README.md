@@ -197,6 +197,13 @@ list is worth keeping complete on every host it is served from, the current
 one included: a client that has moved to a mirror learns its next list from
 that mirror.
 
+An address that does not answer is asked once more by the other path before the
+next address is tried: through the tunnel when the first attempt went out
+directly, and past the tunnel when it did not, because a tunnel that is up and
+carrying nothing takes the update down with it. In Tun Mode both paths end in
+the same tunnel, so nothing is repeated there, and with no profile running there
+is nowhere to repeat it through.
+
 Both are honoured only on an `https` subscription. On plain HTTP anyone on the
 path could write them, and a move is permanent. The value has to be a bare host
 or `host:port` — anything carrying a scheme, a path, a query or credentials is

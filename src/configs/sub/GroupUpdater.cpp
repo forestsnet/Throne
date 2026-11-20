@@ -843,9 +843,12 @@ namespace Subscription {
     }
 
     bool GroupUpdater::fetch(const QString &url, const QString &name, const RequestIdentity &identity, QByteArray &body,
-                             Configs::SubUserInfo &subInfo, QString *error, QString *policyJson, QString *routing) {
+                             Configs::SubUserInfo &subInfo, QString *error, QString *policyJson, QString *routing,
+                             const Subscription::FetchWay way) {
         MW_show_log(">>>>>>>> " + QObject::tr("Requesting subscription: %1").arg(name));
         HttpGetOptions options;
+        options.useProxy = way == Subscription::FetchWay::ThroughCore;
+        options.bypassProxy = way == Subscription::FetchWay::Bypass;
         options.maxBytes = kMaxSubscriptionBytes;
         options.userAgent = identity.userAgent;
         options.headers = identityHeaders(identity);
@@ -1017,7 +1020,7 @@ namespace Subscription {
         QString routing;
         const auto identity = ResolveIdentity(group.get());
         QString answered = url;
-        if (!fetch(url, group->name, identity, body, subInfo, &error, &policyJson, &routing)) {
+        if (!fetchBothWays(url, group->name, identity, body, subInfo, &error, &policyJson, &routing)) {
             // The address itself may be what is blocked, so the mirrors the provider named
             // while it was still reachable are tried before the group is called unreachable.
             answered = fetchFromMirrors(*group, url, identity, body, subInfo, policyJson, routing);
@@ -1045,6 +1048,39 @@ namespace Subscription {
         return outcome;
     }
 
+    // Первая попытка идёт как обычно, и если она не удалась — пробуем другим
+    // путём. Шли мимо ядра — идём через него: имя подписки может резать
+    // провайдер. Шли через него — выходим наружу: туннель бывает поднят и мёртв,
+    // и тогда подписка не обновляется именно из-за него.
+    bool GroupUpdater::fetchBothWays(const QString &url, const QString &name, const RequestIdentity &identity,
+                                     QByteArray &body, Configs::SubUserInfo &subInfo, QString *error,
+                                     QString *policyJson, QString *routing) {
+        if (fetch(url, name, identity, body, subInfo, error, policyJson, routing)) return true;
+
+        QString unusable;
+        const bool wentThroughCore = Configs_network::RequestUsesMixedInbound(false, &unusable);
+        const bool coreReachable = Configs_network::RequestUsesMixedInbound(true, &unusable);
+        const auto way = Subscription::RetryWay(wentThroughCore, coreReachable,
+                                                Configs::dataManager->settingsRepo->spmode_vpn);
+        if (!way.has_value()) return false;
+
+        MW_show_log(*way == Subscription::FetchWay::ThroughCore
+                        ? QObject::tr("%1 did not answer, asking again through the tunnel.").arg(name)
+                        : QObject::tr("%1 did not answer through the tunnel, asking again past it.").arg(name));
+
+        // Свои переменные на попытку: неудачная оставляет после себя половину.
+        QByteArray retryBody;
+        Configs::SubUserInfo retryInfo;
+        QString retryPolicy;
+        QString retryRouting;
+        if (!fetch(url, name, identity, retryBody, retryInfo, error, &retryPolicy, &retryRouting, *way)) return false;
+        body = std::move(retryBody);
+        subInfo = retryInfo;
+        if (policyJson != nullptr) *policyJson = retryPolicy;
+        if (routing != nullptr) *routing = retryRouting;
+        return true;
+    }
+
     QString GroupUpdater::fetchFromMirrors(const Configs::Group &group, const QString &url,
                                            const RequestIdentity &identity, QByteArray &body,
                                            Configs::SubUserInfo &subInfo, QString &policyJson, QString &routing) {
@@ -1058,8 +1094,8 @@ namespace Subscription {
             Configs::SubUserInfo mirrorInfo;
             QString mirrorPolicy;
             QString mirrorRouting;
-            if (!fetch(candidate, group.name, identity, mirrorBody, mirrorInfo, nullptr, &mirrorPolicy,
-                       &mirrorRouting)) {
+            if (!fetchBothWays(candidate, group.name, identity, mirrorBody, mirrorInfo, nullptr, &mirrorPolicy,
+                               &mirrorRouting)) {
                 continue;
             }
             body = std::move(mirrorBody);

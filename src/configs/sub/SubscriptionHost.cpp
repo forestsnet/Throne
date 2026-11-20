@@ -4,6 +4,14 @@
 #include <QUrl>
 
 namespace Subscription {
+    std::optional<FetchWay> RetryWay(const bool firstWentThroughCore, const bool coreReachable, const bool tunMode) {
+        if (tunMode) return std::nullopt;
+        // Шли через ядро — второй путь наружу. Он есть всегда, пока нет TUN.
+        if (firstWentThroughCore) return FetchWay::Bypass;
+        if (!coreReachable) return std::nullopt;
+        return FetchWay::ThroughCore;
+    }
+
     namespace {
         // Разбор «хост» или «хост:порт» и ничего кроме. Всё остальное — чужой
         // путь, чужие учётные данные или просто мусор, и подписку туда не

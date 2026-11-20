@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "include/configs/sub/ImportReport.hpp"
+#include "include/configs/sub/SubscriptionHost.hpp"
 #include "include/database/entities/Group.h"
 #include "include/global/DeviceDetailsHelper.hpp"
 
@@ -145,9 +146,15 @@ namespace Subscription {
         UpdateOutcome importDocuments(int gid, QList<QByteArray> documents, const QString &emptyReason = {}, bool quiet = false);
         // policyJson: заголовки политики провайдера, сериализованные. Пусто, если их не прислали.
         // *routing gets the "routing" header (a Happ routing link), empty when absent.
+        // way: каким путём отправить запрос. По умолчанию — как решают настройки.
         bool fetch(const QString &url, const QString &name, const RequestIdentity &identity, QByteArray &body,
                    Configs::SubUserInfo &subInfo, QString *error = nullptr, QString *policyJson = nullptr,
-                   QString *routing = nullptr);
+                   QString *routing = nullptr, Subscription::FetchWay way = Subscription::FetchWay::AsConfigured);
+        // То же, но после неудачи пробует второй путь: через ядро, если первый шёл
+        // мимо, и мимо ядра, если первый шёл через него. Под TUN второго пути нет.
+        bool fetchBothWays(const QString &url, const QString &name, const RequestIdentity &identity, QByteArray &body,
+                           Configs::SubUserInfo &subInfo, QString *error = nullptr, QString *policyJson = nullptr,
+                           QString *routing = nullptr);
         // Зеркала из политики провайдера, по порядку. Отдаёт адрес, который ответил,
         // и заполняет из него body, subInfo, policyJson и routing. Пусто, если не ответил никто.
         QString fetchFromMirrors(const Configs::Group &group, const QString &url, const RequestIdentity &identity,

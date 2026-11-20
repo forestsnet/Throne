@@ -90,7 +90,8 @@ namespace Configs_network {
         accessManager.setTransferTimeout(options.timeoutMs > 0 ? options.timeoutMs : 10000);
         request.setUrl(url);
         QString proxyError;
-        if (RequestUsesMixedInbound(options.useProxy, &proxyError)) accessManager.setProxy(MixedInboundProxy());
+        if (options.bypassProxy) accessManager.setProxy(QNetworkProxy::NoProxy);
+        else if (RequestUsesMixedInbound(options.useProxy, &proxyError)) accessManager.setProxy(MixedInboundProxy());
         else if (!proxyError.isEmpty()) return HTTPResponse{proxyError};
         request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
         request.setAttribute(QNetworkRequest::Http2AllowedAttribute, options.http2);

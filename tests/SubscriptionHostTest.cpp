@@ -94,6 +94,34 @@ private slots:
                                  QStringLiteral("m1.example.com"))
                     .isEmpty());
     }
+
+    // Под TUN второго пути нет: туннель забирает и прямой запрос тоже, и
+    // повтор был бы тем же самым запросом по тому же маршруту.
+    void tunnelModeLeavesNoSecondPath() {
+        QVERIFY(!RetryWay(false, true, true).has_value());
+        QVERIFY(!RetryWay(true, true, true).has_value());
+        QVERIFY(!RetryWay(false, false, true).has_value());
+        QVERIFY(!RetryWay(true, false, true).has_value());
+    }
+
+    // Шли мимо ядра — вторым путём идём через него: имя подписки режет провайдер.
+    void aDirectAttemptFallsBackToTheCore() {
+        const auto way = RetryWay(false, true, false);
+        QVERIFY(way.has_value());
+        QVERIFY(*way == FetchWay::ThroughCore);
+    }
+
+    // Шли через ядро — вторым путём наружу: туннель бывает поднят и мёртв.
+    void anAttemptThroughTheCoreFallsBackPastIt() {
+        const auto way = RetryWay(true, true, false);
+        QVERIFY(way.has_value());
+        QVERIFY(*way == FetchWay::Bypass);
+    }
+
+    // Профиль не запущен: идти через ядро некуда, и второй попытки нет.
+    void withoutARunningProfileThereIsNothingToRetryThrough() {
+        QVERIFY(!RetryWay(false, false, false).has_value());
+    }
 };
 
 QTEST_MAIN(SubscriptionHostTest)
